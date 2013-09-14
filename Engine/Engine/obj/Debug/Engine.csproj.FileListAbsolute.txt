@@ -1,0 +1,7 @@
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\Engine.dll
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\Engine.pdb
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\nunit.framework.dll
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\nunit.framework.xml
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\obj\Debug\Engine.dll
+C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\obj\Debug\Engine.pdb

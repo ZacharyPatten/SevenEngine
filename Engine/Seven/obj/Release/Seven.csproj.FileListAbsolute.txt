@@ -1,0 +1,13 @@
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\Seven.exe.config
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\Seven.exe
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\Seven.pdb
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\Engine.dll
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\OpenTK.Compatibility.dll
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\OpenTK.dll
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\OpenTK.GLControl.dll
+C:\Users\Seven\Programming\Engine\Seven\bin\Release\Engine.pdb
+C:\Users\Seven\Programming\Engine\Seven\obj\Release\Seven.csprojResolveAssemblyReference.cache
+C:\Users\Seven\Programming\Engine\Seven\obj\Release\Seven.Properties.Resources.resources
+C:\Users\Seven\Programming\Engine\Seven\obj\Release\Seven.csproj.GenerateResource.Cache
+C:\Users\Seven\Programming\Engine\Seven\obj\Release\Seven.exe
+C:\Users\Seven\Programming\Engine\Seven\obj\Release\Seven.pdb
