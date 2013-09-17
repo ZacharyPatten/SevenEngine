@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Batch.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Data\DoublyLinkedList.cs" />
     <Compile Include="Data\DoublyLinkedListNode.cs" />
     <Compile Include="Data\HashTable.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Data\QueueNode.cs" />
     <Compile Include="Data\Tuple.cs" />
     <Compile Include="Math\Matrix.cs" />
+    <Compile Include="Model\Model.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Text\CharacterData.cs" />
     <Compile Include="Text\CharacterSprite.cs" />
@@ -113,9 +115,7 @@
     <Compile Include="Math\Vector.cs" />
     <Compile Include="Input\XboxController.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
