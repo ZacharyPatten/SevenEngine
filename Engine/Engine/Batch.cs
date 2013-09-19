@@ -38,16 +38,10 @@ namespace Engine
       GL.EnableClientState(ArrayCap.ColorArray);
       GL.EnableClientState(ArrayCap.VertexArray);
       GL.EnableClientState(ArrayCap.TextureCoordArray);
-      //Gl.glEnableClientState(Gl.GL_COLOR_ARRAY);
-      //Gl.glEnableClientState(Gl.GL_VERTEX_ARRAY);
-      //Gl.glEnableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
 
       GL.VertexPointer(VertexDimensions, VertexPointerType.Double, 0, _vertexPositions);
       GL.ColorPointer(ColorDimensions, ColorPointerType.Float, 0, _vertexColors);
       GL.TexCoordPointer(UVDimensions, TexCoordPointerType.Float, 0, _vertexUVs);
-      //Gl.glVertexPointer(VertexDimensions, Gl.GL_DOUBLE, 0, _vertexPositions);
-      //Gl.glColorPointer(ColorDimensions, Gl.GL_FLOAT, 0, _vertexColors);
-      //Gl.glTexCoordPointer(UVDimensions, Gl.GL_FLOAT, 0, _vertexUVs);
     }
 
     public void Draw()
@@ -56,9 +50,9 @@ namespace Engine
       {
         return;
       }
+      // RAWR
       SetupPointers();
       GL.DrawArrays(BeginMode.Triangles, 0, _batchSize);
-      //Gl.glDrawArrays(Gl.GL_TRIANGLES, 0, _batchSize);
       _batchSize = 0;
     }
   }

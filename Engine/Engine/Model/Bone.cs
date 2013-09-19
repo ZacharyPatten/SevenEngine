@@ -5,9 +5,14 @@ using System.Text;
 
 namespace Engine.Model
 {
-  public class Model
+  public class Bone
   {
-    //List<Vector[]> _vertexPositions;
-    //List<>
+    List<Bone> _children;
+    Matrix _transformation;
+
+    public Bone()
+    {
+
+    }
   }
 }

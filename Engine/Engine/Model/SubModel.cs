@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Engine.Model
 {
-  public class Model
+  public class SubModel
   {
-    //List<Vector[]> _vertexPositions;
-    //List<>
+    Vector[] _vbo;
+    Texture _texture;
   }
 }
