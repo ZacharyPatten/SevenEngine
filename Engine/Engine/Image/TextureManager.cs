@@ -81,7 +81,6 @@ namespace Engine
       foreach (Texture t in _textureDatabase.Values)
       {
         GL.DeleteTextures(1, new int[] { t.Id });
-        //Gl.glDeleteTextures(1, new int[] { t.Id });
       }
     }
 

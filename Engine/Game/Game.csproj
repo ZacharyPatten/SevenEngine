@@ -54,13 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelState.cs" />
     <Compile Include="States\DrawSpriteState.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\ModelState2.cs" />
     <Compile Include="States\TextState.cs" />
     <Compile Include="States\texturestate.cs" />
+    <Compile Include="Temp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -70,6 +71,10 @@
       <Project>{78e91c0f-f05d-4bba-92b3-e5a84705f63d}</Project>
       <Name>Engine</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Guy.Cecil.full.150663.bmp" />
+    <Content Include="Assets\img4d5a2fe0bf568.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -85,7 +85,8 @@
     <Compile Include="Data\Tuple.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Model\Bone.cs" />
-    <Compile Include="Model\Model.cs" />
+    <Compile Include="Model\SuperModel.cs" />
+    <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\SubModel.cs" />
     <Compile Include="Model\Vertex.cs" />
     <Compile Include="Output.cs" />

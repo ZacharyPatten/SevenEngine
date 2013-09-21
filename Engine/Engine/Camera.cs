@@ -1,4 +1,6 @@
-﻿namespace Engine
+﻿using OpenTK;
+
+namespace Engine
 {
   public class Camera
   {
@@ -86,6 +88,11 @@
             _right.X, _right.Y, _right.Z,
             _up.X, _up.Y, _up.Z,
             _forward.Z, _forward.Y, _forward.Z);
+    }
+
+    public Matrix4 GetCameraTransform()
+    {
+      return Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY);
     }
   }
 }

@@ -11,6 +11,7 @@ namespace Engine
 {
   public class Game : GameWindow
   {
+    PreciseTimer _timer;
     bool _fullscreen = false;
     //Batch _batch;
     FastLoop _fastLoop;
@@ -30,6 +31,7 @@ namespace Engine
       InitializeTextures();
       InitializeStates();
 
+      _timer = new PreciseTimer();
       _fastLoop = new FastLoop(GameLoop);
 
       Output.DecreaseIndent();
@@ -40,8 +42,17 @@ namespace Engine
     {
       base.OnResize(e);
       GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-      Setup2DGraphics(ClientSize.Width, ClientSize.Height);
-      //Setup3DGraphics(ClientSize.Width, ClientSize.Height);
+
+      // Adjust the Projection Transformation Matrix
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.LoadIdentity();
+      double halfWidth = ClientSize.Width / 2;
+      double halfHeight = ClientSize.Height / 2;
+      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
+
+      // Return to the ModelView matrix for safety
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
     }
 
     void InitializeInput()
@@ -53,15 +64,25 @@ namespace Engine
       Output.Print("Initializing Display {");
       Output.IncreaseIndent();
 
+      // SET INITIAL DISPLAY SETTINGS HERE.
       VSync = VSyncMode.On;
-      Output.Print("Vertical Syncronization On;");
+      Output.Print("Vertical Sync On;");
       GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
       Output.Print("Clear Color (.1, .2, .5, 0) Set;");
       GL.Enable(EnableCap.DepthTest);
       Output.Print("Depth Buffer Enabled;");
-      Setup2DGraphics(ClientSize.Width, ClientSize.Height);
-      Output.Print("2D Graphics Enabled;");
-      //Setup3DGraphics(ClientSize.Width, ClientSize.Height);
+      //GL.Enable(EnableCap.CullFace);
+      //Output.Print("Back-face Culling Enable;");
+
+      // Initialize the Projection Matrix
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.LoadIdentity();
+      double halfWidth = ClientSize.Width / 2;
+      double halfHeight = ClientSize.Height / 2;
+      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
+
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
 
       Output.DecreaseIndent();
       Output.Print("} Display Initialized;");
@@ -72,8 +93,7 @@ namespace Engine
       Output.Print("Initializing Sounds {");
       Output.IncreaseIndent();
 
-      // Load sound files here
-      Output.Print("None;");
+      // LOAD SOUND FILES HERE.
 
       Output.DecreaseIndent();
       Output.Print("} Sounds Initialized;");
@@ -84,8 +104,9 @@ namespace Engine
       Output.Print("Initializing Textures {");
       Output.IncreaseIndent();
 
-      // Load textures here using the texture manager.
+      // LOAD TEXTURES HERE USING THE TEXTURE MANAGER.
       _textureManager.LoadTexture("toy", "img4d5a2fe0bf568.bmp");
+      _textureManager.LoadTexture("guy", "Guy.Cecil.full.150663.bmp");
 
       Output.DecreaseIndent();
       Output.Print("} Textures Initialized;");
@@ -96,7 +117,7 @@ namespace Engine
       Output.Print("Initializing Models {");
       Output.IncreaseIndent();
 
-      // Load model files here.
+      // LOAD MODEL FILES HERE.
       Output.Print("None;");
 
       Output.DecreaseIndent();
@@ -108,42 +129,16 @@ namespace Engine
       Output.Print("Initializing States {");
       Output.IncreaseIndent();
 
-      // Load the game states here
-      _system.AddState("texture_test", new MultipleTexturesState(_textureManager));
-      _system.ChangeState("texture_test");
-      _system.AddState("model_state", new ModelState());
+      // LOAD THE GAME STATES HERE
+      //_system.AddState("texture_test", new MultipleTexturesState(_textureManager));
+      //_system.ChangeState("texture_test");
+      //_system.AddState("model_state", new ModelState(_textureManager));
       //_system.ChangeState("model_state");
+      _system.AddState("model_state2", new ModelState2(_textureManager));
+      _system.ChangeState("model_state2");
 
       Output.DecreaseIndent();
       Output.Print("} States Initialized;");
-    }
-
-    // NOTE: This method is for initializing settings that
-    // are window size dependant.
-    private void Setup2DGraphics(double width, double height)
-    {
-      double halfWidth = width / 2;
-      double halfHeight = height / 2;
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadIdentity();
-      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -100, 100);
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadIdentity();
-    }
-
-    // NOTE: This method is for initializing settings that
-    // are window size dependant.
-    private void Setup3DGraphics(double width, double height)
-    {
-      double halfWidth = width / 2;
-      double halfHeight = height / 2;
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadIdentity();
-      Matrix4 persp = Matrix4.CreatePerspectiveFieldOfView(.90f, (float)width / (float)height, 1, 100);
-      GL.LoadMatrix(ref persp);
-      //GL.Perspective(90, 4 / 3, 1, 1000);
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadIdentity();
     }
 
     private void GameLoop(double elapsedTime)
@@ -162,26 +157,16 @@ namespace Engine
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
       base.OnUpdateFrame(e);
-      // Update the game here.
+      _system.Update(_timer.GetElapsedTime());
+      // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       base.OnRenderFrame(e);
-      // Call all rendering functions here.
-
-      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-      Matrix4 modelview = Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY);
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadMatrix(ref modelview);
-
-      GL.Color3(System.Drawing.Color.White);
-      GL.Enable(EnableCap.Texture2D);
-
       _system.Render();
-
       SwapBuffers();
+      // DO NOT RENDER ITEMS HERE. (USE THE RENDER METHODS IN GAME STATES)
     }
   }
 }

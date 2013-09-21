@@ -90,11 +90,10 @@ namespace Engine
       int size;
       System.Diagnostics.Debug.Assert(File.Exists(path));
 
-      //IntPtr data = Alut.alutLoadMemoryFromFile(path, out format, out size, out frequency);
+      //IntPtr data = AL.LoadMemoryFromFile(path, out format, out size, out frequency);
       //System.Diagnostics.Debug.Assert(data != IntPtr.Zero);
       // Load wav data into the generated buffer.
       //AL.BufferData(buffer, format, data, size, (int)frequency);
-      //Al.alBufferData(buffer, format, data, size, (int)frequency);
       // Every seems ok, add it to the library.
       _soundIdentifier.Add(soundId, new SoundSource(buffer, path));
     }
