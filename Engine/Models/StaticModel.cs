@@ -30,9 +30,7 @@ namespace Engine.Models
     public Vector3d Position { get; set; }
     /// <summary>The current scale of this model in the world.</summary>
     public Vector3d Scale { get; set; }
-    /// <summary>Represents the ammount of rotation around each axis (by the RotationAngle).</summary>
     public Vector3d RotationAmmounts { get; set; }
-    /// <summary>Represents the amount of rotation applied to the x, y, and z of RotationAmmounts.</summary>
     public float RotationAngle { get; set; }
 
     public StaticModel(

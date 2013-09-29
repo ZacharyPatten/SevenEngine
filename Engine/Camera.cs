@@ -4,17 +4,17 @@ namespace Engine
 {
   public struct Camera
   {
-    /*private Vector3 _position, _right, _up, _forward;
+    /*private Vector _position, _right, _up, _forward;
     private double _fieldOfView, _maximumViewDistance, _minimumViewDistance;
     private Matrix _viewOrientation;
 
-    public Vector3 Position
+    public Vector Position
     {
       get { return _position; }
       set { _position = value; }
     }
 
-    public Vector3 Right
+    public Vector Right
     {
       get { return _right; }
       set
@@ -28,7 +28,7 @@ namespace Engine
       }
     }
 
-    public Vector3 Up
+    public Vector Up
     {
       get { return _up; }
       set
@@ -42,7 +42,7 @@ namespace Engine
       }
     }
 
-    public Vector3 Forward
+    public Vector Forward
     {
       get { return _forward; }
       set
@@ -74,7 +74,7 @@ namespace Engine
       set { _minimumViewDistance = value; }
     }
 
-    public Camera(Vector3 position, Vector3 right, Vector3 up, Vector3 forward, double fieldOfView, double maximumViewDistance, double minimumViewDistance)
+    public Camera(Vector position, Vector right, Vector up, Vector forward, double fieldOfView, double maximumViewDistance, double minimumViewDistance)
     {
       _position = position;
       _right = right;
@@ -89,15 +89,19 @@ namespace Engine
             _up.X, _up.Y, _up.Z,
             _forward.Z, _forward.Y, _forward.Z);
     }
-  }*/
+
+    public Matrix4 GetCameraTransform()
+    {
+      return Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY);
+    }*/
 
     /// <summary>The current position of this model in the world.</summary>
     public Vector3d Position { get; set; }
     /// <summary>The current scale of this model in the world.</summary>
     public Vector3d Scale { get; set; }
-    /// <summary>Represents the ammount of rotation around each axis (by the RotationAngle).</summary>
+    /// <summary>The multiplyers of rotation per vertex.</summary>
     public Vector3d RotationAmmounts { get; set; }
-    /// <summary>Represents the amount of rotation applied to the x, y, and z of RotationAmmounts.</summary>
+    /// <summary>The multiplyer of rotation.</summary>
     public float RotationAngle { get; set; }
   }
 }

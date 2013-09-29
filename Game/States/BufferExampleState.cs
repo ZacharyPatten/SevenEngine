@@ -18,15 +18,15 @@ namespace Engine
     RigidBodyPartModel _subModel;
     RigidBodyPartModel _subModel2;
     RigidBodyPartModel _subModel3;
-    //InputManager _input;
+    InputManager _input;
 
-    public BufferExampleState(TextureManager textureManager)//, InputManager input)
+    public BufferExampleState(TextureManager textureManager, InputManager input)
     {
       // Initialize the renderer for this instance
       _renderer = new Renderer();
 
       // Initialize the input for user controls of this state
-      //_input = input;
+      _input = input;
       
       _subModel = new RigidBodyPartModel(textureManager, "guy",
         new float[] {

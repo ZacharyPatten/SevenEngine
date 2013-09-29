@@ -10,3 +10,5 @@ I will try to write documentation once the project matures a bit (It's changing 
 Update (9/19/2013): I finished some basic 2D sprite coding, so it is easy to load and draw 2D images (".bmp" files currently the only file type supported).
 
 Update (9/20/2013): I have the bare-bones for a static (non-animated) model class. It correctly renders using a vertex buffer object (unlike GL.Begin()/GL.End() it uses DrawArrays()). In the next week I'll be finishing the static model class and writing an ".obj" importer. After that I'll be writing a bone-hierarchy animated model class.
+
+Update (9/28/2013): I have cleaned up static model importing quit a bit. I am also using OpenTK's very easy imput to handle keyboard/mouse to manipulate the camera. I have minor problems with my projection transformation, so I resorted to using an orthogonal matrix as the projection transform (will fix soon). Anyways the project is looking very promising.

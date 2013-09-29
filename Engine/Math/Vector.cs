@@ -118,12 +118,12 @@ namespace Engine
       return v1.Subtract(v2);
     }
 
-    public Vector Normalise(Vector v)
+    public Vector Normalise()
     {
-      double r = v.Length();
+      double r = Length();
       if (r != 0.0)				// guard against divide by zero
       {
-        return new Vector(v.X / r, v.Y / r, v.Z / r);	// normalise and return
+        return new Vector(X / r, Y / r, Z / r);	// normalise and return
       }
       else
       {

@@ -17,9 +17,9 @@ namespace Game.States
   {
     Renderer _renderer;
     RigidBodyPartModel _subModel;
-    //InputManager _input;
+    InputManager _input;
 
-    public objectImporterState(TextureManager textureManager) //, InputManager input)
+    public objectImporterState(TextureManager textureManager, InputManager input)
     {
       List<float> points = new List<float>();
       List<float> normals = new List<float>();
@@ -34,7 +34,7 @@ namespace Game.States
       using (StreamReader reader = new StreamReader("yoda.obj"))
       {
         _renderer = new Renderer();
-        //_input = input;
+        _input = input;
 
         string line;
         char[] splitChars = { ' ' };
