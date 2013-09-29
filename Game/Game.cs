@@ -17,7 +17,7 @@ namespace Engine
     bool _fullscreen;
     FastLoop _fastLoop;
     StateManager _stateManager;
-    // InputManager _inputManager;
+    //InputManager _inputManager;
     TextureManager _textureManager;
     StaticModelManager _staticModelManager;
     SoundManager _soundManager;
@@ -46,16 +46,22 @@ namespace Engine
     protected override void OnResize(EventArgs e)
     {
       base.OnResize(e);
-      // Set the Viewport for proper transformations
       GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-      // Set the Projection Matrix for proper transformations
-      SetProjectionMatrix();
+
+      // Adjust the Projection Transformation Matrix
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.LoadIdentity();
+      double halfWidth = ClientSize.Width / 2;
+      double halfHeight = ClientSize.Height / 2;
+      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
+
+      // Return to the ModelView matrix for safety
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
     }
 
     private void InitializeInput()
     {
-      // OpenTK includes input, so my input classes are not required.
-
       //_inputManager = new InputManager();
     }
 
@@ -63,9 +69,9 @@ namespace Engine
     {
       Output.Print("Initializing Display {");
       Output.IncreaseIndent();
-      
+
       // SET INITIAL DISPLAY SETTINGS HERE.
-      
+
       _fullscreen = false;
       VSync = VSyncMode.On;
       Output.Print("Vertical Sync On;");
@@ -76,7 +82,6 @@ namespace Engine
       GL.Enable(EnableCap.CullFace);
       Output.Print("Back-face Culling Enable;");
       GL.Enable(EnableCap.Lighting);
-      Output.Print("Lighting Enable;");
 
       SetProjectionMatrix();
 
@@ -114,6 +119,11 @@ namespace Engine
       _textureManager.LoadTexture("yoda", "yoda.bmp");
       _textureManager.LoadTexture("grass", "grass.bmp");
       _textureManager.LoadTexture("thief", "thief.bmp");
+      _textureManager.LoadTexture("RedRanger", "RedRangerBody.bmp");
+      _textureManager.LoadTexture("BlueRanger", "BlueRangerBody.bmp");
+      _textureManager.LoadTexture("PinkRanger", "PinkRangerBody.bmp");
+      _textureManager.LoadTexture("BlackRanger", "BlackRangerBody.bmp");
+      _textureManager.LoadTexture("YellowRanger", "YellowRangerBody.bmp");
 
       Output.DecreaseIndent();
       Output.Print("} Textures Initialized;");
@@ -129,8 +139,9 @@ namespace Engine
       // LOAD MODEL FILES HERE.
 
       _staticModelManager.LoadModel(_textureManager, "grass", "grass.obj");
+      _staticModelManager.LoadModel(_textureManager, "thief", "thief2.obj");
       _staticModelManager.LoadModel(_textureManager, "yoda", "yoda.obj");
-
+      _staticModelManager.LoadModel(_textureManager, "RedRanger", "RedRanger.obj");
 
       Output.DecreaseIndent();
       Output.Print("} Models Initialized;");
@@ -149,7 +160,7 @@ namespace Engine
       Output.Print("Basic Vertex Shader Compiled;");
       Output.Print("Basic Vertex Shader Selected;");
       Output.Print("Basic Fragment Shader Compiled;");
-      Output.Print("Basic Fragment Shader Compiled;");
+      Output.Print("Basic Fragment Shader Selected;");
 
       Output.DecreaseIndent();
       Output.Print("} Shaders Initialized;");
@@ -159,20 +170,12 @@ namespace Engine
     {
       Output.Print("Initializing States {");
       Output.IncreaseIndent();
-
+      
       _stateManager = new StateManager();
 
       // LOAD THE GAME STATES HERE
 
-      //_system.AddState("texture_test", new MultipleTexturesState(_textureManager));
-      //_system.ChangeState("texture_test");
-      //_stateManager.AddState("model_state2", new BufferExampleState(_textureManager, _inputManager));
-      //_stateManager.ChangeState("model_state2");
-      //_system.AddState("obj_test", new objectImporterState(_textureManager, _input));
-      //_system.ChangeState("obj_test");
-      //_stateManager.AddState("obj_test2", new objLoaderstate2(_textureManager, _inputManager));
-      //_stateManager.ChangeState("obj_test2");
-      _stateManager.AddState("modelManagerTestState", new objTesterState3(this.Keyboard, this.Mouse, _staticModelManager, _textureManager));
+      _stateManager.AddState("modelManagerTestState", new objTesterState3(Keyboard, _staticModelManager, _textureManager));
       _stateManager.ChangeState("modelManagerTestState");
 
       Output.DecreaseIndent();
@@ -186,10 +189,14 @@ namespace Engine
       GL.LoadIdentity();
       double halfWidth = ClientSize.Width / 2;
       double halfHeight = ClientSize.Height / 2;
-      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
-      //Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(.5f, 
-      //  (float)ClientSize.Width / (float)ClientSize.Height, .1f, 10000f);
-      //GL.MultMatrix(ref perspective);
+
+      // USE THIIS MATRIX TO ELIMINATE DEPTH PERCEPTION
+      //GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
+
+      // USE THIS MATRIX TO HAVE DEPTH PERCEPTION
+      Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(.5f, 
+        (float)ClientSize.Width / (float)ClientSize.Height, .1f, 10000f);
+      GL.LoadMatrix(ref perspective);
     }
 
     private void GameLoop(double elapsedTime)
@@ -206,15 +213,10 @@ namespace Engine
 
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
+
+      if (Keyboard[OpenTK.Input.Key.Escape]) { this.Exit(); return; }
+      
       base.OnUpdateFrame(e);
-
-      // Lets shut down the game if the user hits "ESC".
-      if (Keyboard[OpenTK.Input.Key.Escape])
-      {
-        this.Exit();
-        return;
-      }
-
       _stateManager.Update(_timer.GetElapsedTime());
       // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }
@@ -222,10 +224,10 @@ namespace Engine
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       base.OnRenderFrame(e);
-      // Clear the color buffer
-      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       // Reset the Projection Matrix.
       SetProjectionMatrix();
+      // Clear the color buffer
+      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       // Call the state rendering functions.
       _stateManager.Render();
       // Swap buffers is needed to show the rendering on the screen.

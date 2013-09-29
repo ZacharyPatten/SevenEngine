@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -296,6 +296,175 @@ namespace Engine
     }
 
     public override string ToString() { return String.Format("Point: {0},{1},{2}", Vertex, Normal, TexCoord); }
+
+  }
+}
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+
+using Engine.Models;
+
+namespace Engine
+{
+  public class StaticModelManager : IDisposable
+  {
+    Dictionary<string, StaticModel> _staticModelDatabase = new Dictionary<string, StaticModel>();
+
+    public StaticModel Get(string superModelId)
+    {
+      return _staticModelDatabase[superModelId];
+    }
+
+    public void LoadModel(TextureManager textureManager, string staticModelId, string path)
+    {
+      _staticModelDatabase.Add(staticModelId, LoadObj(textureManager, path));
+      Output.Print("Model file loaded: \"" + path + "\".");
+    }
+
+    public void RemoveModel(string staticModelId)
+    {
+      // Get the struct with the GPU mappings.
+      StaticModel removal = Get(staticModelId);
+      // Delete the vertex buffer if it exists.
+      int vertexBufferId = removal.VertexBufferId;
+      if (vertexBufferId != 0)
+        GL.DeleteBuffers(1, ref vertexBufferId);
+      // Delete the normal buffer if it exists.
+      int normalbufferId = removal.NormalBufferId;
+      if (normalbufferId != 0)
+        GL.DeleteBuffers(1, ref normalbufferId);
+      // Delete the color buffer if it exists.
+      int colorBufferId = removal.ColorBufferId;
+      if (colorBufferId != 0)
+        GL.DeleteBuffers(1, ref colorBufferId);
+      // Delete the texture coordinate buffer if it exists.
+      int textureCoordinateBufferId = removal.TexCoordBufferId;
+      if (textureCoordinateBufferId != 0)
+        GL.DeleteBuffers(1, ref textureCoordinateBufferId);
+      // Delete the element buffer if it exists.
+      int elementBufferId = removal.ElementBufferId;
+      if (elementBufferId != 0)
+        GL.DeleteBuffers(1, ref elementBufferId);
+      // Now we can remove it from the dictionary.
+      _staticModelDatabase.Remove(staticModelId);
+    }
+
+    public StaticModel LoadObj(TextureManager texturemanager, string path)
+    {
+      List<float> fileVerteces = new List<float>();
+      List<float> fileNormals = new List<float>();
+      List<float> fileTextureCoordinates = new List<float>();
+      List<int> fileIndeces = new List<int>();
+
+      // Lets read the file and handle each line separately for ".obj" files
+      using (StreamReader reader = new StreamReader(path))
+      {
+        while (!reader.EndOfStream)
+        {
+          string[] parameters = reader.ReadLine().Trim().Split(' ');
+          switch (parameters[0])
+          {
+            // Vertex
+            case "v":
+              fileVerteces.Add(float.Parse(parameters[1]));
+              fileVerteces.Add(float.Parse(parameters[2]));
+              fileVerteces.Add(float.Parse(parameters[3]));
+              break;
+
+            // Texture Coordinate
+            case "vt":
+              fileTextureCoordinates.Add(float.Parse(parameters[1]));
+              fileTextureCoordinates.Add(float.Parse(parameters[2]));
+              break;
+
+            // Normal
+            case "vn":
+              fileNormals.Add(float.Parse(parameters[1]));
+              fileNormals.Add(float.Parse(parameters[2]));
+              fileNormals.Add(float.Parse(parameters[3]));
+              break;
+
+            // Face
+            case "f":
+              // NOTE! This does not yet triangulate faces
+              // NOTE! This needs all possible values (position, texture mapping, and normal).
+              for (int i = 1; i < parameters.Length; i++)
+              {
+                string[] indexReferences = parameters[i].Split('/');
+                fileIndeces.Add(int.Parse(indexReferences[0]));
+                if (indexReferences[1] != "")
+                  fileIndeces.Add(int.Parse(indexReferences[1]));
+                else
+                  fileIndeces.Add(0);
+                if (indexReferences[2] != "")
+                  fileIndeces.Add(int.Parse(indexReferences[2]));
+                else
+                  fileIndeces.Add(0);
+              }
+              break;
+          }
+        }
+      }
+
+      // Pull the final vertex order out of the indexed references
+      // Note, arrays start at 0 but the index references start at 1
+      float[] verteces = new float[fileIndeces.Count];
+      for (int i = 0; i < fileIndeces.Count; i += 3)
+      {
+        int index = (fileIndeces[i] - 1) * 3;
+        verteces[i] = fileVerteces[index];
+        verteces[i + 1] = fileVerteces[index + 1];
+        verteces[i + 2] = fileVerteces[index + 2];
+      }
+
+      // Pull the final texture coordinates order out of the indexed references
+      // Note, arrays start at 0 but the index references start at 1
+      // Note, every other value needs to be inverse (not sure why but it works :P)
+      float[] textureCoordinates = new float[fileIndeces.Count / 3 * 2];
+      for (int i = 1; i < fileIndeces.Count; i += 3)
+      {
+        int index = (fileIndeces[i] - 1) * 2;
+        int offset = (i - 1) / 3;
+        textureCoordinates[i - 1 - offset] = fileTextureCoordinates[index];
+        textureCoordinates[i - offset] = 1 - fileTextureCoordinates[(index + 1)];
+      }
+
+      // Pull the final normal order out of the indexed references
+      // Note, arrays start at 0 but the index references start at 1
+      float[] normals = new float[fileIndeces.Count];
+      for (int i = 2; i < fileIndeces.Count; i += 3)
+      {
+        int index = (fileIndeces[i] - 1) * 3;
+        normals[i - 2] = fileNormals[index];
+        normals[i - 1] = fileNormals[(index + 1)];
+        normals[i] = fileNormals[(index + 2)];
+      }
+
+      RigidBodyPartModel model = new RigidBodyPartModel(texturemanager, "grass", verteces, normals, textureCoordinates, null, null);// f2);
+
+      return new StaticModel(model.VertexBufferID, model.ColorBufferID, model.TexCoordBufferID, model.NormalBufferID, model.ElementBufferID, model.Verteces.Length, model.Texture, model.Position, model.Scale, new Vector3d(0,0,0), 0);
+    }
+
+    #region IDisposable Members
+
+    public void Dispose()
+    {
+      foreach (StaticModel t in _staticModelDatabase.Values)
+      {
+        throw new NotImplementedException();
+      }
+    }
+
+    #endregion
 
   }
 }

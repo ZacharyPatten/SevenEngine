@@ -66,7 +66,7 @@ void main()
 
 }";
 
-    public objLoaderstate2(TextureManager texturemanager)//, InputManager input)
+    public objLoaderstate2(TextureManager texturemanager, InputManager input)
     {
       _subModel = LoadObj(texturemanager, "grass.obj");
       _subModel.Scale = new Vector3d(20, 20, 20);

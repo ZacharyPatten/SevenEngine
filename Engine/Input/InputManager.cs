@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +20,7 @@ namespace Engine
                 Controller = new XboxController(0);
                 _usingController = true;
             }*/
-/*        }
+        }
 
         public void Update(double elapsedTime)
         {
@@ -29,8 +29,8 @@ namespace Engine
                 Sdl.SDL_JoystickUpdate();
                 Controller.Update();
             }*/
-/*            Mouse.Update(elapsedTime);
+            Mouse.Update(elapsedTime);
             Keyboard.Process();
         }
     }
-}*/
+}

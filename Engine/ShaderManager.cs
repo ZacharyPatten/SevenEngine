@@ -42,33 +42,7 @@ namespace Engine
     {
       throw new NotImplementedException();
     }
-
-    /*private int CompileShader(ShaderType shaderType)
-    {
-      int programHandle, vHandle, fHandle;
-      vHandle = GL.CreateShader(shaderType);
-      GL.ShaderSource(vHandle, vShaderSource);
-      GL.CompileShader(vHandle);
-      GL.CompileShader(fHandle);
-      string vertexShaderError = GL.GetShaderInfoLog(vHandle);
-      string fragmentShaderError = GL.GetShaderInfoLog(fHandle);
-      if (vertexShaderError == "")
-        Console.Write("Successfully compiled vertex shader on GPU.");
-      else
-        Console.Write(vertexShaderError);
-      if (fragmentShaderError == "")
-        Console.Write("Successfully compiled fragment shader on GPU.");
-      else
-        Console.Write(fragmentShaderError);
-
-      programHandle = GL.CreateProgram();
-      GL.AttachShader(programHandle, vHandle);
-      GL.AttachShader(programHandle, fHandle);
-      GL.LinkProgram(programHandle);
-      Console.Write(GL.GetProgramInfoLog(programHandle));
-      return programHandle;
-    }*/
-
+    
     string vShaderSource =
 @"void main() {
 	gl_Position = ftransform();
