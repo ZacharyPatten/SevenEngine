@@ -1,0 +1,6 @@
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\bin\Release\Converter.exe.config
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\bin\Release\Converter.exe
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\bin\Release\Converter.pdb
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\obj\Release\Converter.csprojResolveAssemblyReference.cache
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\obj\Release\Converter.exe
+C:\Users\Seven\Documents\Visual Studio 2012\Projects\Engine\Engine\Converter\obj\Release\Converter.pdb

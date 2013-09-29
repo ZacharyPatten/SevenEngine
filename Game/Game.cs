@@ -1,0 +1,236 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+
+using Engine;
+using Game.States;
+
+namespace Engine
+{
+  public class Game : GameWindow
+  {
+    PreciseTimer _timer;
+    bool _fullscreen;
+    FastLoop _fastLoop;
+    StateManager _stateManager;
+    // InputManager _inputManager;
+    TextureManager _textureManager;
+    StaticModelManager _staticModelManager;
+    SoundManager _soundManager;
+    ShaderManager _shaderManager;
+
+    public Game() : base(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Game")
+    {
+      Output.Print("GAME INITIALIZATION {");
+      Output.IncreaseIndent();
+
+      InitializeInput();
+      InitializeDisplay();
+      InitializeSounds();
+      InitializeTextures();
+      InitializeModels();
+      InitializeShaders();
+      InitializeStates();
+
+      _timer = new PreciseTimer();
+      _fastLoop = new FastLoop(GameLoop);
+
+      Output.DecreaseIndent();
+      Output.Print("} GAME INITIALIZATION COMPLETE;");
+    }
+
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+      // Set the Viewport for proper transformations
+      GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
+      // Set the Projection Matrix for proper transformations
+      SetProjectionMatrix();
+    }
+
+    private void InitializeInput()
+    {
+      // OpenTK includes input, so my input classes are not required.
+
+      //_inputManager = new InputManager();
+    }
+
+    private void InitializeDisplay()
+    {
+      Output.Print("Initializing Display {");
+      Output.IncreaseIndent();
+      
+      // SET INITIAL DISPLAY SETTINGS HERE.
+      
+      _fullscreen = false;
+      VSync = VSyncMode.On;
+      Output.Print("Vertical Sync On;");
+      GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
+      Output.Print("Clear Color (.1, .2, .5, 0) Set;");
+      GL.Enable(EnableCap.DepthTest);
+      Output.Print("Depth Buffer Enabled;");
+      GL.Enable(EnableCap.CullFace);
+      Output.Print("Back-face Culling Enable;");
+      GL.Enable(EnableCap.Lighting);
+      Output.Print("Lighting Enable;");
+
+      SetProjectionMatrix();
+
+      Output.DecreaseIndent();
+      Output.Print("} Display Initialized;");
+    }
+
+    private void InitializeSounds()
+    {
+      Output.Print("Initializing Sounds {");
+      Output.IncreaseIndent();
+
+      _soundManager = new SoundManager();
+
+      // LOAD SOUND FILES HERE.
+
+      Output.Print("No sound effects currently loaded.");
+      
+      Output.DecreaseIndent();
+      Output.Print("} Sounds Initialized;");
+    }
+
+    private void InitializeTextures()
+    {
+      Output.Print("Initializing Textures {");
+      Output.IncreaseIndent();
+
+      _textureManager = new TextureManager();
+
+      // LOAD TEXTURES HERE USING THE TEXTURE MANAGER.
+
+      _textureManager.LoadTexture("toy", "img4d5a2fe0bf568.bmp");
+      _textureManager.LoadTexture("guy", "Guy.Cecil.full.150663.bmp");
+      _textureManager.LoadTexture("face", "Face001.bmp");
+      _textureManager.LoadTexture("yoda", "yoda.bmp");
+      _textureManager.LoadTexture("grass", "grass.bmp");
+      _textureManager.LoadTexture("thief", "thief.bmp");
+
+      Output.DecreaseIndent();
+      Output.Print("} Textures Initialized;");
+    }
+
+    private void InitializeModels()
+    {
+      Output.Print("Initializing Models {");
+      Output.IncreaseIndent();
+
+      _staticModelManager = new StaticModelManager();
+
+      // LOAD MODEL FILES HERE.
+
+      _staticModelManager.LoadModel(_textureManager, "grass", "grass.obj");
+      _staticModelManager.LoadModel(_textureManager, "yoda", "yoda.obj");
+
+
+      Output.DecreaseIndent();
+      Output.Print("} Models Initialized;");
+    }
+
+    private void InitializeShaders()
+    {
+      Output.Print("Initializing Shaders {");
+      Output.IncreaseIndent();
+
+      _shaderManager = new ShaderManager();
+
+      // LOAD SHADER FILES HERE.
+
+      _shaderManager.AddShader();
+      Output.Print("Basic Vertex Shader Compiled;");
+      Output.Print("Basic Vertex Shader Selected;");
+      Output.Print("Basic Fragment Shader Compiled;");
+      Output.Print("Basic Fragment Shader Compiled;");
+
+      Output.DecreaseIndent();
+      Output.Print("} Shaders Initialized;");
+    }
+
+    private void InitializeStates()
+    {
+      Output.Print("Initializing States {");
+      Output.IncreaseIndent();
+
+      _stateManager = new StateManager();
+
+      // LOAD THE GAME STATES HERE
+
+      //_system.AddState("texture_test", new MultipleTexturesState(_textureManager));
+      //_system.ChangeState("texture_test");
+      //_stateManager.AddState("model_state2", new BufferExampleState(_textureManager, _inputManager));
+      //_stateManager.ChangeState("model_state2");
+      //_system.AddState("obj_test", new objectImporterState(_textureManager, _input));
+      //_system.ChangeState("obj_test");
+      //_stateManager.AddState("obj_test2", new objLoaderstate2(_textureManager, _inputManager));
+      //_stateManager.ChangeState("obj_test2");
+      _stateManager.AddState("modelManagerTestState", new objTesterState3(this.Keyboard, this.Mouse, _staticModelManager, _textureManager));
+      _stateManager.ChangeState("modelManagerTestState");
+
+      Output.DecreaseIndent();
+      Output.Print("} States Initialized;");
+    }
+
+    private void SetProjectionMatrix()
+    {
+      // Initialize the Projection Matrix
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.LoadIdentity();
+      double halfWidth = ClientSize.Width / 2;
+      double halfHeight = ClientSize.Height / 2;
+      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
+      //Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(.5f, 
+      //  (float)ClientSize.Width / (float)ClientSize.Height, .1f, 10000f);
+      //GL.MultMatrix(ref perspective);
+    }
+
+    private void GameLoop(double elapsedTime)
+    {
+      UpdateInput(elapsedTime);
+      _stateManager.Update(elapsedTime);
+      _stateManager.Render();
+    }
+
+    private void UpdateInput(double elapsedTime)
+    {
+      //_inputManager.Update(elapsedTime);
+    }
+
+    protected override void OnUpdateFrame(FrameEventArgs e)
+    {
+      base.OnUpdateFrame(e);
+
+      // Lets shut down the game if the user hits "ESC".
+      if (Keyboard[OpenTK.Input.Key.Escape])
+      {
+        this.Exit();
+        return;
+      }
+
+      _stateManager.Update(_timer.GetElapsedTime());
+      // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
+    }
+
+    protected override void OnRenderFrame(FrameEventArgs e)
+    {
+      base.OnRenderFrame(e);
+      // Clear the color buffer
+      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+      // Reset the Projection Matrix.
+      SetProjectionMatrix();
+      // Call the state rendering functions.
+      _stateManager.Render();
+      // Swap buffers is needed to show the rendering on the screen.
+      SwapBuffers();
+      // DO NOT RENDER ITEMS HERE. (USE THE RENDER METHODS IN GAME STATES)
+    }
+  }
+}
