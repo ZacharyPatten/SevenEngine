@@ -81,7 +81,26 @@ namespace Engine
       Output.Print("Depth Buffer Enabled;");
       GL.Enable(EnableCap.CullFace);
       Output.Print("Back-face Culling Enable;");
+
       GL.Enable(EnableCap.Lighting);
+      GL.Enable(EnableCap.Light0);
+      //GL.Normal3(1, 1, 1);
+
+
+      float[] mat_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+      float[] mat_shininess = { 50.0f };
+      float[] light_position = { 1.0f, 1.0f, 1.0f, 0.0f };
+      float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+      //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      GL.ShadeModel(ShadingModel.Smooth);
+
+      GL.Material(MaterialFace.Front, MaterialParameter.Specular, mat_specular);
+      GL.Material(MaterialFace.Front, MaterialParameter.Shininess, mat_shininess);
+      GL.Light(LightName.Light0, LightParameter.Position, light_position);
+      GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
+      GL.Light(LightName.Light0, LightParameter.Diffuse, mat_specular);
+
 
       SetProjectionMatrix();
 
@@ -113,17 +132,25 @@ namespace Engine
 
       // LOAD TEXTURES HERE USING THE TEXTURE MANAGER.
 
-      _textureManager.LoadTexture("toy", "img4d5a2fe0bf568.bmp");
-      _textureManager.LoadTexture("guy", "Guy.Cecil.full.150663.bmp");
-      _textureManager.LoadTexture("face", "Face001.bmp");
-      _textureManager.LoadTexture("yoda", "yoda.bmp");
+      //_textureManager.LoadTexture("toy", "img4d5a2fe0bf568.bmp");
+      //_textureManager.LoadTexture("guy", "Guy.Cecil.full.150663.bmp");
+      //_textureManager.LoadTexture("face", "Face001.bmp");
+      //_textureManager.LoadTexture("yoda", "yoda.bmp");
       _textureManager.LoadTexture("grass", "grass.bmp");
-      _textureManager.LoadTexture("thief", "thief.bmp");
+      //_textureManager.LoadTexture("thief", "thief.bmp");
+      _textureManager.LoadTexture("terrain", "Terrain.bmp");
       _textureManager.LoadTexture("RedRanger", "RedRangerBody.bmp");
       _textureManager.LoadTexture("BlueRanger", "BlueRangerBody.bmp");
       _textureManager.LoadTexture("PinkRanger", "PinkRangerBody.bmp");
       _textureManager.LoadTexture("BlackRanger", "BlackRangerBody.bmp");
       _textureManager.LoadTexture("YellowRanger", "YellowRangerBody.bmp");
+
+      //_textureManager.LoadTexture("NightWalkerTop", @"SkyBoxes\NightWalker\NightWalkerTop.bmp");
+      //_textureManager.LoadTexture("NightWalkerFront", @"SkyBoxes\NightWalker\NightWalkerFront.bmp");
+      //_textureManager.LoadTexture("NightWalkerBack", @"SkyBoxes\NightWalker\NightWalkerBack.bmp");
+      //_textureManager.LoadTexture("NightWalkerLeft", @"SkyBoxes\NightWalker\NightWalkerLeft.bmp");
+      //_textureManager.LoadTexture("NightWalkerRight", @"SkyBoxes\NightWalker\NightWalkerRight.bmp");
+
 
       Output.DecreaseIndent();
       Output.Print("} Textures Initialized;");
@@ -138,10 +165,20 @@ namespace Engine
 
       // LOAD MODEL FILES HERE.
 
-      _staticModelManager.LoadModel(_textureManager, "grass", "grass.obj");
-      _staticModelManager.LoadModel(_textureManager, "thief", "thief2.obj");
-      _staticModelManager.LoadModel(_textureManager, "yoda", "yoda.obj");
+      _staticModelManager.LoadModel(_textureManager, "terrain", "Terrain.obj");
+      //_staticModelManager.LoadModel(_textureManager, "grass", "grass.obj");
+      //_staticModelManager.LoadModel(_textureManager, "thief", "thief2.obj");
+      //_staticModelManager.LoadModel(_textureManager, "yoda", "yoda.obj");
       _staticModelManager.LoadModel(_textureManager, "RedRanger", "RedRanger.obj");
+      //_staticModelManager.LoadModel(_textureManager, "Ranger", "RedRanger.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerHead", "RangerHead.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerArmRight", "RangerArmRight.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerArmLeft", "RangerArmLeft.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerTorso", "RangerTorso.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerLegRight", "RangerLegRight.obj");
+      //_staticModelManager.LoadModel(_textureManager, "RangerLegLeft", "RangerLegLeft.obj");
+
+      _staticModelManager.LoadModel(_textureManager, "skyBox", @"SkyBoxes\SkyBox.obj");
 
       Output.DecreaseIndent();
       Output.Print("} Models Initialized;");
@@ -157,6 +194,7 @@ namespace Engine
       // LOAD SHADER FILES HERE.
 
       _shaderManager.AddShader();
+      
       Output.Print("Basic Vertex Shader Compiled;");
       Output.Print("Basic Vertex Shader Selected;");
       Output.Print("Basic Fragment Shader Compiled;");
@@ -175,8 +213,10 @@ namespace Engine
 
       // LOAD THE GAME STATES HERE
 
-      _stateManager.AddState("modelManagerTestState", new objTesterState3(Keyboard, _staticModelManager, _textureManager));
-      _stateManager.ChangeState("modelManagerTestState");
+      _stateManager.AddState("multipleModelState", new MultipleModelState(Keyboard, _staticModelManager, _textureManager));
+      //_stateManager.AddState("RedRangerTesting", new RedRangerTestingTest(Keyboard, _staticModelManager, _textureManager));
+      //_stateManager.AddState("skyBoxState", new SkyBoxTesting(Keyboard, _staticModelManager, _textureManager));
+      _stateManager.ChangeState("multipleModelState");
 
       Output.DecreaseIndent();
       Output.Print("} States Initialized;");

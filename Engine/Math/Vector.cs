@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+//using System.Runtime.InteropServices;
 
 namespace Engine
 {
-  [StructLayout(LayoutKind.Sequential)]
-  public struct Vector
+  //[StructLayout(LayoutKind.Sequential)]
+  public class Vector
   {
-    public static readonly Vector Zero = new Vector(0, 0, 0);
+    //public static readonly Vector Zero = new Vector(0, 0, 0);
     public double X { get; set; }
     public double Y { get; set; }
     public double Z { get; set; }
 
     public Vector(double x, double y, double z)
-      : this()
     {
       X = x;
       Y = y;
@@ -137,3 +136,4 @@ namespace Engine
     }
   }
 }
+

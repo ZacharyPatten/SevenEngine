@@ -305,35 +305,54 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
 using Engine.Models;
+using Engine.Textures;
+
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Engine
 {
   public class StaticModelManager : IDisposable
   {
-    Dictionary<string, StaticModel> _staticModelDatabase = new Dictionary<string, StaticModel>();
+    Dictionary<string, StaticMesh> _staticModelDatabase = new Dictionary<string, StaticMesh>();
 
-    public StaticModel Get(string superModelId)
+    /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
+    public int Count { get { return _staticModelDatabase.Count; } }
+
+    public StaticMesh Get(string superModelId)
     {
-      return _staticModelDatabase[superModelId];
+      StaticMesh mesh = _staticModelDatabase[superModelId];
+      mesh.ExistingReferences++;
+      return mesh;
     }
 
-    public void LoadModel(TextureManager textureManager, string staticModelId, string path)
+    /// <summary>Loads an 3d model file. NOTE taht only obj files are currently supported.</summary>
+    /// <param name="textureManager">The texture manager so that the mesh can automatically texture itself.</param>
+    /// <param name="staticModelId">The key used to look up this mesh in the database.</param>
+    /// <param name="filePath">The filepath of the model file you are attempting to load.</param>
+    public void LoadModel(TextureManager textureManager, string staticModelId, string filePath)
     {
-      _staticModelDatabase.Add(staticModelId, LoadObj(textureManager, path));
-      Output.Print("Model file loaded: \"" + path + "\".");
+      _staticModelDatabase.Add(staticModelId, LoadObj(textureManager, filePath));
+      Output.Print("Model file loaded: \"" + filePath + "\".");
     }
 
     public void RemoveModel(string staticModelId)
     {
       // Get the struct with the GPU mappings.
-      StaticModel removal = Get(staticModelId);
+      StaticMesh removal = Get(staticModelId);
+
+      // If the game tries to remove a texture that still has active references then
+        // lets warn them.
+      if (removal.ExistingReferences > 1)
+      {
+        Output.Print("WARNING: texture removal \"" + staticModelId + "\" still has active references.");
+      }
+
       // Delete the vertex buffer if it exists.
       int vertexBufferId = removal.VertexBufferId;
       if (vertexBufferId != 0)
@@ -347,7 +366,7 @@ namespace Engine
       if (colorBufferId != 0)
         GL.DeleteBuffers(1, ref colorBufferId);
       // Delete the texture coordinate buffer if it exists.
-      int textureCoordinateBufferId = removal.TexCoordBufferId;
+      int textureCoordinateBufferId = removal.TextureCoordinateBufferId;
       if (textureCoordinateBufferId != 0)
         GL.DeleteBuffers(1, ref textureCoordinateBufferId);
       // Delete the element buffer if it exists.
@@ -358,21 +377,28 @@ namespace Engine
       _staticModelDatabase.Remove(staticModelId);
     }
 
-    public StaticModel LoadObj(TextureManager texturemanager, string path)
+    public StaticMesh LoadObj(TextureManager texturemanager, string filePath)
     {
       List<float> fileVerteces = new List<float>();
       List<float> fileNormals = new List<float>();
       List<float> fileTextureCoordinates = new List<float>();
       List<int> fileIndeces = new List<int>();
+      Texture texture;
 
       // Lets read the file and handle each line separately for ".obj" files
-      using (StreamReader reader = new StreamReader(path))
+      using (StreamReader reader = new StreamReader(filePath))
       {
         while (!reader.EndOfStream)
         {
           string[] parameters = reader.ReadLine().Trim().Split(' ');
           switch (parameters[0])
           {
+            // Texture
+            case "t":
+              texturemanager.LoadTexture(parameters[1], parameters[1]);
+              texture = texturemanager.Get(parameters[1]);
+              break;
+
             // Vertex
             case "v":
               fileVerteces.Add(float.Parse(parameters[1]));
@@ -449,16 +475,78 @@ namespace Engine
         normals[i] = fileNormals[(index + 2)];
       }
 
-      RigidBodyPartModel model = new RigidBodyPartModel(texturemanager, "grass", verteces, normals, textureCoordinates, null, null);// f2);
+      int vertexBufferId;
+      if (verteces != null)
+      {
+        // Declare the buffer
+        GL.GenBuffers(1, out vertexBufferId);
+        // Select the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
+        // Initialize the buffer values
+        GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(verteces.Length * sizeof(float)), verteces, BufferUsageHint.StaticDraw);
+        // Quick error checking
+        int bufferSize;
+        GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out bufferSize);
+        if (verteces.Length * sizeof(float) != bufferSize)
+          throw new ApplicationException("Vertex array not uploaded correctly");
+        // Deselect the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+      }
+      else { vertexBufferId = 0; }
 
-      return new StaticModel(model.VertexBufferID, model.ColorBufferID, model.TexCoordBufferID, model.NormalBufferID, model.ElementBufferID, model.Verteces.Length, model.Texture, model.Position, model.Scale, new Vector3d(0,0,0), 0);
+      int textureCoordinateBufferId;
+      if (textureCoordinates != null)
+      {
+        // Declare the buffer
+        GL.GenBuffers(1, out textureCoordinateBufferId);
+        // Select the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, textureCoordinateBufferId);
+        // Initialize the buffer values
+        GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(textureCoordinates.Length * sizeof(float)), textureCoordinates, BufferUsageHint.StaticDraw);
+        // Quick error checking
+        int bufferSize;
+        GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out bufferSize);
+        if (textureCoordinates.Length * sizeof(float) != bufferSize)
+          throw new ApplicationException("TexCoord array not uploaded correctly");
+        // Deselect the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+      }
+      else { textureCoordinateBufferId = 0; }
+
+      int normalBufferId;
+      if (normals != null)
+      {
+        // Declare the buffer
+        GL.GenBuffers(1, out normalBufferId);
+        // Select the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, normalBufferId);
+        // Initialize the buffer values
+        GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(normals.Length * sizeof(float)), normals, BufferUsageHint.StaticDraw);
+        // Quick error checking
+        int bufferSize;
+        GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out bufferSize);
+        if (normals.Length * sizeof(float) != bufferSize)
+          throw new ApplicationException("Normal array not uploaded correctly");
+        // Deselect the new buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+      }
+      else { normalBufferId = 0; }
+
+      return new StaticMesh(
+        filePath,
+        vertexBufferId,
+        0,
+        textureCoordinateBufferId,
+        normalBufferId,
+        0,
+        verteces.Length);
     }
 
     #region IDisposable Members
 
     public void Dispose()
     {
-      foreach (StaticModel t in _staticModelDatabase.Values)
+      foreach (StaticMesh t in _staticModelDatabase.Values)
       {
         throw new NotImplementedException();
       }

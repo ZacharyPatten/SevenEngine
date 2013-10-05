@@ -1,4 +1,9 @@
-﻿using System;
+﻿// THIS STATEIS USED AS AN EXAMPLE OF BUFFERS (VERTEX VS ELEMENT).
+// It uses the rigidbody class, which I no longer use in the engine.
+// The class is still located in the engine, but you will have to
+// uncomment the class to use this state.
+
+/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -163,4 +168,4 @@ namespace Engine
       _subModel3.Render();
     }
   }
-}
+}*/

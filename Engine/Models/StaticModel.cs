@@ -3,60 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-
 using Engine.Textures;
+
+using OpenTK;
 
 namespace Engine.Models
 {
-  public struct StaticModel
+  public class StaticModel
   {
-    /// <summary>The location of the vertex buffer on the GPU.</summary>
-    public int VertexBufferId { get; set; }
-    /// <summary>The location of the color buffer on the GPU.</summary>
-    public int ColorBufferId { get; set; }
-    /// <summary>The location of the texture coordinate buffer on the GPU.</summary>
-    public int TexCoordBufferId { get; set; }
-    /// <summary>The location of the normal buffer on the GPU.</summary>
-    public int NormalBufferId { get; set; }
-    /// <summary>The location of the element buffer on the GPU.</summary>
-    public int ElementBufferId { get; set; }
-    /// <summary>The number of verteces in this model.</summary>
-    public int VertexCount { get; set; }
-    /// <summary>The texture that this model maps to.</summary>
-    public Texture Texture { get; set; }
-    /// <summary>The current position of this model in the world.</summary>
-    public Vector3d Position { get; set; }
-    /// <summary>The current scale of this model in the world.</summary>
-    public Vector3d Scale { get; set; }
-    public Vector3d RotationAmmounts { get; set; }
-    public float RotationAngle { get; set; }
+    /// <summary>All the meshes and textures for those meshes that make up the entire model.</summary>
+    protected List<Tuple<Texture, StaticMesh>> _meshes;
 
-    public StaticModel(
-      int vertexBufferId, 
-      int colorBufferId, 
-      int textureCoordinatesId, 
-      int normalBufferId,
-      int elementBufferId,
-      int vertexCount,
-      Texture texture,
-      Vector3d position,
-      Vector3d scale,
-      Vector3d rotationAmmounts,
-      float rotationAngle) : this()
+    /// <summary>The location of the model in world-space (used in Renderer.cs).</summary>
+    protected Vector _position;
+    /// <summary>The scale of the model in world-space (used in Renderer.cs).</summary>
+    protected Vector _scale;
+    /// <summary>The axis about which the model will be rotated in world space (used in Renderer.cs).</summary>
+    protected Vector _rotationAxis;
+    /// <summary>The angle of rotation about the </summary>
+    protected float _rotationAngle;
+    
+    public List<Tuple<Texture, StaticMesh>> Meshes { get { return _meshes; } set { _meshes = value; } }
+
+    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector Scale { get { return _scale; } set { _scale = value; } }
+    public Vector RotationAmmounts { get { return _rotationAxis; } set { _rotationAxis = value; } }
+    public float RotationAngle { get { return _rotationAngle; } set { _rotationAngle = value; } }
+
+    public StaticModel()
     {
-      VertexBufferId = vertexBufferId;
-      ColorBufferId = colorBufferId;
-      TexCoordBufferId = textureCoordinatesId;
-      NormalBufferId = normalBufferId;
-      ElementBufferId = elementBufferId;
-      VertexCount = vertexCount;
-      Texture = texture;
-      Position = position;
-      Scale = scale;
-      RotationAmmounts = rotationAmmounts;
-      RotationAngle = rotationAngle;
+      _meshes = new List<Tuple<Texture, StaticMesh>>();
+
+      _position = new Vector(0, 0, 0);
+      _scale = new Vector(1, 1, 1);
+      _rotationAxis = new Vector(0, 0, 0);
+      _rotationAngle = 0;
+
     }
   }
 }

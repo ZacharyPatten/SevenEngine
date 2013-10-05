@@ -1,4 +1,9 @@
-﻿using System;
+﻿// THIS STATE IS USED AS AN EXAMPLE OF OBJ FILE IMPORTING.
+// It uses the rigidbody class, which I no longer use in the engine.
+// The class is still located in the engine, but you will have to
+// uncomment the class to use this state.
+
+/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -168,4 +173,4 @@ namespace Game.States
       _subModel.Render();
     }
   }
-}
+}*/

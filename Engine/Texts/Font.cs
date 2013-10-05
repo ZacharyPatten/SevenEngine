@@ -23,7 +23,7 @@ namespace Engine.Texts
 
     public Vector MeasureFont(string text, double maxWidth)
     {
-      Vector dimensions = new Vector();
+      Vector dimensions = new Vector(0, 0, 0);
 
       foreach (char c in text)
       {
@@ -37,8 +37,7 @@ namespace Engine.Texts
     public CharacterSprite CreateSprite(char c)
     {
       CharacterData charData = _characterData[c];
-      Sprite sprite = new Sprite();
-      sprite.Texture = _texture;
+      Sprite sprite = new Sprite(_texture);
 
       // Setup UVs
       Point topLeft = new Point((float)charData.X / (float)_texture.Width,

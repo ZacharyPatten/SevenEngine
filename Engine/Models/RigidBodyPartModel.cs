@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -230,7 +230,8 @@ namespace Engine.Models
 
       GL.Rotate(temp, 1, 0, 0);
 
-      _renderer.DrawSubModel(this);
+      //_renderer.DrawSubModel(this);
+      throw new Exception("Dont use this calss!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
   }
-}
+}*/

@@ -12,7 +12,8 @@ namespace Engine.Models
 
     public Bone()
     {
-
+      _children = new List<Bone>();
+      _transformation = new Matrix();
     }
   }
 }

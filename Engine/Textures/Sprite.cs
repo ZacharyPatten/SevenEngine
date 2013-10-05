@@ -17,12 +17,12 @@
     public double Height { get { return _vertexPositions[0].Y - _vertexPositions[2].Y; } set { double newHeight = value; InitVertexPositions(Center, Width, newHeight); } }
     public Vector Center { get { return new Vector(_vertexPositions[0].X + (Width / 2), _vertexPositions[0].Y - (Height / 2), _vertexPositions[0].Z); } set { Vector newPosition = value; InitVertexPositions(newPosition, Width, Height); } }
 
-    public Sprite()
+    public Sprite(Texture texture)
     {
       _vertexPositions = new Vector[VertexAmount];
       _vertexColors = new Color[VertexAmount];
       _vertexUVs = new Point[VertexAmount];
-      _texture = new Texture();
+      _texture = texture;
 
       InitVertexPositions(new Vector(0, 0, 0), 1, 1);
       SetColor(new Color(1, 1, 1, 1));

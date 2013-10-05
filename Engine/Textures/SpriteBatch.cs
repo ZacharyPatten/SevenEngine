@@ -39,7 +39,16 @@ namespace Engine.Textures
       GL.EnableClientState(ArrayCap.VertexArray);
       GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-      GL.VertexPointer(VertexDimensions, VertexPointerType.Double, 0, _vertexPositions);
+      //throw new NotImplementedException();
+      double[] verteces = new double[_batchSize];
+      for (int i = 0; i < _batchSize; i += 3)
+      {
+        verteces[i] = _vertexPositions[i / 3].X;
+        verteces[i + 1] = _vertexPositions[i / 3].Y;
+        verteces[i + 2] = _vertexPositions[i / 3].Z;
+      }
+
+      GL.VertexPointer(VertexDimensions, VertexPointerType.Double, 0, verteces);
       GL.ColorPointer(ColorDimensions, ColorPointerType.Float, 0, _vertexColors);
       GL.TexCoordPointer(UVDimensions, TexCoordPointerType.Float, 0, _vertexUVs);
     }

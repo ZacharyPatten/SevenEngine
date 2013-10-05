@@ -16,9 +16,14 @@ namespace Engine
   {
     Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
 
+    /// <summary>The number of textures currently loaded onto the graphics card.</summary>
+    public int Count { get { return _textureDatabase.Count; } }
+
     public Texture Get(string textureId)
     {
-      return _textureDatabase[textureId];
+      Texture texture = _textureDatabase[textureId];
+      texture.ExistingReferences++;
+      return texture;
     }
 
     private bool LoadTextureFromDisk(string path, out int id, out int height, out int width)

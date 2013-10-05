@@ -1,10 +1,11 @@
-﻿uniform vec3 lightDir;
+﻿//uniform vec3 lightDir;
 varying vec3 normal;
 
 void main()
 {
-	float intensity;
+    float intensity;
 	vec4 color;
+    vec3 lightDir = vec3(1, 1, 1);
 	intensity = dot(lightDir,normalize(normal));
 
 	if (intensity > 0.95)

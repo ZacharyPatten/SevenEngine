@@ -50,7 +50,7 @@ namespace Engine
       }
     }
 
-    public void DrawSubModel(RigidBodyPartModel subModel)
+    /*public void DrawSubModel(RigidBodyPartModel subModel)
     {
       GL.BindTexture(TextureTarget.Texture2D, subModel.Texture.Id);
 
@@ -129,93 +129,174 @@ namespace Engine
       }
 
       GL.PopClientAttrib();
-    }
+    }*/
 
-    public void DrawStaticModel(StaticModel staticModel)
+    public void DrawSkyBox(SkyBox skyBox)
     {
       GL.MatrixMode(MatrixMode.Modelview);
       GL.LoadIdentity();
-      GL.Translate(staticModel.Position);
-      GL.Scale(staticModel.Scale);
-      GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts);
+      GL.Translate(skyBox.Position.X, skyBox.Position.Y, skyBox.Position.Z);
+      GL.Scale(skyBox.Scale.X, skyBox.Scale.Y, skyBox.Scale.Z);
 
-      GL.BindTexture(TextureTarget.Texture2D, staticModel.Texture.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Up.Id);
+      GL.Begin(BeginMode.Triangles);
+      GL.Vertex3(-1, -1, -1);
+      GL.TexCoord2(1, 1);
+      GL.Vertex3(-1, -1, 1);
+      GL.TexCoord2(0, 1);
+      GL.Vertex3(-1, 1, 1);
+      GL.TexCoord2(0, 0);
+      GL.Vertex3(-1, 1, -1);
+      GL.TexCoord2(1, 0);
+      GL.End();
 
-      // Push current Array Buffer state so we can restore it later
-      GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Back.Id);
+      GL.Begin(BeginMode.Triangles);
+      GL.Vertex3(-1, 1, -1);
+      GL.TexCoord2(0, 0);
+      GL.Vertex3(1, 1, -1);
+      GL.TexCoord2(1, 0);
+      GL.Vertex3(1, -1, -1);
+      GL.TexCoord2(1, 1);
+      GL.Vertex3(-1, -1, -1);
+      GL.TexCoord2(0, 1);
+      GL.End();
 
-      if (staticModel.VertexBufferId == 0) return;
-      //if (subModel.ElementBufferID == 0) return;
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Left.Id);
+      GL.Begin(BeginMode.Triangles);
+      GL.Vertex3(1, 1, -1);
+      GL.TexCoord2(1, 1);
+      GL.Vertex3(1, 1, 1);
+      GL.TexCoord2(0, 1);
+      GL.Vertex3(1, -1, 1);
+      GL.TexCoord2(0, 0);
+      GL.Vertex3(1, -1, -1);
+      GL.TexCoord2(1, 0);
+      GL.End();
 
-      if (GL.IsEnabled(EnableCap.Lighting))
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Right.Id);
+      GL.Begin(BeginMode.Triangles);
+      GL.Vertex3(-1, -1, 1);
+      GL.TexCoord2(0, 0);
+      GL.Vertex3(1, -1, 1);
+      GL.TexCoord2(1, 0);
+      GL.Vertex3(1, 1, 1);
+      GL.TexCoord2(1, 1);
+      GL.Vertex3(-1, 1, 1);
+      GL.TexCoord2(0, 1);
+      GL.End();
+
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Front.Id);
+      GL.Begin(BeginMode.Triangles);
+      GL.Vertex3(1, 1, 1);
+      GL.TexCoord2(1, 0);
+      GL.Vertex3(1, 1, -1);
+      GL.TexCoord2(1, 1);
+      GL.Vertex3(-1, 1, -1);
+      GL.TexCoord2(0, 1);
+      GL.Vertex3(-1, 1, 1);
+      GL.TexCoord2(0, 0);
+      GL.End();
+    }
+    
+    public void DrawStaticModel(Camera camera, StaticModel staticModel)
+    {
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
+
+      Matrix4 view = Matrix4.Identity;
+      
+      GL.Translate(-camera.Position.X, -camera.Position.Y, -camera.Position.Z);
+      GL.Rotate(-camera.RotationX, 1, 0, 0);
+      GL.Rotate(-camera.RotationY, 0, 1, 0);
+      GL.Rotate(-camera.RotationZ, 0, 0, 1);
+
+      GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
+      GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
+      GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
+      //GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
+
+      //GL.Translate(-camera.Position.X, -camera.Position.Y, -camera.Position.Z);
+
+      foreach (Tuple<Texture, StaticMesh> tuple in staticModel.Meshes)
       {
-        // Normal Array Buffer
-        if (staticModel.NormalBufferId != 0)
+        GL.BindTexture(TextureTarget.Texture2D, tuple.Item1.Id);
+
+        // Push current Array Buffer state so we can restore it later
+        GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
+
+        if (tuple.Item2.VertexBufferId == 0) return;
+
+        if (GL.IsEnabled(EnableCap.Lighting))
         {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.NormalBufferId);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.NormalArray);
+          // Normal Array Buffer
+          if (tuple.Item2.NormalBufferId != 0)
+          {
+            // Bind to the Array Buffer ID
+            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.NormalBufferId);
+            // Set the Pointer to the current bound array describing how the data ia stored
+            GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
+            // Enable the client state so it will use this array buffer pointer
+            GL.EnableClientState(ArrayCap.NormalArray);
+          }
         }
-      }
-      else
-      {
-        // Color Array Buffer (Colors not used when lighting is enabled)
-        if (staticModel.ColorBufferId != 0)
+        else
         {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.ColorBufferId);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.ColorArray);
+          // Color Array Buffer (Colors not used when lighting is enabled)
+          if (tuple.Item2.ColorBufferId != 0)
+          {
+            // Bind to the Array Buffer ID
+            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.ColorBufferId);
+            // Set the Pointer to the current bound array describing how the data ia stored
+            GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
+            // Enable the client state so it will use this array buffer pointer
+            GL.EnableClientState(ArrayCap.ColorArray);
+          }
         }
-      }
 
-      // Texture Array Buffer
-      if (GL.IsEnabled(EnableCap.Texture2D))
-      {
-        if (staticModel.TexCoordBufferId != 0)
+        // Texture Array Buffer
+        if (GL.IsEnabled(EnableCap.Texture2D))
         {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.TexCoordBufferId);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.TextureCoordArray);
+          if (tuple.Item2.TextureCoordinateBufferId != 0)
+          {
+            // Bind to the Array Buffer ID
+            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.TextureCoordinateBufferId);
+            // Set the Pointer to the current bound array describing how the data ia stored
+            GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
+            // Enable the client state so it will use this array buffer pointer
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
+          }
         }
-      }
 
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.VertexBufferId);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      if (staticModel.ElementBufferId != 0)
-      {
-        // Element Array Buffer
+        // Vertex Array Buffer
         // Bind to the Array Buffer ID
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, staticModel.ElementBufferId);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.VertexBufferId);
         // Set the Pointer to the current bound array describing how the data ia stored
-        GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
+        GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
         // Enable the client state so it will use this array buffer pointer
-        GL.EnableClientState(ArrayCap.IndexArray);
-        // Draw the elements in the element array buffer
-        // Draws up items in the Color, Vertex, TexCoordinate, and Normal Buffers using indices in the ElementArrayBuffer
-        GL.DrawElements(BeginMode.Triangles, staticModel.VertexCount, DrawElementsType.UnsignedInt, 0);
-      }
-      else
-      {
-        GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.VertexBufferId);
-        GL.DrawArrays(BeginMode.Triangles, 0, staticModel.VertexCount);
-      }
+        GL.EnableClientState(ArrayCap.VertexArray);
 
-      GL.PopClientAttrib();
+        if (tuple.Item2.ElementBufferId != 0)
+        {
+          // Element Array Buffer
+          // Bind to the Array Buffer ID
+          GL.BindBuffer(BufferTarget.ElementArrayBuffer, tuple.Item2.ElementBufferId);
+          // Set the Pointer to the current bound array describing how the data ia stored
+          GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
+          // Enable the client state so it will use this array buffer pointer
+          GL.EnableClientState(ArrayCap.IndexArray);
+          // Draw the elements in the element array buffer
+          // Draws up items in the Color, Vertex, TexCoordinate, and Normal Buffers using indices in the ElementArrayBuffer
+          GL.DrawElements(BeginMode.Triangles, tuple.Item2.VertexCount, DrawElementsType.UnsignedInt, 0);
+        }
+        else
+        {
+          GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.VertexBufferId);
+          GL.DrawArrays(BeginMode.Triangles, 0, tuple.Item2.VertexCount);
+        }
+
+        GL.PopClientAttrib();
+      }
     }
 
     public void Render()

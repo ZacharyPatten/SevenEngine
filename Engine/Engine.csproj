@@ -63,6 +63,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Graphics\DLLs\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -74,9 +75,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
     <Compile Include="ShaderManager.cs" />
     <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="SkyBox.cs" />
     <Compile Include="Textures\SpriteBatch.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="DataStructures\DoublyLinkedList.cs" />
@@ -88,7 +91,6 @@
     <Compile Include="DataStructures\Tuple.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Models\Bone.cs" />
-    <Compile Include="Models\SuperModel.cs" />
     <Compile Include="StaticModelManager.cs" />
     <Compile Include="Models\RigidBodyPartModel.cs" />
     <Compile Include="Models\Vertex.cs" />
@@ -123,12 +125,16 @@
     <Compile Include="Input\XboxController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\FragmentShaderLit.FragmentShader" />
     <None Include="Shaders\FragmentShaderToon.fragmentShader" />
     <None Include="Shaders\VertexShaderBasic.vertexShader" />
     <None Include="Shaders\VertexShaderToon.vertexShader" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\FragmentShaderBasic.fragmentShader" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\VertexShaderLit.VertexShader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
