@@ -1,278 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using System.IO;
 
 using Engine;
 using Game.States;
+using Engine.Imaging;
 
-namespace Engine
+namespace Game
 {
-  public class Game : GameWindow
+  // This is an example of how to use my engine. Read this file and the "GameState.cs" file within the "State" folder.
+  // Hope you enjoy using my engine :)
+  public class Game : SevenEngineWindow
   {
-    PreciseTimer _timer;
-    bool _fullscreen;
-    FastLoop _fastLoop;
-    StateManager _stateManager;
-    //InputManager _inputManager;
-    TextureManager _textureManager;
-    StaticModelManager _staticModelManager;
-    SoundManager _soundManager;
-    ShaderManager _shaderManager;
+    public Game() : base() { }
 
-    public Game() : base(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Game")
+    public override void InitializeDisplay()
     {
-      Output.Print("GAME INITIALIZATION {");
-      Output.IncreaseIndent();
-
-      InitializeInput();
-      InitializeDisplay();
-      InitializeSounds();
-      InitializeTextures();
-      InitializeModels();
-      InitializeShaders();
-      InitializeStates();
-
-      _timer = new PreciseTimer();
-      _fastLoop = new FastLoop(GameLoop);
-
-      Output.DecreaseIndent();
-      Output.Print("} GAME INITIALIZATION COMPLETE;");
-    }
-
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-      GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-
-      // Adjust the Projection Transformation Matrix
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadIdentity();
-      double halfWidth = ClientSize.Width / 2;
-      double halfHeight = ClientSize.Height / 2;
-      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
-
-      // Return to the ModelView matrix for safety
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadIdentity();
-    }
-
-    private void InitializeInput()
-    {
-      //_inputManager = new InputManager();
-    }
-
-    private void InitializeDisplay()
-    {
-      Output.Print("Initializing Display {");
-      Output.IncreaseIndent();
-
       // SET INITIAL DISPLAY SETTINGS HERE.
+      // Use the static class "GraphicsSettingsManager"
 
-      _fullscreen = false;
-      VSync = VSyncMode.On;
-      Output.Print("Vertical Sync On;");
-      GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
-      Output.Print("Clear Color (.1, .2, .5, 0) Set;");
-      GL.Enable(EnableCap.DepthTest);
-      Output.Print("Depth Buffer Enabled;");
-      GL.Enable(EnableCap.CullFace);
-      Output.Print("Back-face Culling Enable;");
-
-      GL.Enable(EnableCap.Lighting);
-      GL.Enable(EnableCap.Light0);
-      //GL.Normal3(1, 1, 1);
-
-
-      float[] mat_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-      float[] mat_shininess = { 50.0f };
-      float[] light_position = { 1.0f, 1.0f, 1.0f, 0.0f };
-      float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
-
-      //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      GL.ShadeModel(ShadingModel.Smooth);
-
-      GL.Material(MaterialFace.Front, MaterialParameter.Specular, mat_specular);
-      GL.Material(MaterialFace.Front, MaterialParameter.Shininess, mat_shininess);
-      GL.Light(LightName.Light0, LightParameter.Position, light_position);
-      GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
-      GL.Light(LightName.Light0, LightParameter.Diffuse, mat_specular);
-
-
-      SetProjectionMatrix();
-
-      Output.DecreaseIndent();
-      Output.Print("} Display Initialized;");
+      GraphicsSettingsManager.BackFaceCulling = true;
+      GraphicsSettingsManager.DepthBuffer = true;
+      GraphicsSettingsManager.VerticalSyncronization = true;
+      GraphicsSettingsManager.ClearColor = Color.DarkBlue;
+      GraphicsSettingsManager.Texture2D = true;
+      GraphicsSettingsManager.Blend = true;
+      GraphicsSettingsManager.SetAlphaBlending();
     }
 
-    private void InitializeSounds()
+    public override void InitializeSounds()
     {
-      Output.Print("Initializing Sounds {");
-      Output.IncreaseIndent();
+      // LOAD SOUNDS HERE.
+      // Use the static class "SoundManager"
 
-      _soundManager = new SoundManager();
-
-      // LOAD SOUND FILES HERE.
-
-      Output.Print("No sound effects currently loaded.");
-      
-      Output.DecreaseIndent();
-      Output.Print("} Sounds Initialized;");
+      // Just keep this function here. I havn't finished the SoundManager class yet...
+      Output.Write("No sound effects currently loaded.");
     }
 
-    private void InitializeTextures()
+    public override void InitializeTextures()
     {
-      Output.Print("Initializing Textures {");
-      Output.IncreaseIndent();
+      // LOAD TEXTURES HERE.
+      // Use the static class "TextureManager"
 
-      _textureManager = new TextureManager();
+      // Note: I only support ".bmp"files at the moment. Just pull non-bitmaps into any standard image editor and export them as bitmap files.
 
-      // LOAD TEXTURES HERE USING THE TEXTURE MANAGER.
-
-      //_textureManager.LoadTexture("toy", "img4d5a2fe0bf568.bmp");
-      //_textureManager.LoadTexture("guy", "Guy.Cecil.full.150663.bmp");
-      //_textureManager.LoadTexture("face", "Face001.bmp");
-      //_textureManager.LoadTexture("yoda", "yoda.bmp");
-      _textureManager.LoadTexture("grass", "grass.bmp");
-      //_textureManager.LoadTexture("thief", "thief.bmp");
-      _textureManager.LoadTexture("terrain", "Terrain.bmp");
-      _textureManager.LoadTexture("RedRanger", "RedRangerBody.bmp");
-      _textureManager.LoadTexture("BlueRanger", "BlueRangerBody.bmp");
-      _textureManager.LoadTexture("PinkRanger", "PinkRangerBody.bmp");
-      _textureManager.LoadTexture("BlackRanger", "BlackRangerBody.bmp");
-      _textureManager.LoadTexture("YellowRanger", "YellowRangerBody.bmp");
-
-      //_textureManager.LoadTexture("NightWalkerTop", @"SkyBoxes\NightWalker\NightWalkerTop.bmp");
-      //_textureManager.LoadTexture("NightWalkerFront", @"SkyBoxes\NightWalker\NightWalkerFront.bmp");
-      //_textureManager.LoadTexture("NightWalkerBack", @"SkyBoxes\NightWalker\NightWalkerBack.bmp");
-      //_textureManager.LoadTexture("NightWalkerLeft", @"SkyBoxes\NightWalker\NightWalkerLeft.bmp");
-      //_textureManager.LoadTexture("NightWalkerRight", @"SkyBoxes\NightWalker\NightWalkerRight.bmp");
-
-
-      Output.DecreaseIndent();
-      Output.Print("} Textures Initialized;");
+      TextureManager.LoadTexture("grass", Directory.GetCurrentDirectory() + @"\..\..\Assets\grass.bmp");
+      TextureManager.LoadTexture("terrain", Directory.GetCurrentDirectory() + @"\..\..\Assets\Terrain.bmp");
+      TextureManager.LoadTexture("RedRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRangerBody.bmp");
+      TextureManager.LoadTexture("BlueRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\BlueRangerBody.bmp");
+      TextureManager.LoadTexture("PinkRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\PinkRangerBody.bmp");
+      TextureManager.LoadTexture("BlackRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\BlackRangerBody.bmp");
+      TextureManager.LoadTexture("YellowRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\YellowRangerBody.bmp");
     }
 
-    private void InitializeModels()
+    public override void InitializeModels()
     {
-      Output.Print("Initializing Models {");
-      Output.IncreaseIndent();
-
-      _staticModelManager = new StaticModelManager();
-
       // LOAD MODEL FILES HERE.
+      // Use the static class "StaticModelManager"
 
-      _staticModelManager.LoadModel(_textureManager, "terrain", "Terrain.obj");
-      //_staticModelManager.LoadModel(_textureManager, "grass", "grass.obj");
-      //_staticModelManager.LoadModel(_textureManager, "thief", "thief2.obj");
-      //_staticModelManager.LoadModel(_textureManager, "yoda", "yoda.obj");
-      _staticModelManager.LoadModel(_textureManager, "RedRanger", "RedRanger.obj");
-      //_staticModelManager.LoadModel(_textureManager, "Ranger", "RedRanger.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerHead", "RangerHead.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerArmRight", "RangerArmRight.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerArmLeft", "RangerArmLeft.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerTorso", "RangerTorso.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerLegRight", "RangerLegRight.obj");
-      //_staticModelManager.LoadModel(_textureManager, "RangerLegLeft", "RangerLegLeft.obj");
+      // NOTE: only support obj files at the moment. ".obj" files MUST include vertex position, uvs, AND normals (my parser still needs to be more versatile)
+      // Just use blender to export .obj model files with teh following settings:
+      // (1) triangulated, (2) include normals, (3) include uvs, -z forward (i think), y up (i think) and all other settings off
 
-      _staticModelManager.LoadModel(_textureManager, "skyBox", @"SkyBoxes\SkyBox.obj");
-
-      Output.DecreaseIndent();
-      Output.Print("} Models Initialized;");
+      StaticModelManager.LoadModel("terrain", Directory.GetCurrentDirectory() + @"\..\..\Assets\Terrain.obj");
+      StaticModelManager.LoadModel("RedRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj");
     }
 
-    private void InitializeShaders()
+    public override void InitializeShaders()
     {
-      Output.Print("Initializing Shaders {");
-      Output.IncreaseIndent();
-
-      _shaderManager = new ShaderManager();
-
       // LOAD SHADER FILES HERE.
+      // Use the static class "ShaderManager"
 
-      _shaderManager.AddShader();
-      
-      Output.Print("Basic Vertex Shader Compiled;");
-      Output.Print("Basic Vertex Shader Selected;");
-      Output.Print("Basic Fragment Shader Compiled;");
-      Output.Print("Basic Fragment Shader Selected;");
-
-      Output.DecreaseIndent();
-      Output.Print("} Shaders Initialized;");
+      // Just keep this function here. I havn't finished the ShaderManager class yet...
+      ShaderManager.AddShader();
     }
 
-    private void InitializeStates()
+    public override void InitializeStates()
     {
-      Output.Print("Initializing States {");
-      Output.IncreaseIndent();
-      
-      _stateManager = new StateManager();
-
       // LOAD THE GAME STATES HERE
-
-      _stateManager.AddState("multipleModelState", new MultipleModelState(Keyboard, _staticModelManager, _textureManager));
-      //_stateManager.AddState("RedRangerTesting", new RedRangerTestingTest(Keyboard, _staticModelManager, _textureManager));
-      //_stateManager.AddState("skyBoxState", new SkyBoxTesting(Keyboard, _staticModelManager, _textureManager));
-      _stateManager.ChangeState("multipleModelState");
-
-      Output.DecreaseIndent();
-      Output.Print("} States Initialized;");
-    }
-
-    private void SetProjectionMatrix()
-    {
-      // Initialize the Projection Matrix
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadIdentity();
-      double halfWidth = ClientSize.Width / 2;
-      double halfHeight = ClientSize.Height / 2;
-
-      // USE THIIS MATRIX TO ELIMINATE DEPTH PERCEPTION
-      //GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
-
-      // USE THIS MATRIX TO HAVE DEPTH PERCEPTION
-      Matrix4 perspective = OpenTK.Matrix4.CreatePerspectiveFieldOfView(.5f, 
-        (float)ClientSize.Width / (float)ClientSize.Height, .1f, 10000f);
-      GL.LoadMatrix(ref perspective);
-    }
-
-    private void GameLoop(double elapsedTime)
-    {
-      UpdateInput(elapsedTime);
-      _stateManager.Update(elapsedTime);
-      _stateManager.Render();
-    }
-
-    private void UpdateInput(double elapsedTime)
-    {
-      //_inputManager.Update(elapsedTime);
-    }
-
-    protected override void OnUpdateFrame(FrameEventArgs e)
-    {
-
-      if (Keyboard[OpenTK.Input.Key.Escape]) { this.Exit(); return; }
+      // Use the static class "StateManager"
       
-      base.OnUpdateFrame(e);
-      _stateManager.Update(_timer.GetElapsedTime());
-      // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
-    }
-
-    protected override void OnRenderFrame(FrameEventArgs e)
-    {
-      base.OnRenderFrame(e);
-      // Reset the Projection Matrix.
-      SetProjectionMatrix();
-      // Clear the color buffer
-      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-      // Call the state rendering functions.
-      _stateManager.Render();
-      // Swap buffers is needed to show the rendering on the screen.
-      SwapBuffers();
-      // DO NOT RENDER ITEMS HERE. (USE THE RENDER METHODS IN GAME STATES)
+      //StateManager.AddState("multipleModelState", new MultipleModelState(Keyboard));
+      //StateManager.ChangeState("multipleModelState");
+      StateManager.AddState("gameState", new GameState());
+      StateManager.ChangeState("gameState");
     }
   }
 }

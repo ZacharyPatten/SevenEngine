@@ -1,4 +1,4 @@
-﻿using Engine.Textures;
+﻿using Engine.Imaging;
 
 namespace Engine.Texts
 {

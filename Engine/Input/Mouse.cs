@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using Engine.Mathematics;
+
 namespace Engine
 {
   public class Mouse
@@ -95,7 +97,7 @@ namespace Engine
       mousePos = _openGLControl.PointToClient(mousePos);
 
       // Now use our point definition, 
-      Engine.Point adjustedMousePoint = new Engine.Point();
+      Engine.Mathematics.Point adjustedMousePoint = new Engine.Mathematics.Point();
       adjustedMousePoint.X = (float)mousePos.X - ((float)_parentForm.ClientSize.Width / 2);
       adjustedMousePoint.Y = ((float)_parentForm.ClientSize.Height / 2) - (float)mousePos.Y;
       Position = adjustedMousePoint;

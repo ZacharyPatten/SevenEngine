@@ -6,33 +6,29 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine.Textures;
+using Engine;
+using Engine.Imaging;
 using Engine.Texts;
 using Engine.Models;
+using Engine.Mathematics;
 
 namespace Engine
 {
-  public class Renderer
+  /// <summary>Utility for the engine. Handles ALL rendering. It is good to handle this in one class because vast optimizations can be handled here.</summary>
+  public static class Renderer
   {
-    SpriteBatch _batch = new SpriteBatch();
+    private static SpriteBatch _batch = new SpriteBatch();
 
-    int _currentTextureId = -1;
+    private static int _currentTextureId = -1;
 
-    public Renderer()
-    {
-      GL.Enable(EnableCap.Texture2D);
-      GL.Enable(EnableCap.Blend);
-      GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-    }
-
-    public void DrawImmediateModeVertex(Vector position, Color color, Point uvs)
+    public static void DrawImmediateModeVertex(Vector position, Color color, Point uvs)
     {
       GL.Color4(color.Red, color.Green, color.Blue, color.Alpha);
       GL.TexCoord2(uvs.X, uvs.Y);
       GL.Vertex3(position.X, position.Y, position.Z);
     }
 
-    public void DrawSprite(Sprite sprite)
+    public static void DrawSprite(Sprite sprite)
     {
       if (sprite.Texture.Id == _currentTextureId)
       {
@@ -131,7 +127,7 @@ namespace Engine
       GL.PopClientAttrib();
     }*/
 
-    public void DrawSkyBox(SkyBox skyBox)
+    public static void DrawSkyBox(SkyBox skyBox)
     {
       GL.MatrixMode(MatrixMode.Modelview);
       GL.LoadIdentity();
@@ -199,33 +195,44 @@ namespace Engine
       GL.End();
     }
     
-    public void DrawStaticModel(Camera camera, StaticModel staticModel)
+    /// <summary>Renders a single static model using "GL.DrawArrays()".</summary>
+    /// <param name="camera">The camera used to capture the world (needed for the world to camera transformation).</param>
+    /// <param name="staticModel">The mesh to be rendered.</param>
+    public static void DrawStaticModel(Camera camera, StaticModel staticModel)
     {
+      // Select the model view matrix to apply the world and camera transformation.
       GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadIdentity();
-
-      Matrix4 view = Matrix4.Identity;
       
-      GL.Translate(-camera.Position.X, -camera.Position.Y, -camera.Position.Z);
-      GL.Rotate(-camera.RotationX, 1, 0, 0);
-      GL.Rotate(-camera.RotationY, 0, 1, 0);
-      GL.Rotate(-camera.RotationZ, 0, 0, 1);
+      // This line is not necessary when the camera matrix is loaded in just after.
+      //GL.LoadIdentity();
+      
+      // Get and load the camera transformatino matrix.
+      Matrix4 cameraTransform = TransformationManager.CurrentCamera.GetMatrix();
+      GL.LoadMatrix(ref cameraTransform);
 
+      //GL.Translate(-camera.Position.X, -camera.Position.Y, -camera.Position.Z);
+      //GL.Rotate(-camera.RotationX, 1, 0, 0);
+      //GL.Rotate(-camera.RotationY, 0, 1, 0);
+      //GL.Rotate(-camera.RotationZ, 0, 0, 1);
+
+      // Apply the world transformation due to the mesh's position, scale, and rotation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
       GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
-      //GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
 
-      //GL.Translate(-camera.Position.X, -camera.Position.Y, -camera.Position.Z);
 
       foreach (Tuple<Texture, StaticMesh> tuple in staticModel.Meshes)
       {
-        GL.BindTexture(TextureTarget.Texture2D, tuple.Item1.Id);
+        // If there is no vertex buffer, nothing will render anyway, so we can stop it now.
+        if (tuple.Item2.VertexBufferId == 0 ||
+          // If there is no color or texture, nothing will render anyway
+          (tuple.Item2.ColorBufferId == 0 && tuple.Item2.TextureCoordinateBufferId == 0))
+          return;
+
+        if (tuple.Item2.VertexBufferId == 0) return;
 
         // Push current Array Buffer state so we can restore it later
         GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
-
-        if (tuple.Item2.VertexBufferId == 0) return;
 
         if (GL.IsEnabled(EnableCap.Lighting))
         {
@@ -259,6 +266,8 @@ namespace Engine
         {
           if (tuple.Item2.TextureCoordinateBufferId != 0)
           {
+            // Bind the texture to which the UVs are mapping to.
+            GL.BindTexture(TextureTarget.Texture2D, tuple.Item1.Id);
             // Bind to the Array Buffer ID
             GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.TextureCoordinateBufferId);
             // Set the Pointer to the current bound array describing how the data ia stored
@@ -266,6 +275,9 @@ namespace Engine
             // Enable the client state so it will use this array buffer pointer
             GL.EnableClientState(ArrayCap.TextureCoordArray);
           }
+          else
+            // Nothing will render if this branching is reached.
+            return;
         }
 
         // Vertex Array Buffer
@@ -291,7 +303,9 @@ namespace Engine
         }
         else
         {
+          // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
           GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.VertexBufferId);
+          // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
           GL.DrawArrays(BeginMode.Triangles, 0, tuple.Item2.VertexCount);
         }
 
@@ -299,12 +313,12 @@ namespace Engine
       }
     }
 
-    public void Render()
+    public static void Render()
     {
       _batch.Draw();
     }
 
-    public void DrawText(Text text)
+    public static void DrawText(Text text)
     {
       foreach (CharacterSprite c in text.CharacterSprites)
       {

@@ -8,25 +8,47 @@ using System.Drawing.Imaging;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine.Textures;
+using Engine.Imaging;
 
 namespace Engine
 {
-  public class TextureManager : IDisposable
+  public static class TextureManager
   {
-    Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
+    private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
 
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
-    public int Count { get { return _textureDatabase.Count; } }
+    public static int Count { get { return _textureDatabase.Count; } }
 
-    public Texture Get(string textureId)
+    /// <summary>Pull out a reference to a texture.</summary>
+    /// <param name="textureId">The name associated with the texture (what you caled it when you added it).</param>
+    /// <returns>A reference to the desired texture.</returns>
+    public static Texture Get(string textureId)
     {
       Texture texture = _textureDatabase[textureId];
       texture.ExistingReferences++;
       return texture;
     }
 
-    private bool LoadTextureFromDisk(string path, out int id, out int height, out int width)
+    /// <summary>Loads a ".obj" file. NOTE: check my parser for importing proterties.</summary>
+    /// <param name="textureId"></param>
+    /// <param name="path"></param>
+    public static void LoadTexture(string textureId, string path)
+    {
+      int textureIdNum;
+      int width;
+      int height;
+
+      // Attempt to load the file
+      if (!LoadTextureFromDisk(path, out textureIdNum, out height, out width))
+        Console.WriteLine("ERROR loading texture file: \"" + path + "\".");
+      else
+      {
+        _textureDatabase.Add(textureId, new Texture(textureIdNum, width, height));
+        Output.Write("Texture file loaded: \"" + path + "\".");
+      }
+    }
+
+    private static bool LoadTextureFromDisk(string path, out int id, out int height, out int width)
     {
       try
       {
@@ -65,36 +87,5 @@ namespace Engine
         return false;
       }
     }
-
-    public void LoadTexture(string textureId, string path)
-    {
-      int textureIdNum;
-      int width;
-      int height;
-
-      // Attempt to load the file
-      if (!LoadTextureFromDisk(path, out textureIdNum, out height, out width))
-      {
-        Console.WriteLine("Could not open texture file: \"" + path + "\".");
-      }
-      else
-      {
-        _textureDatabase.Add(textureId, new Texture(textureIdNum, width, height));
-        Output.Print("Texture file loaded: \"" + path + "\".");
-      }
-    }
-
-    #region IDisposable Members
-
-    public void Dispose()
-    {
-      foreach (Texture t in _textureDatabase.Values)
-      {
-        GL.DeleteTextures(1, new int[] { t.Id });
-      }
-    }
-
-    #endregion
-
   }
 }

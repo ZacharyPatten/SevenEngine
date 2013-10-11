@@ -3,7 +3,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using Engine;
 
-namespace Engine
+namespace Game
 {
   static class Program
   {

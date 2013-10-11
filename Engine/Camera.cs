@@ -1,103 +1,14 @@
-﻿using OpenTK;
-using System;
-using System.Windows.Input;
+﻿using System;
+
+using OpenTK;
 using OpenTK.Input;
+
+using Engine.Mathematics;
 
 namespace Engine
 {
-  public class Camera
+  /*public class Camera
   {
-    /*private Vector _position, _right, _up, _forward;
-    private double _fieldOfView, _maximumViewDistance, _minimumViewDistance;
-    private Matrix _viewOrientation;
-
-    public Vector Position
-    {
-      get { return _position; }
-      set { _position = value; }
-    }
-
-    public Vector Right
-    {
-      get { return _right; }
-      set
-      {
-        _right = value;
-        _viewOrientation =
-          new Matrix(
-            _right.X, _right.Y, _right.Z,
-            _up.X, _up.Y, _up.Z,
-            _forward.Z, _forward.Y, _forward.Z);
-      }
-    }
-
-    public Vector Up
-    {
-      get { return _up; }
-      set
-      {
-        _up = value;
-        _viewOrientation =
-          new Matrix(
-            _right.X, _right.Y, _right.Z,
-            _up.X, _up.Y, _up.Z,
-            _forward.Z, _forward.Y, _forward.Z);
-      }
-    }
-
-    public Vector Forward
-    {
-      get { return _forward; }
-      set
-      {
-        _forward = value;
-        _viewOrientation =
-          new Matrix(
-            _right.X, _right.Y, _right.Z,
-            _up.X, _up.Y, _up.Z,
-            _forward.Z, _forward.Y, _forward.Z);
-      }
-    }
-
-    public double FieldOfView
-    {
-      get { return _fieldOfView; }
-      set { _fieldOfView = value; }
-    }
-
-    public double MaximumViewDistance
-    {
-      get { return _maximumViewDistance; }
-      set { _maximumViewDistance = value; }
-    }
-
-    public double MinimumViewDistance
-    {
-      get { return _minimumViewDistance; }
-      set { _minimumViewDistance = value; }
-    }
-
-    public Camera(Vector position, Vector right, Vector up, Vector forward, double fieldOfView, double maximumViewDistance, double minimumViewDistance)
-    {
-      _position = position;
-      _right = right;
-      _up = up;
-      _forward = forward;
-      _fieldOfView = fieldOfView;
-      _maximumViewDistance = maximumViewDistance;
-      _minimumViewDistance = minimumViewDistance;
-      _viewOrientation =
-          new Matrix(
-            _right.X, _right.Y, _right.Z,
-            _up.X, _up.Y, _up.Z,
-            _forward.Z, _forward.Y, _forward.Z);
-    }
-
-    public Matrix4 GetCameraTransform()
-    {
-      return Matrix4.LookAt(Vector3.Zero, Vector3.UnitZ, Vector3.UnitY);
-    }*/
-
     protected Vector _position;
     protected Vector _up;
     protected Vector _forward;
@@ -172,5 +83,124 @@ namespace Engine
         Vector3 position = new Vector3((float)_position.X, (float)_position.Y, (float)_position.Z);
       return Matrix4.LookAt(position, position+direction, up);
     }
-  }
+  }*/
+
+  public class Camera
+    {
+	    private static Vector yAxis = new Vector(0,1,0);
+
+        private double _fieldOfView;
+
+        private double _positionSpeed;
+        private double _lookSpeed;
+
+	    private Vector _position;
+	    private Vector _forward;
+	    private Vector _up;
+
+        public double FieldOfView { get { return _fieldOfView; } set { _fieldOfView = value; } }
+
+        public double PositionSpeed { get { return _positionSpeed; } set { _positionSpeed = value; } }
+        public double LookSpeed { get { return _lookSpeed; } set { _lookSpeed = value; } }
+
+        public Vector Position { get { return _position; } set { _position = value; } }
+        public Vector Forward { get { return _forward; } set { _forward = value; } }
+        public Vector Up { get { return _up; } set { _up = value; } }
+
+        public Vector Backward { get { return -_forward; } }
+        public Vector Right { get { return _up.CrossProduct(_forward.Normalise()); } }
+        public Vector Left { get { return _forward.CrossProduct(_up.Normalise()); } }
+        public Vector Down { get { return -_up; } }
+
+	    public Camera()
+	    {
+		    _position = new Vector(0,0,0);
+            _forward = new Vector(0,0,1);
+            _up = new Vector(0,1,0);
+
+            _fieldOfView = .5d;
+	    }
+	
+	    public Camera(Vector pos, Vector forward, Vector up, double fieldOfView)
+	    {
+		    _position = pos;
+            _forward = forward.Normalise();
+		    _up = up.Normalise();
+            _fieldOfView = fieldOfView;
+	    }
+
+	    /*bool mouseLocked = false;
+	    Vector2f centerPosition = new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
+	
+	    public void input()
+	    {
+		    float sensitivity = 0.5f;
+		    float movAmt = (float)(10 * Time.getDelta());
+    //		float rotAmt = (float)(100 * Time.getDelta());
+		
+		    if(Input.getKey(Input.KEY_ESCAPE))
+		    {
+			    Input.setCursor(true);
+			    mouseLocked = false;
+		    }
+		    if(Input.getMouseDown(0))
+		    {
+			    Input.setMousePosition(centerPosition);
+			    Input.setCursor(false);
+			    mouseLocked = true;
+		    }
+		
+		    if(Input.getKey(Input.KEY_W))
+			    move(getForward(), movAmt);
+		    if(Input.getKey(Input.KEY_S))
+			    move(getBackward(), -movAmt);
+		    if(Input.getKey(Input.KEY_A))
+			    move(getLeft(), movAmt);
+		    if(Input.getKey(Input.KEY_D))
+			    move(getRight(), movAmt);
+		
+		    if(mouseLocked)
+		    {
+			    Vector2f deltaPos = Input.getMousePosition().sub(centerPosition);
+			
+			    bool rotY = deltaPos.getX() != 0;
+			    bool rotX = deltaPos.getY() != 0;
+			
+			    if(rotY)
+				    rotateY(deltaPos.getX() * sensitivity);
+			    if(rotX)
+				    rotateX(-deltaPos.getY() * sensitivity);
+				
+			    if(rotY || rotX)
+				    Input.setMousePosition(new Vector2f(Window.getWidth()/2, Window.getHeight()/2));
+		    }
+	    }*/
+	
+	    public void Move(Vector direction, double ammount)
+	    {
+		    _position = _position + (direction * ammount);
+	    }
+	
+	    public void RotateY(double angle)
+	    {
+		    Vector Haxis = yAxis.CrossProduct(_forward.Normalise());
+		    _forward = _forward.Rotate(angle, yAxis).Normalise();
+		    _up = _forward.CrossProduct(Haxis.Normalise());
+	    }
+	
+	    public void RotateX(double angle)
+	    {
+		    Vector Haxis = yAxis.CrossProduct(_forward.Normalise());
+            _forward = _forward.Rotate(angle, Haxis).Normalise();
+		    _up = _forward.CrossProduct(Haxis.Normalise());
+	    }
+
+        public Matrix4 GetMatrix()
+        {
+          return Matrix4.LookAt(
+            (float)_position.X, (float)_position.Y, (float)_position.Z,
+            (float)_forward.X, (float)_forward.Y, (float)_forward.Z,
+            (float)_up.X, (float)_up.Y, (float)_up.Z);
+        }
+    }
 }

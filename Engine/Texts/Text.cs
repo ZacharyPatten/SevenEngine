@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-using Engine.Textures;
+using Engine.Imaging;
+using Engine.Mathematics;
 
 namespace Engine.Texts
 {

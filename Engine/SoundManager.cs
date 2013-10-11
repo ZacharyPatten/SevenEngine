@@ -11,7 +11,7 @@ using Engine.Audio;
 
 namespace Engine
 {
-  public class SoundManager
+  public static class SoundManager
   {
     struct SoundSource
     {
@@ -23,18 +23,19 @@ namespace Engine
       public int _bufferId;
       string _filePath;
     }
-    Dictionary<string, SoundSource> _soundIdentifier = new Dictionary<string, SoundSource>();
-    readonly int MaxSoundChannels = 256;
-    List<int> _soundChannels = new List<int>();
-    float _masterVolume = 1.0f;
 
-    public SoundManager()
-    {
+    private static Dictionary<string, SoundSource> _soundIdentifier = new Dictionary<string, SoundSource>();
+    static readonly int MaxSoundChannels = 256;
+    static List<int> _soundChannels = new List<int>();
+    static float _masterVolume = 1.0f;
+
+    //public SoundManager()
+    //{
       //Alut.alutInit();
-      DicoverSoundChannels();
-    }
+      //DicoverSoundChannels();
+    //}
 
-    private void DicoverSoundChannels()
+    private static void DicoverSoundChannels()
     {
       while (_soundChannels.Count < MaxSoundChannels)
       {
@@ -53,7 +54,7 @@ namespace Engine
       }
     }
 
-    private bool IsChannelPlaying(int channel)
+    private static bool IsChannelPlaying(int channel)
     {
       return AL.GetSourceState(channel) == ALSourceState.Playing;
       //int value = 0; 
@@ -61,7 +62,7 @@ namespace Engine
       //return (value == Al.AL_PLAYING);
     }
 
-    private int FindNextFreeChannel()
+    private static int FindNextFreeChannel()
     {
       foreach (int slot in _soundChannels)
       {
@@ -75,7 +76,7 @@ namespace Engine
     }
 
 
-    public void LoadSound(string soundId, string path)
+    public static void LoadSound(string soundId, string path)
     {
       // Generate a buffer.
       int buffer = -1;
@@ -101,12 +102,12 @@ namespace Engine
       _soundIdentifier.Add(soundId, new SoundSource(buffer, path));
     }
 
-    public Sound PlaySound(string soundId)
+    public static Sound PlaySound(string soundId)
     {
       // Default play sound doesn't loop.
       return PlaySound(soundId, false);
     }
-    public Sound PlaySound(string soundId, bool loop)
+    public static Sound PlaySound(string soundId, bool loop)
     {
       int channel = FindNextFreeChannel();
       if (channel != -1)
@@ -144,18 +145,18 @@ namespace Engine
     }
 
 
-    public void ChangeVolume(Sound sound, float value)
+    public static void ChangeVolume(Sound sound, float value)
     {
       AL.Source(sound.Channel, ALSourcef.Gain, _masterVolume * value);
       //Al.alSourcef(sound.Channel, Al.AL_GAIN, _masterVolume * value);
     }
 
-    public bool IsSoundPlaying(Sound sound)
+    public static bool IsSoundPlaying(Sound sound)
     {
       return IsChannelPlaying(sound.Channel);
     }
 
-    public void StopSound(Sound sound)
+    public static void StopSound(Sound sound)
     {
       if (sound.Channel == -1)
       {
@@ -165,7 +166,7 @@ namespace Engine
       //Al.alSourceStop(sound.Channel);
     }
 
-    public void MasterVolume(float value)
+    public static void MasterVolume(float value)
     {
       _masterVolume = value;
       foreach (int channel in _soundChannels)
@@ -174,28 +175,5 @@ namespace Engine
         //Al.alSourcef(channel, Al.AL_GAIN, value);
       }
     }
-
-    #region IDisposable Members
-
-    public void Dispose()
-    {
-
-      foreach (SoundSource soundSource in _soundIdentifier.Values)
-      {
-        SoundSource temp = soundSource;
-        AL.DeleteBuffers(1, ref temp._bufferId);
-        //Al.alDeleteBuffers(1, ref temp._bufferId);
-      }
-      _soundIdentifier.Clear();
-      foreach (int slot in _soundChannels)
-      {
-        int target = _soundChannels[slot];
-        AL.DeleteSources(1, ref target);
-        //Al.alDeleteSources(1, ref target);
-      }
-      //Alut.alutExit();
-    }
-
-    #endregion
   }
 }

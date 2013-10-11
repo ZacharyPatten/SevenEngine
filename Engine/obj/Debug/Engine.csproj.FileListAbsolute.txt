@@ -5,3 +5,15 @@ C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\nuni
 C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\bin\Debug\nunit.framework.xml
 C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\obj\Debug\Engine.dll
 C:\Users\Zero\Documents\Visual Studio 2010\Projects\Engine\Engine\obj\Debug\Engine.pdb
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\Engine.dll
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\Engine.pdb
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.Compatibility.dll
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.dll
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.GLControl.dll
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\nunit.framework.xml
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.xml
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.Compatibility.xml
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Debug\OpenTK.GLControl.xml
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Debug\Engine.csprojResolveAssemblyReference.cache
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Debug\Engine.dll
+C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Debug\Engine.pdb

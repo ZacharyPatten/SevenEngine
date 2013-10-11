@@ -1,10 +1,11 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 
-using Engine.Textures;
+using Engine.Imaging;
+using Engine.Mathematics;
 
 namespace Engine.Models
 {
-  [Serializable]
+  [StructLayout(LayoutKind.Sequential)]
   public class Vertex
   {
     protected Vector _position;

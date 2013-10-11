@@ -54,19 +54,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="States\DrawSpriteState.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="States\BufferExampleState.cs" />
-    <Compile Include="States\objectImporterState.cs" />
-    <Compile Include="States\objLoaderstate2.cs" />
-    <Compile Include="States\MultipleModelState.cs" />
-    <Compile Include="States\RedRangerTestingTest.cs" />
-    <Compile Include="States\SkyBoxTesting.cs" />
+    <Compile Include="States\GameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Assets\grass.obj" />
+    <None Include="Assets\RedRanger.obj" />
+    <None Include="Assets\Skyboxes\Side.obj" />
+    <None Include="Assets\Skyboxes\SkyBox.obj" />
+    <None Include="Assets\Terrain.obj" />
+    <None Include="Assets\Yoda.obj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">
@@ -75,8 +75,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Guy.Cecil.full.150663.bmp" />
-    <Content Include="Assets\img4d5a2fe0bf568.bmp" />
+    <Content Include="Assets\BlackRangerBody.bmp" />
+    <Content Include="Assets\BlueRangerBody.bmp" />
+    <Content Include="Assets\grass.bmp" />
+    <Content Include="Assets\RedRangerBody.bmp" />
+    <Content Include="Assets\yoda.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Skyboxes\NightWalker\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
