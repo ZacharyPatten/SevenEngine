@@ -32,13 +32,13 @@ namespace Engine
       if (StateExists(stateId))
       {
         Output.ClearIndent();
-        Output.Write("ERROR!\nStateSystem.cs\\AddState(): " + stateId + " already exits.");
+        Output.WriteLine("ERROR!\nStateSystem.cs\\AddState(): " + stateId + " already exits.");
         throw new StateSystemException("ERROR!\nStateSystem.cs\\AddState(): " + stateId + " already exits.");
       }
       else
       {
         _stateDatabase.Add(stateId, state);
-        Output.Write("\"" + stateId + "\" state loaded;");
+        Output.WriteLine("\"" + stateId + "\" state loaded;");
       }
     }
 
@@ -49,13 +49,13 @@ namespace Engine
       if (!StateExists(stateId))
       {
         Output.ClearIndent();
-        Output.Write("ERROR!\nStateSystem.cs\\ChangeState(): " + stateId + "does not exits.");
+        Output.WriteLine("ERROR!\nStateSystem.cs\\ChangeState(): " + stateId + "does not exits.");
         throw new StateSystemException("ERROR!\nStateSystem.cs\\ChangeState(): " + stateId + " does not exits.");
       }
       else
       {
         _currentState = _stateDatabase[stateId];
-        Output.Write("\"" + stateId + "\" state selected;");
+        Output.WriteLine("\"" + stateId + "\" state selected;");
       }
     }
 

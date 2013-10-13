@@ -7,6 +7,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using Engine;
+using Engine.DataStructures;
 using Engine.Imaging;
 using Engine.Texts;
 using Engine.Models;
@@ -30,7 +31,7 @@ namespace Engine
 
     public static void DrawSprite(Sprite sprite)
     {
-      if (sprite.Texture.Id == _currentTextureId)
+      if (sprite.Texture.Handle == _currentTextureId)
       {
         _batch.AddSprite(sprite);
       }
@@ -40,7 +41,7 @@ namespace Engine
         _batch.Draw();
 
         // Update texture info
-        _currentTextureId = sprite.Texture.Id;
+        _currentTextureId = sprite.Texture.Handle;
         //GL.BindTexture(TextureTarget.Texture2D, _currentTextureId);
         _batch.AddSprite(sprite);
       }
@@ -134,7 +135,7 @@ namespace Engine
       GL.Translate(skyBox.Position.X, skyBox.Position.Y, skyBox.Position.Z);
       GL.Scale(skyBox.Scale.X, skyBox.Scale.Y, skyBox.Scale.Z);
 
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Up.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Up.Handle);
       GL.Begin(BeginMode.Triangles);
       GL.Vertex3(-1, -1, -1);
       GL.TexCoord2(1, 1);
@@ -146,7 +147,7 @@ namespace Engine
       GL.TexCoord2(1, 0);
       GL.End();
 
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Back.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Back.Handle);
       GL.Begin(BeginMode.Triangles);
       GL.Vertex3(-1, 1, -1);
       GL.TexCoord2(0, 0);
@@ -158,7 +159,7 @@ namespace Engine
       GL.TexCoord2(0, 1);
       GL.End();
 
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Left.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Left.Handle);
       GL.Begin(BeginMode.Triangles);
       GL.Vertex3(1, 1, -1);
       GL.TexCoord2(1, 1);
@@ -170,7 +171,7 @@ namespace Engine
       GL.TexCoord2(1, 0);
       GL.End();
 
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Right.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Right.Handle);
       GL.Begin(BeginMode.Triangles);
       GL.Vertex3(-1, -1, 1);
       GL.TexCoord2(0, 0);
@@ -182,7 +183,7 @@ namespace Engine
       GL.TexCoord2(0, 1);
       GL.End();
 
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Front.Id);
+      GL.BindTexture(TextureTarget.Texture2D, skyBox.Front.Handle);
       GL.Begin(BeginMode.Triangles);
       GL.Vertex3(1, 1, 1);
       GL.TexCoord2(1, 0);
@@ -221,15 +222,13 @@ namespace Engine
       GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
 
 
-      foreach (Tuple<Texture, StaticMesh> tuple in staticModel.Meshes)
+      foreach (Link<Texture, StaticMesh> link in staticModel.Meshes)
       {
         // If there is no vertex buffer, nothing will render anyway, so we can stop it now.
-        if (tuple.Item2.VertexBufferId == 0 ||
+        if (link.Right.VertexBufferHandle == 0 ||
           // If there is no color or texture, nothing will render anyway
-          (tuple.Item2.ColorBufferId == 0 && tuple.Item2.TextureCoordinateBufferId == 0))
+          (link.Right.ColorBufferHandle == 0 && link.Right.TextureCoordinateBufferHandle == 0))
           return;
-
-        if (tuple.Item2.VertexBufferId == 0) return;
 
         // Push current Array Buffer state so we can restore it later
         GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
@@ -237,10 +236,10 @@ namespace Engine
         if (GL.IsEnabled(EnableCap.Lighting))
         {
           // Normal Array Buffer
-          if (tuple.Item2.NormalBufferId != 0)
+          if (link.Right.NormalBufferHandle != 0)
           {
             // Bind to the Array Buffer ID
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.NormalBufferId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, link.Right.NormalBufferHandle);
             // Set the Pointer to the current bound array describing how the data ia stored
             GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
             // Enable the client state so it will use this array buffer pointer
@@ -250,10 +249,10 @@ namespace Engine
         else
         {
           // Color Array Buffer (Colors not used when lighting is enabled)
-          if (tuple.Item2.ColorBufferId != 0)
+          if (link.Right.ColorBufferHandle != 0)
           {
             // Bind to the Array Buffer ID
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.ColorBufferId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, link.Right.ColorBufferHandle);
             // Set the Pointer to the current bound array describing how the data ia stored
             GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
             // Enable the client state so it will use this array buffer pointer
@@ -264,12 +263,12 @@ namespace Engine
         // Texture Array Buffer
         if (GL.IsEnabled(EnableCap.Texture2D))
         {
-          if (tuple.Item2.TextureCoordinateBufferId != 0)
+          if (link.Right.TextureCoordinateBufferHandle != 0)
           {
             // Bind the texture to which the UVs are mapping to.
-            GL.BindTexture(TextureTarget.Texture2D, tuple.Item1.Id);
+            GL.BindTexture(TextureTarget.Texture2D, link.Left.Handle);
             // Bind to the Array Buffer ID
-            GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.TextureCoordinateBufferId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, link.Right.TextureCoordinateBufferHandle);
             // Set the Pointer to the current bound array describing how the data ia stored
             GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
             // Enable the client state so it will use this array buffer pointer
@@ -282,31 +281,31 @@ namespace Engine
 
         // Vertex Array Buffer
         // Bind to the Array Buffer ID
-        GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.VertexBufferId);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, link.Right.VertexBufferHandle);
         // Set the Pointer to the current bound array describing how the data ia stored
         GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
         // Enable the client state so it will use this array buffer pointer
         GL.EnableClientState(ArrayCap.VertexArray);
 
-        if (tuple.Item2.ElementBufferId != 0)
+        if (link.Right.ElementBufferHandle != 0)
         {
           // Element Array Buffer
           // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ElementArrayBuffer, tuple.Item2.ElementBufferId);
+          GL.BindBuffer(BufferTarget.ElementArrayBuffer, link.Right.ElementBufferHandle);
           // Set the Pointer to the current bound array describing how the data ia stored
           GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
           // Enable the client state so it will use this array buffer pointer
           GL.EnableClientState(ArrayCap.IndexArray);
           // Draw the elements in the element array buffer
           // Draws up items in the Color, Vertex, TexCoordinate, and Normal Buffers using indices in the ElementArrayBuffer
-          GL.DrawElements(BeginMode.Triangles, tuple.Item2.VertexCount, DrawElementsType.UnsignedInt, 0);
+          GL.DrawElements(BeginMode.Triangles, link.Right.VertexCount, DrawElementsType.UnsignedInt, 0);
         }
         else
         {
           // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-          GL.BindBuffer(BufferTarget.ArrayBuffer, tuple.Item2.VertexBufferId);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, link.Right.VertexBufferHandle);
           // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-          GL.DrawArrays(BeginMode.Triangles, 0, tuple.Item2.VertexCount);
+          GL.DrawArrays(BeginMode.Triangles, 0, link.Right.VertexCount);
         }
 
         GL.PopClientAttrib();

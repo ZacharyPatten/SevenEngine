@@ -62,17 +62,3 @@ C:\Users\Seven\Programming\SevenEngine\Game\bin\Release\Engine.pdb
 C:\Users\Seven\Programming\SevenEngine\Game\obj\Release\Game.csprojResolveAssemblyReference.cache
 C:\Users\Seven\Programming\SevenEngine\Game\obj\Release\Game.exe
 C:\Users\Seven\Programming\SevenEngine\Game\obj\Release\Game.pdb
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\Game.exe.config
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\Game.exe
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\Game.pdb
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\Engine.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.Compatibility.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.GLControl.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\Engine.pdb
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.Compatibility.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\bin\Release\OpenTK.GLControl.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\obj\Release\Game.csprojResolveAssemblyReference.cache
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\obj\Release\Game.exe
-C:\Users\Seven\Documents\GitHub\SevenEngine\Game\obj\Release\Game.pdb

@@ -75,6 +75,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataStructures\HashTableAttemptTwo.cs" />
+    <Compile Include="DataStructures\PriorityHeap.cs" />
     <Compile Include="DataStructures\Octree.cs" />
     <Compile Include="DataStructures\OctreeJava.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
@@ -83,7 +85,11 @@
     <Compile Include="Models\StaticModel.cs" />
     <Compile Include="SevenEngineWindow.cs" />
     <Compile Include="ShaderManager.cs" />
-    <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\ExtendedGeometryShader.cs" />
+    <Compile Include="Shaders\FragmentShader.cs" />
+    <Compile Include="Shaders\GeometryShader.cs" />
+    <Compile Include="Shaders\ShaderProgram.cs" />
+    <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="Models\Utilities\SkyBox.cs" />
     <Compile Include="Imaging\SpriteBatch.cs" />
     <Compile Include="Camera.cs" />
@@ -91,9 +97,9 @@
     <Compile Include="DataStructures\DoublyLinkedListNode.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\LinkedListNode.cs" />
-    <Compile Include="DataStructures\PriorityQueue.cs" />
+    <Compile Include="DataStructures\PriorityHeapOld.cs" />
     <Compile Include="DataStructures\QueueNode.cs" />
-    <Compile Include="DataStructures\Tuple.cs" />
+    <Compile Include="DataStructures\Link.cs" />
     <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Models\Bone.cs" />
     <Compile Include="StaticModelManager.cs" />
@@ -128,18 +134,6 @@
     <Compile Include="Mathematics\Tween.cs" />
     <Compile Include="Mathematics\Vector.cs" />
     <Compile Include="Input\XboxController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\FragmentShaderLit.FragmentShader" />
-    <None Include="Shaders\FragmentShaderToon.fragmentShader" />
-    <None Include="Shaders\VertexShaderBasic.vertexShader" />
-    <None Include="Shaders\VertexShaderToon.vertexShader" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\FragmentShaderBasic.fragmentShader" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\VertexShaderLit.VertexShader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

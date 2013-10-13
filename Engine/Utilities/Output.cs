@@ -17,12 +17,20 @@ namespace Engine
 
     /// <summary>Writes a message to the console. Places spaces before the output equal to the current indention level.</summary>
     /// <param name="output">The string desired to write.</param>
+    public static void WriteLine(string output)
+    {
+      for (int i = 0; i < _indent; i++)
+        Console.Write(" ");
+      Console.WriteLine(output);
+    }
+
+    /// <summary>Writes a message to the console. Places spaces before the output equal to the current indention level.</summary>
+    /// <param name="output">The string desired to write.</param>
     public static void Write(string output)
     {
       for (int i = 0; i < _indent; i++)
         Console.Write(" ");
       Console.Write(output);
-      Console.WriteLine();
     }
   }
 }

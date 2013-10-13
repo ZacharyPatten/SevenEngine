@@ -79,10 +79,15 @@
     <Content Include="Assets\BlueRangerBody.bmp" />
     <Content Include="Assets\grass.bmp" />
     <Content Include="Assets\RedRangerBody.bmp" />
+    <Content Include="Assets\Skyboxes\NightWalker\NightWalkerBack.bmp" />
+    <Content Include="Assets\Skyboxes\NightWalker\NightWalkerFront.bmp" />
+    <Content Include="Assets\Skyboxes\NightWalker\NightWalkerLeft.bmp" />
+    <Content Include="Assets\Skyboxes\NightWalker\NightWalkerRight.bmp" />
+    <Content Include="Assets\Skyboxes\NightWalker\NightWalkerTop.bmp" />
     <Content Include="Assets\yoda.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Skyboxes\NightWalker\" />
+    <Folder Include="Assets\Shaders\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 
 using Engine.Models;
@@ -17,6 +13,7 @@ namespace Engine
   public static class StaticModelManager
   {
     private static Dictionary<string, StaticMesh> _staticModelDatabase = new Dictionary<string, StaticMesh>();
+    //private static Dictionary<string, StaticMesh> _staticModelDatabase = new Dictionary<string, StaticMesh>();
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
     public static int Count { get { return _staticModelDatabase.Count; } }
@@ -35,7 +32,8 @@ namespace Engine
     public static void LoadModel(string staticMeshId, string filePath)
     {
       _staticModelDatabase.Add(staticMeshId, LoadObj(staticMeshId, filePath));
-      Output.Write("Model file loaded: \"" + filePath + "\".");
+      string[] pathSplit = filePath.Split('\\');
+      Output.WriteLine("Model file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
     }
 
     public static void RemoveModel(string staticMeshId)
@@ -47,27 +45,27 @@ namespace Engine
         // lets warn them.
       if (removal.ExistingReferences > 1)
       {
-        Output.Write("WARNING: texture removal \"" + staticMeshId + "\" still has active references.");
+        Output.WriteLine("WARNING: texture removal \"" + staticMeshId + "\" still has active references.");
       }
 
       // Delete the vertex buffer if it exists.
-      int vertexBufferId = removal.VertexBufferId;
+      int vertexBufferId = removal.VertexBufferHandle;
       if (vertexBufferId != 0)
         GL.DeleteBuffers(1, ref vertexBufferId);
       // Delete the normal buffer if it exists.
-      int normalbufferId = removal.NormalBufferId;
+      int normalbufferId = removal.NormalBufferHandle;
       if (normalbufferId != 0)
         GL.DeleteBuffers(1, ref normalbufferId);
       // Delete the color buffer if it exists.
-      int colorBufferId = removal.ColorBufferId;
+      int colorBufferId = removal.ColorBufferHandle;
       if (colorBufferId != 0)
         GL.DeleteBuffers(1, ref colorBufferId);
       // Delete the texture coordinate buffer if it exists.
-      int textureCoordinateBufferId = removal.TextureCoordinateBufferId;
+      int textureCoordinateBufferId = removal.TextureCoordinateBufferHandle;
       if (textureCoordinateBufferId != 0)
         GL.DeleteBuffers(1, ref textureCoordinateBufferId);
       // Delete the element buffer if it exists.
-      int elementBufferId = removal.ElementBufferId;
+      int elementBufferId = removal.ElementBufferHandle;
       if (elementBufferId != 0)
         GL.DeleteBuffers(1, ref elementBufferId);
       // Now we can remove it from the dictionary.
@@ -76,6 +74,7 @@ namespace Engine
 
     public static StaticMesh LoadObj(string staticMeshId, string filePath)
     {
+      // These are temporarily needed lists for storing the parsed data as you read it.
       List<float> fileVerteces = new List<float>();
       List<float> fileNormals = new List<float>();
       List<float> fileTextureCoordinates = new List<float>();

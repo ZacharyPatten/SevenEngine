@@ -19,7 +19,7 @@ namespace Engine
 
     public SevenEngineWindow() : base(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Game")
     {
-      Output.Write("GAME INITIALIZATION {");
+      Output.WriteLine("GAME INITIALIZATION {");
       Output.IncreaseIndent();
 
       InitializeInput();
@@ -33,7 +33,7 @@ namespace Engine
       _timer = new PreciseTimer();
 
       Output.DecreaseIndent();
-      Output.Write("} GAME INITIALIZATION COMPLETE;");
+      Output.WriteLine("} GAME INITIALIZATION COMPLETE;");
     }
 
     protected override void OnResize(EventArgs e)
@@ -47,69 +47,74 @@ namespace Engine
 
     private void BaseInitializeDisplay()
     {
-      Output.Write("Initializing Display {");
+      Output.WriteLine("Initializing Display {");
       Output.IncreaseIndent();
+
+      // This is kinda hack-y, but I want people to be able to change the settings from my "GraphicsSettingsManager"
+      // class instead of calling the OpenTK "GameWindow" code. (needed for full OpenTK abstraction)
+      GraphicsSettingsManager.InitializeWindow(this);
+
       InitializeDisplay();
       Output.DecreaseIndent();
-      Output.Write("} Display Initialized;");
+      Output.WriteLine("} Display Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeDisplay() { Output.Write("ERROR: you are not overriding the \"InitializeDisplay()\" during game initilization."); }
+    public virtual void InitializeDisplay() { Output.WriteLine("ERROR: you are not overriding the \"InitializeDisplay()\" during game initilization."); }
 
     private void BaseInitializeSounds()
     {
-      Output.Write("Initializing Sounds {");
+      Output.WriteLine("Initializing Sounds {");
       Output.IncreaseIndent();
       InitializeSounds();
       Output.DecreaseIndent();
-      Output.Write("} Sounds Initialized;");
+      Output.WriteLine("} Sounds Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeSounds() { Output.Write("ERROR: you are not overriding the \"InitializeSounds()\" during game initilization."); }
+    public virtual void InitializeSounds() { Output.WriteLine("ERROR: you are not overriding the \"InitializeSounds()\" during game initilization."); }
 
     private void BaseInitializeTextures()
     {
-      Output.Write("Initializing Textures {");
+      Output.WriteLine("Initializing Textures {");
       Output.IncreaseIndent();
       InitializeTextures();
       Output.DecreaseIndent();
-      Output.Write("} Textures Initialized;");
+      Output.WriteLine("} Textures Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeTextures() { Output.Write("ERROR: you are not overriding the \"InitializeTextures()\" during game initilization."); }
+    public virtual void InitializeTextures() { Output.WriteLine("ERROR: you are not overriding the \"InitializeTextures()\" during game initilization."); }
 
     private void BaseInitializeModels()
     {
-      Output.Write("Initializing Models {");
+      Output.WriteLine("Initializing Models {");
       Output.IncreaseIndent();
       InitializeModels();
       Output.DecreaseIndent();
-      Output.Write("} Models Initialized;");
+      Output.WriteLine("} Models Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeModels() { Output.Write("ERROR: you are not overriding the \"InitializeModels()\" during game initilization."); }
+    public virtual void InitializeModels() { Output.WriteLine("ERROR: you are not overriding the \"InitializeModels()\" during game initilization."); }
 
     private void BaseInitializeShaders()
     {
-      Output.Write("Initializing Shaders {");
+      Output.WriteLine("Initializing Shaders {");
       Output.IncreaseIndent();
       InitializeShaders();
       Output.DecreaseIndent();
-      Output.Write("} Shaders Initialized;");
+      Output.WriteLine("} Shaders Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeShaders() { Output.Write("ERROR: you are not overriding the \"InitializeShaders()\" during game initilization."); }
+    public virtual void InitializeShaders() { Output.WriteLine("ERROR: you are not overriding the \"InitializeShaders()\" during game initilization."); }
 
     private void BaseInitializeStates()
     {
-      Output.Write("Initializing States {");
+      Output.WriteLine("Initializing States {");
       Output.IncreaseIndent();
       InitializeStates();
       Output.DecreaseIndent();
-      Output.Write("} States Initialized;");
+      Output.WriteLine("} States Initialized;");
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
-    public virtual void InitializeStates() { Output.Write("ERROR: you are not overriding the \"InitializeState()\" during game initilization."); }
+    public virtual void InitializeStates() { Output.WriteLine("ERROR: you are not overriding the \"InitializeState()\" during game initilization."); }
 
     protected override void OnUpdateFrame(FrameEventArgs e)
     {

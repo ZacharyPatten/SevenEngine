@@ -38,25 +38,28 @@ namespace Engine
       int width;
       int height;
 
+      string[] pathSplit = path.Split('\\');
+
       // Attempt to load the file
       if (!LoadTextureFromDisk(path, out textureIdNum, out height, out width))
-        Console.WriteLine("ERROR loading texture file: \"" + path + "\".");
+        Console.WriteLine("ERROR loading texture file: \"" + pathSplit[pathSplit.Length - 1] + "\".");
       else
       {
-        _textureDatabase.Add(textureId, new Texture(textureIdNum, width, height));
-        Output.Write("Texture file loaded: \"" + path + "\".");
+        _textureDatabase.Add(textureId, new Texture(textureId, textureIdNum, width, height));
+        Output.WriteLine("Texture file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
       }
     }
 
-    private static bool LoadTextureFromDisk(string path, out int id, out int height, out int width)
+    private static bool LoadTextureFromDisk(string path, out int handle, out int height, out int width)
     {
       try
       {
         if (String.IsNullOrEmpty(path))
           throw new ArgumentException(path);
 
-        id = GL.GenTexture();
-        GL.BindTexture(TextureTarget.Texture2D, id);
+        handle = GL.GenTexture();
+
+        GL.BindTexture(TextureTarget.Texture2D, handle);
 
         Bitmap bitmap = new Bitmap(path);
 
@@ -81,9 +84,9 @@ namespace Engine
       }
       catch
       {
-        id = -1;
-        height = -1;
-        width = -1;
+        handle = 0;
+        height = 0;
+        width = 0;
         return false;
       }
     }

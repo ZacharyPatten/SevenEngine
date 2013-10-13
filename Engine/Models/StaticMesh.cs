@@ -9,11 +9,11 @@ namespace Engine.Models
 
     protected string _filePath;
     protected string _staticMeshId;
-    protected int _vertexBufferId;
-    protected int _colorBufferId;
-    protected int _textureCoordinateBufferId;
-    protected int _normalBufferId;
-    protected int _elementBufferId;
+    protected int _vertexBufferHandle;
+    protected int _colorBufferHandle;
+    protected int _textureCoordinateBufferHandle;
+    protected int _normalBufferHandle;
+    protected int _elementBufferHandle;
     protected int _vertexCount;
 
     /// <summary>The number of existing hardware instances of this model reference.</summary>
@@ -23,46 +23,47 @@ namespace Engine.Models
     public string FilePath { get { return _filePath; } set { _filePath = value; } }
     /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>
     public string StaticMeshId { get { return _staticMeshId; } set { _staticMeshId = value; } }
-    /// <summary>The location of the vertex buffer on the GPU.</summary>
-    public int VertexBufferId { get { return _vertexBufferId; } set { _vertexBufferId = value; } }
+    /// <summary>The handle of the vertex buffer on the GPU.</summary>
+    public int VertexBufferHandle { get { return _vertexBufferHandle; } set { _vertexBufferHandle = value; } }
     /// <summary>The location of the color buffer on the GPU.</summary>
-    public int ColorBufferId { get { return _colorBufferId; } set { _colorBufferId = value; } }
+    public int ColorBufferHandle { get { return _colorBufferHandle; } set { _colorBufferHandle = value; } }
     /// <summary>The location of the texture coordinate buffer on the GPU.</summary>
-    public int TextureCoordinateBufferId { get { return _textureCoordinateBufferId; } set { _textureCoordinateBufferId = value; } }
+    public int TextureCoordinateBufferHandle { get { return _textureCoordinateBufferHandle; } set { _textureCoordinateBufferHandle = value; } }
     /// <summary>The location of the normal buffer on the GPU.</summary>
-    public int NormalBufferId { get { return _normalBufferId; } set { _normalBufferId = value; } }
+    public int NormalBufferHandle { get { return _normalBufferHandle; } set { _normalBufferHandle = value; } }
     /// <summary>The location of the element buffer on the GPU.</summary>
-    public int ElementBufferId { get { return _elementBufferId; } set { _elementBufferId = value; } }
+    public int ElementBufferHandle { get { return _elementBufferHandle; } set { _elementBufferHandle = value; } }
     /// <summary>The number of verteces in this model.</summary>
     public int VertexCount { get { return _vertexCount; } set { _vertexCount = value; } }
 
 
     /// <summary>Creates an instance of a StaticMesh.</summary>
     /// <param name="filePath">The file path of the model that the data came from.</param>
-    /// <param name="vertexBufferId">The number reference of the vertex buffer on the GPU (default is 0).</param>
-    /// <param name="colorBufferId">The number reference of the color buffer on the GPU (default is 0).</param>
-    /// <param name="textureCoordinatesId">The number reference of the texture coordinate buffer on the GPU (default is 0).</param>
-    /// <param name="normalBufferId">The number reference of the normal buffer on the GPU (default is 0).</param>
-    /// <param name="elementBufferId">The number reference of the element buffer on the GPU (default is 0).</param>
+    /// <param name="staticMeshId">The name associated with this mash when in was created.</param>
+    /// <param name="vertexBufferHandle">The number reference of the vertex buffer on the GPU (default is 0).</param>
+    /// <param name="colorBufferHandle">The number reference of the color buffer on the GPU (default is 0).</param>
+    /// <param name="textureCoordinatesHandle">The number reference of the texture coordinate buffer on the GPU (default is 0).</param>
+    /// <param name="normalBufferHandle">The number reference of the normal buffer on the GPU (default is 0).</param>
+    /// <param name="elementBufferHandle">The number reference of the element buffer on the GPU (default is 0).</param>
     /// <param name="vertexCount">The number of verteces making up the mesh.</param>
     public StaticMesh(
       string filePath,
       string staticMeshId,
-      int vertexBufferId, 
-      int colorBufferId, 
-      int textureCoordinatesId, 
-      int normalBufferId,
-      int elementBufferId,
+      int vertexBufferHandle, 
+      int colorBufferHandle, 
+      int textureCoordinatesHandle, 
+      int normalBufferHandle,
+      int elementBufferHandle,
       int vertexCount)
     {
       _existingReferences = 0;
 
       _filePath = filePath;
-      _vertexBufferId = vertexBufferId;
-      _colorBufferId = colorBufferId;
-      _textureCoordinateBufferId = textureCoordinatesId;
-      _normalBufferId = normalBufferId;
-      _elementBufferId = elementBufferId;
+      _vertexBufferHandle = vertexBufferHandle;
+      _colorBufferHandle = colorBufferHandle;
+      _textureCoordinateBufferHandle = textureCoordinatesHandle;
+      _normalBufferHandle = normalBufferHandle;
+      _elementBufferHandle = elementBufferHandle;
       _vertexCount = vertexCount;
     }
   }

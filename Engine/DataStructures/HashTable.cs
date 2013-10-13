@@ -4,8 +4,8 @@ namespace Engine.DataStructures
 {
   public class HashTable<TKey, TValue>
   {
-    private LinkedListNode<Tuple<TKey, TValue>>[] _table
-        = new LinkedListNode<Tuple<TKey, TValue>>[107];
+    private LinkedListNode<Link<TKey, TValue>>[] _table
+        = new LinkedListNode<Link<TKey, TValue>>[107];
 
     private int _count = 0;
 
@@ -32,7 +32,7 @@ namespace Engine.DataStructures
       }
       set
       {
-        LinkedListNode<Tuple<TKey, TValue>> cell = Find(key, Hash(key));
+        LinkedListNode<Link<TKey, TValue>> cell = Find(key, Hash(key));
         if (cell == null)
         {
           value = default(TValue);
@@ -55,7 +55,7 @@ namespace Engine.DataStructures
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-      LinkedListNode<Tuple<TKey, TValue>> cell = Find(key, Hash(key));
+      LinkedListNode<Link<TKey, TValue>> cell = Find(key, Hash(key));
       if (cell == null)
       {
         value = default(TValue);
@@ -68,9 +68,9 @@ namespace Engine.DataStructures
       }
     }
 
-    private LinkedListNode<Tuple<TKey, TValue>> Find(TKey key, int loc)
+    private LinkedListNode<Link<TKey, TValue>> Find(TKey key, int loc)
     {
-      for (LinkedListNode<Tuple<TKey, TValue>> p = _table[loc];
+      for (LinkedListNode<Link<TKey, TValue>> p = _table[loc];
           p != null; p = p.Next)
       {
         if (p.Value.Left.Equals(key))
@@ -98,21 +98,20 @@ namespace Engine.DataStructures
         if (++_count > _table.Length * _maxLoadFactor &&
             _sizeIndex < _tableSizes.Length - 1)
         {
-          LinkedListNode<Tuple<TKey, TValue>>[] t = _table;
-          _table = new LinkedListNode<Tuple<TKey, TValue>>[_tableSizes[++_sizeIndex]];
+          LinkedListNode<Link<TKey, TValue>>[] t = _table;
+          _table = new LinkedListNode<Link<TKey, TValue>>[_tableSizes[++_sizeIndex]];
           for (int i = 0; i < t.Length; i++)
           {
             while (t[i] != null)
             {
-              LinkedListNode<Tuple<TKey, TValue>> cell
+              LinkedListNode<Link<TKey, TValue>> cell
                   = RemoveFirst(t, i);
               Add(cell, Hash(cell.Value.Left));
             }
           }
           location = Hash(key);
         }
-        LinkedListNode<Tuple<TKey, TValue>> p
-            = new LinkedListNode<Tuple<TKey, TValue>>(new Tuple<TKey, TValue>(key, value), null);
+        LinkedListNode<Link<TKey, TValue>> p = new LinkedListNode<Link<TKey, TValue>>(new Link<TKey, TValue>(key, value), null);
         //p.Value = new Tuple<TKey, TValue>(key, value);
         Add(p, location);
       }
@@ -122,7 +121,7 @@ namespace Engine.DataStructures
       }
     }
 
-    private void Add(LinkedListNode<Tuple<TKey, TValue>> cell, int location)
+    private void Add(LinkedListNode<Link<TKey, TValue>> cell, int location)
     {
       cell.Next = _table[location];
       _table[location] = cell;
@@ -147,10 +146,10 @@ namespace Engine.DataStructures
       throw new NotImplementedException("the dictionary removal is not yet written.");
     }
 
-    private LinkedListNode<Tuple<TKey, TValue>>
-        RemoveFirst(LinkedListNode<Tuple<TKey, TValue>>[] t, int i)
+    private LinkedListNode<Link<TKey, TValue>>
+        RemoveFirst(LinkedListNode<Link<TKey, TValue>>[] t, int i)
     {
-      LinkedListNode<Tuple<TKey, TValue>> first = t[i];
+      LinkedListNode<Link<TKey, TValue>> first = t[i];
       t[i] = first.Next;
       return first;
     }

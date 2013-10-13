@@ -56,14 +56,3 @@ C:\Users\Seven\Programming\SevenEngine\Engine\bin\Release\OpenTK.GLControl.xml
 C:\Users\Seven\Programming\SevenEngine\Engine\obj\Release\Engine.dll
 C:\Users\Seven\Programming\SevenEngine\Engine\obj\Release\Engine.pdb
 C:\Users\Seven\Programming\SevenEngine\Engine\obj\Release\Engine.csprojResolveAssemblyReference.cache
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\Engine.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\Engine.pdb
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.Compatibility.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.GLControl.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.Compatibility.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\bin\Release\OpenTK.GLControl.xml
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Release\Engine.dll
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Release\Engine.pdb
-C:\Users\Seven\Documents\GitHub\SevenEngine\Engine\obj\Release\Engine.csprojResolveAssemblyReference.cache

@@ -32,7 +32,7 @@ namespace Game
       // Use the static class "SoundManager"
 
       // Just keep this function here. I havn't finished the SoundManager class yet...
-      Output.Write("No sound effects currently loaded.");
+      Output.WriteLine("No sound effects currently loaded.");
     }
 
     public override void InitializeTextures()
@@ -43,7 +43,6 @@ namespace Game
       // Note: I only support ".bmp"files at the moment. Just pull non-bitmaps into any standard image editor and export them as bitmap files.
 
       TextureManager.LoadTexture("grass", Directory.GetCurrentDirectory() + @"\..\..\Assets\grass.bmp");
-      TextureManager.LoadTexture("terrain", Directory.GetCurrentDirectory() + @"\..\..\Assets\Terrain.bmp");
       TextureManager.LoadTexture("RedRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRangerBody.bmp");
       TextureManager.LoadTexture("BlueRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\BlueRangerBody.bmp");
       TextureManager.LoadTexture("PinkRanger", Directory.GetCurrentDirectory() + @"\..\..\Assets\PinkRangerBody.bmp");
@@ -69,8 +68,39 @@ namespace Game
       // LOAD SHADER FILES HERE.
       // Use the static class "ShaderManager"
 
+      // These basic shaders do not include lighting effects.
+      ShaderManager.LoadVertexShader("VertexShaderBasic", Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderBasic.VertexShader");
+      ShaderManager.LoadFragmentShader("FragmentShaderBasic", Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderBasic.FragmentShader");
+
+      // These Lambertian shaders include an algorithm for lighting.
+      // Warning!!! I'm still working on these shaders, but I thought I'd keep the example of how to load them.
+      ShaderManager.LoadVertexShader("VertexShaderLambertian", Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderLambertian.VertexShader");
+      ShaderManager.LoadFragmentShader("FragmentShaderLambertian", Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderLambertian.FragmentShader");
+
+      // LINK TOGETHER YOUR SHADERS HERE
+      // Use the static class "ShaderManager"
+
+      ShaderManager.MakeShaderProgram(
+        "ShaderProgramBasic", // What to name this shader program.
+        ShaderManager.GetVertexShader("VertexShaderBasic"), // The vertex shader to use.
+        ShaderManager.GetFragmentShader("FragmentShaderBasic"), // The fragment shader to use.
+        null, // The geometry shader to use.
+        null); // The extended geometry shader to use.
+
+      ShaderManager.MakeShaderProgram(
+        "ShaderProgramLambertian", // What to name this shader program.
+        ShaderManager.GetVertexShader("VertexShaderLambertian"), // The vertex shader to use.
+        ShaderManager.GetFragmentShader("FragmentShaderLambertian"), // The fragment shader to use.
+        null, // The geometry shader to use.
+        null); // The extended geometry shader to use.
+
+      // DONT FORGET TO SELECT YOUR SHADERS WHEN YOU WANT TO USE THEM
+      // Use the static class "ShaderManager"
+
+      ShaderManager.SetActiveShader(ShaderManager.GetShaderProgram("ShaderProgramLambertian"));
+
       // Just keep this function here. I havn't finished the ShaderManager class yet...
-      ShaderManager.AddShader();
+      //ShaderManager.AddShader();
     }
 
     public override void InitializeStates()

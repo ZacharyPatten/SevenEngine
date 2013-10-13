@@ -7,12 +7,18 @@ namespace Engine
 {
   public static class GraphicsSettingsManager
   {
+    // This is kinda hack-y, but some graphics setting need to be changed in the "GameWindow" class.
+    // Thus I either need to make a reference to every setting, or do like I'm doing at the moment and just reference the entire class.
+    private static GameWindow _sevenEngineWindow;
+
     private static bool _verticalSyncronization;
     private static Color _clearColor;
     private static bool _depthBuffer;
     private static bool _backFaceCulling;
     private static bool _texture2d;
     private static bool _blend;
+
+    public static void InitializeWindow(GameWindow sevenEngineWindow) { _sevenEngineWindow = sevenEngineWindow; }
 
     public static bool VerticalSyncronization
     { 
@@ -21,15 +27,15 @@ namespace Engine
       {
         if (value == true)
         {
-          //VSync = VSyncMode.On;
+          _sevenEngineWindow.VSync = VSyncMode.On;
           _verticalSyncronization = value;
-          Output.Write("Sorry, OpenTK does not yet support VSync;");
+          Output.WriteLine("Vertical Syncronization enabled;");
         }
         else
         {
-          //VSync = VSyncMode.Off;
+          _sevenEngineWindow.VSync = VSyncMode.Off;
           _verticalSyncronization = value;
-          Output.Write("Sorry, OpenTK does not yet support VSync;");
+          Output.WriteLine("Vertical Syncronization disabled;");
         }
       } 
     }
@@ -41,7 +47,7 @@ namespace Engine
       {
         GL.ClearColor((float)value.Red / 255f, (float)value.Green / 255f, (float)value.Blue / 255f, 1.0f);
         _clearColor = value;
-        Output.Write("Clear color set to: red " + value.Red + ", green " + value.Green + ", blue " + value.Blue + ";");
+        Output.WriteLine("Clear color set to: red " + value.Red + ", green " + value.Green + ", blue " + value.Blue + ";");
       } 
     }
 
@@ -54,13 +60,13 @@ namespace Engine
         {
           GL.Enable(EnableCap.DepthTest);
           _depthBuffer = value;
-          Output.Write("Depth buffer enabled;");
+          Output.WriteLine("Depth buffer enabled;");
         }
         else
         {
           GL.Disable(EnableCap.DepthTest);
           _depthBuffer = value;
-          Output.Write("Depth buffer disabled;");
+          Output.WriteLine("Depth buffer disabled;");
         }
       } 
     }
@@ -74,13 +80,13 @@ namespace Engine
         {
           GL.Enable(EnableCap.CullFace);
           _backFaceCulling = value;
-          Output.Write("Back face culling enabled;");
+          Output.WriteLine("Back face culling enabled;");
         }
         else
         {
           GL.Disable(EnableCap.CullFace);
           _backFaceCulling = value;
-          Output.Write("Back face culling disabled;");
+          Output.WriteLine("Back face culling disabled;");
         }
       } 
     }
@@ -94,13 +100,13 @@ namespace Engine
         {
           GL.Enable(EnableCap.Texture2D);
           _texture2d = value;
-          Output.Write("2D texture enabled;");
+          Output.WriteLine("2D texture enabled;");
         }
         else
         {
           GL.Disable(EnableCap.Texture2D);
           _texture2d = value;
-          Output.Write("2D texture disabled;");
+          Output.WriteLine("2D texture disabled;");
         }
       } 
     }
@@ -114,13 +120,13 @@ namespace Engine
         {
           GL.Enable(EnableCap.Blend);
           _blend = value;
-          Output.Write("2D texture enabled;");
+          Output.WriteLine("Alpha blanding enabled;");
         }
         else
         {
           GL.Disable(EnableCap.Blend);
           _blend = value;
-          Output.Write("2D texture disabled;");
+          Output.WriteLine("Alpha blanding disabled;");
         }
       } 
     }

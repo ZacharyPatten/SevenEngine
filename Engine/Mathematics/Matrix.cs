@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace Engine.Mathematics
 {
-  [Serializable]
   [StructLayout(LayoutKind.Sequential)]
   public struct Matrix
   {
