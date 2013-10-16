@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using Engine;
-using Engine.Imaging;
+//using Engine.Imaging;
 using Engine.Utilities;
 
 namespace Engine
@@ -30,6 +30,9 @@ namespace Engine
       BaseInitializeShaders();
       BaseInitializeStates();
 
+      TransformationManager.ScreenWidth = this.ClientSize.Width;
+      TransformationManager.ScreenHeight = this.ClientSize.Height;
+
       _timer = new PreciseTimer();
 
       Output.DecreaseIndent();
@@ -40,6 +43,8 @@ namespace Engine
     {
       base.OnResize(e);
       GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
+      TransformationManager.ScreenWidth = this.ClientSize.Width;
+      TransformationManager.ScreenHeight = this.ClientSize.Height;
     }
 
     /// <summary>Give the input manager a reference to the Keyboard from OpenTK.</summary>
@@ -122,7 +127,12 @@ namespace Engine
       // Update the state within the input manager
       InputManager.Update();
       // If "ESCAPE" is pressed then lets close the game
-      if (InputManager.EndProgramKey) { this.Exit(); return; }
+      if (InputManager.Escapepressed) { this.Exit(); return; }
+      if (InputManager.F1pressed)
+      {
+        if (this.WindowState == WindowState.Normal) this.WindowState = WindowState.Fullscreen;
+        else if (this.WindowState == WindowState.Fullscreen) this.WindowState = WindowState.Normal;
+      }
       StateManager.Update(_timer.GetElapsedTime());
       // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }

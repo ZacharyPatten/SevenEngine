@@ -4,31 +4,33 @@
 // - PriorityHeapDynamic
 //   - PriorityHeapDynamicException
 
-// This file contains runtime values.
-// All runtimes are in O-Notation. Here is a brief explanation:
+// This file contains runtime and space values.
+// All runtime and space values are in O-Notation. Here is a brief explanation:
 // - "O(x)": the member has an upper bound of runtime equation "x"
 // - "Omega(x)": the member has a lower bound of runtime equation "x"
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 //   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
-// Note that if the letter "n" is used, it typically means the current number of items within the set.
+// Notes:
+// - if the letter "n" is used, it typically means the current number of items within the structure
+// - the space values are located in the "remarks" of each constructor
+// - the runtimes are in simplified while the spaces are not simplified to be more specific with space allocation
 
 // Written by Seven (Zachary Aaron Patten)
 // Last Edited on date 10-12-13
 // Feel free to use this code in any manor you see fit.
 // However, please site me because I put quite a bit of time into it.
-// Special thanks to Rodney Howell, my previous data structures professor. 
+// Special thanks to Rodney Howell, my previous data structures professor.
 // - Thanks. :)
 
 using System;
 
 namespace Engine.DataStructures
 {
-
   #region PriorityHeapStatic
 
-  /// <summary>Implements a priority heap with static priorities using an array.</summary>
-  /// <typeparam name="Type">The type of item to be stored in this priority queue.</typeparam>
+  /// <summary>Implements a mutable priority heap with static priorities using an array.</summary>
+  /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags. 
   /// Seven (Zachary Patten) 10-12-13.</remarks>
   public class PriorityHeapStatic<Type>
@@ -50,11 +52,13 @@ namespace Engine.DataStructures
 
     /// <summary>Generates a priority queue with a capacity of the parameter. Runtime O(1).</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
-    /// <remarks>Runtime O(capacity).</remarks>
+    /// <remarks>Runtime: Theta(capacity). Space: Theta(capacity).</remarks>
     public PriorityHeapStatic(int capacity)
     {
       _queueArray = new Link<int, Type>[capacity + 1];
       _queueArray[0] = new Link<int, Type>(int.MaxValue, default(Type));
+      for (int i = 1; i < capacity; i ++)
+        _queueArray[0] = new Link<int, Type>(int.MinValue, default(Type));
       _count = 0;
     }
 
@@ -64,13 +68,14 @@ namespace Engine.DataStructures
     /// <remarks>Runtime O(ln(n)), Omega(1), EstAvg(ln(n)).</remarks>
     public void Enqueue(Type addition, int priority)
     {
-      if (_count < _queueArray.Length - 1)
-      {
-        _queueArray[_count + 1] = new Link<int, Type>(priority, addition);
-        ShiftUp(_count + 1);
-        _count++;
-      }
-      else throw new PriorityHeapStaticException("Attempting to add to a full priority queue.");
+      if (!(_count < _queueArray.Length - 1))
+        throw new PriorityHeapStaticException("Attempting to add to a full priority queue.");
+      _count++;
+      // Functionality Note: imutable or mutable (next three lines)
+      //_queueArray[_count + 1] = new Link<int, Type>(priority, addition);
+      _queueArray[_count].Left = priority;
+      _queueArray[_count].Right = addition;
+      ShiftUp(_count);
     }
 
     /// <summary>Dequeues the item with the highest priority.</summary>
@@ -151,8 +156,8 @@ namespace Engine.DataStructures
 
   #region PriorityHeapDynamic
 
-  /// <summary>Implements a priority heap with dynamic priorities using an array.</summary>
-  /// <typeparam name="Type">The type of item to be stored in this priority queue.</typeparam>
+  /// <summary>Implements a mutable priority heap with dynamic priorities using an array and a hash table.</summary>
+  /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
   public class PriorityHeapDynamic<Type>
@@ -166,7 +171,7 @@ namespace Engine.DataStructures
     public int Capacity { get { return _queueArray.Length - 1; } }
 
     /// <summary>The number of items in the queue.</summary
-    /// <remarks>Runtime O(1).</remarks>
+    /// <remarks>Runtime: O(1).</remarks>
     public int Count { get { return _count; } }
 
     /// <summary>True if full, false if there is still room.</summary>
@@ -175,12 +180,14 @@ namespace Engine.DataStructures
 
     /// <summary>Generates a priority queue with a capacity of the parameter.</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
-    /// <remarks>Runtime Theta(capacity).</remarks>
+    /// <remarks>Runtime Theta(capacity). Space: Theta(capacity + n).</remarks>
     public PriorityHeapDynamic(int capacity)
     {
       _indexingReference = new HashTable<Type, int>();
       _queueArray = new Link<int, Type>[capacity + 1];
       _queueArray[0] = new Link<int, Type>(int.MaxValue, default(Type));
+      for (int i = 1; i < capacity; i++)
+        _queueArray[0] = new Link<int, Type>(int.MinValue, default(Type));
       _count = 0;
     }
 
@@ -190,15 +197,16 @@ namespace Engine.DataStructures
     /// <remarks>Runtime O(n), Omega(1), EstAvg(ln(n)).</remarks>
     public void Enqueue(Type addition, int priority)
     {
-      if (_count < _queueArray.Length - 1)
-      {
-        _queueArray[_count + 1] = new Link<int, Type>(priority, addition);
-        // Runtime Note: O(n) cause by hash table addition
-        _indexingReference.Add(addition, _count + 1);
-        ShiftUp(_count + 1);
-        _count++;
-      }
-      else throw new PriorityHeapDynamicException("Attempting to add to a full priority queue.");
+      if (!(_count < _queueArray.Length - 1))
+        throw new PriorityHeapDynamicException("Attempting to add to a full priority queue.");
+      _count++;
+      // Functionality Note: imutable or mutable (next three lines)
+      //_queueArray[_count + 1] = new Link<int, Type>(priority, addition);
+      _queueArray[_count].Left = priority;
+      _queueArray[_count].Right = addition;
+      // Runtime Note: O(n) cause by hash table addition
+      _indexingReference.Add(addition, _count);
+      ShiftUp(_count);
     }
 
     /// <summary>This lets you peek at the top priority WITHOUT REMOVING it.</summary>

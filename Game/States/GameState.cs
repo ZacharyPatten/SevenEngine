@@ -18,6 +18,7 @@ namespace Game.States
     StaticModel _blueRanger;
     StaticModel _blackRanger;
     StaticModel _yellowRanger;
+    StaticModel _RedRangerTwo;
 
     public GameState()
     {
@@ -28,42 +29,43 @@ namespace Game.States
       _camera.Move(_camera.Backward, 300);
       TransformationManager.CurrentCamera = _camera;
 
-      _terrain = new StaticModel();
-      _terrain.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("grass"), StaticModelManager.Get("terrain")));
+      _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
       _terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
-      _redRanger = new StaticModel();
-      _redRanger.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("RedRanger"), StaticModelManager.Get("RedRanger")));
+      _redRanger = StaticModelManager.GetModel("RedRanger");
       _redRanger.RotationAmmounts = new Vector(0, 1, 0);
       _redRanger.RotationAngle = 180f;
       _redRanger.Scale = new Vector(5, 5, 5);
       _redRanger.Position = new Vector(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
-      _yellowRanger = new StaticModel();
-      _yellowRanger.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("YellowRanger"), StaticModelManager.Get("RedRanger")));
+      _yellowRanger = StaticModelManager.GetModel("YellowRanger");
       _yellowRanger.RotationAmmounts = new Vector(0, 1, 1);
       _yellowRanger.Scale = new Vector(10, 10, 10);
       _yellowRanger.Position = new Vector(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
-      _blackRanger = new StaticModel();
-      _blackRanger.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("BlackRanger"), StaticModelManager.Get("RedRanger")));
+      _blackRanger = StaticModelManager.GetModel("BlackRanger");
       _blackRanger.RotationAmmounts = new Vector(1, 1, 0);
       _blackRanger.Scale = new Vector(10, 10, 10);
       _blackRanger.Position = new Vector(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
 
-      _blueRanger = new StaticModel();
-      _blueRanger.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("BlueRanger"), StaticModelManager.Get("RedRanger")));
+      _blueRanger = StaticModelManager.GetModel("BlueRanger");
       _blueRanger.RotationAmmounts = new Vector(0, 1, 2);
       _blueRanger.Scale = new Vector(10, 10, 10);
       _blueRanger.Position = new Vector(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
-      _pinkRanger = new StaticModel();
-      _pinkRanger.Meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get("PinkRanger"), StaticModelManager.Get("RedRanger")));
+      _pinkRanger = StaticModelManager.GetModel("PinkRanger");
       _pinkRanger.RotationAmmounts = new Vector(0, 1, 0);
       _pinkRanger.Scale = new Vector(10, 10, 10);
       _pinkRanger.Position = new Vector(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
+
+
+      _RedRangerTwo = StaticModelManager.GetModel("RedRangerSeven");
+      _RedRangerTwo.RotationAmmounts = new Vector(0, 1, 0);
+      _RedRangerTwo.Scale = new Vector(20, 20, 20);
+      _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
+
     }
 
     public void Render()
@@ -77,6 +79,7 @@ namespace Game.States
       Renderer.DrawStaticModel(_camera, _blackRanger);
       Renderer.DrawStaticModel(_camera, _pinkRanger);
       Renderer.DrawStaticModel(_camera, _yellowRanger);
+      Renderer.DrawStaticModel(_camera, _RedRangerTwo);
     }
 
     public void Update(double elapsedTime)
@@ -91,6 +94,9 @@ namespace Game.States
         _blueRanger.RotationAngle += 400;
         _pinkRanger.RotationAngle += 300;
       }
+
+      _RedRangerTwo.RotationAngle++;
+      _RedRangerTwo.RotationAngle++;
 
       _yellowRanger.RotationAngle++;
       _blackRanger.RotationAngle++;

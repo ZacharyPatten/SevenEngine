@@ -103,13 +103,22 @@ namespace Engine
         public double PositionSpeed { get { return _positionSpeed; } set { _positionSpeed = value; } }
         public double LookSpeed { get { return _lookSpeed; } set { _lookSpeed = value; } }
 
+        //public Vector Position { get { return _position; } set { _position = value; } }
+        //public Vector Forward { get { return _forward; } set { _forward = value; } }
+        //public Vector Up { get { return _up; } set { _up = value; } }
+
+        //public Vector Backward { get { return -_forward; } }
+        //public Vector Right { get { return _up.CrossProduct(_forward.Normalise()); } }
+        //public Vector Left { get { return _forward.CrossProduct(_up.Normalise()); } }
+        //public Vector Down { get { return -_up; } }
+
         public Vector Position { get { return _position; } set { _position = value; } }
         public Vector Forward { get { return _forward; } set { _forward = value; } }
         public Vector Up { get { return _up; } set { _up = value; } }
 
         public Vector Backward { get { return -_forward; } }
-        public Vector Right { get { return _up.CrossProduct(_forward.Normalise()); } }
-        public Vector Left { get { return _forward.CrossProduct(_up.Normalise()); } }
+        public Vector Right { get { return _up.CrossProduct(_forward).Normalise(); } }
+        public Vector Left { get { return _forward.CrossProduct(_up).Normalise(); } }
         public Vector Down { get { return -_up; } }
 
 	    public Camera()

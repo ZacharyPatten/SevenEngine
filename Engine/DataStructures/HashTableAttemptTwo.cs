@@ -174,21 +174,14 @@ namespace Engine.DataStructures
     public virtual bool ContainsValue(Object value)
     {
       if (value == null)
-      {
         for (int i = _buckets.Length; --i >= 0; )
-        {
           if (_buckets[i].key != null && _buckets[i].key != _buckets && _buckets[i].value == null)
             return true;
-        }
-      }
       else
-      {
-        for (int i = _buckets.Length; --i >= 0; )
-        {
-          Object val = _buckets[i].value;
-          if (val != null && val.Equals(value)) return true;
-        }
-      }
+        // I had to use "j" vs "i" here because the compiler apparently cant determine scope without brackets
+        for (int j = _buckets.Length; --j >= 0; )
+          if (_buckets[j].value != null && _buckets[j].value.Equals(value))
+            return true;
       return false;
     }
 
@@ -327,15 +320,7 @@ namespace Engine.DataStructures
     // Internal method to get the hash code for an Object.  This will call
     // GetHashCode() on each object if you haven't provided an IHashCodeProvider
     // instance.  Otherwise, it calls hcp.GetHashCode(obj).
-    protected virtual int GetHash(Object key)
-    {
-      return key.GetHashCode();
-    }
-
-    public virtual bool IsFixedSize
-    {
-      get { return false; }
-    }
+    protected virtual int GetHash(Object key) { return key.GetHashCode(); }
 
     // Internal method to compare two keys.  If you have provided an IComparer
     // instance in the constructor, this method will call comparer.Compare(item, key).
@@ -352,7 +337,7 @@ namespace Engine.DataStructures
     }
 
     /// <summary>Adds an entry with the given key and value to this hashtable.</summary>
-    /// <param name="key">The left value of the entry.</param>plk]opkdfkgopdkgvlksdfgskldfg'ksdfkgsd';flgk'sd;flkgs';lkf
+    /// <param name="key">The left value of the entry.</param>
     /// <param name="value">The right value of the entry.</param>
     public virtual void Add(Object key, Object value) { Insert(key, value, true); }
 

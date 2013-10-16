@@ -221,7 +221,6 @@ namespace Engine
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
       GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
 
-
       foreach (Link<Texture, StaticMesh> link in staticModel.Meshes)
       {
         // If there is no vertex buffer, nothing will render anyway, so we can stop it now.

@@ -21,7 +21,7 @@ namespace Engine
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    public static VertexShader GetVertexShader(string shaderId)
+    internal static VertexShader GetVertexShader(string shaderId)
     {
       VertexShader shader = _vertexShaderDatabase[shaderId];
       shader.ExistingReferences++;
@@ -31,7 +31,7 @@ namespace Engine
     /// <summary>Get a fragment shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    public static FragmentShader GetFragmentShader(string shaderId)
+    internal static FragmentShader GetFragmentShader(string shaderId)
     {
       FragmentShader shader = _fragmentShaderDatabase[shaderId];
       shader.ExistingReferences++;
@@ -41,7 +41,7 @@ namespace Engine
     /// <summary>Get a geometry shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    public static GeometryShader GetGeometryShader(string shaderId)
+    internal static GeometryShader GetGeometryShader(string shaderId)
     {
       GeometryShader shader = _geometryShaderDatabase[shaderId];
       shader.ExistingReferences++;
@@ -51,7 +51,7 @@ namespace Engine
     /// <summary>Get an extended geometry shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    public static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
+    internal static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
     {
       ExtendedGeometryShader shader = _extendedGeometryShaderDatabase[shaderId];
       shader.ExistingReferences++;
@@ -61,7 +61,7 @@ namespace Engine
     /// <summary>Get a shader program that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    public static ShaderProgram GetShaderProgram(string shaderId)
+    internal static ShaderProgram GetShaderProgram(string shaderId)
     {
       ShaderProgram shaderProgram = _shaderProgramDatabase[shaderId];
       shaderProgram.ExistingReferences++;
@@ -200,10 +200,10 @@ namespace Engine
 
     public static bool MakeShaderProgram(
       string programId,
-      VertexShader vertexShader,
-      FragmentShader fragmentShader,
-      GeometryShader geometryShader,
-      ExtendedGeometryShader extendedGeometryShader)
+      string vertexShaderId,
+      string fragmentShaderId,
+      string geometryShaderId,
+      string extendedGeometryShaderId)
     {
       int programHandle;
 
@@ -211,26 +211,26 @@ namespace Engine
       programHandle = GL.CreateProgram();
 
       // Link the desired shaders to complete the shader program on the GPU.
-      if (vertexShader != null)
-        GL.AttachShader(programHandle, vertexShader.Handle);
-      if (fragmentShader != null)
-        GL.AttachShader(programHandle, fragmentShader.Handle);
-      if (geometryShader != null)
-        GL.AttachShader(programHandle, geometryShader.Handle);
-      if (extendedGeometryShader != null)
-        GL.AttachShader(programHandle, extendedGeometryShader.Handle);
+      if (vertexShaderId != null)
+        GL.AttachShader(programHandle, GetVertexShader(vertexShaderId).Handle);
+      if (fragmentShaderId != null)
+        GL.AttachShader(programHandle, GetFragmentShader(fragmentShaderId).Handle);
+      if (geometryShaderId != null)
+        GL.AttachShader(programHandle, GetGeometryShader(geometryShaderId).Handle);
+      if (extendedGeometryShaderId != null)
+        GL.AttachShader(programHandle, GetExtendedGeometryShader(extendedGeometryShaderId).Handle);
 
       // Call for OpenGL to link the program together
       GL.LinkProgram(programHandle);
 
       // Check for errors
       string programError = GL.GetProgramInfoLog(programHandle);
-      if (programError == "" || programError == "No errors\n")
-      {
-        Output.WriteLine("ERROR creating shader program: \"" + programId + "\";");
-        Output.WriteLine(programError);
-        return false;
-      }
+      //if (programError == "" || programError == "No errors\n")
+      //{
+        //Output.WriteLine("ERROR creating shader program: \"" + programId + "\";");
+        //Output.WriteLine(programError);
+        //return false;
+      //}
 
       // The program has been successfully created. Add it to the database so we can use it.
       _shaderProgramDatabase.Add(programId, new ShaderProgram(programId, programHandle));
@@ -249,76 +249,9 @@ namespace Engine
         return false;
       }
 
-      GL.UseProgram(_shaderProgramDatabase[shaderProgramId].Handle);
+      GL.UseProgram(GetShaderProgram(shaderProgramId).Handle);
       Output.WriteLine("Shader program activated: \"" + shaderProgramId + "\";");
       return true;
     }
-
-    /// <summary>Sets the currently active shader program by passing in a reference to a created shader program.</summary>
-    /// <param name="shaderProgram">A reference to the shader program you want to be active.</param>
-    /// <returns>If the shader selection was successful. (true if success, false if unsuccessful)</returns>
-    public static bool SetActiveShader(ShaderProgram shaderProgram)
-    {
-      GL.UseProgram(shaderProgram.Handle);
-      return true;
-    }
-
-    /*public static void AddShader()
-    {
-      GL.UseProgram(CompileShaders());
-    }
-
-    private static int CompileShaders()
-    {
-      string vShader;
-      string fShader;
-
-      // Store the file in string variables to be sent and compiled on the GPU.
-      using (StreamReader reader = new StreamReader(Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderBasic.VertexShader")) { vShader = reader.ReadToEnd(); }
-      using (StreamReader reader = new StreamReader(Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderBasic.FragmentShader")) { fShader = reader.ReadToEnd(); }
-
-      int programHandle, vHandle, fHandle;
-      vHandle = GL.CreateShader(ShaderType.VertexShader);
-      fHandle = GL.CreateShader(ShaderType.FragmentShader);
-      GL.ShaderSource(vHandle, vShader);
-      GL.ShaderSource(fHandle, fShader);
-      GL.CompileShader(vHandle);
-      GL.CompileShader(fHandle);
-
-      // Check for compiler errors
-      string[] vShaderSplit = vShader.Split('\\');
-      string vertexCompilationError = GL.GetShaderInfoLog(vHandle);
-      if (vertexCompilationError != "")
-      {
-        Output.WriteLine("ERROR loading shader \"" + vShaderSplit[vShaderSplit.Length - 1] + "\";");
-        Output.WriteLine(vertexCompilationError);
-      }
-      else
-        Output.WriteLine("Shader file compiled \"" + vShaderSplit[vShaderSplit.Length - 1] + "\";");
-
-      string[] fShaderSplit = fShader.Split('\\');
-      string fragmentCompilationError = GL.GetShaderInfoLog(fHandle);
-      if (fragmentCompilationError != "")
-      {
-        Output.WriteLine("ERROR loading shader \"" + fShaderSplit[fShaderSplit.Length - 1] + "\";");
-        Output.WriteLine(fragmentCompilationError);
-      }
-      else
-        Output.WriteLine("Shader file loaded \"" + fShaderSplit[fShaderSplit.Length - 1] + "\";");
-
-      // Generate the shader program
-      programHandle = GL.CreateProgram();
-
-      // Link the desired shaders to complete the shader program on the GPU.
-      GL.AttachShader(programHandle, vHandle);
-      GL.AttachShader(programHandle, fHandle);
-      GL.LinkProgram(programHandle);
-      Console.Write(GL.GetProgramInfoLog(programHandle));
-
-      Output.WriteLine("Basic Vertex Shader Selected;");
-      Output.WriteLine("Basic Fragment Shader Selected;");
-
-      return programHandle;
-    }*/
   }
 }

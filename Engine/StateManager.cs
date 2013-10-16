@@ -62,10 +62,7 @@ namespace Engine
     /// <summary>Checks if a state exists (an example could be if a specific menu is already loaded then use it; if not then it needs to be loaded first).</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     /// <returns>"true if the state exists. "false""</returns>
-    public static bool StateExists(string stateId)
-    {
-      return _stateDatabase.ContainsKey(stateId);
-    }
+    public static bool StateExists(string stateId) { return _stateDatabase.ContainsKey(stateId); }
   }
 
   internal class StateSystemException : Exception

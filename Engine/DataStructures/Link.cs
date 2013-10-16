@@ -1,20 +1,26 @@
 ﻿// This file contains the following classes:
-// - Link
+// - PriorityHeapStatic
+//   - PriorityHeapStaticException
+// - PriorityHeapDynamic
+//   - PriorityHeapDynamicException
 
-// This file contains runtime values.
-// All runtimes are in O-Notation. Here is a breif explanation:
+// This file contains runtime and space values.
+// All runtime and space values are in O-Notation. Here is a brief explanation:
 // - "O(x)": the member has an upper bound of runtime equation "x"
 // - "Omega(x)": the member has a lower bound of runtime equation "x"
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 //   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
-// Note that if the letter "n" is used, it typically means the current number of items within the set.
+// Notes:
+// - if the letter "n" is used, it typically means the current number of items within the structure
+// - the space values are located in the "remarks" of each constructor
+// - the runtimes are in simplified while the spaces are not simplified to be more specific with space allocation
 
 // Written by Seven (Zachary Aaron Patten)
 // Last Edited on date 10-12-13
 // Feel free to use this code in any manor you see fit.
 // However, please site me because I put quite a bit of time into it.
-// Special thanks to Rodney Howell, my previous data structures professor. 
+// Special thanks to Rodney Howell, my previous data structures professor.
 // - Thanks. :)
 
 namespace Engine.DataStructures
@@ -37,7 +43,7 @@ namespace Engine.DataStructures
     /// <summary>Creates a link between two objects.</summary>
     /// <param name="left">The left item to be linked.</param>
     /// <param name="right">The right item to be linked.</param>
-    /// <remarks>Runtime: O(1).</remarks>
+    /// <remarks>Runtime: O(1). Space: Theta(2).</remarks>
     public Link(LeftItem left, RightItem right)
     {
       _left = left;

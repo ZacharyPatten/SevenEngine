@@ -75,11 +75,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataStructures\AvlTree.cs" />
     <Compile Include="DataStructures\HashTableAttemptTwo.cs" />
     <Compile Include="DataStructures\PriorityHeap.cs" />
     <Compile Include="DataStructures\Octree.cs" />
     <Compile Include="DataStructures\OctreeJava.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
+    <Compile Include="DataStructures\Interfaces\IStringId.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
@@ -97,7 +99,6 @@
     <Compile Include="DataStructures\DoublyLinkedListNode.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\LinkedListNode.cs" />
-    <Compile Include="DataStructures\PriorityHeapOld.cs" />
     <Compile Include="DataStructures\QueueNode.cs" />
     <Compile Include="DataStructures\Link.cs" />
     <Compile Include="Mathematics\Matrix.cs" />

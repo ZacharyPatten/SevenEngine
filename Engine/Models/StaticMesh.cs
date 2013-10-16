@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
+using Engine.Imaging;
+
 namespace Engine.Models
 {
   [StructLayout(LayoutKind.Sequential)]
@@ -20,21 +22,21 @@ namespace Engine.Models
     public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
 
     /// <summary>Holds the filepath of the imported file.</summary>
-    public string FilePath { get { return _filePath; } set { _filePath = value; } }
+    internal string FilePath { get { return _filePath; } set { _filePath = value; } }
     /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>
-    public string StaticMeshId { get { return _staticMeshId; } set { _staticMeshId = value; } }
+    internal string StaticMeshId { get { return _staticMeshId; } set { _staticMeshId = value; } }
     /// <summary>The handle of the vertex buffer on the GPU.</summary>
-    public int VertexBufferHandle { get { return _vertexBufferHandle; } set { _vertexBufferHandle = value; } }
+    internal int VertexBufferHandle { get { return _vertexBufferHandle; } set { _vertexBufferHandle = value; } }
     /// <summary>The location of the color buffer on the GPU.</summary>
-    public int ColorBufferHandle { get { return _colorBufferHandle; } set { _colorBufferHandle = value; } }
+    internal int ColorBufferHandle { get { return _colorBufferHandle; } set { _colorBufferHandle = value; } }
     /// <summary>The location of the texture coordinate buffer on the GPU.</summary>
-    public int TextureCoordinateBufferHandle { get { return _textureCoordinateBufferHandle; } set { _textureCoordinateBufferHandle = value; } }
+    internal int TextureCoordinateBufferHandle { get { return _textureCoordinateBufferHandle; } set { _textureCoordinateBufferHandle = value; } }
     /// <summary>The location of the normal buffer on the GPU.</summary>
-    public int NormalBufferHandle { get { return _normalBufferHandle; } set { _normalBufferHandle = value; } }
+    internal int NormalBufferHandle { get { return _normalBufferHandle; } set { _normalBufferHandle = value; } }
     /// <summary>The location of the element buffer on the GPU.</summary>
-    public int ElementBufferHandle { get { return _elementBufferHandle; } set { _elementBufferHandle = value; } }
+    internal int ElementBufferHandle { get { return _elementBufferHandle; } set { _elementBufferHandle = value; } }
     /// <summary>The number of verteces in this model.</summary>
-    public int VertexCount { get { return _vertexCount; } set { _vertexCount = value; } }
+    internal int VertexCount { get { return _vertexCount; } set { _vertexCount = value; } }
 
 
     /// <summary>Creates an instance of a StaticMesh.</summary>

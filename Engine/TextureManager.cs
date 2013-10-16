@@ -19,13 +19,21 @@ namespace Engine
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
     public static int Count { get { return _textureDatabase.Count; } }
 
+    /// <summary>Checks to see if a texture id exists.</summary>
+    /// <param name="textureId"></param>
+    /// <returns></returns>
+    internal static bool TextureExists(string textureId)
+    {
+      return _textureDatabase.ContainsKey(textureId);
+    }
+
     /// <summary>Pull out a reference to a texture.</summary>
     /// <param name="textureId">The name associated with the texture (what you caled it when you added it).</param>
     /// <returns>A reference to the desired texture.</returns>
-    public static Texture Get(string textureId)
+    internal static Texture Get(string textureId)
     {
       Texture texture = _textureDatabase[textureId];
-      texture.ExistingReferences++;
+      //texture.ExistingReferences++;
       return texture;
     }
 
