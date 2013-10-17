@@ -19,6 +19,7 @@ namespace Engine
   public static class Renderer
   {
     private static SpriteBatch _batch = new SpriteBatch();
+    private static HeapArrayStatic<StaticModel> _staticModelBatch = new HeapArrayStatic<StaticModel>(100000);
 
     private static int _currentTextureId = -1;
 
@@ -218,8 +219,8 @@ namespace Engine
 
       // Apply the world transformation due to the mesh's position, scale, and rotation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
-      GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
       GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
+      GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       foreach (Link<Texture, StaticMesh> link in staticModel.Meshes)
       {
@@ -311,9 +312,22 @@ namespace Engine
       }
     }
 
+    public static void AddStaticModel(StaticModel model)
+    {
+      _staticModelBatch.Enqueue(
+        model,
+        (int)Math.Sqrt(
+        Math.Pow(TransformationManager.CurrentCamera.Position.X - model.Position.X, 2) +
+        Math.Pow(TransformationManager.CurrentCamera.Position.Y - model.Position.Y, 2) +
+        Math.Pow(TransformationManager.CurrentCamera.Position.Z - model.Position.Z, 2)));
+    }
+
     public static void Render()
     {
-      _batch.Draw();
+      //_batch.Draw();
+      StaticModel model = _staticModelBatch.Dequeue();
+      while (_staticModelBatch.Count > 0)
+        DrawStaticModel(TransformationManager.CurrentCamera, _staticModelBatch.Dequeue());
     }
 
     public static void DrawText(Text text)

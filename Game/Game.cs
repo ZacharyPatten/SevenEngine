@@ -4,6 +4,7 @@ using Engine;
 using Game.States;
 using Engine.Imaging;
 using Engine.DataStructures;
+using Engine.Shaders;
 
 namespace Game
 {
@@ -146,11 +147,11 @@ namespace Game
     {
       // LOAD THE GAME STATES HERE
       // Use the static class "StateManager"
-
-      //StateManager.AddState("multipleModelState", new MultipleModelState(Keyboard));
-      //StateManager.ChangeState("multipleModelState");
+      
       StateManager.AddState("gameState", new GameState());
-      StateManager.ChangeState("gameState");
+      StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
+      //StateManager.ChangeState("gameState");
+      StateManager.ChangeState("priorityHeapTesting");
     }
   }
 }

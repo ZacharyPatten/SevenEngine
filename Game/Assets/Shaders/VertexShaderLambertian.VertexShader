@@ -3,7 +3,8 @@ varying vec4 pos;
 varying vec4 rawpos;
 
 void main() {
-  normal = gl_NormalMatrix * gl_Normal;
+  //normal = gl_NormalMatrix * gl_Normal;
+  normal = gl_ModelViewMatrix * gl_Normal;
   gl_Position = ftransform();
   pos = gl_ModelViewMatrix * gl_Vertex;
   rawpos = gl_Vertex;

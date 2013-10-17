@@ -75,13 +75,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithms\Sorting.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
-    <Compile Include="DataStructures\HashTableAttemptTwo.cs" />
-    <Compile Include="DataStructures\PriorityHeap.cs" />
+    <Compile Include="DataStructures\Heap.cs" />
+    <Compile Include="DataStructures\List.cs" />
     <Compile Include="DataStructures\Octree.cs" />
-    <Compile Include="DataStructures\OctreeJava.cs" />
+    <Compile Include="DataStructures\Queue.cs" />
+    <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
-    <Compile Include="DataStructures\Interfaces\IStringId.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
@@ -95,11 +96,7 @@
     <Compile Include="Models\Utilities\SkyBox.cs" />
     <Compile Include="Imaging\SpriteBatch.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="DataStructures\DoublyLinkedList.cs" />
-    <Compile Include="DataStructures\DoublyLinkedListNode.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
-    <Compile Include="DataStructures\LinkedListNode.cs" />
-    <Compile Include="DataStructures\QueueNode.cs" />
     <Compile Include="DataStructures\Link.cs" />
     <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Models\Bone.cs" />

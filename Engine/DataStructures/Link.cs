@@ -1,8 +1,6 @@
 ﻿// This file contains the following classes:
-// - PriorityHeapStatic
-//   - PriorityHeapStaticException
-// - PriorityHeapDynamic
-//   - PriorityHeapDynamicException
+// - Link
+// This file has no external dependencies (other than "System" from .Net Framework).
 
 // This file contains runtime and space values.
 // All runtime and space values are in O-Notation. Here is a brief explanation:
@@ -20,11 +18,12 @@
 // Last Edited on date 10-12-13
 // Feel free to use this code in any manor you see fit.
 // However, please site me because I put quite a bit of time into it.
-// Special thanks to Rodney Howell, my previous data structures professor.
 // - Thanks. :)
 
 namespace Engine.DataStructures
 {
+  #region Link
+
   /// <summary>Creates a link between two objects. (you may recognize this as a tuple)</summary>
   /// <typeparam name="LeftItem">The type of the left item to be linked.</typeparam>
   /// <typeparam name="RightItem">The type of the right item to be linked.</typeparam>
@@ -50,4 +49,6 @@ namespace Engine.DataStructures
       _right = right;
     }
   }
+
+  #endregion
 }

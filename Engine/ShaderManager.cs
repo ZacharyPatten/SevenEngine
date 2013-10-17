@@ -6,6 +6,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using Engine.Shaders;
+using Engine.DataStructures;
 
 namespace Engine
 {
@@ -16,7 +17,8 @@ namespace Engine
     private static Dictionary<string, GeometryShader> _geometryShaderDatabase = new Dictionary<string, GeometryShader>();
     private static Dictionary<string, ExtendedGeometryShader> _extendedGeometryShaderDatabase = new Dictionary<string, ExtendedGeometryShader>();
 
-    private static Dictionary<string, ShaderProgram> _shaderProgramDatabase = new Dictionary<string, ShaderProgram>();
+    //private static Dictionary<string, ShaderProgram> _shaderProgramDatabase = new Dictionary<string, ShaderProgram>();
+    private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree<ShaderProgram>();
 
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
@@ -63,7 +65,9 @@ namespace Engine
     /// <returns>The shader if it exists.</returns>
     internal static ShaderProgram GetShaderProgram(string shaderId)
     {
-      ShaderProgram shaderProgram = _shaderProgramDatabase[shaderId];
+      //ShaderProgram shaderProgram = _shaderProgramDatabase[shaderId];
+      ShaderProgram shaderProgram = _shaderProgramDatabase.Get(shaderId);
+
       shaderProgram.ExistingReferences++;
       return shaderProgram;
     }
@@ -243,11 +247,11 @@ namespace Engine
     /// <returns>If the shader selection was successful. (true if success, false if unsuccessful)</returns>
     public static bool SetActiveShader(string shaderProgramId)
     {
-      if (!_shaderProgramDatabase.ContainsKey(shaderProgramId))
-      {
-        Output.WriteLine("ERROR activating shader program: \"" + shaderProgramId + "\";");
-        return false;
-      }
+      //if (!_shaderProgramDatabase.ContainsKey(shaderProgramId))
+      //{
+        //Output.WriteLine("ERROR activating shader program: \"" + shaderProgramId + "\";");
+        //return false;
+      //}
 
       GL.UseProgram(GetShaderProgram(shaderProgramId).Handle);
       Output.WriteLine("Shader program activated: \"" + shaderProgramId + "\";");

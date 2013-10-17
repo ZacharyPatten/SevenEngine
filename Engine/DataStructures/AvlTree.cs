@@ -1,456 +1,317 @@
-﻿//// This file contains the following classes:
-//// - AvlTreeArray
+﻿// This file contains the following classes:
+// - AvlTree
+//   - AvlTreeNode
+//   - AvlTreeException
+// This file has no external dependencies (other than "System" from .Net Framework).
 
-//// This file contains runtime values.
-//// All runtimes are in O-Notation. Here is a brief explanation:
-//// - "O(x)": the member has an upper bound of runtime equation "x"
-//// - "Omega(x)": the member has a lower bound of runtime equation "x"
-//// - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
-//// - "EstAvg(x)": the runtime equation "x" to typically expect
-////   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
-//// Note that if the letter "n" is used, it typically means the current number of items within the set.
+// This file contains runtime values.
+// All runtimes are in O-Notation. Here is a brief explanation:
+// - "O(x)": the member has an upper bound of runtime equation "x"
+// - "Omega(x)": the member has a lower bound of runtime equation "x"
+// - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
+// - "EstAvg(x)": the runtime equation "x" to typically expect
+//   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
+// Note that if the letter "n" is used, it typically means the current number of items within the set.
 
-//// Written by Seven (Zachary Aaron Patten)
-//// Last Edited on date 10-12-13
-//// Feel free to use this code in any manor you see fit.
-//// However, please site me because I put quite a bit of time into it.
-//// Special thanks to Rodney Howell, my previous data structures professor.
-//// - Thanks. :)
+// Written by Seven (Zachary Aaron Patten)
+// Last Edited on date 10-12-13
+// Feel free to use this code in any manor you see fit.
+// However, please site me because I put quite a bit of time into it.
+// - Thanks. :)
 
-//using System;
+using System;
 
-//using Engine.DataStructures.Interfaces;
+namespace Engine.DataStructures
+{
+  #region AvlTree
 
-//namespace Engine.DataStructures
-//{
-//  #region AvlTreeArray
+  /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
+  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags. 
+  /// Seven (Zachary Patten) 10-12-13. Special Thanks to Nick Boen for providing the removal methods.</remarks>
+  public class AvlTree<Type>
+  {
+    #region AvlTreeNode
 
-//  public class AvlTreeArray
-//  {
-//    private Link<IStringId, int>[] _avlTree;
-//    private int _count;
-//    private int _capacity;
+    /// <summary>This class just holds the data for each individual node of the tree.</summary>
+    private class AvlTreeNode
+    {
+      private string _id;
+      private Type _value;
+      private AvlTreeNode _leftChild;
+      private AvlTreeNode _rightChild;
+      private int _height;
 
-//    public int Count { get { return _count; } }
-//    public int Capacity { get { return _capacity; } }
-//    public bool IsEmpty { get { return _count == 0; } }
+      internal string Id { get { return _id; } set { _id = value; } }
+      internal Type Value { get { return _value; } set { _value = value; } }
+      internal AvlTreeNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
+      internal AvlTreeNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
+      internal int Height { get { return _height; } set { _height = value; } }
 
-//    public IStringId Find(string name) { return Find(name, 1); }
+      internal AvlTreeNode(string id, Type value, AvlTreeNode leftChild, AvlTreeNode rightChild, int height)
+      {
+        _id = id;
+        _value = value;
+        _leftChild = leftChild;
+        _rightChild = rightChild;
+        _height = height;
+      }
+    }
 
-//    public AvlTreeArray(int capacity)
-//    {
-//      _capacity = capacity;
-//      // Due to the nature of an AVL tree, the actual capacity must be a power of 2
-//      capacity = NextPowerOfTwo(capacity);
-//      _avlTree = new Link<IStringId, int>[capacity];
-//    }
+    #endregion
 
-//    /// <summary>Finds the first power of two greater than or equal to "minimum."</summary>
-//    /// <param name="minimum">The minimum bound.</param>
-//    /// <returns>The first power of two greater than or equal to "minimum."</returns>
-//    /// <remarks>Runtime: Theta(ln(minimum)).</remarks>
-//    private int NextPowerOfTwo(int minimum)
-//    {
-//      if (minimum > Int32.MaxValue / 2)
-//        throw new Exception("Attempting to construct an AVL Tree of too large size: " + minimum + ".");
-//      int nextPowerOfTwo = 2;
-//      while (nextPowerOfTwo < minimum)
-//        nextPowerOfTwo *= 2;
-//      return nextPowerOfTwo;
-//    }
+    private AvlTreeNode _avlTree;
+    private int _count;
 
-//    private IStringId Find(string name, int index)
-//    {
-//      if (_avlTree[index] == null)
-//        throw new Exception("Attempting to find a non-existing value.");
-//      int compResult = name.CompareTo(_avlTree[index]);
-//      if (compResult == 0)
-//        return _avlTree[index].Left;
-//      else if (compResult < 0)
-//        // NOTE: "index * 2" is the index of the leftchild of the item at location "index"
-//        return Find(name, index * 2);
-//      else
-//        // NOTE: "(index * 2) + 1" is the index of the rightchild of the item at location "index"
-//        return Find(name, index * 2 + 1);
-//    }
+    /// <summary>Gets the number of elements in the collection.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public int Count { get { return _count; } }
+    /// <summary>Gets whether the binary search tree is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _avlTree == null; } }
 
-//    public void Add(IStringId item)
-//    {
-//      Add(item, 1);
-//      _count++;
-//    }
+    /// <summary>Constructs an AVL Tree.</summary>
+    /// <remarks>Runtime: O(1). Space: Theta(n).</remarks>
+    public AvlTree()
+    {
+      _avlTree = null;
+      _count = 0;
+    }
 
-//    private void Add(IStringId addition, int index)
-//    {
-//      if (_avlTree[index].Left == null)
-//      {
-//        _avlTree[index].Left = addition;
-//        _avlTree[index].Right = 0;
-//      }
-//      else
-//      {
-//        int compResult = addition.Id.CompareTo(_avlTree[index].Left.Id);//info.Name.CompareTo(t.Root.Left.Name);
-//        if (compResult == 0)
-//          throw new InvalidOperationException("A NameInfo with the given name already exists.");
-//        else if (compResult < 0)
-//        {
-//          // NOTE: "index * 2" is the index of the leftchild of the item at location "index"
-//          Add(addition, index * 2);
-//          Balance(index);
-//        }
-//        else
-//        {
-//          // NOTE: "(index * 2) + 1" is the index of the rightchild of the item at location "index"
-//          Add(addition, index * 2 + 1);
-//          Balance(index);
-//        }
-//      }
-//    }
+    /// <summary>Gets the item with the designated by the string.</summary>
+    /// <param name="id">The string ID to look for.</param>
+    /// <returns>The object with the desired string ID if it exists.</returns>
+    /// <remarks>Runtime: O(ln(n)), Omega(1).</remarks>
+    public Type Get(string id) { return Get(id, _avlTree); }
 
-//    //public void CopyTo(IList list) { CopyTo(1, list); }
+    /// <summary>Standard AVL Tree searching algorithm using recursion.</summary>
+    /// <param name="id">The string ID to look for.</param>
+    /// <param name="avlTree">The AVL Tree node to look in.</param>
+    /// <returns>The object in the AVL Tree with the desired string ID.</returns>
+    /// <remarks>Runtime: O(ln(n)), Omega(1).</remarks>
+    private Type Get(string id, AvlTreeNode avlTree)
+    {
+      if (avlTree == null)
+        throw new AvlTreeException("Attempting to get a non-existing value.");
+      int compResult = id.CompareTo(avlTree.Id);
+      if (compResult == 0)
+        return avlTree.Value;
+      else if (compResult < 0)
+        return Get(id, avlTree.LeftChild);
+      else
+        return Get(id, avlTree.RightChild);
+    }
 
-//    //private void CopyTo(int index, IList list)
-//    //{
-//    //  if (_avlTree[index].Left != null)
-//    //  {
-//    //    // NOTE: "index * 2" is the index of the leftchild of the item at location "index"
-//    //    CopyTo(index * 2, list);
-//    //    list.Add(_avlTree[index]);
-//    //    // NOTE: "(index * 2) + 1" is the index of the rightchild of the item at location "index"
-//    //    CopyTo(index * 2 + 1, list);
-//    //  }
-//    //}
+    /// <summary>Adds an object to the AVL Tree.</summary>
+    /// <param name="id">The string id that you can use to look and remove up the object.</param>
+    /// <param name="addition">The object to add.</param>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    public void Add(string id, Type addition)
+    {
+      _avlTree = Add(id, addition, _avlTree);
+      _count++;
+    }
 
-//    /// <summary>Finds the height of the given tree.</summary>
-//    /// <param name="t">The tree.</param>
-//    /// <returns>The height of t.</returns>
-//    private int Height(int index)
-//    {
-//      if (_avlTree[index].Left == null)
-//        return -1;
-//      else
-//        return _avlTree[index].Right;
-//    }
+    /// <summary>Adds an object to the AVL Tree.</summary>
+    /// <param name="addition">The object to add.</param>
+    /// <param name="avlTree">The binary search tree to add to.</param>
+    /// <returns>The resulting tree.</returns>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    private AvlTreeNode Add(string id, Type addition, AvlTreeNode avlTree)
+    {
+      if (avlTree == null)
+        return new AvlTreeNode(id, addition, null, null, 0);
+      else
+      {
+        int compResult = id.CompareTo(avlTree.Id);
+        if (compResult == 0)
+          throw new AvlTreeException("A NameInfo with the given name already exists.");
+        else if (compResult < 0)
+          avlTree.LeftChild = Add(id, addition, avlTree.LeftChild);
+        else
+          avlTree.RightChild = Add(id, addition, avlTree.RightChild);
+        // We added the new object, now we need to check the tree balancing
+        return Balance(avlTree);
+      }
+    }
 
-//    /// <summary>Performs a single rotate right on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private IStringId SingleRotateRight(int index)
-//    {
-//      ArraySwap(
-//      IStringId temp = _avlTree[index * 2 + 1];
-//      t.LeftChild = temp.RightChild;
-//      temp.RightChild = t;
-//      SetHeight(t);
-//      SetHeight(temp);
-//      return temp;
-//    }
+    /// <summary>Removes an object from the AVL Tree.</summary>
+    /// <param name="removal">The string ID of the object to remove.</param>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    public void Remove(string removal)
+    {
+      throw new AvlTreeException("I have not yet finished the removal method.");
+      _avlTree = Remove(removal, _avlTree);
+      _count--;
+    }
 
-//    /// <summary>Sets the height of the given tree based on the heights set for its children.</summary>
-//    /// <param name="t">The tree.</param>
-//    private void SetHeight(int index)
-//    {
-//      // Functionality Note: imutable or mutable (next three lines)
-//      if (Height(t.LeftChild) < Height(t.RightChild))
-//        // t.Root = new Link<Type, int>(t.Root.Left, Math.Max(Height(t.LeftChild), Height(t.RightChild)) + 1);
-//        t.Height = Math.Max(Height(t.LeftChild), Height(t.RightChild)) + 1;
-//    }
+    /// <summary>Removes an object from the AVL Tree.</summary>
+    /// <param name="removal">The string ID of the object to remove.</param>
+    /// <param name="avlTree">The binary tree to remove from.</param>
+    /// <returns>The resulting tree after the removal.</returns>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    private AvlTreeNode Remove(string removal, AvlTreeNode avlTree)
+    {
+      if (avlTree != null)
+      {
+        int compResult = removal.CompareTo(avlTree.Id);
+        // If the compResult is 0 with strings, it means they are identical, the entry already exists
+        if (compResult == 0)
+        {
+          if (avlTree.RightChild != null)
+          {
+            AvlTreeNode leftMostOfRight;
+            avlTree.RightChild = RemoveLeftMost(avlTree.RightChild, out leftMostOfRight);
+            leftMostOfRight.RightChild = avlTree.RightChild;
+            leftMostOfRight.LeftChild = avlTree.LeftChild;
+            avlTree = leftMostOfRight;
+          }
+          else if (avlTree.LeftChild != null)
+            avlTree = avlTree.LeftChild;
+          else
+            return null;
+          SetHeight(avlTree);
+          return Balance(avlTree);
+        }
+        else if (compResult < 0)
+          avlTree = Remove(removal, avlTree.LeftChild);
+        else
+          avlTree = Remove(removal, avlTree.RightChild);
+        SetHeight(avlTree);
+        return Balance(avlTree);
+      }
+      else
+        throw new AvlTreeException("Attempting to remove a non-existing entry.");
+    }
 
-//    /// <summary>Performs a single rotate left on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode<IStringId> SingleRotateLeft(int index)
-//    {
-//      AvlTreeNode<IStringId> temp = t.RightChild;
-//      t.RightChild = temp.LeftChild;
-//      temp.LeftChild = t;
-//      SetHeight(t);
-//      SetHeight(temp);
-//      return temp;
-//    }
+    /// <summary>Removes the left-most child of an AVL Tree node and returns it through the out parameter.</summary>
+    /// <param name="avlTree">The tree to remove the left-most child from.</param>
+    /// <param name="leftMost">The left-most child of this AVL tree.</param>
+    /// <returns>The updated tree with the removal.</returns>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    private AvlTreeNode RemoveLeftMost(AvlTreeNode avlTree, out AvlTreeNode leftMost)
+    {
+      if (avlTree.LeftChild == null)
+      {
+        leftMost = avlTree;
+        return null;
+      }
+      avlTree.LeftChild = RemoveLeftMost(avlTree.LeftChild, out leftMost);
+      SetHeight(avlTree);
+      return Balance(avlTree);
+    }
 
-//    /// <summary>Performs a double rotate right on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode<IStringId> DoubleRotateRight(AvlTreeNode<IStringId> t)
-//    {
-//      AvlTreeNode<IStringId> temp = t.LeftChild.RightChild;
-//      t.LeftChild.RightChild = temp.LeftChild;
-//      temp.LeftChild = t.LeftChild;
-//      t.LeftChild = temp.RightChild;
-//      temp.RightChild = t;
-//      SetHeight(temp.LeftChild);
-//      SetHeight(temp.RightChild);
-//      SetHeight(temp);
-//      return temp;
-//    }
+    /// <summary>This is just a protection against the null valued leaf nodes, which have a height of "-1".</summary>
+    /// <param name="avlTree">The AVL Tree to find the hight of.</param>
+    /// <returns>Returns "-1" if null (leaf) or the height property of the node.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private int Height(AvlTreeNode avlTree)
+    {
+      if (avlTree == null)
+        return -1;
+      else
+        return avlTree.Height;
+    }
 
-//    /// <summary>Performs a double rotate left on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode<IStringId> DoubleRotateLeft(AvlTreeNode<IStringId> t)
-//    {
-//      AvlTreeNode<IStringId> temp = t.RightChild.LeftChild;
-//      t.RightChild.LeftChild = temp.RightChild;
-//      temp.RightChild = t.RightChild;
-//      t.RightChild = temp.LeftChild;
-//      temp.LeftChild = t;
-//      SetHeight(temp.LeftChild);
-//      SetHeight(temp.RightChild);
-//      SetHeight(temp);
-//      return temp;
-//    }
+    /// <summary>Sets the height of a tree based on its children's heights.</summary>
+    /// <param name="avlTree">The tree to have its height adjusted.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    private void SetHeight(AvlTreeNode avlTree)
+    {
+      // Functionality Note: imutable or mutable (next three lines)
+      if (Height(avlTree.LeftChild) < Height(avlTree.RightChild))
+        // t.Root = new Link<Type, int>(t.Id, Math.Max(Height(t.LeftChild), Height(t.RightChild)) + 1);
+        avlTree.Height = Math.Max(Height(avlTree.LeftChild), Height(avlTree.RightChild)) + 1;
+    }
 
-//    private AvlTreeNode<IStringId> Balance(AvlTreeNode<IStringId> t)
-//    {
-//      if (Height(t.LeftChild) == Height(t.RightChild) + 2)
-//      {
-//        if (Height(t.LeftChild.LeftChild) > Height(t.RightChild))
-//          return SingleRotateRight(t);
-//        else
-//          return DoubleRotateRight(t);
-//      }
-//      else if (Height(t.RightChild) == Height(t.LeftChild) + 2)
-//      {
-//        if (Height(t.RightChild.RightChild) > Height(t.LeftChild))
-//          return SingleRotateLeft(t);
-//        else
-//          return DoubleRotateLeft(t);
-//      }
-//      SetHeight(t);
-//      return t;
-//    }
+    /// <summary>Standard balancing algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to check the balancing of.</param>
+    /// <returns>The result of the possible balancing.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private AvlTreeNode Balance(AvlTreeNode avlTree)
+    {
+      if (Height(avlTree.LeftChild) == Height(avlTree.RightChild) + 2)
+      {
+        if (Height(avlTree.LeftChild.LeftChild) > Height(avlTree.RightChild))
+          return SingleRotateRight(avlTree);
+        else
+          return DoubleRotateRight(avlTree);
+      }
+      else if (Height(avlTree.RightChild) == Height(avlTree.LeftChild) + 2)
+      {
+        if (Height(avlTree.RightChild.RightChild) > Height(avlTree.LeftChild))
+          return SingleRotateLeft(avlTree);
+        else
+          return DoubleRotateLeft(avlTree);
+      }
+      SetHeight(avlTree);
+      return avlTree;
+    }
 
-//    /// <summary>Standard array swap method.</summary>
-//    /// <param name="indexOne">The first index of the swap.</param>
-//    /// <param name="indexTwo">The second index of the swap.</param>
-//    /// <remarks>Runtime O(1).</remarks>
-//    private void ArraySwap(int indexOne, int indexTwo)
-//    {
-//      Link<IStringId, int> swapStorage = _avlTree[indexTwo];
-//      _avlTree[indexTwo] = _avlTree[indexOne];
-//      _avlTree[indexOne] = swapStorage;
-//    }
-//  }
+    /// <summary>Standard single rotation (to the right) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to single rotate right.</param>
+    /// <returns>The resulting tree.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private AvlTreeNode SingleRotateRight(AvlTreeNode avlTree)
+    {
+      AvlTreeNode temp = avlTree.LeftChild;
+      avlTree.LeftChild = temp.RightChild;
+      temp.RightChild = avlTree;
+      SetHeight(avlTree);
+      SetHeight(temp);
+      return temp;
+    }
 
-//  #endregion
+    /// <summary>Standard single rotation (to the left) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to single rotate left.</param>
+    /// <returns>The resulting tree.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private AvlTreeNode SingleRotateLeft(AvlTreeNode avlTree)
+    {
+      AvlTreeNode temp = avlTree.RightChild;
+      avlTree.RightChild = temp.LeftChild;
+      temp.LeftChild = avlTree;
+      SetHeight(avlTree);
+      SetHeight(temp);
+      return temp;
+    }
 
-//  #region AvlTree
+    /// <summary>Standard double rotation (to the right) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to double rotate right.</param>
+    /// <returns>The resulting tree.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private AvlTreeNode DoubleRotateRight(AvlTreeNode avlTree)
+    {
+      AvlTreeNode temp = avlTree.LeftChild.RightChild;
+      avlTree.LeftChild.RightChild = temp.LeftChild;
+      temp.LeftChild = avlTree.LeftChild;
+      avlTree.LeftChild = temp.RightChild;
+      temp.RightChild = avlTree;
+      SetHeight(temp.LeftChild);
+      SetHeight(temp.RightChild);
+      SetHeight(temp);
+      return temp;
+    }
 
-//  public class AvlTree
-//  {
-//    private class AvlTreeNode
-//    {
-//      private IStringId _root;
-//      private AvlTreeNode _leftChild;
-//      private AvlTreeNode _rightChild;
-//      private int _height;
+    /// <summary>Standard double rotation (to the left) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to double rotate left.</param>
+    /// <returns>The resulting tree.</returns>
+    /// <remarks>Runtime: O(1).</remarks>
+    private AvlTreeNode DoubleRotateLeft(AvlTreeNode avlTree)
+    {
+      AvlTreeNode temp = avlTree.RightChild.LeftChild;
+      avlTree.RightChild.LeftChild = temp.RightChild;
+      temp.RightChild = avlTree.RightChild;
+      avlTree.RightChild = temp.LeftChild;
+      temp.LeftChild = avlTree;
+      SetHeight(temp.LeftChild);
+      SetHeight(temp.RightChild);
+      SetHeight(temp);
+      return temp;
+    }
 
-//      /// <summary> Gets or sets the data stored in the root.</summary>
-//      public IStringId Root { get { return _root; } set { _root = value; } }
-//      /// <summary>Gets or sets the left child.</summary>
-//      public AvlTreeNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
-//      /// <summary>Gets or sets the right child.</summary>
-//      public AvlTreeNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
-//      /// <summary>Gets the height of the avl tree node.</summary>
-//      public int Height { get { return _height; } set { _height = value; } }
+    /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
+    private class AvlTreeException : Exception { public AvlTreeException(string message) : base(message) { } }
+  }
 
-//      /// <summary>Constructs an AvlTree node.</summary>
-//      /// <param name="root">The value of the </param>
-//      /// <param name="leftChild"></param>
-//      /// <param name="rightChild"></param>
-//      public AvlTreeNode(IStringId root, AvlTreeNode leftChild, AvlTreeNode rightChild, int height)
-//      {
-//        _root = root;
-//        _leftChild = leftChild;
-//        _rightChild = rightChild;
-//        _height = height;
-//      }
-//    }
-
-//    private AvlTreeNode _elements = null;
-//    private int _count = 0;
-
-//    /// <summary>Gets the number of elements in the collection.</summary>
-//    public int Count { get { return _count; } }
-//    /// <summary>Gets whether the binary search tree is empty.</summary>
-//    public bool IsEmpty { get { return _elements == null; } }
-
-//    /// <summary>Finds the NameInfo containing the given name. If no such NameInfo exists, returns null.</summary>
-//    /// <param name="name">The name to look for.</param>
-//    /// <returns>The NameInfo containing name, or null if no such NameInfo exists.</returns>
-//    public IStringId Find(string name) { return Find(name, _elements); }
-
-//    /// <summary>Finds the NameInfo containing the given name in the given binary search tree.
-//    /// If no such NameInfo exists, returns null.</summary>
-//    /// <param name="name">The name to look for.</param>
-//    /// <param name="t">The binary search tree to look in.</param>
-//    /// <returns></returns>
-//    private IStringId Find(string name, AvlTreeNode t)
-//    {
-//      if (t == null)
-//        throw new Exception("Attempting to find a non-existing value.");
-//      int compResult = 0;// = name.CompareTo(t.Root.Left.Name);
-//      if (compResult == 0)
-//        return t.Root;
-//      else if (compResult < 0)
-//        return Find(name, t.LeftChild);
-//      else
-//        return Find(name, t.RightChild);
-//    }
-
-//    /// <summary>Adds the given NameInfo to the collection. If a NameInfo with the same
-//    /// name already exists, throws an InvalidOperationException.</summary>
-//    /// <param name="item">The NameInfo to add.</param>
-//    public void Add(IStringId item)
-//    {
-//      _elements = Add(item, _elements);
-//      _count++;
-//    }
-
-//    /// <summary>Adds the given NameInfo to the given binary search tree.  If a NameInfo
-//    /// with the same name already exists in t, throws an InvalidOperationException.</summary>
-//    /// <param name="addition">The NameInfo to add.</param>
-//    /// <param name="t">The binary search tree to add to.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode Add(IStringId addition, AvlTreeNode t)
-//    {
-//      if (t == null)
-//        return new AvlTreeNode(addition, null, null, 0);
-//      else
-//      {
-//        int compResult = addition.Id.CompareTo(t.Root.Id);
-//        if (compResult == 0)
-//          throw new InvalidOperationException("A NameInfo with the given name already exists.");
-//        else if (compResult < 0)
-//        {
-//          t.LeftChild = Add(addition, t.LeftChild);
-//          return Balance(t);
-//        }
-//        else
-//        {
-//          t.RightChild = Add(addition, t.RightChild);
-//          return Balance(t);
-//        }
-//      }
-//    }
-
-//    ///// <summary>Copies all elements to the end of the given IList in alphabetic order.</summary>
-//    ///// <param name="list">The list to copy to.</param>
-//    //public void CopyTo(IList list) { CopyTo(_elements, list); }
-
-//    ///// <summary>Copies all elements of the given binary search tree to the end of the given IList in alphabetic order.</summary>
-//    ///// <param name="t">The binary search tree to copy.</param>
-//    ///// <param name="list">The list to copy to.</param>
-//    //private void CopyTo(AvlTreeNode<Type> t, IList list)
-//    //{
-//    //  if (t != null)
-//    //  {
-//    //    CopyTo(t.LeftChild, list);
-//    //    list.Add(t.Root);
-//    //    CopyTo(t.RightChild, list);
-//    //  }
-//    //}
-
-//    /// <summary>Finds the height of the given tree.</summary>
-//    /// <param name="t">The tree.</param>
-//    /// <returns>The height of t.</returns>
-//    private int Height(AvlTreeNode t)
-//    {
-//      if (t == null)
-//        return -1;
-//      else
-//        return t.Height;
-//    }
-
-//    /// <summary>Performs a single rotate right on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode SingleRotateRight(AvlTreeNode t)
-//    {
-//      AvlTreeNode temp = t.LeftChild;
-//      t.LeftChild = temp.RightChild;
-//      temp.RightChild = t;
-//      SetHeight(t);
-//      SetHeight(temp);
-//      return temp;
-//    }
-
-//    /// <summary>Sets the height of the given tree based on the heights set for its children.</summary>
-//    /// <param name="t">The tree.</param>
-//    private void SetHeight(AvlTreeNode t)
-//    {
-//      // Functionality Note: imutable or mutable (next three lines)
-//      if (Height(t.LeftChild) < Height(t.RightChild))
-//        // t.Root = new Link<Type, int>(t.Root.Left, Math.Max(Height(t.LeftChild), Height(t.RightChild)) + 1);
-//        t.Height = Math.Max(Height(t.LeftChild), Height(t.RightChild)) + 1;
-//    }
-
-//    /// <summary>Performs a single rotate left on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode SingleRotateLeft(AvlTreeNode t)
-//    {
-//      AvlTreeNode temp = t.RightChild;
-//      t.RightChild = temp.LeftChild;
-//      temp.LeftChild = t;
-//      SetHeight(t);
-//      SetHeight(temp);
-//      return temp;
-//    }
-
-//    /// <summary>Performs a double rotate right on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode DoubleRotateRight(AvlTreeNode t)
-//    {
-//      AvlTreeNode temp = t.LeftChild.RightChild;
-//      t.LeftChild.RightChild = temp.LeftChild;
-//      temp.LeftChild = t.LeftChild;
-//      t.LeftChild = temp.RightChild;
-//      temp.RightChild = t;
-//      SetHeight(temp.LeftChild);
-//      SetHeight(temp.RightChild);
-//      SetHeight(temp);
-//      return temp;
-//    }
-
-//    /// <summary>Performs a double rotate left on the given tree.</summary>
-//    /// <param name="t">The tree to rotate.</param>
-//    /// <returns>The resulting tree.</returns>
-//    private AvlTreeNode DoubleRotateLeft(AvlTreeNode t)
-//    {
-//      AvlTreeNode temp = t.RightChild.LeftChild;
-//      t.RightChild.LeftChild = temp.RightChild;
-//      temp.RightChild = t.RightChild;
-//      t.RightChild = temp.LeftChild;
-//      temp.LeftChild = t;
-//      SetHeight(temp.LeftChild);
-//      SetHeight(temp.RightChild);
-//      SetHeight(temp);
-//      return temp;
-//    }
-
-//    private AvlTreeNode Balance(AvlTreeNode t)
-//    {
-//      if (Height(t.LeftChild) == Height(t.RightChild) + 2)
-//      {
-//        if (Height(t.LeftChild.LeftChild) > Height(t.RightChild))
-//          return SingleRotateRight(t);
-//        else
-//          return DoubleRotateRight(t);
-//      }
-//      else if (Height(t.RightChild) == Height(t.LeftChild) + 2)
-//      {
-//        if (Height(t.RightChild.RightChild) > Height(t.LeftChild))
-//          return SingleRotateLeft(t);
-//        else
-//          return DoubleRotateLeft(t);
-//      }
-//      SetHeight(t);
-//      return t;
-//    }
-//  }
-
-//  #endregion
-//}
+  #endregion
+}
