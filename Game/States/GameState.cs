@@ -27,7 +27,7 @@ namespace Game.States
       _camera.Move(_camera.Up, 400);
       _camera.Move(_camera.Backward, 1500);
       _camera.Move(_camera.Backward, 300);
-      TransformationManager.CurrentCamera = _camera;
+      Renderer.CurrentCamera = _camera;
 
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
@@ -71,22 +71,22 @@ namespace Game.States
     public void Render()
     {
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
-      TransformationManager.SetProjectionMatrix();
+      Renderer.SetProjectionMatrix();
 
-      Renderer.DrawStaticModel(_camera, _terrain);
-      Renderer.DrawStaticModel(_camera, _redRanger);
-      Renderer.DrawStaticModel(_camera, _blueRanger);
-      Renderer.DrawStaticModel(_camera, _blackRanger);
-      Renderer.DrawStaticModel(_camera, _pinkRanger);
-      Renderer.DrawStaticModel(_camera, _yellowRanger);
-      Renderer.DrawStaticModel(_camera, _RedRangerTwo);
+      Renderer.DrawStaticModel(_terrain);
+      Renderer.DrawStaticModel(_redRanger);
+      Renderer.DrawStaticModel(_blueRanger);
+      Renderer.DrawStaticModel(_blackRanger);
+      Renderer.DrawStaticModel(_pinkRanger);
+      Renderer.DrawStaticModel(_yellowRanger);
+      Renderer.DrawStaticModel(_RedRangerTwo);
     }
 
-    public void Update(double elapsedTime)
+    public string Update(double elapsedTime)
     {
       CameraControls();
 
-      if (InputManager.Rdown)
+      if (InputManager.Keyboard.Rdown)
       {
         _redRanger.RotationAngle += 75;
         _yellowRanger.RotationAngle += 100;
@@ -102,22 +102,23 @@ namespace Game.States
       _blackRanger.RotationAngle++;
       _blueRanger.RotationAngle++;
       _pinkRanger.RotationAngle++;
+      return "Don't Change States";
     }
 
     private void CameraControls()
     {
       // Camera position movement
-      if (InputManager.Qdown)
+      if (InputManager.Keyboard.Qdown)
         _camera.Move(_camera.Down, _camera.PositionSpeed);
-      if (InputManager.Edown)
+      if (InputManager.Keyboard.Edown)
         _camera.Move(_camera.Up, _camera.PositionSpeed);
-      if (InputManager.Adown)
+      if (InputManager.Keyboard.Adown)
         _camera.Move(_camera.Forward, _camera.PositionSpeed);
-      if (InputManager.Wdown)
+      if (InputManager.Keyboard.Wdown)
         _camera.Move(_camera.Backward, _camera.PositionSpeed);
-      if (InputManager.Sdown)
+      if (InputManager.Keyboard.Sdown)
         _camera.Move(_camera.Left, _camera.PositionSpeed);
-      if (InputManager.Ddown)
+      if (InputManager.Keyboard.Ddown)
         _camera.Move(_camera.Right, _camera.PositionSpeed);
 
       // Camera look angle adjustment

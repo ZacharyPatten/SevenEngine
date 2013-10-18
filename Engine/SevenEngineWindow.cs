@@ -1,7 +1,4 @@
 ﻿using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -30,8 +27,9 @@ namespace Engine
       BaseInitializeShaders();
       BaseInitializeStates();
 
-      TransformationManager.ScreenWidth = this.ClientSize.Width;
-      TransformationManager.ScreenHeight = this.ClientSize.Height;
+      // This is a temporary fix to changing transformation matrices
+      Renderer.ScreenWidth = this.ClientSize.Width;
+      Renderer.ScreenHeight = this.ClientSize.Height;
 
       _timer = new PreciseTimer();
 
@@ -43,12 +41,18 @@ namespace Engine
     {
       base.OnResize(e);
       GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-      TransformationManager.ScreenWidth = this.ClientSize.Width;
-      TransformationManager.ScreenHeight = this.ClientSize.Height;
+
+      // This is a temporary fix to changing transformation matrices
+      Renderer.ScreenWidth = this.ClientSize.Width;
+      Renderer.ScreenHeight = this.ClientSize.Height;
     }
 
     /// <summary>Give the input manager a reference to the Keyboard from OpenTK.</summary>
-    private void InitializeInput() { InputManager.InitializeKeyboard(Keyboard); }
+    private void InitializeInput()
+    {
+      InputManager.InitializeKeyboard(Keyboard);
+      InputManager.InitializeMouse(Mouse);
+    }
 
     private void BaseInitializeDisplay()
     {
@@ -127,15 +131,17 @@ namespace Engine
       // Update the state within the input manager
       InputManager.Update();
       // If "ESCAPE" is pressed then lets close the game
-      if (InputManager.Escapepressed) { this.Exit(); return; }
-      if (InputManager.F1pressed)
+      if (InputManager.Keyboard.Escapepressed) { this.Exit(); return; }
+      if (InputManager.Keyboard.F1pressed)
       {
         if (this.WindowState == WindowState.Normal) this.WindowState = WindowState.Fullscreen;
         else if (this.WindowState == WindowState.Fullscreen) this.WindowState = WindowState.Normal;
       }
-      StateManager.Update(_timer.GetElapsedTime());
+      Update(_timer.GetElapsedTime());
       // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }
+    /// <summary>OVERRIDE THIS FUNCTION!</summary>
+    public virtual void Update(double elapsedTime) { Output.WriteLine("ERROR: you are not overriding the \"Update()\" during game initilization."); }
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {

@@ -2,7 +2,7 @@
 {
   public interface IGameState
   {
-    void Update(double elapsedTime);
+    string Update(double elapsedTime);
     void Render();
   }
 }

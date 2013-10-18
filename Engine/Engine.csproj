@@ -103,15 +103,10 @@
     <Compile Include="StaticModelManager.cs" />
     <Compile Include="Models\RigidBodyPartModel.cs" />
     <Compile Include="Models\Vertex.cs" />
-    <Compile Include="TransformationManager.cs" />
     <Compile Include="Utilities\Output.cs" />
     <Compile Include="Texts\CharacterData.cs" />
     <Compile Include="Texts\CharacterSprite.cs" />
     <Compile Include="Imaging\Color.cs" />
-    <Compile Include="Input\ControllerButton.cs" />
-    <Compile Include="Input\ControlStick.cs" />
-    <Compile Include="Input\ControlTrigger.cs" />
-    <Compile Include="Input\Dpad.cs" />
     <Compile Include="Texts\Font.cs" />
     <Compile Include="Texts\FontParser.cs" />
     <Compile Include="IGameState.cs" />
@@ -131,7 +126,6 @@
     <Compile Include="TextureManager.cs" />
     <Compile Include="Mathematics\Tween.cs" />
     <Compile Include="Mathematics\Vector.cs" />
-    <Compile Include="Input\XboxController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -14,10 +14,9 @@ namespace Engine.Utilities
     private static extern bool QueryPerformanceCounter(ref long PerformanceCount);
 
     /// <summary>A measure of how fast the ticks are happening for the current system.</summary>
-    protected long _ticksPerSecond = 0;
-    // 
-    protected long _previousElapsedTime = 0;
-
+    private long _ticksPerSecond = 0;
+    /// <summary>A memory of the previous call to determine timespan.</summary>
+    private long _previousElapsedTime = 0;
 
     /// <summary>Creates an instance of a precise timer and initializes the the time.</summary>
     public PreciseTimer()

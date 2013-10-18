@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -9,12 +6,14 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using Engine.Imaging;
+using Engine.DataStructures;
 
 namespace Engine
 {
   public static class TextureManager
   {
-    private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
+    //private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
+    private static AvlTree<Texture> _textureDatabase = new AvlTree<Texture>();
 
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
     public static int Count { get { return _textureDatabase.Count; } }
@@ -24,7 +23,7 @@ namespace Engine
     /// <returns></returns>
     internal static bool TextureExists(string textureId)
     {
-      return _textureDatabase.ContainsKey(textureId);
+      return _textureDatabase.Contains(textureId);
     }
 
     /// <summary>Pull out a reference to a texture.</summary>
@@ -32,7 +31,7 @@ namespace Engine
     /// <returns>A reference to the desired texture.</returns>
     internal static Texture Get(string textureId)
     {
-      Texture texture = _textureDatabase[textureId];
+      Texture texture = _textureDatabase.Get(textureId);
       //texture.ExistingReferences++;
       return texture;
     }

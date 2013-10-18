@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Engine.DataStructures;
 using Engine.Imaging;
@@ -15,7 +12,7 @@ namespace Engine.Models
   public class StaticModel
   {
     /// <summary>All the meshes and textures for those meshes that make up the entire model.</summary>
-    protected List<Link<Texture, StaticMesh>> _meshes;
+    protected ListArray<Link<Texture, StaticMesh>> _meshes;
 
     /// <summary>The name id associated with this model.</summary>
     protected string _id;
@@ -31,7 +28,7 @@ namespace Engine.Models
     protected ShaderProgram _shaderOverride;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    internal List<Link<Texture, StaticMesh>> Meshes { get { return _meshes; } set { _meshes = value; } }
+    internal ListArray<Link<Texture, StaticMesh>> Meshes { get { return _meshes; } set { _meshes = value; } }
 
     public Vector Position { get { return _position; } set { _position = value; } }
     public Vector Scale { get { return _scale; } set { _scale = value; } }
@@ -44,7 +41,7 @@ namespace Engine.Models
 
     internal StaticModel()
     {
-      _meshes = new List<Link<Texture, StaticMesh>>();
+      _meshes = new ListArray<Link<Texture, StaticMesh>>(10);
 
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
@@ -57,7 +54,7 @@ namespace Engine.Models
       if (textures.Length != meshes.Length)
         throw new Exception("Attepting to make a static model but the number of meshes and number of textures are not equal.");
       _id = staticModelId;
-      _meshes = new List<Link<Texture, StaticMesh>>();
+      _meshes = new ListArray<Link<Texture, StaticMesh>>(10);
       for (int i = 0; i < textures.Length; i++)
         _meshes.Add(new Link<Texture, StaticMesh>(TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i])));
 
@@ -67,17 +64,24 @@ namespace Engine.Models
       _rotationAngle = 0;
     }
 
-    internal StaticModel(string staticModelId, Link<Texture, StaticMesh>[] meshes)
+    internal StaticModel(string staticModelId, ListArray<Link<Texture, StaticMesh>> meshes)
     {
       _id = staticModelId;
-      _meshes = meshes.ToList();
+
+      _meshes = meshes;
+
+      for (int i = 0; i < meshes.Count; i++)
+      {
+        meshes[i].Left.ExistingReferences++;
+        meshes[i].Right.ExistingReferences++;
+      }
 
       // increment the references of the GPU mappings
-      foreach (Link<Texture, StaticMesh> link in meshes)
-      {
-        link.Left.ExistingReferences++;
-        link.Right.ExistingReferences++;
-      }
+      //foreach (Link<Texture, StaticMesh> link in meshes)
+      //{
+      //  link.Left.ExistingReferences++;
+      //  link.Right.ExistingReferences++;
+      //}
 
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
@@ -87,8 +91,9 @@ namespace Engine.Models
 
     internal StaticModel Clone()
     {
-      Link<Texture, StaticMesh>[] meshesClone = new Link<Texture, StaticMesh>[_meshes.Count];
-      _meshes.CopyTo(meshesClone);
+      ListArray<Link<Texture, StaticMesh>> meshesClone = new ListArray<Link<Texture, StaticMesh>>(_meshes.Count);
+      for (int i = 0; i < _meshes.Count; i++)
+        meshesClone.Add(_meshes[i]);
       return new StaticModel(_id, meshesClone);
     }
   }

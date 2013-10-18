@@ -101,6 +101,30 @@ namespace Engine.DataStructures
         return Get(id, avlTree.RightChild);
     }
 
+    /// <summary>Checks to see if the tree contains a specific key.</summary>
+    /// <param name="id">The id to check for existance.</param>
+    /// <returns>"true" if the key exists; "false" if the key does not exist.</returns>
+    /// <remarks>Runtime: O(ln(n)).</remarks>
+    public bool Contains(string id) { return Contains(id, _avlTree); }
+
+    /// <summary>Checks to see if the tree contains a specific key.</summary>
+    /// <param name="id">The id to check for existance.</param>
+    /// <param name="avlTree">The tree to check for key existance in.</param>
+    /// <returns>"true" if the key exists; "false" if the key does not exist.</returns>
+    /// <remarks>Runtime: O(ln(n)).</remarks>
+    private bool Contains(string id, AvlTreeNode avlTree)
+    {
+      if (avlTree == null)
+        return false;
+      int compResult = id.CompareTo(avlTree.Id);
+      if (compResult == 0)
+        return true;
+      else if (compResult < 0)
+        return Contains(id, avlTree.LeftChild);
+      else
+        return Contains(id, avlTree.RightChild);
+    }
+
     /// <summary>Adds an object to the AVL Tree.</summary>
     /// <param name="id">The string id that you can use to look and remove up the object.</param>
     /// <param name="addition">The object to add.</param>

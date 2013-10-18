@@ -11,27 +11,22 @@
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
 
 // Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-12-13
+// Last Edited on date 3-6-13
 // Feel free to use this code in any manor you see fit.
 // However, please site me because I put quite a bit of time into it.
 // - Thanks. :)
 
 using System;
 
-namespace Seven.Algotithms
+namespace Engine.Algotithms
 {
   public static class Sorting
   {
-    #region Bubble Sort
-    #region Integers
-    /// <summary>
-    /// Sorts an entire array of type int in non-decreasing order using the bubble sort algorithm.
-    /// Runtime: Omega(n), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stability: yes;
-    /// - Seven 03.06.2013
-    /// </summary>
+    #region BubbleSort
+
+    /// <summary>Sorts an entire array of type int in non-decreasing order using the bubble sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
+    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stability: yes.</remarks>
     public static void BubbleSort(int[] array)
     {
       for (int i = 0; i < array.Length; i++)
@@ -43,17 +38,10 @@ namespace Seven.Algotithms
             array[j] = temp;
           }
     }
-    #endregion
 
-    #region IComparable
-    /// <summary>
-    /// Sorts an entire array of type IComparable in non-decreasing order using the bubble sort algorithm.
-    /// Runtime: Omega(n), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stability: yes;
-    /// - Seven 03.06.2013
-    /// </summary>
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the bubble sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
+    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stability: yes.</remarks>
     public static void BubbleSort(IComparable[] array)
     {
       for (int i = 0; i < array.Length; i++)
@@ -65,19 +53,14 @@ namespace Seven.Algotithms
             array[j] = temp;
           }
     }
-    #endregion
+
     #endregion
 
-    #region Selection Sort
-    #region Integers
-    /// <summary>
-    /// Sorts an entire array of type int in non-decreasing order using the selection sort algoritm.
-    /// Runtime: Omega(n^2), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stablity: no.
-    /// - Seven 03.06.2013
-    /// </summary>
-    /// <param name="array">the array to be sorted</param>
+    #region SelectionSort
+
+    /// <summary>Sorts an entire array of type int in non-decreasing order using the selection sort algoritm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n^2), average(n^2), O(n^2). Memory: in place. Stablity: no.</remarks>
     public static void SelectionSort(int[] array)
     {
       for (int i = 0; i < array.Length; i++)
@@ -93,9 +76,7 @@ namespace Seven.Algotithms
           }
       }
     }
-    #endregion
 
-    #region IComparable
     /// <summary>
     /// Sorts an entire array of type IComparable in non-decreasing order using the selection sort algoritm.
     /// Runtime: Omega(n^2), average(n^2), O(n^2).
@@ -119,19 +100,14 @@ namespace Seven.Algotithms
           }
       }
     }
-    #endregion
+
     #endregion
 
-    #region Insertion Sort
-    #region Integers
-    /// <summary>
-    /// Sorts an entire array of type int in non-decreasing order using the insertion sort algorithm.
-    /// Runtime: Omega(n), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stablity: yes.
-    /// - Seven 03.06.2013
-    /// </summary>
+    #region InsertionSort
+
+    /// <summary>Sorts an entire array of type int in non-decreasing order using the insertion sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
+    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stablity: yes.</remarks>
     public static void InsertionSort(int[] array)
     {
       for (int i = 1; i < array.Length; i++)
@@ -143,17 +119,10 @@ namespace Seven.Algotithms
         array[j] = temp;
       }
     }
-    #endregion
 
-    #region IComparable
-    /// <summary>
-    /// Sorts an entire array of type IComparable in non-decreasing order using the insertion sort algorithm.
-    /// Runtime: Omega(n), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stablity: yes.
-    /// - Seven 03.06.2013
-    /// </summary>
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the insertion sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
+    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stablity: yes.</remarks>
     public static void InsertionSort(IComparable[] array)
     {
       for (int i = 1; i < array.Length; i++)
@@ -165,11 +134,11 @@ namespace Seven.Algotithms
         array[j] = temp;
       }
     }
-    #endregion
+
     #endregion
 
-    #region Quick Sort
-    #region Integers
+    #region QuickSort
+
     /// <summary>Sorts an entire array of type int in non-decreasing order using the quick sort algorithm.</summary>
     /// <param name="array">The array to be sorted.</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory Space: ln(n). Stablity: no.</remarks>
@@ -204,21 +173,12 @@ namespace Seven.Algotithms
         QuickSort(array, k + 1, start + len - (k + 1));
       }
     }
-    #endregion
 
-    #region IComparable
-    /// <summary>
-    /// Sorts an entire array of type IComparable in non-decreasing order using the quick sort algorithm.
-    /// Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2).
-    /// Memory: ln(n).
-    /// Stablity: no.
-    /// - Seven 03.06.2013
-    /// </summary>
-    /// <param name="array">the array to be sorted</param>
-    public static void QuickSort(IComparable[] array)
-    {
-      QuickSort(array, 0, array.Length);
-    }
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the quick sort algorithm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: ln(n). Stablity: no.</remarks>
+    public static void QuickSort(IComparable[] array) { QuickSort(array, 0, array.Length); }
+
     private static void QuickSort(IComparable[] array, int start, int len)
     {
       if (len > 1)
@@ -248,19 +208,14 @@ namespace Seven.Algotithms
         QuickSort(array, k + 1, start + len - (k + 1));
       }
     }
-    #endregion
+
     #endregion
 
-    #region Merge Sort
-    #region Integers
-    /// <summary>
-    /// Sorts up to an array of type int in non-decreasing order using the merge sort algorithm.
-    /// Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)).
-    /// Memory: n.
-    /// Stablity: yes.
-    /// - Seven 03.06.2013
-    /// </summary>
-    /// <param name="array">the array to be sorted</param>
+    #region MergeSort
+
+    /// <summary>Sorts up to an array of type int in non-decreasing order using the merge sort algorithm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)). Memory: n. Stablity: yes.</remarks>
     public static void MergeSort(int[] array)
     {
       MergeSort(array, 0, array.Length);
@@ -291,17 +246,10 @@ namespace Seven.Algotithms
           array[start + h] = sorted[0 + h];
       }
     }
-    #endregion
 
-    #region IComparable
-    /// <summary>
-    /// Sorts up to an array of type IComparable in non-decreasing order using the merge sort algorithm.
-    /// Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)).
-    /// Memory: n.
-    /// Stablity: yes.
-    /// - Seven 03.06.2013
-    /// </summary>
-    /// <param name="array">the array to be sorted</param>
+    /// <summary>Sorts up to an array of type IComparable in non-decreasing order using the merge sort algorithm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)). Memory: n. Stablity: yes.</remarks>
     public static void MergeSort(IComparable[] array)
     {
       MergeSort(array, 0, array.Length);
@@ -332,18 +280,14 @@ namespace Seven.Algotithms
           array[start + h] = sorted[0 + h];
       }
     }
-    #endregion
+
     #endregion
 
-    #region Heap Sort
-    #region Integers
-    /// <summary>
-    /// Sorts an entire array of type int in non-decreasing order using the heap sort algorithm.
-    /// Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2).
-    /// Memory: in place.
-    /// Stablity: no.
-    /// - Seven 03.06.2013</summary>
-    /// <param name="array">the array to be sorted</param>
+    #region HeapSort
+
+    /// <summary>Sorts an entire array of type int in non-decreasing order using the heap sort algorithm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: in place. Stablity: no.</remarks>
     public static void HeapSort(int[] array)
     {
       int heapSize = array.Length;
@@ -358,6 +302,7 @@ namespace Seven.Algotithms
         MaxHeapify(array, heapSize, 0);
       }
     }
+
     private static void MaxHeapify(int[] array, int heapSize, int index)
     {
       int left = (index + 1) * 2 - 1;
@@ -377,16 +322,10 @@ namespace Seven.Algotithms
         MaxHeapify(array, heapSize, largest);
       }
     }
-    #endregion
 
-    #region IComparable
-    /// <summary>
-    /// Sorts an entire array of type IComparable in non-decreasing order using the heap sort algorithm.
-    /// Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2).
-    /// Memory: in place.
-    /// Stablity: no.
-    /// - Seven 03.06.2013</summary>
-    /// <param name="array">the array to be sorted</param>
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the heap sort algorithm.</summary>
+    /// <param name="array">The array to be sorted</param>
+    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: in place. Stablity: no.</remarks>
     public static void HeapSort(IComparable[] array)
     {
       int heapSize = array.Length;
@@ -401,6 +340,7 @@ namespace Seven.Algotithms
         MaxHeapify(array, heapSize, 0);
       }
     }
+
     private static void MaxHeapify(IComparable[] array, int heapSize, int index)
     {
       int left = (index + 1) * 2 - 1;
@@ -420,7 +360,7 @@ namespace Seven.Algotithms
         MaxHeapify(array, heapSize, largest);
       }
     }
-    #endregion
+
     #endregion
   }
 }

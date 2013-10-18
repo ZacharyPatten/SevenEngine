@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 using OpenTK;
@@ -12,10 +11,15 @@ namespace Engine
 {
   public static class ShaderManager
   {
-    private static Dictionary<string, VertexShader> _vertexShaderDatabase = new Dictionary<string, VertexShader>();
-    private static Dictionary<string, FragmentShader> _fragmentShaderDatabase = new Dictionary<string, FragmentShader>();
-    private static Dictionary<string, GeometryShader> _geometryShaderDatabase = new Dictionary<string, GeometryShader>();
-    private static Dictionary<string, ExtendedGeometryShader> _extendedGeometryShaderDatabase = new Dictionary<string, ExtendedGeometryShader>();
+    //private static Dictionary<string, VertexShader> _vertexShaderDatabase = new Dictionary<string, VertexShader>();
+    //private static Dictionary<string, FragmentShader> _fragmentShaderDatabase = new Dictionary<string, FragmentShader>();
+    //private static Dictionary<string, GeometryShader> _geometryShaderDatabase = new Dictionary<string, GeometryShader>();
+    //private static Dictionary<string, ExtendedGeometryShader> _extendedGeometryShaderDatabase = new Dictionary<string, ExtendedGeometryShader>();
+    private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTree<VertexShader>();
+    private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTree<FragmentShader>();
+    private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTree<GeometryShader>();
+    private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader>();
+
 
     //private static Dictionary<string, ShaderProgram> _shaderProgramDatabase = new Dictionary<string, ShaderProgram>();
     private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree<ShaderProgram>();
@@ -25,7 +29,8 @@ namespace Engine
     /// <returns>The shader if it exists.</returns>
     internal static VertexShader GetVertexShader(string shaderId)
     {
-      VertexShader shader = _vertexShaderDatabase[shaderId];
+      //VertexShader shader = _vertexShaderDatabase[shaderId];
+      VertexShader shader = _vertexShaderDatabase.Get(shaderId);
       shader.ExistingReferences++;
       return shader;
     }
@@ -35,7 +40,8 @@ namespace Engine
     /// <returns>The shader if it exists.</returns>
     internal static FragmentShader GetFragmentShader(string shaderId)
     {
-      FragmentShader shader = _fragmentShaderDatabase[shaderId];
+      //FragmentShader shader = _fragmentShaderDatabase[shaderId];
+      FragmentShader shader = _fragmentShaderDatabase.Get(shaderId);
       shader.ExistingReferences++;
       return shader;
     }
@@ -45,7 +51,8 @@ namespace Engine
     /// <returns>The shader if it exists.</returns>
     internal static GeometryShader GetGeometryShader(string shaderId)
     {
-      GeometryShader shader = _geometryShaderDatabase[shaderId];
+      //GeometryShader shader = _geometryShaderDatabase[shaderId];
+      GeometryShader shader = _geometryShaderDatabase.Get(shaderId);
       shader.ExistingReferences++;
       return shader;
     }
@@ -55,7 +62,8 @@ namespace Engine
     /// <returns>The shader if it exists.</returns>
     internal static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
     {
-      ExtendedGeometryShader shader = _extendedGeometryShaderDatabase[shaderId];
+      //ExtendedGeometryShader shader = _extendedGeometryShaderDatabase[shaderId];
+      ExtendedGeometryShader shader = _extendedGeometryShaderDatabase.Get(shaderId);
       shader.ExistingReferences++;
       return shader;
     }

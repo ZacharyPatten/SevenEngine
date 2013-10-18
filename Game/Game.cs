@@ -74,7 +74,7 @@ namespace Game
       StaticModelManager.LoadMesh("RedRanger",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj");
 
-      StaticModelManager.LoadModel("Terrain", new string[]  { "grass" }, new string[] { "terrain" } );
+      StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" });
       StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" });
       StaticModelManager.LoadModel("BlueRanger", new string[] { "BlueRanger" }, new string[] { "RedRanger" });
       StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" });
@@ -91,22 +91,22 @@ namespace Game
       // Use the static class "ShaderManager"
 
       // These basic shaders do not include lighting effects.
-      ShaderManager.LoadVertexShader("VertexShaderBasic", 
+      ShaderManager.LoadVertexShader("VertexShaderBasic",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderBasic.VertexShader");
-      ShaderManager.LoadFragmentShader("FragmentShaderBasic", 
+      ShaderManager.LoadFragmentShader("FragmentShaderBasic",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderBasic.FragmentShader");
 
       // These shaders set stages based of normal values to give a solid shading toon look.
       // WARNING!!! i glitched these shaders up pretty bad, im stil new to shaders... try the other two
-      ShaderManager.LoadVertexShader("VertexShaderToon", 
+      ShaderManager.LoadVertexShader("VertexShaderToon",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderToon.vertexShader");
-      ShaderManager.LoadFragmentShader("FragmentShaderToon", 
+      ShaderManager.LoadFragmentShader("FragmentShaderToon",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderToon.fragmentShader");
 
       // These Lambertian shaders include an algorithm for lighting.
-      ShaderManager.LoadVertexShader("VertexShaderLambertian", 
+      ShaderManager.LoadVertexShader("VertexShaderLambertian",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderLambertian.VertexShader");
-      ShaderManager.LoadFragmentShader("FragmentShaderLambertian", 
+      ShaderManager.LoadFragmentShader("FragmentShaderLambertian",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderLambertian.FragmentShader");
 
       // LINK TOGETHER YOUR SHADERS HERE
@@ -138,20 +138,26 @@ namespace Game
       // Use the static class "ShaderManager"
 
       ShaderManager.SetActiveShader("ShaderProgramLambertian");
-
-      // Just keep this function here. I havn't finished the ShaderManager class yet...
-      //ShaderManager.AddShader();
     }
 
     public override void InitializeStates()
     {
       // LOAD THE GAME STATES HERE
       // Use the static class "StateManager"
-      
+
       StateManager.AddState("gameState", new GameState());
       StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
       //StateManager.ChangeState("gameState");
       StateManager.ChangeState("priorityHeapTesting");
+    }
+
+    public override void Update(double elapsedTime)
+    {
+      //DO NOT UPDATE GAME LOGIC HERE!!! Use the state manager and only change states if need be...
+      string stateStatus = StateManager.Update(elapsedTime);
+      // Use the stateStatus string to determine the need for a state change.
+      // It defaults to "Don't Change States". An example is if the string is
+      // "menuState", you could call - StateManager.ChangeState("menuState").
     }
   }
 }

@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+
+using Engine.DataStructures;
 
 namespace Engine
 {
   public static class StateManager
   {
-    private static Dictionary<string, IGameState> _stateDatabase = new Dictionary<string, IGameState>();
+    //private static Dictionary<string, IGameState> _stateDatabase = new Dictionary<string, IGameState>();
+    private static AvlTree<IGameState> _stateDatabase = new AvlTree<IGameState>();
 
     private static IGameState _currentState = null;
 
     /// <summary>Calls the "Update()" function for the current state relative to the timespan since the last update in SECONDS.</summary>
     /// <param name="elapsedTime">The time since the last update call in SECONDS.</param>
-    public static void Update(double elapsedTime)
+    public static string Update(double elapsedTime)
     {
-      if (_currentState == null) return;
-      _currentState.Update(elapsedTime);
+      if (_currentState == null) return "Don't Change States";
+      return _currentState.Update(elapsedTime);
     }
 
     /// <summary>Calls the render function of the current state.</summary>
@@ -54,7 +56,8 @@ namespace Engine
       }
       else
       {
-        _currentState = _stateDatabase[stateId];
+        //_currentState = _stateDatabase[stateId];
+        _currentState = _stateDatabase.Get(stateId);
         Output.WriteLine("\"" + stateId + "\" state selected;");
       }
     }
@@ -62,7 +65,11 @@ namespace Engine
     /// <summary>Checks if a state exists (an example could be if a specific menu is already loaded then use it; if not then it needs to be loaded first).</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     /// <returns>"true if the state exists. "false""</returns>
-    public static bool StateExists(string stateId) { return _stateDatabase.ContainsKey(stateId); }
+    public static bool StateExists(string stateId)
+    {
+      //return _stateDatabase.ContainsKey(stateId);
+      return _stateDatabase.Contains(stateId);
+    }
   }
 
   internal class StateSystemException : Exception

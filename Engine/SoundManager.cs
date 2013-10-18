@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 using OpenTK;
 using OpenTK.Audio.OpenAL;
 
 using Engine.Audio;
+using Engine.DataStructures;
 
 namespace Engine
 {
@@ -24,9 +22,11 @@ namespace Engine
       string _filePath;
     }
 
-    private static Dictionary<string, SoundSource> _soundIdentifier = new Dictionary<string, SoundSource>();
+    //private static Dictionary<string, SoundSource> _soundIdentifier = new Dictionary<string, SoundSource>();
+    private static AvlTree<SoundSource> _soundIdentifier = new AvlTree<SoundSource>();
     static readonly int MaxSoundChannels = 256;
-    static List<int> _soundChannels = new List<int>();
+    //static List<int> _soundChannels = new List<int>();
+    static ListArray<int> _soundChannels = new ListArray<int>(100);
     static float _masterVolume = 1.0f;
 
     //public SoundManager()
@@ -64,15 +64,15 @@ namespace Engine
 
     private static int FindNextFreeChannel()
     {
-      foreach (int slot in _soundChannels)
-      {
-        if (!IsChannelPlaying(slot))
-        {
-          return slot;
-        }
-      }
+      for (int i = 0; i < _soundChannels.Count; i++)
+        if (!IsChannelPlaying(_soundChannels[i]))
+          return _soundChannels[i];
 
-      return -1;
+      //foreach (int slot in _soundChannels)
+        //if (!IsChannelPlaying(slot))
+          //return slot;
+
+        return -1;
     }
 
 
@@ -113,7 +113,8 @@ namespace Engine
       if (channel != -1)
       {
         AL.SourceStop(channel);
-        AL.Source(channel, ALSourcei.Buffer, _soundIdentifier[soundId]._bufferId);
+        //AL.Source(channel, ALSourcei.Buffer, _soundIdentifier[soundId]._bufferId);
+        AL.Source(channel, ALSourcei.Buffer, _soundIdentifier.Get(soundId)._bufferId);
         AL.Source(channel, ALSourcef.Pitch, 1.0f);
         AL.Source(channel, ALSourcef.Gain, 1.0f);
         //Al.alSourceStop(channel);
@@ -169,11 +170,12 @@ namespace Engine
     public static void MasterVolume(float value)
     {
       _masterVolume = value;
-      foreach (int channel in _soundChannels)
-      {
-        AL.Source(channel, ALSourcef.Gain, value);
-        //Al.alSourcef(channel, Al.AL_GAIN, value);
-      }
+
+      for (int i = 0; i < _soundChannels.Count; i++)
+        AL.Source(_soundChannels[i], ALSourcef.Gain, value);
+
+      //foreach (int channel in _soundChannels)
+      //  AL.Source(channel, ALSourcef.Gain, value);
     }
   }
 }

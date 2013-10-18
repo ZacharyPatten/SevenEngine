@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 using Engine.DataStructures;
@@ -13,15 +12,18 @@ namespace Engine
 {
   public static class StaticModelManager
   {
-    private static Dictionary<string, StaticMesh> _staticMeshDatabase = new Dictionary<string, StaticMesh>();
-    private static Dictionary<string, StaticModel> _staticModelDatabase = new Dictionary<string, StaticModel>();
+    //private static Dictionary<string, StaticMesh> _staticMeshDatabase = new Dictionary<string, StaticMesh>();
+    //private static Dictionary<string, StaticModel> _staticModelDatabase = new Dictionary<string, StaticModel>();
+    private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTree<StaticMesh>();
+    private static AvlTree<StaticModel> _staticModelDatabase = new AvlTree<StaticModel>();
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
     public static int Count { get { return _staticMeshDatabase.Count; } }
 
     internal static StaticMesh GetMesh(string staticMeshId)
     {
-      StaticMesh mesh = _staticMeshDatabase[staticMeshId];
+      //StaticMesh mesh = _staticMeshDatabase[staticMeshId];
+      StaticMesh mesh = _staticMeshDatabase.Get(staticMeshId);
       //mesh.ExistingReferences++;
       return mesh;
     }
@@ -29,7 +31,11 @@ namespace Engine
     /// <summary>Gets a static model you loaded that you have loaded.</summary>
     /// <param name="staticModelId">The name id of the model you wish to obtain.</param>
     /// <returns>The desired static model if it exists.</returns>
-    public static StaticModel GetModel(string staticModelId) { return _staticModelDatabase[staticModelId].Clone(); }
+    public static StaticModel GetModel(string staticModelId)
+    {
+      //return _staticModelDatabase[staticModelId].Clone();
+      return _staticModelDatabase.Get(staticModelId).Clone();
+    }
 
     /// <summary>Loads an 3d model file. NOTE that only obj files are currently supported.</summary>
     /// <param name="textureManager">The texture manager so that the mesh can automatically texture itself.</param>
@@ -94,10 +100,10 @@ namespace Engine
     private static StaticMesh LoadObj(string staticMeshId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
-      List<float> fileVerteces = new List<float>();
-      List<float> fileNormals = new List<float>();
-      List<float> fileTextureCoordinates = new List<float>();
-      List<int> fileIndeces = new List<int>();
+      ListArray<float> fileVerteces = new ListArray<float>(1000);
+      ListArray<float> fileNormals = new ListArray<float>(1000);
+      ListArray<float> fileTextureCoordinates = new ListArray<float>(1000);
+      ListArray<int> fileIndeces = new ListArray<int>(1000);
       Texture texture;
 
       // Lets read the file and handle each line separately for ".obj" files
@@ -261,13 +267,13 @@ namespace Engine
     public static StaticModel LoadSevenModelFromDisk(string staticModelId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
-      List<float> fileVerteces = new List<float>();
-      List<float> fileNormals = new List<float>();
-      List<float> fileTextureCoordinates = new List<float>();
-      List<int> fileIndeces = new List<int>();
+      ListArray<float> fileVerteces = new ListArray<float>(1000);
+      ListArray<float> fileNormals = new ListArray<float>(1000);
+      ListArray<float> fileTextureCoordinates = new ListArray<float>(1000);
+      ListArray<int> fileIndeces = new ListArray<int>(1000);
       Texture texture = null;
 
-      List<Link<Texture, StaticMesh>> meshes = new List<Link<Texture, StaticMesh>>();
+      ListArray<Link<Texture, StaticMesh>> meshes = new ListArray<Link<Texture, StaticMesh>>(1000);
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))
@@ -436,7 +442,7 @@ namespace Engine
           }
         }
       }
-      return new StaticModel(staticModelId, meshes.ToArray());
+      return new StaticModel(staticModelId, meshes);
     }
   }
 }
