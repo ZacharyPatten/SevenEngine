@@ -4,24 +4,18 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine.Shaders;
-using Engine.DataStructures;
+using SevenEngine.Shaders;
+using SevenEngine.DataStructures;
 
-namespace Engine
+namespace SevenEngine
 {
   public static class ShaderManager
   {
-    //private static Dictionary<string, VertexShader> _vertexShaderDatabase = new Dictionary<string, VertexShader>();
-    //private static Dictionary<string, FragmentShader> _fragmentShaderDatabase = new Dictionary<string, FragmentShader>();
-    //private static Dictionary<string, GeometryShader> _geometryShaderDatabase = new Dictionary<string, GeometryShader>();
-    //private static Dictionary<string, ExtendedGeometryShader> _extendedGeometryShaderDatabase = new Dictionary<string, ExtendedGeometryShader>();
     private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTree<VertexShader>();
     private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTree<FragmentShader>();
     private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTree<GeometryShader>();
     private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader>();
 
-
-    //private static Dictionary<string, ShaderProgram> _shaderProgramDatabase = new Dictionary<string, ShaderProgram>();
     private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree<ShaderProgram>();
 
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>

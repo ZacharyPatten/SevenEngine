@@ -3,20 +3,28 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine;
-using Engine.DataStructures;
-using Engine.Imaging;
-using Engine.Texts;
-using Engine.Models;
-using Engine.Mathematics;
+using SevenEngine;
+using SevenEngine.DataStructures;
+using SevenEngine.Imaging;
+using SevenEngine.Texts;
+using SevenEngine.Models;
+using SevenEngine.Mathematics;
+using SevenEngine.Shaders;
 
-namespace Engine
+namespace SevenEngine
 {
   /// <summary>Utility for the engine. Handles ALL rendering. It is good to handle this in one class because vast optimizations can be handled here.</summary>
   public static class Renderer
   {
+    #region Shaders
 
+    private static ShaderProgram _defaultShaderProgram;
 
+    public static ShaderProgram DefaultShaderProgram { get { return _defaultShaderProgram; } set { _defaultShaderProgram = value; } }
+
+    #endregion
+
+    #region Transformations
 
     private static Camera _currentCamera;
 
@@ -32,10 +40,10 @@ namespace Engine
       set
       {
         _screenWidth = value;
-        GL.MatrixMode(MatrixMode.Projection);
-        //GL.LoadIdentity(); // this is not needed because I use "LoadMatrix()" just after it (but you may want it if you change the following code)
-        Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)_screenWidth / (float)_screenHeight, .1f, 10000f);
-        GL.LoadMatrix(ref perspective);
+        //GL.MatrixMode(MatrixMode.Projection);
+        ////GL.LoadIdentity(); // this is not needed because I use "LoadMatrix()" just after it (but you may want it if you change the following code)
+        //Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)_screenWidth / (float)_screenHeight, .1f, 10000f);
+        //GL.LoadMatrix(ref perspective);
       }
     }
 
@@ -45,11 +53,25 @@ namespace Engine
       set
       {
         _screenHeight = value;
-        GL.MatrixMode(MatrixMode.Projection);
-        //GL.LoadIdentity(); // this is not needed because I use "LoadMatrix()" just after it (but you may want it if you change the following code)
-        Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)_screenWidth / (float)_screenHeight, .1f, 10000f);
-        GL.LoadMatrix(ref perspective);
+        //GL.MatrixMode(MatrixMode.Projection);
+        ////GL.LoadIdentity(); // this is not needed because I use "LoadMatrix()" just after it (but you may want it if you change the following code)
+        //Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)_screenWidth / (float)_screenHeight, .1f, 10000f);
+        //GL.LoadMatrix(ref perspective);
       }
+    }
+
+    public static void SetViewport(int x, int y, int width, int height)
+    {
+      GL.Viewport(x, y, width, height);
+    }
+
+    public static void SetOrthographicMatrix()
+    {
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.LoadIdentity();
+      double halfWidth = _screenWidth / 2;
+      double halfHeight = _screenHeight / 2;
+      GL.Ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1000, 1000);
     }
 
     public static void SetProjectionMatrix()
@@ -57,16 +79,14 @@ namespace Engine
       // This creates a projection matrix that transforms objects due to depth. (applies depth perception)
       GL.MatrixMode(MatrixMode.Projection);
       //GL.LoadIdentity(); // this is not needed because I use "LoadMatrix()" just after it (but you may want it if you change the following code)
-      Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)800 / (float)600, .1f, 10000f);
+      Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView((float)_currentCamera.FieldOfView, (float)800 / (float)600, 1f, 10000f);
       GL.LoadMatrix(ref perspective);
     }
 
+    #endregion
 
-
-    private static SpriteBatch _batch = new SpriteBatch();
-    private static HeapArrayStatic<StaticModel> _staticModelBatch = new HeapArrayStatic<StaticModel>(100000);
-
-    private static int _currentTextureId = -1;
+    //private static SpriteBatch _batch = new SpriteBatch();
+    private static HeapArray<StaticModel> _staticModelBatch = new HeapArray<StaticModel>(100000);
 
     public static void DrawImmediateModeVertex(Vector position, Color color, Point uvs)
     {
@@ -77,169 +97,44 @@ namespace Engine
 
     public static void DrawSprite(Sprite sprite)
     {
-      if (sprite.Texture.Handle == _currentTextureId)
-      {
-        _batch.AddSprite(sprite);
-      }
-      else
-      {
-        // Draw all with current texture
-        _batch.Draw();
 
-        // Update texture info
-        _currentTextureId = sprite.Texture.Handle;
-        //GL.BindTexture(TextureTarget.Texture2D, _currentTextureId);
-        _batch.AddSprite(sprite);
-      }
-    }
+      SetOrthographicMatrix();
 
-    /*public void DrawSubModel(RigidBodyPartModel subModel)
-    {
-      GL.BindTexture(TextureTarget.Texture2D, subModel.Texture.Id);
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
 
-      // Push current Array Buffer state so we can restore it later
-      GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
+      //Matrix4 cameraTransform = _currentCamera.GetMatrix();
+      //GL.LoadMatrix(ref cameraTransform);
 
-      if (subModel.VertexBufferID == 0) return;
-      //if (subModel.ElementBufferID == 0) return;
+      //GL.Translate(-_currentCamera.Position.X, -_currentCamera.Position.Y, -_currentCamera.Position.Z);
 
-      if (GL.IsEnabled(EnableCap.Lighting))
-      {
-        // Normal Array Buffer
-        if (subModel.NormalBufferID != 0)
-        {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subModel.NormalBufferID);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.NormalArray);
-        }
-      }
-      else
-      {
-        // Color Array Buffer (Colors not used when lighting is enabled)
-        if (subModel.ColorBufferID != 0)
-        {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subModel.ColorBufferID);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.ColorArray);
-        }
-      }
-
-      // Texture Array Buffer
-      if (GL.IsEnabled(EnableCap.Texture2D))
-      {
-        if (subModel.TexCoordBufferID != 0)
-        {
-          // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subModel.TexCoordBufferID);
-          // Set the Pointer to the current bound array describing how the data ia stored
-          GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
-          // Enable the client state so it will use this array buffer pointer
-          GL.EnableClientState(ArrayCap.TextureCoordArray);
-        }
-      }
+      GL.Translate(sprite.Position.X, sprite.Position.Y, sprite.Position.Z);
+      //GL.Rotate(1, -_currentCamera.Forward.X, -_currentCamera.Forward.Y, -_currentCamera.Forward.Z);
+      //GL.Rotate(-1, 0, _currentCamera.Forward.Y, 0);
+      GL.Rotate(sprite.Rotation, 0, 0, 1);
+      GL.Scale(sprite.Scale.X, sprite.Scale.Y, 1);
 
       // Vertex Array Buffer
       // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, subModel.VertexBufferID);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
       // Set the Pointer to the current bound array describing how the data ia stored
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       // Enable the client state so it will use this array buffer pointer
       GL.EnableClientState(ArrayCap.VertexArray);
 
-      if (subModel.ElementBufferID != 0)
-      {
-        // Element Array Buffer
-        // Bind to the Array Buffer ID
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subModel.ElementBufferID);
-        // Set the Pointer to the current bound array describing how the data ia stored
-        GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
-        // Enable the client state so it will use this array buffer pointer
-        GL.EnableClientState(ArrayCap.IndexArray);
-        // Draw the elements in the element array buffer
-        // Draws up items in the Color, Vertex, TexCoordinate, and Normal Buffers using indices in the ElementArrayBuffer
-        GL.DrawElements(BeginMode.Triangles, subModel.Indeces.Length, DrawElementsType.UnsignedInt, 0);
-      }
-      else
-      {
-        GL.BindBuffer(BufferTarget.ArrayBuffer, subModel.VertexBufferID);
-        GL.DrawArrays(BeginMode.Triangles, 0, subModel.Verteces.Length);
-      }
+      // Bind the texture to which the UVs are mapping to.
+      GL.BindTexture(TextureTarget.Texture2D, sprite.Texture.GpuHandle);
+      // Bind to the Array Buffer ID
+      GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GPUTextureCoordinateBufferHandle);
+      // Set the Pointer to the current bound array describing how the data ia stored
+      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
+      // Enable the client state so it will use this array buffer pointer
+      GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-      GL.PopClientAttrib();
-    }*/
-
-    public static void DrawSkyBox(SkyBox skyBox)
-    {
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadIdentity();
-      GL.Translate(skyBox.Position.X, skyBox.Position.Y, skyBox.Position.Z);
-      GL.Scale(skyBox.Scale.X, skyBox.Scale.Y, skyBox.Scale.Z);
-
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Up.Handle);
-      GL.Begin(BeginMode.Triangles);
-      GL.Vertex3(-1, -1, -1);
-      GL.TexCoord2(1, 1);
-      GL.Vertex3(-1, -1, 1);
-      GL.TexCoord2(0, 1);
-      GL.Vertex3(-1, 1, 1);
-      GL.TexCoord2(0, 0);
-      GL.Vertex3(-1, 1, -1);
-      GL.TexCoord2(1, 0);
-      GL.End();
-
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Back.Handle);
-      GL.Begin(BeginMode.Triangles);
-      GL.Vertex3(-1, 1, -1);
-      GL.TexCoord2(0, 0);
-      GL.Vertex3(1, 1, -1);
-      GL.TexCoord2(1, 0);
-      GL.Vertex3(1, -1, -1);
-      GL.TexCoord2(1, 1);
-      GL.Vertex3(-1, -1, -1);
-      GL.TexCoord2(0, 1);
-      GL.End();
-
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Left.Handle);
-      GL.Begin(BeginMode.Triangles);
-      GL.Vertex3(1, 1, -1);
-      GL.TexCoord2(1, 1);
-      GL.Vertex3(1, 1, 1);
-      GL.TexCoord2(0, 1);
-      GL.Vertex3(1, -1, 1);
-      GL.TexCoord2(0, 0);
-      GL.Vertex3(1, -1, -1);
-      GL.TexCoord2(1, 0);
-      GL.End();
-
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Right.Handle);
-      GL.Begin(BeginMode.Triangles);
-      GL.Vertex3(-1, -1, 1);
-      GL.TexCoord2(0, 0);
-      GL.Vertex3(1, -1, 1);
-      GL.TexCoord2(1, 0);
-      GL.Vertex3(1, 1, 1);
-      GL.TexCoord2(1, 1);
-      GL.Vertex3(-1, 1, 1);
-      GL.TexCoord2(0, 1);
-      GL.End();
-
-      GL.BindTexture(TextureTarget.Texture2D, skyBox.Front.Handle);
-      GL.Begin(BeginMode.Triangles);
-      GL.Vertex3(1, 1, 1);
-      GL.TexCoord2(1, 0);
-      GL.Vertex3(1, 1, -1);
-      GL.TexCoord2(1, 1);
-      GL.Vertex3(-1, 1, -1);
-      GL.TexCoord2(0, 1);
-      GL.Vertex3(-1, 1, 1);
-      GL.TexCoord2(0, 0);
-      GL.End();
+      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
+      GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
+      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
+      GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
     }
     
     /// <summary>Renders a single static model using "GL.DrawArrays()".</summary>
@@ -247,6 +142,8 @@ namespace Engine
     /// <param name="staticModel">The mesh to be rendered.</param>
     public static void DrawStaticModel(StaticModel staticModel)
     {
+      SetProjectionMatrix();
+
       // Select the model view matrix to apply the world and camera transformation.
       GL.MatrixMode(MatrixMode.Modelview);
       
@@ -312,7 +209,7 @@ namespace Engine
           if (staticModel.Meshes[i].Right.TextureCoordinateBufferHandle != 0)
           {
             // Bind the texture to which the UVs are mapping to.
-            GL.BindTexture(TextureTarget.Texture2D, staticModel.Meshes[i].Left.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, staticModel.Meshes[i].Left.GpuHandle);
             // Bind to the Array Buffer ID
             GL.BindBuffer(BufferTarget.ArrayBuffer, staticModel.Meshes[i].Right.TextureCoordinateBufferHandle);
             // Set the Pointer to the current bound array describing how the data ia stored
@@ -370,18 +267,9 @@ namespace Engine
 
     public static void Render()
     {
-      //_batch.Draw();
       StaticModel model = _staticModelBatch.Dequeue();
       while (_staticModelBatch.Count > 0)
         DrawStaticModel(_staticModelBatch.Dequeue());
-    }
-
-    public static void DrawText(Text text)
-    {
-      foreach (CharacterSprite c in text.CharacterSprites)
-      {
-        DrawSprite(c.Sprite);
-      }
     }
   }
 }

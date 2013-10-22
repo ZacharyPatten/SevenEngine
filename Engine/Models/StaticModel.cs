@@ -1,13 +1,13 @@
 ﻿using System;
 
-using Engine.DataStructures;
-using Engine.Imaging;
-using Engine.Mathematics;
-using Engine.Shaders;
+using SevenEngine.DataStructures;
+using SevenEngine.Imaging;
+using SevenEngine.Mathematics;
+using SevenEngine.Shaders;
 
 using OpenTK;
 
-namespace Engine.Models
+namespace SevenEngine.Models
 {
   public class StaticModel
   {

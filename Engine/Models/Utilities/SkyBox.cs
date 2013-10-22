@@ -3,11 +3,11 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine;
-using Engine.Imaging;
-using Engine.Mathematics;
+using SevenEngine;
+using SevenEngine.Imaging;
+using SevenEngine.Mathematics;
 
-namespace Engine
+namespace SevenEngine
 {
   public class SkyBox
   {

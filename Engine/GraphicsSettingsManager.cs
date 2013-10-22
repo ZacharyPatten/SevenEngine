@@ -1,9 +1,9 @@
-﻿using Engine.Imaging;
+﻿using SevenEngine.Imaging;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Engine
+namespace SevenEngine
 {
   public static class GraphicsSettingsManager
   {

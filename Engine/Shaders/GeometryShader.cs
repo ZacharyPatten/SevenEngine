@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Engine.Shaders
+namespace SevenEngine.Shaders
 {
   [StructLayout(LayoutKind.Sequential)]
   public class GeometryShader

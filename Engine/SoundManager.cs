@@ -4,10 +4,10 @@ using System.IO;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
 
-using Engine.Audio;
-using Engine.DataStructures;
+using SevenEngine.Audio;
+using SevenEngine.DataStructures;
 
-namespace Engine
+namespace SevenEngine
 {
   public static class SoundManager
   {

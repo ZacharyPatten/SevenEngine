@@ -10,6 +10,10 @@
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
 
+// This file contains space and stability values in the "remarks" xml tags of each method.
+// Space values show how much space will be allocated during the algorithm.
+// If a sorting algorithm is stable, it means that equal items will retain their relative order to each other.
+
 // Written by Seven (Zachary Aaron Patten)
 // Last Edited on date 3-6-13
 // Feel free to use this code in any manor you see fit.
@@ -18,7 +22,7 @@
 
 using System;
 
-namespace Engine.Algotithms
+namespace SevenEngine.Algotithms
 {
   public static class Sorting
   {

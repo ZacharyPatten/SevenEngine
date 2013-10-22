@@ -1,6 +1,6 @@
-﻿using Engine.Imaging;
+﻿using SevenEngine.Imaging;
 
-namespace Engine.Texts
+namespace SevenEngine.Texts
 {
   public class CharacterSprite
   {

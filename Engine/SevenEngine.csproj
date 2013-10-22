@@ -8,7 +8,7 @@
     <ProjectGuid>{78E91C0F-F05D-4BBA-92B3-E5A84705F63D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Engine</RootNamespace>
+    <RootNamespace>SevenEngine</RootNamespace>
     <AssemblyName>Engine</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -83,6 +83,7 @@
     <Compile Include="DataStructures\Queue.cs" />
     <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
+    <Compile Include="IGameState.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
@@ -94,12 +95,12 @@
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="Models\Utilities\SkyBox.cs" />
-    <Compile Include="Imaging\SpriteBatch.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\Link.cs" />
     <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Models\Bone.cs" />
+    <Compile Include="SpriteManager.cs" />
     <Compile Include="StaticModelManager.cs" />
     <Compile Include="Models\RigidBodyPartModel.cs" />
     <Compile Include="Models\Vertex.cs" />
@@ -109,7 +110,6 @@
     <Compile Include="Imaging\Color.cs" />
     <Compile Include="Texts\Font.cs" />
     <Compile Include="Texts\FontParser.cs" />
-    <Compile Include="IGameState.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />

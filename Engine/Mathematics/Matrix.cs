@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Engine.Mathematics
+namespace SevenEngine.Mathematics
 {
   [StructLayout(LayoutKind.Sequential)]
   public struct Matrix

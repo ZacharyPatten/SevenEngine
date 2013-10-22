@@ -1,4 +1,4 @@
-﻿namespace Engine
+﻿namespace SevenEngine
 {
   public interface IGameState
   {

@@ -1,10 +1,10 @@
 ﻿using System;
 
-using Engine;
-using Engine.DataStructures;
-using Engine.Imaging;
-using Engine.Models;
-using Engine.Mathematics;
+using SevenEngine;
+using SevenEngine.DataStructures;
+using SevenEngine.Imaging;
+using SevenEngine.Models;
+using SevenEngine.Mathematics;
 
 namespace Game.States
 {
@@ -22,45 +22,51 @@ namespace Game.States
 
     public GameState()
     {
+      // Creates a camera and sets the initial positions
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);
       _camera.Move(_camera.Backward, 1500);
       _camera.Move(_camera.Backward, 300);
-      Renderer.CurrentCamera = _camera;
 
+      // Gets a copy of the "Terrain" model and tracks the number of hardware instances of each component
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
       _terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
+      // Gets a copy of the "RedRanger" model and tracks the number of hardware instances of each component
       _redRanger = StaticModelManager.GetModel("RedRanger");
       _redRanger.RotationAmmounts = new Vector(0, 1, 0);
       _redRanger.RotationAngle = 180f;
       _redRanger.Scale = new Vector(5, 5, 5);
       _redRanger.Position = new Vector(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
+      // Gets a copy of the "YellowRanger" model and tracks the number of hardware instances of each component
       _yellowRanger = StaticModelManager.GetModel("YellowRanger");
       _yellowRanger.RotationAmmounts = new Vector(0, 1, 1);
       _yellowRanger.Scale = new Vector(10, 10, 10);
       _yellowRanger.Position = new Vector(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
+      // Gets a copy of the "BlackRanger" model and tracks the number of hardware instances of each component
       _blackRanger = StaticModelManager.GetModel("BlackRanger");
       _blackRanger.RotationAmmounts = new Vector(1, 1, 0);
       _blackRanger.Scale = new Vector(10, 10, 10);
       _blackRanger.Position = new Vector(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
 
+      // Gets a copy of the "BlueRanger" model and tracks the number of hardware instances of each component
       _blueRanger = StaticModelManager.GetModel("BlueRanger");
       _blueRanger.RotationAmmounts = new Vector(0, 1, 2);
       _blueRanger.Scale = new Vector(10, 10, 10);
       _blueRanger.Position = new Vector(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
+      // Gets a copy of the "PinkRanger" model and tracks the number of hardware instances of each component
       _pinkRanger = StaticModelManager.GetModel("PinkRanger");
       _pinkRanger.RotationAmmounts = new Vector(0, 1, 0);
       _pinkRanger.Scale = new Vector(10, 10, 10);
       _pinkRanger.Position = new Vector(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
-
+      // Gets a copy of the "RedRangerSeven" model and tracks the number of hardware instances of each component
       _RedRangerTwo = StaticModelManager.GetModel("RedRangerSeven");
       _RedRangerTwo.RotationAmmounts = new Vector(0, 1, 0);
       _RedRangerTwo.Scale = new Vector(20, 20, 20);
@@ -70,7 +76,10 @@ namespace Game.States
 
     public void Render()
     {
-      // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
+      // Set the camera for the rendering (alters the positions & orientations of objdects)
+      Renderer.CurrentCamera = _camera;
+
+      // You will alter the projection matrix here. Just use this for now, the Renderer is still under heavy development.
       Renderer.SetProjectionMatrix();
 
       Renderer.DrawStaticModel(_terrain);
@@ -113,16 +122,23 @@ namespace Game.States
       if (InputManager.Keyboard.Edown)
         _camera.Move(_camera.Up, _camera.PositionSpeed);
       if (InputManager.Keyboard.Adown)
-        _camera.Move(_camera.Forward, _camera.PositionSpeed);
-      if (InputManager.Keyboard.Wdown)
-        _camera.Move(_camera.Backward, _camera.PositionSpeed);
-      if (InputManager.Keyboard.Sdown)
         _camera.Move(_camera.Left, _camera.PositionSpeed);
+      if (InputManager.Keyboard.Wdown)
+        _camera.Move(_camera.Forward, _camera.PositionSpeed);
+      if (InputManager.Keyboard.Sdown)
+        _camera.Move(_camera.Backward, _camera.PositionSpeed);
       if (InputManager.Keyboard.Ddown)
         _camera.Move(_camera.Right, _camera.PositionSpeed);
 
       // Camera look angle adjustment
-      // I haven't figured out angular camera changes yet
+      if (InputManager.Keyboard.Kdown)
+        _camera.RotateX(.01f);
+      if (InputManager.Keyboard.Idown)
+        _camera.RotateX(-.01f);
+      if (InputManager.Keyboard.Jdown)
+        _camera.RotateY(.01f);
+      if (InputManager.Keyboard.Ldown)
+        _camera.RotateY(-.01f);
     }
   }
 }

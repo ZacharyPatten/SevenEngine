@@ -8,7 +8,6 @@
 // - "Omega(x)": the member has a lower bound of runtime equation "x"
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
-//   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
 // Notes:
 // - if the letter "n" is used, it typically means the current number of items within the structure
 // - the space values are located in the "remarks" of each constructor
@@ -20,7 +19,7 @@
 // However, please site me because I put quite a bit of time into it.
 // - Thanks. :)
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
   #region Link
 

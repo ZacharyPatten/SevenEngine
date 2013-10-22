@@ -8,13 +8,16 @@ using SevenEngine.Mathematics;
 
 namespace Game.States
 {
-  public class PowerRangerDNA : IGameState
+  public class SpriteState : IGameState
   {
     Camera _camera;
+    Sprite _sprites;
     StaticModel _terrain;
-    StaticModel[] _rangers;
 
-    public PowerRangerDNA()
+    double spriteX = 0;
+    double spriteY = 0;
+
+    public SpriteState()
     {
       _camera = new Camera();
       _camera.PositionSpeed = 5;
@@ -27,20 +30,9 @@ namespace Game.States
       _terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
-      string[] colors = new string[] { "RedRanger", "YellowRanger", "BlueRanger", "BlackRanger", "PinkRanger"};
-
-      Random random = new Random();
-      _rangers = new StaticModel[300];
-      for (int i = 0; i < _rangers.Length; i++)
-      {
-        _rangers[i] = StaticModelManager.GetModel(colors[random.Next(0, 5)]);
-        _rangers[i].Position.X = i * 10 - 500;
-        _rangers[i].Position.Y = _terrain.Position.Y + 130;
-        _rangers[i].Position.Z = i * 10 - 530;
-        _rangers[i].Scale = new Vector(5, 5, 5);
-        _rangers[i].RotationAmmounts = new Vector(0, 1, 0);
-        _rangers[i].RotationAngle = i * 2;
-      }
+      _sprites = new Sprite(TextureManager.Get("Menu"));
+      _sprites.Scale.X = 100;
+      _sprites.Scale.Y = 100;
     }
 
     public void Render()
@@ -50,17 +42,7 @@ namespace Game.States
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       Renderer.SetProjectionMatrix();
 
-      if (InputManager.Keyboard.Vdown)
-      {
-        foreach (StaticModel model in _rangers)
-          Renderer.AddStaticModel(model);
-        Renderer.Render();
-      }
-      else
-      {
-        foreach (StaticModel model in _rangers)
-          Renderer.DrawStaticModel(model);
-      }
+      Renderer.DrawSprite(_sprites);
 
       Renderer.DrawStaticModel(_terrain);
     }
@@ -68,8 +50,13 @@ namespace Game.States
     public string Update(double elapsedTime)
     {
       CameraControls();
-      foreach (StaticModel model in _rangers)
-        model.RotationAngle+=5;
+
+      spriteX += elapsedTime * 2;
+      spriteY += elapsedTime * 2;
+      _sprites.Position.X = Math.Sin(spriteX) * 100;
+      _sprites.Position.Y = Math.Sin(spriteY) * 100;
+
+      // You can return whatever you like, but you should use the return value to determine state changes
       return "Don't Change States";
     }
 

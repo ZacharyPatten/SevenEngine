@@ -1,4 +1,4 @@
-﻿namespace Engine.Texts
+﻿namespace SevenEngine.Texts
 {
   public class CharacterData
   {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{78E91C0F-F05D-4BBA-92B3-E5A84705F63D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenEngine", "Engine\SevenEngine.csproj", "{78E91C0F-F05D-4BBA-92B3-E5A84705F63D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "Game\Game.csproj", "{7FEC005B-B67A-4543-8D29-E85C782B70C3}"
 EndProject

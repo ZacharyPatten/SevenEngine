@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Engine
+namespace SevenEngine
 {
   /// <summary>Utility for the engine. Prints important tasks and errors without crashing the entire game.</summary>
   public static class Output

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Engine.Mathematics
+namespace SevenEngine.Mathematics
 {
   public class Vector
   {

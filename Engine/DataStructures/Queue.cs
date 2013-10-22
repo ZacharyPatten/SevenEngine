@@ -20,7 +20,7 @@
 
 using System;
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
   #region Queue
 

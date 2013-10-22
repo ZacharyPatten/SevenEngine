@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
-namespace Engine.Texts
+using SevenEngine.DataStructures;
+
+namespace SevenEngine.Texts
 {
   /// <summary>
   /// This parser doesn't support kerning! It's also quite brittle and will die on unexpected input.
@@ -26,9 +27,9 @@ namespace Engine.Texts
       return int.Parse(value);
     }
 
-    public static Dictionary<char, CharacterData> Parse(string filePath)
+    public static AvlTree<CharacterData> Parse(string filePath)
     {
-      Dictionary<char, CharacterData> charDictionary = new Dictionary<char, CharacterData>();
+      AvlTree<CharacterData> charDictionary = new AvlTree<CharacterData>();
 
       string[] lines = File.ReadAllLines(filePath);
 
@@ -51,7 +52,7 @@ namespace Engine.Texts
           YOffset = GetValue(typesAndValues[7]),
           XAdvance = GetValue(typesAndValues[8])
         };
-        charDictionary.Add((char)charData.Id, charData);
+        charDictionary.Add(((char)charData.Id).ToString(), charData);
       }
       return charDictionary;
     }

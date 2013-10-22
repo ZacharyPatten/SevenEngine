@@ -1,7 +1,6 @@
 ﻿using System;
-using OpenTK;
-using OpenTK.Graphics;
-using Engine;
+
+using SevenEngine;
 
 namespace Game
 {

@@ -1,7 +1,7 @@
 ﻿// This file contains the following classes:
 // - HeapArrayStatic
 //   - HeapArrayStaticLink
-//   - PriorityHeapArrayStaticException
+//   - HeapArrayStaticException
 // - HeapArrayDynamic
 //   - HeapArrayDynamicLink
 //   - HeapArrayDynamicException
@@ -24,20 +24,20 @@
 
 using System;
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
-  #region PriorityHeapArrayStatic
+  #region HeapArray
 
   /// <summary>Implements a mutable priority heap with static priorities using an array.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags. 
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class HeapArrayStatic<Type>
+  public class HeapArray<Type>
   {
-    #region HeapArrayStaticLink
+    #region HeapArrayLink
 
     /// <summary>This is just a storage class, it stores an entry in the priority heap and its priority.</summary>
-    private class HeapArrayStaticLink
+    private class HeapArrayLink
     {
       private int _priority;
       private Type _value;
@@ -45,7 +45,7 @@ namespace Engine.DataStructures
       internal int Priority { get { return _priority; } set { _priority = value; } }
       internal Type Value { get { return _value; } set { _value = value; } }
 
-      internal HeapArrayStaticLink(int left, Type right)
+      internal HeapArrayLink(int left, Type right)
       {
         _priority = left;
         _value = right;
@@ -55,7 +55,7 @@ namespace Engine.DataStructures
     #endregion
 
     private int _count;
-    private HeapArrayStaticLink[] _queueArray;
+    private HeapArrayLink[] _queueArray;
 
     /// <summary>The maximum items the queue can hold.</summary>
     /// <remarks>Runtime: O(1).</remarks>
@@ -72,12 +72,12 @@ namespace Engine.DataStructures
     /// <summary>Generates a priority queue with a capacity of the parameter. Runtime O(1).</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
     /// <remarks>Runtime: Theta(capacity).</remarks>
-    public HeapArrayStatic(int capacity)
+    public HeapArray(int capacity)
     {
-      _queueArray = new HeapArrayStaticLink[capacity + 1];
-      _queueArray[0] = new HeapArrayStaticLink(int.MaxValue, default(Type));
+      _queueArray = new HeapArrayLink[capacity + 1];
+      _queueArray[0] = new HeapArrayLink(int.MaxValue, default(Type));
       for (int i = 1; i < capacity; i ++)
-        _queueArray[i] = new HeapArrayStaticLink(int.MinValue, default(Type));
+        _queueArray[i] = new HeapArrayLink(int.MinValue, default(Type));
       _count = 0;
     }
 
@@ -158,7 +158,7 @@ namespace Engine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     private void ArraySwap(int indexOne, int indexTwo)
     {
-      HeapArrayStaticLink swapStorage = _queueArray[indexTwo];
+      HeapArrayLink swapStorage = _queueArray[indexTwo];
       _queueArray[indexTwo] = _queueArray[indexOne];
       _queueArray[indexOne] = swapStorage;
     }
@@ -173,7 +173,7 @@ namespace Engine.DataStructures
 
   #endregion
 
-  #region PriorityHeapDynamic
+  #region HeapArrayDynamic
 
   /// <summary>Implements a mutable priority heap with dynamic priorities using an array and a hash table.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>

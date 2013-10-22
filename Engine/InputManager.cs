@@ -2,17 +2,17 @@
 
 using OpenTK.Input;
 
-namespace Engine
+namespace SevenEngine
 {
   /// <summary>Manages input using a state system consisting of two states.</summary>
   public static class InputManager
   {
     // Reference to the keyboard input
-    private static Engine.Input.Keyboard _keyboard;
+    private static SevenEngine.Input.Keyboard _keyboard;
 
     private static Mouse _mouse;
 
-    public static Engine.Input.Keyboard Keyboard { get { return _keyboard; } }
+    public static SevenEngine.Input.Keyboard Keyboard { get { return _keyboard; } }
 
     public static Mouse Mouse { get { return _mouse; } }
 
@@ -26,7 +26,7 @@ namespace Engine
     public static void Update()
     {
       _keyboard.Update();
-      //_mouse.Update();
+      _mouse.Update();
     }
   }
 }

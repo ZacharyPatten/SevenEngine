@@ -1,84 +1,92 @@
-﻿using Engine.Mathematics;
+﻿using System;
 
-namespace Engine.Imaging
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+
+using SevenEngine.Mathematics;
+
+namespace SevenEngine.Imaging
 {
   public class Sprite
   {
-    private const int VertexAmount = 6;
+    private static readonly int _vertexCount = 6;
 
-    Vector[] _vertexPositions;
-    Color[] _vertexColors;
-    Point[] _vertexUVs;
-    Texture _texture;
+    private Vector _position;
+    private Texture _texture;
+    private Point _scale;
+    private double _rotation;
+    private static int _gpuVertexBufferHandle;
+    private int _gpuTextureMappingBufferHandle;
 
-    public Vector[] VertexPositions { get { return _vertexPositions; } }
-    public Color[] VertexColors { get { return _vertexColors; } }
-    public Point[] VertexUVs { get { return _vertexUVs; } }
+    internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
+    internal int GPUTextureCoordinateBufferHandle { get { return _gpuTextureMappingBufferHandle; } }
 
-    public double Width { get { return _vertexPositions[1].X - _vertexPositions[0].X; } set { double newWidth = value; InitVertexPositions(Center, newWidth, Height); } }
-    public double Height { get { return _vertexPositions[0].Y - _vertexPositions[2].Y; } set { double newHeight = value; InitVertexPositions(Center, Width, newHeight); } }
-    public Vector Center { get { return new Vector(_vertexPositions[0].X + (Width / 2), _vertexPositions[0].Y - (Height / 2), _vertexPositions[0].Z); } set { Vector newPosition = value; InitVertexPositions(newPosition, Width, Height); } }
+    internal int VertexCount { get { return _vertexCount; } }
 
+    /// <summary>Get and set the position of the sprite.</summary>
+    public Vector Position { get { return _position; } set { _position = value; } }
+    /// <summary>Get and set the size of the sprite.</summary>
+    public Point Scale { get { return _scale; } set { _scale = value; } }
+    /// <summary>Get and set the rotation angle of the sprite.</summary>
+    public double Rotation { get { return _rotation; } set { _rotation = value; } }
+
+    /// <summary>Get and set the texture the sprite is mapping to.</summary>
+    public Texture Texture { get { return _texture; } set { _texture = value; } }
+
+    /// <summary>Creates an instance of a sprite.</summary>
+    /// <param name="texture">The texture to have this sprite mapped to.</param>
     public Sprite(Texture texture)
     {
-      _vertexPositions = new Vector[VertexAmount];
-      _vertexColors = new Color[VertexAmount];
-      _vertexUVs = new Point[VertexAmount];
+      if (_gpuVertexBufferHandle == 0)
+        GenerateVertexBuffer();
+      _position = new Vector(0, 0, -10);
+      _scale = new Point(1, 1);
+      _rotation = 0d;
       _texture = texture;
-
-      InitVertexPositions(new Vector(0, 0, 0), 1, 1);
-      SetColor(new Color(1, 1, 1, 1));
-      SetUVs(new Point(0, 0), new Point(1, 1));
+      GenerateTextureCoordinateBuffer();
     }
 
-    public Texture Texture
+    /// <summary>Generates the vertex buffer that all sprites will use.</summary>
+    private void GenerateVertexBuffer()
     {
-      get { return _texture; }
-      set
-      {
-        _texture = value;
-        // By default the width and height is set
-        // to that of the texture
-        InitVertexPositions(Center, _texture.Width, _texture.Height);
-      }
-    }
-    
-    private void InitVertexPositions(Vector position, double width, double height)
-    {
-      double halfWidth = width / 2;
-      double halfHeight = height / 2;
-      // Clockwise creation of two triangles to make a quad.
-
-      // TopLeft, TopRight, BottomLeft
-      _vertexPositions[0] = new Vector(position.X - halfWidth, position.Y + halfHeight, position.Z);
-      _vertexPositions[1] = new Vector(position.X + halfWidth, position.Y + halfHeight, position.Z);
-      _vertexPositions[2] = new Vector(position.X - halfWidth, position.Y - halfHeight, position.Z);
-
-      // TopRight, BottomRight, BottomLeft
-      _vertexPositions[3] = new Vector(position.X + halfWidth, position.Y + halfHeight, position.Z);
-      _vertexPositions[4] = new Vector(position.X + halfWidth, position.Y - halfHeight, position.Z);
-      _vertexPositions[5] = new Vector(position.X - halfWidth, position.Y - halfHeight, position.Z);
+      // Every sprite uses the same vertex positions
+      float[] verteces = new float[] {
+        1f,1f,0f,  -1f,1f,0f,  1f,-1f,0f,
+        -1f,-1f,0f,  1f,-1f,0f,  -1f,1f,0f };
+      // Declare the buffer
+      GL.GenBuffers(1, out _gpuVertexBufferHandle);
+      // Select the new buffer
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _gpuVertexBufferHandle);
+      // Initialize the buffer values
+      GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(verteces.Length * sizeof(float)), verteces, BufferUsageHint.StaticDraw);
+      // Quick error checking
+      int bufferSize;
+      GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out bufferSize);
+      if (verteces.Length * sizeof(float) != bufferSize)
+        throw new ApplicationException("Vertex array not uploaded correctly");
+      // Deselect the new buffer
+      GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
 
-    public void SetColor(Color color)
+    /// <summary>Generates the vertex buffer that all sprites will use.</summary>
+    private void GenerateTextureCoordinateBuffer()
     {
-      for (int i = 0; i < Sprite.VertexAmount; i++)
-      {
-        _vertexColors[i] = color;
-      }
-    }
-
-    public void SetUVs(Point topLeft, Point bottomRight)
-    {
-      // TopLeft, TopRight, BottomLeft
-      _vertexUVs[0] = topLeft;
-      _vertexUVs[1] = new Point(bottomRight.X, topLeft.Y);
-      _vertexUVs[2] = new Point(topLeft.X, bottomRight.Y);
-
-      // TopRight, BottomRight, BottomLeft
-      _vertexUVs[3] = new Point(bottomRight.X, topLeft.Y);
-      _vertexUVs[4] = bottomRight;
-      _vertexUVs[5] = new Point(topLeft.X, bottomRight.Y);
+      float[] textureMappings = new float[] {
+        1f,0f,  0f,0f,  1f,1f,
+        0f,1f,  1f,1f,  0f,0f, };
+      // Declare the buffer
+      GL.GenBuffers(1, out _gpuTextureMappingBufferHandle);
+      // Select the new buffer
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _gpuTextureMappingBufferHandle);
+      // Initialize the buffer values
+      GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(textureMappings.Length * sizeof(float)), textureMappings, BufferUsageHint.StaticDraw);
+      // Quick error checking
+      int bufferSize;
+      GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out bufferSize);
+      if (textureMappings.Length * sizeof(float) != bufferSize)
+        throw new ApplicationException("Texture mapping array not uploaded correctly");
+      // Deselect the new buffer
+      GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
   }
 }

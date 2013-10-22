@@ -10,7 +10,6 @@
 // - "Omega(x)": the member has a lower bound of runtime equation "x"
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
-//   (THIS IS MY PERSONAL ESTIMATION, AND CONSIDERING I WROTE THE CODE YOU SHOULD PROBABLY TRUST ME)
 // Note that if the letter "n" is used, it typically means the current number of items within the set.
 
 // Written by Seven (Zachary Aaron Patten)
@@ -21,7 +20,7 @@
 
 using System;
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
   #region AvlTree
 
@@ -163,7 +162,6 @@ namespace Engine.DataStructures
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
     public void Remove(string removal)
     {
-      throw new AvlTreeException("I have not yet finished the removal method.");
       _avlTree = Remove(removal, _avlTree);
       _count--;
     }
@@ -190,7 +188,13 @@ namespace Engine.DataStructures
             avlTree = leftMostOfRight;
           }
           else if (avlTree.LeftChild != null)
-            avlTree = avlTree.LeftChild;
+          {
+            AvlTreeNode rightMostOfLeft;
+            avlTree.RightChild = RemoveLeftMost(avlTree.RightChild, out rightMostOfLeft);
+            rightMostOfLeft.RightChild = avlTree.RightChild;
+            rightMostOfLeft.LeftChild = avlTree.LeftChild;
+            avlTree = rightMostOfLeft;
+          }
           else
             return null;
           SetHeight(avlTree);
@@ -220,6 +224,23 @@ namespace Engine.DataStructures
         return null;
       }
       avlTree.LeftChild = RemoveLeftMost(avlTree.LeftChild, out leftMost);
+      SetHeight(avlTree);
+      return Balance(avlTree);
+    }
+
+    /// <summary>Removes the right-most child of an AVL Tree node and returns it through the out parameter.</summary>
+    /// <param name="avlTree">The tree to remove the right-most child from.</param>
+    /// <param name="leftMost">The right-most child of this AVL tree.</param>
+    /// <returns>The updated tree with the removal.</returns>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    private AvlTreeNode RemoveRightMost(AvlTreeNode avlTree, out AvlTreeNode rightMost)
+    {
+      if (avlTree.RightChild == null)
+      {
+        rightMost = avlTree;
+        return null;
+      }
+      avlTree.LeftChild = RemoveLeftMost(avlTree.RightChild, out rightMost);
       SetHeight(avlTree);
       return Balance(avlTree);
     }

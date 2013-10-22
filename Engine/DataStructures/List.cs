@@ -22,7 +22,7 @@
 
 using System;
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
   #region List
 
@@ -153,6 +153,10 @@ namespace Engine.DataStructures
 
   #region ListArray
 
+  /// <summary>Implements a growing list as an array, so there is possible expansions/contractions.</summary>
+  /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
+  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
+  /// Seven (Zachary Patten) 10-12-13.</remarks>
   public class ListArray<Type>
   {
     private Type[] _list;

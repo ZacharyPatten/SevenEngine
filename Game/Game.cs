@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
-using Engine;
+using SevenEngine;
+using SevenEngine.Imaging;
+using SevenEngine.DataStructures;
+using SevenEngine.Shaders;
+
 using Game.States;
-using Engine.Imaging;
-using Engine.DataStructures;
-using Engine.Shaders;
 
 namespace Game
 {
@@ -22,7 +24,7 @@ namespace Game
       GraphicsSettingsManager.BackFaceCulling = true;
       GraphicsSettingsManager.DepthBuffer = true;
       GraphicsSettingsManager.VerticalSyncronization = true;
-      GraphicsSettingsManager.ClearColor = Color.DarkBlue;
+      GraphicsSettingsManager.ClearColor = Color.DarkOrchid;
       GraphicsSettingsManager.Texture2D = true;
       GraphicsSettingsManager.Blend = true;
       GraphicsSettingsManager.SetAlphaBlending();
@@ -42,7 +44,8 @@ namespace Game
       // LOAD TEXTURES HERE.
       // Use the static class "TextureManager"
 
-      // Note: I only support ".bmp"files at the moment. Just pull non-bitmaps into any standard image editor and export them as bitmap files.
+      // Note: I only support ".bmp"files at the moment.
+      // Just pull non-bitmaps into any standard image editor and export them as bitmap files.
 
       TextureManager.LoadTexture("grass",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\grass.bmp");
@@ -56,6 +59,9 @@ namespace Game
         Directory.GetCurrentDirectory() + @"\..\..\Assets\BlackRangerBody.bmp");
       TextureManager.LoadTexture("YellowRanger",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\YellowRangerBody.bmp");
+
+      TextureManager.LoadTexture("Menu",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Menu.bmp");
     }
 
     public override void InitializeModels()
@@ -147,13 +153,14 @@ namespace Game
 
       StateManager.AddState("gameState", new GameState());
       StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
-      //StateManager.ChangeState("gameState");
+      StateManager.AddState("spriteTesting", new SpriteState());
       StateManager.ChangeState("priorityHeapTesting");
     }
 
     public override void Update(double elapsedTime)
     {
-      //DO NOT UPDATE GAME LOGIC HERE!!! Use the state manager and only change states if need be...
+      // DO NOT UPDATE LOW LEVEL GAME LOGIC HERE!!!
+      // Only change states as need be with the static "StateManager" class.
       string stateStatus = StateManager.Update(elapsedTime);
       // Use the stateStatus string to determine the need for a state change.
       // It defaults to "Don't Change States". An example is if the string is

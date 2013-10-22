@@ -1,30 +1,26 @@
 ﻿using System;
 using System.IO;
 
-using Engine.DataStructures;
-using Engine.Models;
-using Engine.Imaging;
+using SevenEngine.DataStructures;
+using SevenEngine.Models;
+using SevenEngine.Imaging;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Engine
+namespace SevenEngine
 {
   public static class StaticModelManager
   {
-    //private static Dictionary<string, StaticMesh> _staticMeshDatabase = new Dictionary<string, StaticMesh>();
-    //private static Dictionary<string, StaticModel> _staticModelDatabase = new Dictionary<string, StaticModel>();
     private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTree<StaticMesh>();
     private static AvlTree<StaticModel> _staticModelDatabase = new AvlTree<StaticModel>();
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
     public static int Count { get { return _staticMeshDatabase.Count; } }
 
-    internal static StaticMesh GetMesh(string staticMeshId)
+    public static StaticMesh GetMesh(string staticMeshId)
     {
-      //StaticMesh mesh = _staticMeshDatabase[staticMeshId];
       StaticMesh mesh = _staticMeshDatabase.Get(staticMeshId);
-      //mesh.ExistingReferences++;
       return mesh;
     }
 
@@ -33,7 +29,6 @@ namespace Engine
     /// <returns>The desired static model if it exists.</returns>
     public static StaticModel GetModel(string staticModelId)
     {
-      //return _staticModelDatabase[staticModelId].Clone();
       return _staticModelDatabase.Get(staticModelId).Clone();
     }
 
@@ -114,12 +109,6 @@ namespace Engine
           string[] parameters = reader.ReadLine().Trim().Split(' ');
           switch (parameters[0])
           {
-            // Texture
-            case "t":
-              TextureManager.LoadTexture(parameters[1], parameters[1]);
-              texture = TextureManager.Get(parameters[1]);
-              break;
-
             // Vertex
             case "v":
               fileVerteces.Add(float.Parse(parameters[1]));

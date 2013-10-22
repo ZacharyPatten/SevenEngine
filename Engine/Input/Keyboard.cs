@@ -1,19 +1,18 @@
-﻿using System;
+﻿using OpenTK.Input;
 
-using OpenTK.Input;
-
-namespace Engine.Input
+namespace SevenEngine.Input
 {
-  /// <summary>Manages input using a state system consisting of two states.</summary>
+  /// <summary>Manages keyboard input using a state system consisting of two states.</summary>
   public class Keyboard
   {
-    // The number of keys supported
+    // The number of keys supported by OpenTK
     private const int _numberOfKeyboardKeys = 144;
 
+    // The state storages
     private bool[] _stateOne;
     private bool[] _stateTwo;
 
-    // Reference to the current state
+    // Reference to the states indicating past/present
     private bool[] _currentState;
     private bool[] _previousState;
 

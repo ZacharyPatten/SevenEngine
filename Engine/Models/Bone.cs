@@ -1,8 +1,8 @@
 ﻿using System;
 
-using Engine.Mathematics;
+using SevenEngine.Mathematics;
 
-namespace Engine.Models
+namespace SevenEngine.Models
 {
   public class Bone
   {

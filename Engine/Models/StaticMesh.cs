@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 
-using Engine.Imaging;
+using SevenEngine.Imaging;
 
-namespace Engine.Models
+namespace SevenEngine.Models
 {
   [StructLayout(LayoutKind.Sequential)]
   public class StaticMesh
@@ -48,7 +48,7 @@ namespace Engine.Models
     /// <param name="normalBufferHandle">The number reference of the normal buffer on the GPU (default is 0).</param>
     /// <param name="elementBufferHandle">The number reference of the element buffer on the GPU (default is 0).</param>
     /// <param name="vertexCount">The number of verteces making up the mesh.</param>
-    public StaticMesh(
+    internal StaticMesh(
       string filePath,
       string staticMeshId,
       int vertexBufferHandle, 

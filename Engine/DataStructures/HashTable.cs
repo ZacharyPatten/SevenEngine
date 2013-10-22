@@ -19,7 +19,7 @@
 using System;
 using System.Collections;
 
-namespace Engine.DataStructures
+namespace SevenEngine.DataStructures
 {
   #region HashTable
 

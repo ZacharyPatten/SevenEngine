@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-using Engine.Imaging;
-using Engine.Mathematics;
+using SevenEngine.Imaging;
+using SevenEngine.Mathematics;
 
-namespace Engine.Models
+namespace SevenEngine.Models
 {
   [StructLayout(LayoutKind.Sequential)]
   public class Vertex

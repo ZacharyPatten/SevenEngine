@@ -1,14 +1,23 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Engine.Mathematics
+namespace SevenEngine.Mathematics
 {
   [StructLayout(LayoutKind.Sequential)]
-  public struct Point
+  public class Point
   {
-    public float X { get; set; }
-    public float Y { get; set; }
+    private double _x;
+    private double _y;
 
-    public Point(float x, float y) : this()
+    public double X { get { return _x; } set { _x = value; } }
+    public double Y { get { return _y; } set { _y = value; } }
+
+    public Point()
+    {
+      _x = 0d;
+      _y = 0d;
+    }
+
+    public Point(double x, double y)
     {
       X = x;
       Y = y;

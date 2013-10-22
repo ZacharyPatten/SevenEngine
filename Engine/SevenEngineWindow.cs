@@ -3,13 +3,13 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using Engine;
-//using Engine.Imaging;
-using Engine.Utilities;
+using SevenEngine;
+using SevenEngine.Imaging;
+using SevenEngine.Utilities;
 
-namespace Engine
+namespace SevenEngine
 {
-  public class SevenEngineWindow : GameWindow
+  public abstract class SevenEngineWindow : GameWindow
   {
     // This timer calculates the time between updates in SECONDS.
     protected PreciseTimer _timer;
@@ -28,8 +28,10 @@ namespace Engine
       BaseInitializeStates();
 
       // This is a temporary fix to changing transformation matrices
-      Renderer.ScreenWidth = this.ClientSize.Width;
-      Renderer.ScreenHeight = this.ClientSize.Height;
+      Renderer.ScreenWidth = ClientSize.Width;
+      Renderer.ScreenHeight = ClientSize.Height;
+
+      Renderer.SetViewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
       _timer = new PreciseTimer();
 
@@ -40,11 +42,11 @@ namespace Engine
     protected override void OnResize(EventArgs e)
     {
       base.OnResize(e);
-      GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
+      Renderer.SetViewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
       // This is a temporary fix to changing transformation matrices
-      Renderer.ScreenWidth = this.ClientSize.Width;
-      Renderer.ScreenHeight = this.ClientSize.Height;
+      Renderer.ScreenWidth = ClientSize.Width;
+      Renderer.ScreenHeight = ClientSize.Height;
     }
 
     /// <summary>Give the input manager a reference to the Keyboard from OpenTK.</summary>
@@ -58,11 +60,8 @@ namespace Engine
     {
       Output.WriteLine("Initializing Display {");
       Output.IncreaseIndent();
-
-      // This is kinda hack-y, but I want people to be able to change the settings from my "GraphicsSettingsManager"
-      // class instead of calling the OpenTK "GameWindow" code. (needed for full OpenTK abstraction)
+      // This is so the GraphicsSettingsManager can change window properties
       GraphicsSettingsManager.InitializeWindow(this);
-
       InitializeDisplay();
       Output.DecreaseIndent();
       Output.WriteLine("} Display Initialized;");
@@ -134,10 +133,10 @@ namespace Engine
       if (InputManager.Keyboard.Escapepressed) { this.Exit(); return; }
       if (InputManager.Keyboard.F1pressed)
       {
-        if (this.WindowState == WindowState.Normal) this.WindowState = WindowState.Fullscreen;
-        else if (this.WindowState == WindowState.Fullscreen) this.WindowState = WindowState.Normal;
+        if (WindowState == WindowState.Normal) WindowState = WindowState.Fullscreen;
+        else if (WindowState == WindowState.Fullscreen) WindowState = WindowState.Normal;
       }
-      Update(_timer.GetElapsedTime());
+      Update(_timer.GetElaspedMilliseconds());
       // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>

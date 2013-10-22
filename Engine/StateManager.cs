@@ -1,8 +1,8 @@
 ﻿using System;
 
-using Engine.DataStructures;
+using SevenEngine.DataStructures;
 
-namespace Engine
+namespace SevenEngine
 {
   public static class StateManager
   {
