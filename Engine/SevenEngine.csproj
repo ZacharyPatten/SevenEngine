@@ -84,9 +84,12 @@
     <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
     <Compile Include="IGameState.cs" />
+    <Compile Include="Mathematics\Foundations.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
+    <Compile Include="Mathematics\Trigonometry.cs" />
     <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
+    <Compile Include="PhysicsManager.cs" />
     <Compile Include="SevenEngineWindow.cs" />
     <Compile Include="ShaderManager.cs" />
     <Compile Include="Shaders\ExtendedGeometryShader.cs" />
@@ -102,9 +105,8 @@
     <Compile Include="Models\Bone.cs" />
     <Compile Include="SpriteManager.cs" />
     <Compile Include="StaticModelManager.cs" />
-    <Compile Include="Models\RigidBodyPartModel.cs" />
     <Compile Include="Models\Vertex.cs" />
-    <Compile Include="Utilities\Output.cs" />
+    <Compile Include="Output.cs" />
     <Compile Include="Texts\CharacterData.cs" />
     <Compile Include="Texts\CharacterSprite.cs" />
     <Compile Include="Imaging\Color.cs" />
@@ -114,7 +116,7 @@
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Mathematics\Point.cs" />
-    <Compile Include="Utilities\PreciseTimer.cs" />
+    <Compile Include="PreciseTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="Sounds\Sound.cs" />

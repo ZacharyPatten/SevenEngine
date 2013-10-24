@@ -39,23 +39,24 @@ namespace SevenEngine.DataStructures
     {
       private string _id;
       private Type _value;
-      private ListNode _down;
+      private ListNode _next;
 
       internal string Id { get { return _id; } set { _id = value; } }
       internal Type Value { get { return _value; } set { _value = value; } }
-      internal ListNode Down { get { return _down; } set { _down = value; } }
+      internal ListNode Next { get { return _next; } set { _next = value; } }
 
       internal ListNode(string id, Type data, ListNode down)
       {
         _id = id;
         _value = data;
-        _down = down;
+        _next = down;
       }
     }
 
     #endregion
 
     private ListNode _head;
+    private ListNode _tail;
     private ListNode _currentIterator;
     private int _count;
 
@@ -68,13 +69,14 @@ namespace SevenEngine.DataStructures
     public List()
     {
       _head = null;
+      _tail = null;
       _count = 0;
     }
 
     /// <summary>Adds an item to the list.</summary>
     /// <param name="id">The string id of the item to add to the list.</param>
     /// <param name="addition">The item to add to the list.</param>
-    /// <remarks>Runtime: Theta(n).</remarks>
+    /// <remarks>Runtime: O(1).</remarks>
     public void Add(string id, Type addition)
     {
       Add(id, addition, _head);
@@ -85,15 +87,24 @@ namespace SevenEngine.DataStructures
     /// <param name="id">The string id of the addition.</param>
     /// <param name="addition">The item to add to the list.</param>
     /// <param name="listNode">The current location during recursion.</param>
-    /// <remarks>Runtime: Theta(n).</remarks>
+    /// <remarks>Runtime: O(1).</remarks>
     private void Add(string id, Type addition, ListNode listNode)
     {
-      if (listNode == null)
-        _head = new ListNode(id, addition, null);
-      if (listNode.Id == id)
-        throw new ListException("Attempting to add an already existing id value.");
-      else if (listNode.Down == null)
-        listNode.Down = new ListNode(id, addition, null);
+      //if (listNode == null)
+      //  _head = new ListNode(id, addition, null);
+      //if (listNode.Id == id)
+      //  throw new ListException("Attempting to add an already existing id value.");
+      //else if (listNode.Down == null)
+      //  listNode.Down = new ListNode(id, addition, null);
+      if (_tail == null)
+        _tail = new ListNode(id, addition, null);
+      else
+      {
+        _tail.Next = new ListNode(id, addition, null);
+        _tail = _tail.Next;
+      }
+      if (_head == null)
+        _head = _tail;
     }
 
     /// <summary>Removes an item from the list with the matching string id.</summary>
@@ -108,17 +119,31 @@ namespace SevenEngine.DataStructures
     /// <summary>Removes an item from the list with the matching string id.</summary>
     /// <param name="removalId">The string id of the item to remove.</param>
     /// <param name="listNode">The current location during recursion.</param>
-    /// <remarks>Runtime: Theta(n).</remarks>
+    /// <remarks>Runtime: O(n).</remarks>
     private void Remove(string removalId, ListNode listNode)
     {
+      //if (listNode == null)
+      //  throw new ListException("Attempting to remove a non-existing id value.");
+      //else if (listNode.Id == removalId)
+      //  _head = _head.Down;
+      //else if (listNode.Down.Id == removalId)
+      //  listNode.Down = listNode.Down.Down;
+      //else
+      //  Remove(removalId, listNode.Down);
       if (listNode == null)
         throw new ListException("Attempting to remove a non-existing id value.");
       else if (listNode.Id == removalId)
-        _head = _head.Down;
-      else if (listNode.Down.Id == removalId)
-        listNode.Down = listNode.Down.Down;
+        _head = _head.Next;
+      else if (listNode.Next == null)
+        throw new ListException("Attempting to remove a non-existing id value.");
+      else if (listNode.Next.Id == removalId)
+      {
+        if (listNode.Next.Equals(_tail))
+          _tail = listNode;
+        listNode.Next = listNode.Next.Next;
+      }
       else
-        Remove(removalId, listNode.Down);
+        Remove(removalId, listNode.Next);
     }
 
     /// <summary>Initializes an iterator for this list. Use IterateNext to iterate through the list.</summary>
@@ -129,19 +154,40 @@ namespace SevenEngine.DataStructures
     /// <param name="next">The next item in the current iteration of the list.</param>
     /// <returns>If there is an item to return. "false": nothing to return (end of list). "true": still iterating.</returns>
     /// <remarks>Runtime: O(1).</remarks> 
-    public bool IterateGetNext(out Type next)
+    public bool IteratorGetNext(out Type next)
     {
       next = default(Type);
       if (_currentIterator == null)
         return false;
       next = _currentIterator.Value;
-      _currentIterator = _currentIterator.Down;
+      _currentIterator = _currentIterator.Next;
       return true;
     }
 
+    /// <summary>Allows you to rename an entry within this list.</summary>
+    /// <param name="oldName">The id of the list entry to rename.</param>
+    /// <param name="newName">The new id to apply to the node.</param>
+    /// <remarks>Runtime: Theta(n).</remarks>
+    public void RenameEntry(string oldName, string newName)
+    {
+      ListNode looper = _head;
+      ListNode rename = null;
+      while (looper != null)
+      {
+        if (looper.Id == newName)
+          throw new ListException("Attempting to rename a list entry to an already existing id.");
+        if (looper.Id == oldName)
+          rename = looper;
+        looper = looper.Next;
+      }
+      rename.Id = newName;
+    }
+
+    /// <summary>Resets the list to an empty state. WARNING could cause excessive garbage collection.</summary>
     public void Clear()
     {
       _head = null;
+      _tail = null;
       _count = 0;
     }
 

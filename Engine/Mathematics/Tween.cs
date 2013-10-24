@@ -11,27 +11,16 @@ namespace SevenEngine.Mathematics
     double _totalDuration = 5;
     bool _finished = false;
     TweenFunction _tweenF = null;
+
     public delegate double TweenFunction(double timePassed, double start, double distance, double duration);
 
-    public double Value()
-    {
-      return _current;
-    }
+    public double Value() { return _current; }
 
-    public bool IsFinished()
-    {
-      return _finished;
-    }
+    public bool IsFinished() { return _finished; }
 
-    public Tween(double start, double end, double time)
-    {
-      Construct(start, end, time, Tween.Linear);
-    }
+    public Tween(double start, double end, double time) { Construct(start, end, time, Tween.Linear); }
 
-    public Tween(double start, double end, double time, TweenFunction tweenF)
-    {
-      Construct(start, end, time, tweenF);
-    }
+    public Tween(double start, double end, double time, TweenFunction tweenF) { Construct(start, end, time, tweenF); }
 
     public void Construct(double start, double end, double time, TweenFunction tweenF)
     {
@@ -62,22 +51,15 @@ namespace SevenEngine.Mathematics
     public static double EaseOutExpo(double timePassed, double start, double distance, double duration)
     {
       if (timePassed == duration)
-      {
         return start + distance;
-      }
       return distance * (-Math.Pow(2, -10 * timePassed / duration) + 1) + start;
     }
 
     public static double EaseInExpo(double timePassed, double start, double distance, double duration)
     {
       if (timePassed == 0)
-      {
         return start;
-      }
-      else
-      {
-        return distance * Math.Pow(2, 10 * (timePassed / duration - 1)) + start;
-      }
+      return distance * Math.Pow(2, 10 * (timePassed / duration - 1)) + start;
     }
 
     public static double EaseOutCirc(double timePassed, double start, double distance, double duration)

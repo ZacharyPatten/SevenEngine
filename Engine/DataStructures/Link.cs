@@ -21,12 +21,12 @@
 
 namespace SevenEngine.DataStructures
 {
-  #region Link
+  #region Link2
 
   /// <summary>Creates a link between two objects. (you may recognize this as a tuple)</summary>
   /// <typeparam name="LeftItem">The type of the left item to be linked.</typeparam>
   /// <typeparam name="RightItem">The type of the right item to be linked.</typeparam>
-  public class Link<LeftItem, RightItem>
+  public class Link2<LeftItem, RightItem>
   {
     private LeftItem _left;
     private RightItem _right;
@@ -42,9 +42,45 @@ namespace SevenEngine.DataStructures
     /// <param name="left">The left item to be linked.</param>
     /// <param name="right">The right item to be linked.</param>
     /// <remarks>Runtime: O(1). Space: Theta(2).</remarks>
-    public Link(LeftItem left, RightItem right)
+    public Link2(LeftItem left, RightItem right)
     {
       _left = left;
+      _right = right;
+    }
+  }
+
+  #endregion
+
+  #region Link3
+
+  /// <summary>Creates a link between two objects. (you may recognize this as a tuple)</summary>
+  /// <typeparam name="LeftItem">The type of the left item to be linked.</typeparam>
+  /// <typeparam name="MiddleItem">The type of the middle item to be linked.</typeparam>
+  /// <typeparam name="RightItem">The type of the right item to be linked.</typeparam>
+  public class Link3<LeftItem, MiddleItem, RightItem>
+  {
+    private LeftItem _left;
+    private MiddleItem _middle;
+    private RightItem _right;
+
+    /// <summary>The left item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public LeftItem Left { get { return _left; } set { _left = value; } }
+    /// <summary>The middle item of the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public MiddleItem Middle { get { return _middle; } set { _middle = value; } }
+    /// <summary>The right item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public RightItem Right { get { return _right; } set { _right = value; } }
+
+    /// <summary>Creates a link between two objects.</summary>
+    /// <param name="left">The left item to be linked.</param>
+    /// <param name="right">The right item to be linked.</param>
+    /// <remarks>Runtime: O(1). Space: Theta(2).</remarks>
+    public Link3(LeftItem left, MiddleItem middle, RightItem right)
+    {
+      _left = left;
+      _middle = middle;
       _right = right;
     }
   }

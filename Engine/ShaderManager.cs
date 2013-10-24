@@ -9,13 +9,14 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
+  /// <summary>This static ShaderManager class is storage for all shader files and shader programs. It also includes the code for
+  /// loading shaders from files and linking them into shader programs.</summary>
   public static class ShaderManager
   {
     private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTree<VertexShader>();
     private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTree<FragmentShader>();
     private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTree<GeometryShader>();
     private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader>();
-
     private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree<ShaderProgram>();
 
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
@@ -218,13 +219,13 @@ namespace SevenEngine
 
       // Link the desired shaders to complete the shader program on the GPU.
       if (vertexShaderId != null)
-        GL.AttachShader(programHandle, GetVertexShader(vertexShaderId).Handle);
+        GL.AttachShader(programHandle, GetVertexShader(vertexShaderId).GpuHandle);
       if (fragmentShaderId != null)
-        GL.AttachShader(programHandle, GetFragmentShader(fragmentShaderId).Handle);
+        GL.AttachShader(programHandle, GetFragmentShader(fragmentShaderId).GpuHandle);
       if (geometryShaderId != null)
-        GL.AttachShader(programHandle, GetGeometryShader(geometryShaderId).Handle);
+        GL.AttachShader(programHandle, GetGeometryShader(geometryShaderId).GpuHandle);
       if (extendedGeometryShaderId != null)
-        GL.AttachShader(programHandle, GetExtendedGeometryShader(extendedGeometryShaderId).Handle);
+        GL.AttachShader(programHandle, GetExtendedGeometryShader(extendedGeometryShaderId).GpuHandle);
 
       // Call for OpenGL to link the program together
       GL.LinkProgram(programHandle);
@@ -255,7 +256,7 @@ namespace SevenEngine
         //return false;
       //}
 
-      GL.UseProgram(GetShaderProgram(shaderProgramId).Handle);
+      GL.UseProgram(GetShaderProgram(shaderProgramId).GpuHandle);
       Output.WriteLine("Shader program activated: \"" + shaderProgramId + "\";");
       return true;
     }

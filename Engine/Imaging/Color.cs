@@ -2,6 +2,7 @@
 
 namespace SevenEngine.Imaging
 {
+  /// <summary>Represents a single color by RGBA values.</summary>
   [StructLayout(LayoutKind.Sequential)]
   public class Color
   {
@@ -11,13 +12,13 @@ namespace SevenEngine.Imaging
     private double _alpha;
 
     /// <summary>The ammount of red (0-255).</summary>
-    public double Red { get { return _red; } set { _red = value; } }
+    public double Red { get { return _red; } set { if (value < 0) _red = 0; else if (value > 255) _red = 255; else _red = value; } }
     /// <summary>The ammount of green (0-255).</summary>
-    public double Green { get { return _green; } set { _green = value; } }
+    public double Green { get { return _green; } set { if (value < 0) _green = 0; else if (value > 255) _green = 255; else _green = value; } }
     /// <summary>The ammount of blue (0-255).</summary>
-    public double Blue { get { return _blue; } set { _blue = value; } }
-    /// <summary>The alpha value.</summary>
-    public double Alpha { get { return _alpha; } set { _alpha = value; } }
+    public double Blue { get { return _blue; } set { if (value < 0) _blue = 0; else if (value > 255) _blue = 255; else _blue = value; } }
+    /// <summary>The alpha value (0-255).</summary>
+    public double Alpha { get { return _alpha; } set { if (value < 0) _alpha = 0; else if (value > 255) _alpha = 255; else _alpha = value; } }
 
     /// <summary>Creates an instance of a color and defaults it to black.</summary>
     public Color()

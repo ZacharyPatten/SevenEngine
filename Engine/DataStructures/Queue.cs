@@ -65,6 +65,8 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public Queue()
     {
+      _front = new QueueNode(default(Type), null, null);
+      _back = new QueueNode(default(Type), null, null);
       _front.Next = _back;
       _back.Previous = _front;
       _count = 0;

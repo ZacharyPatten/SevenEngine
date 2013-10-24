@@ -9,6 +9,7 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
+  // THE SOUND CLASSES ARE NOT YET FUNCTINAL, PLEASE WAIT FOR ME TO FINISH THEM...
   public static class SoundManager
   {
     struct SoundSource

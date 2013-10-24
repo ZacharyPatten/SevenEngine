@@ -80,12 +80,12 @@ namespace Game
       StaticModelManager.LoadMesh("RedRanger",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj");
 
-      StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" });
-      StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" });
-      StaticModelManager.LoadModel("BlueRanger", new string[] { "BlueRanger" }, new string[] { "RedRanger" });
-      StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" });
-      StaticModelManager.LoadModel("PinkRanger", new string[] { "PinkRanger" }, new string[] { "RedRanger" });
-      StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" });
+      StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
+      StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
+      StaticModelManager.LoadModel("BlueRanger", new string[] { "BlueRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
+      StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
+      StaticModelManager.LoadModel("PinkRanger", new string[] { "PinkRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
+      StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
 
       StaticModelManager.LoadSevenModel("RedRangerSeven",
         Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj7");
@@ -143,7 +143,7 @@ namespace Game
       // DONT FORGET TO SELECT YOUR SHADERS WHEN YOU WANT TO USE THEM
       // Use the static class "ShaderManager"
 
-      ShaderManager.SetActiveShader("ShaderProgramLambertian");
+      ShaderManager.SetActiveShader("ShaderProgramBasic");
     }
 
     public override void InitializeStates()
@@ -151,9 +151,9 @@ namespace Game
       // LOAD THE GAME STATES HERE
       // Use the static class "StateManager"
 
-      StateManager.AddState("gameState", new GameState());
+      //StateManager.AddState("gameState", new GameState());
       StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
-      StateManager.AddState("spriteTesting", new SpriteState());
+      //StateManager.AddState("spriteTesting", new SpriteState());
       StateManager.ChangeState("priorityHeapTesting");
     }
 

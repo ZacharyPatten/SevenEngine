@@ -1,0 +1,12 @@
+// entries within quotes are variables
+
+staticModel 'staticModelName'
+shader 'shaderName' 'filePath'
+staticMesh 'staticMeshName'
+texture 'textureName' 'fileLocation'
+vertex 'x' 'y' 'z'
+vertexTexture 'u' 'v'
+vertexNormal 'x' 'y' 'z'
+face 'references1' 'references2' 'references3'
+endStaticMesh
+endStaticModel

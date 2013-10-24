@@ -64,16 +64,14 @@ namespace SevenEngine.Mathematics
         return new Vector(0, 0, 0);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary>Rotates a vector about an arbitrary axis by a specified angle.</summary>
     /// <param name="angle">RADIANS!!!</param>
     /// <param name="axis"></param>
     /// <returns></returns>
     public Vector Rotate(double angle, Vector axis)
     {
-      double sinHalfAngle = Math.Sin(angle / 2);
-      double cosHalfAngle = Math.Cos(angle / 2);
+      double sinHalfAngle = Trigonometry.Sin(angle / 2);
+      double cosHalfAngle = Trigonometry.Cos(angle / 2);
 
       double rX = axis.X * sinHalfAngle;
       double rY = axis.Y * sinHalfAngle;
@@ -88,7 +86,7 @@ namespace SevenEngine.Mathematics
       return new Vector(w.X, w.Y, w.Z);
     }
 
-    public override string ToString() { return string.Format("X:{0}, Y:{1}, Z:{2}", X, Y, Z); }
+    public override string ToString() { return string.Format(" X:{0}, Y:{1}, Z:{2} ", X, Y, Z); }
   }
 }
 

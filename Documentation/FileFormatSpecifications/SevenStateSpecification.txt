@@ -1,0 +1,11 @@
+state 'stateName'
+
+shader 'shaderName' 'shaderFilePath'
+
+texture 'filepath'
+
+staticModel 'filepath' 'positionX' 'positionY' 'positionZ' 'orientationW' 'orientationX' 'orientationY' 'orientationZ' 'scaleX' 'scaleY' 'scaleZ'
+
+sprite 'filePath'
+
+defaultshader 'shaderName'

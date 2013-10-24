@@ -4,9 +4,10 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
+  /// <summary>This static class is used for state control of a game. It is the highest level of game logic.
+  /// It allows you to change the active state or update and render teh current one.</summary>
   public static class StateManager
   {
-    //private static Dictionary<string, IGameState> _stateDatabase = new Dictionary<string, IGameState>();
     private static AvlTree<IGameState> _stateDatabase = new AvlTree<IGameState>();
 
     private static IGameState _currentState = null;
@@ -70,10 +71,8 @@ namespace SevenEngine
       //return _stateDatabase.ContainsKey(stateId);
       return _stateDatabase.Contains(stateId);
     }
-  }
 
-  internal class StateSystemException : Exception
-  {
-    public StateSystemException(string message) : base(message) { }
+    /// <summary>A unique class for throwing StateSystem exceptions only.</summary>
+    private class StateSystemException : Exception { public StateSystemException(string message) : base(message) { } }
   }
 }

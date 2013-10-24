@@ -12,10 +12,11 @@ namespace Game.States
   {
     Camera _camera;
     Sprite _sprites;
+    Sprite _sprites2;
+    Sprite _sprites3;
     StaticModel _terrain;
 
-    double spriteX = 0;
-    double spriteY = 0;
+    double spriteTimer = -10;
 
     public SpriteState()
     {
@@ -31,8 +32,14 @@ namespace Game.States
       _terrain.Position = new Vector(0, 0, 0);
 
       _sprites = new Sprite(TextureManager.Get("Menu"));
-      _sprites.Scale.X = 100;
-      _sprites.Scale.Y = 100;
+      _sprites.Scale.X = 50;
+      _sprites.Scale.Y = 50;
+      _sprites2 = new Sprite(TextureManager.Get("Menu"));
+      _sprites2.Scale.X = 50;
+      _sprites2.Scale.Y = 50;
+      _sprites3 = new Sprite(TextureManager.Get("Menu"));
+      _sprites3.Scale.X = 50;
+      _sprites3.Scale.Y = 50;
     }
 
     public void Render()
@@ -43,6 +50,8 @@ namespace Game.States
       Renderer.SetProjectionMatrix();
 
       Renderer.DrawSprite(_sprites);
+      Renderer.DrawSprite(_sprites2);
+      Renderer.DrawSprite(_sprites3);
 
       Renderer.DrawStaticModel(_terrain);
     }
@@ -51,10 +60,15 @@ namespace Game.States
     {
       CameraControls();
 
-      spriteX += elapsedTime * 2;
-      spriteY += elapsedTime * 2;
-      _sprites.Position.X = Math.Sin(spriteX) * 100;
-      _sprites.Position.Y = Math.Sin(spriteY) * 100;
+      spriteTimer += .05;
+      _sprites.Position.X = (Trigonometry.Sin(spriteTimer) * 100) + 100;
+      _sprites.Position.Y = (Trigonometry.Cos(spriteTimer) * 100) + 100;
+
+      _sprites2.Position.X = (Math.Sin(spriteTimer) * 100) - 100;
+      _sprites2.Position.Y = (Math.Cos(spriteTimer) * 100) - 100;
+
+      _sprites3.Position.X = (Trigonometry.Sin(spriteTimer) * 100);
+      _sprites3.Position.Y = (Trigonometry.Cos(spriteTimer) * 100);
 
       // You can return whatever you like, but you should use the return value to determine state changes
       return "Don't Change States";

@@ -5,6 +5,7 @@ using SevenEngine.Mathematics;
 
 namespace SevenEngine.Models
 {
+  /// <summary>I currenlty DON'T use this class, and I probably never will need to. I am just keeping it for the time being.</summary>
   [StructLayout(LayoutKind.Sequential)]
   public class Vertex
   {

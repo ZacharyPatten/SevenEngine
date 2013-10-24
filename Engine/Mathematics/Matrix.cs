@@ -99,8 +99,8 @@ namespace SevenEngine.Mathematics
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix FactoryRotationX(double angle)
     {
-      double cos = Math.Cos(angle);
-      double sin = Math.Sin(angle);
+      double cos = Trigonometry.Cos(angle);
+      double sin = Trigonometry.Sin(angle);
       return new Matrix(
         1, 0, 0,
         0, cos, sin,
@@ -111,8 +111,8 @@ namespace SevenEngine.Mathematics
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix FactoryRotationY(double angle)
     {
-      double cos = Math.Cos(angle);
-      double sin = Math.Sin(angle);
+      double cos = Trigonometry.Cos(angle);
+      double sin = Trigonometry.Sin(angle);
       return new Matrix(
         cos, 0, -sin,
         0, 1, 0,
@@ -123,8 +123,8 @@ namespace SevenEngine.Mathematics
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix FactoryRotationZ(double angle)
     {
-      double cos = Math.Cos(angle);
-      double sin = Math.Sin(angle);
+      double cos = Trigonometry.Cos(angle);
+      double sin = Trigonometry.Sin(angle);
       return new Matrix(
         cos, -sin, 0,
         sin, cos, 0,
@@ -138,9 +138,9 @@ namespace SevenEngine.Mathematics
     public static Matrix FactoryRotationXthenYthenZ(double angleX, double angleY, double angleZ)
     {
       double
-        xCos = Math.Cos(angleX), xSin = Math.Sin(angleX),
-        yCos = Math.Cos(angleY), ySin = Math.Sin(angleY),
-        zCos = Math.Cos(angleZ), zSin = Math.Sin(angleZ);
+        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
+        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
+        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
       return new Matrix(
         yCos * zCos, -yCos * zSin, ySin,
         xCos * zSin + xSin * ySin * zCos, xCos * zCos + xSin * ySin * zSin, -xSin * yCos,
@@ -154,9 +154,9 @@ namespace SevenEngine.Mathematics
     public static Matrix FactoryRotationZthenYthenX(double angleX, double angleY, double angleZ)
     {
       double
-        xCos = Math.Cos(angleX), xSin = Math.Sin(angleX),
-        yCos = Math.Cos(angleY), ySin = Math.Sin(angleY),
-        zCos = Math.Cos(angleZ), zSin = Math.Sin(angleZ);
+        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
+        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
+        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
       return new Matrix(
         yCos * zCos, zCos * xSin * ySin - xCos * zSin, xCos * zCos * ySin + xSin * zSin,
         yCos * zSin, xCos * zCos + xSin * ySin * zSin, -zCos * xSin + xCos * ySin * zSin,
@@ -170,10 +170,7 @@ namespace SevenEngine.Mathematics
     /// <param name="shearYbyZ">The shear along the Y-axis in the Z-direction.</param>
     /// <param name="shearZbyX">The shear along the Z-axis in the X-direction.</param>
     /// <param name="shearZbyY">The shear along the Z-axis in the Y-direction.</param>
-    public static Matrix FactoryShear(
-      double shearXbyY, double shearXbyZ,
-      double shearYbyX, double shearYbyZ,
-      double shearZbyX, double shearZbyY)
+    public static Matrix FactoryShear(double shearXbyY, double shearXbyZ, double shearYbyX, double shearYbyZ, double shearZbyX, double shearZbyY)
     {
       return new Matrix(
         1, shearYbyX, shearZbyX,
@@ -296,16 +293,13 @@ namespace SevenEngine.Mathematics
       return String.Format(
         "|{00}, {01}, {02}|\n" +
         "|{03}, {04}, {05}|\n" +
-        "|{06}, {07}, {18}|\n" +
+        "|{06}, {07}, {08}|\n" +
         _row0Column0, _row0Column1, _row0Column2,
         _row1Column0, _row1Column1, _row1Column2,
         _row2Column0, _row2Column1, _row2Column2);
     }
-  }
 
-  /// <summary>Class for throwing unique matrix related exceptions.</summary>
-  public class MatrixException : Exception
-  {
-    public MatrixException(string message) : base(message) { }
+    /// <summary>Class for throwing unique matrix related exceptions.</summary>
+    private class MatrixException : Exception { public MatrixException(string message) : base(message) { } }
   }
 }

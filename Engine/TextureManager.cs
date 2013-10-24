@@ -10,6 +10,8 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
+  /// <summary>This static TextureManager class is storage for textures. It also includes the code for
+  /// loading textures from files.</summary>
   public static class TextureManager
   {
     //private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();

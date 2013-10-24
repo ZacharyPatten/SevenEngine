@@ -5,7 +5,6 @@ using OpenTK.Graphics.OpenGL;
 
 using SevenEngine;
 using SevenEngine.Imaging;
-using SevenEngine.Utilities;
 
 namespace SevenEngine
 {

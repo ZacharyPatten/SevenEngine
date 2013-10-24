@@ -27,7 +27,7 @@ namespace Game.States
       _terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
-      string[] colors = new string[] { "RedRanger", "YellowRanger", "BlueRanger", "BlackRanger", "PinkRanger"};
+      string[] colors = new string[] { "YellowRanger", "RedRanger", "BlueRanger", "BlackRanger", "PinkRanger" };
 
       Random random = new Random();
       _rangers = new StaticModel[300];
@@ -40,6 +40,11 @@ namespace Game.States
         _rangers[i].Scale = new Vector(5, 5, 5);
         _rangers[i].RotationAmmounts = new Vector(0, 1, 0);
         _rangers[i].RotationAngle = i * 2;
+      }
+
+      for (int i = 0; i < _rangers.Length; i+=2)
+      {
+        _rangers[i].Meshes.Remove("Body");
       }
     }
 
@@ -69,7 +74,7 @@ namespace Game.States
     {
       CameraControls();
       foreach (StaticModel model in _rangers)
-        model.RotationAngle+=5;
+        model.RotationAngle += 3;
       return "Don't Change States";
     }
 

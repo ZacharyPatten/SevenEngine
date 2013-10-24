@@ -2,11 +2,13 @@
 
 namespace SevenEngine.Imaging
 {
+  /// <summary>Represents a single texture that has been loaded on the GPU. multiple references of this class SHOULD exist,
+  /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
+  /// same buffers on the GPU, which is good for both speed and memory space.</summary>
   [StructLayout(LayoutKind.Sequential)]
   public class Texture
   {
     protected int _existingReferences;
-
     protected string _id;
     protected int _gpuHandle;
     protected int _width;
@@ -14,7 +16,6 @@ namespace SevenEngine.Imaging
 
     /// <summary>The number of existing hardware instances of this model reference.</summary>
     public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
-
     /// <summary>The string id associated with this specific texture when it was loaded.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The handle of the texture on the GPU.</summary>
@@ -24,10 +25,15 @@ namespace SevenEngine.Imaging
     /// <summary>The height of the texture.</summary>
     public int Height { get { return _height; } set { _height = value; } }
 
-    internal Texture(string id, int handle, int width, int height)
+    /// <summary>Constructs an instance of a texture, which is a GPU mapping class.</summary>
+    /// <param name="id">The id associated with this texture used for look-up purposes.</param>
+    /// <param name="gpuHandle">The GPU handle or location for the start of memory on VRAM.</param>
+    /// <param name="width">The width of the texture.</param>
+    /// <param name="height">The height of the texture.</param>
+    internal Texture(string id, int gpuHandle, int width, int height)
     {
       _id = id;
-     _gpuHandle = handle;
+      _gpuHandle = gpuHandle;
       _width = width;
       _height = height;
       _existingReferences = 0;

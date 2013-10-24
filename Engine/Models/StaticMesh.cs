@@ -1,14 +1,14 @@
 ﻿using System.Runtime.InteropServices;
 
-using SevenEngine.Imaging;
-
 namespace SevenEngine.Models
 {
+  /// <summary>Represents a single mesh that has been loaded on the GPU. multiple references of this class SHOULD exist,
+  /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
+  /// same buffers on the GPU, which is good for both speed and memory space.</summary>
   [StructLayout(LayoutKind.Sequential)]
   public class StaticMesh
   {
     private int _existingReferences;
-
     protected string _filePath;
     protected string _staticMeshId;
     protected int _vertexBufferHandle;
@@ -20,7 +20,6 @@ namespace SevenEngine.Models
 
     /// <summary>The number of existing hardware instances of this model reference.</summary>
     public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
-
     /// <summary>Holds the filepath of the imported file.</summary>
     internal string FilePath { get { return _filePath; } set { _filePath = value; } }
     /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>

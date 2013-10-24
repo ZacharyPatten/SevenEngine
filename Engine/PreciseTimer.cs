@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+//using System.Runtime.InteropServices;
 
-namespace SevenEngine.Utilities
+namespace SevenEngine
 {
   /// <summary>Utility for the engine. Gets the alapsed time to be passed to the "Update()" functions of state or game objects.</summary>
   public class PreciseTimer

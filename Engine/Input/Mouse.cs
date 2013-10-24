@@ -23,6 +23,8 @@ namespace SevenEngine
     private int _previousX;
     private int _previousY;
 
+    /// <summary>Initializes this mouse object with a pointer to the OpenTK mouse object.</summary>
+    /// <param name="mouse">The reference to the OpenTK mouse object.</param>
     public Mouse(MouseDevice mouse)
     {
       _mouse = mouse;

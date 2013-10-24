@@ -10,6 +10,8 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SevenEngine
 {
+  /// <summary>This static StaticModelManager class is storage for static meshes and models. It also includes the code for
+  /// loading models from files.</summary>
   public static class StaticModelManager
   {
     private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTree<StaticMesh>();
@@ -29,7 +31,23 @@ namespace SevenEngine
     /// <returns>The desired static model if it exists.</returns>
     public static StaticModel GetModel(string staticModelId)
     {
-      return _staticModelDatabase.Get(staticModelId).Clone();
+      //return _staticModelDatabase.Get(staticModelId).Clone();
+      StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
+
+      List<Link3<string, Texture, StaticMesh>> meshes = new List<Link3<string, Texture, StaticMesh>>();
+
+      Link3<string, Texture, StaticMesh> looper;
+      modelToGet.Meshes.IteratorInitialize();
+      while (modelToGet.Meshes.IteratorGetNext(out looper))
+      {
+        looper.Middle.ExistingReferences++;
+        looper.Right.ExistingReferences++;
+        meshes.Add(looper.Left, new Link3<string,Texture,StaticMesh>(looper.Left, looper.Middle, looper.Right));
+      }
+
+
+      //return new StaticModel(modelToGet.Id, modelToGet.Meshes);
+      return new StaticModel(modelToGet.Id, meshes);
     }
 
     /// <summary>Loads an 3d model file. NOTE that only obj files are currently supported.</summary>
@@ -54,7 +72,7 @@ namespace SevenEngine
       Output.WriteLine("Model file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
     }
 
-    public static void LoadModel(string staticModelId, string[] textures, string[] meshs) { _staticModelDatabase.Add(staticModelId, new StaticModel(staticModelId, textures, meshs)); }
+    public static void LoadModel(string staticModelId, string[] textures, string[] meshs, string[] meshNames) { _staticModelDatabase.Add(staticModelId, new StaticModel(staticModelId, textures, meshs, meshNames)); }
 
     public static void RemoveModel(string staticMeshId)
     {
@@ -95,11 +113,12 @@ namespace SevenEngine
     private static StaticMesh LoadObj(string staticMeshId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
-      ListArray<float> fileVerteces = new ListArray<float>(1000);
-      ListArray<float> fileNormals = new ListArray<float>(1000);
-      ListArray<float> fileTextureCoordinates = new ListArray<float>(1000);
-      ListArray<int> fileIndeces = new ListArray<int>(1000);
-      Texture texture;
+      // Its better to use "ListArrays" vs "Lists" because they will be accessed by indeces
+      // by the faces of the obj file.
+      ListArray<float> fileVerteces = new ListArray<float>(10000);
+      ListArray<float> fileNormals = new ListArray<float>(10000);
+      ListArray<float> fileTextureCoordinates = new ListArray<float>(10000);
+      ListArray<int> fileIndeces = new ListArray<int>(10000);
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))
@@ -261,8 +280,9 @@ namespace SevenEngine
       ListArray<float> fileTextureCoordinates = new ListArray<float>(1000);
       ListArray<int> fileIndeces = new ListArray<int>(1000);
       Texture texture = null;
+      string meshName = "defaultMeshName";
 
-      ListArray<Link<Texture, StaticMesh>> meshes = new ListArray<Link<Texture, StaticMesh>>(1000);
+      List<Link3<string, Texture, StaticMesh>> meshes = new List<Link3<string, Texture, StaticMesh>>();
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))
@@ -272,6 +292,11 @@ namespace SevenEngine
           string[] parameters = reader.ReadLine().Trim().Split(' ');
           switch (parameters[0])
           {
+            // MeshName
+            case "m":
+              meshName = parameters[1];
+              break;
+
             // Texture
             case "t":
               if (!TextureManager.TextureExists(parameters[1]))
@@ -411,17 +436,19 @@ namespace SevenEngine
               }
               else { normalBufferId = 0; }
 
-              meshes.Add(new Link<Texture, StaticMesh>(
-                texture,
-                new StaticMesh(
-                filePath,
-                staticModelId + "sub" + meshes.Count,
-                vertexBufferId,
-                0, // Obj files don't support vertex colors
-                textureCoordinateBufferId,
-                normalBufferId,
-                0, // I don't support an index buffer at this time
-                verteces.Length)));
+              meshes.Add(meshName,
+                new Link3<string, Texture, StaticMesh>(
+                  meshName,
+                  texture,
+                  new StaticMesh(
+                  filePath,
+                  staticModelId + "sub" + meshes.Count,
+                  vertexBufferId,
+                  0, // Obj files don't support vertex colors
+                  textureCoordinateBufferId,
+                  normalBufferId,
+                  0, // I don't support an index buffer at this time
+                  verteces.Length)));
               fileVerteces.Clear();
               fileNormals.Clear();
               fileTextureCoordinates.Clear();
