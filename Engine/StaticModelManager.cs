@@ -1,4 +1,16 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken 
+// from the SevenEngine project must include citation to its original author(s) located at the
+// top of each source code file, or you may include a reference to the SevenEngine project as
+// a whole but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 using System.IO;
 
 using SevenEngine.DataStructures;
@@ -34,20 +46,31 @@ namespace SevenEngine
       //return _staticModelDatabase.Get(staticModelId).Clone();
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
 
-      List<Link3<string, Texture, StaticMesh>> meshes = new List<Link3<string, Texture, StaticMesh>>();
+      //List<Link3<string, Texture, StaticMesh>> meshes = new List<Link3<string, Texture, StaticMesh>>();
 
-      Link3<string, Texture, StaticMesh> looper;
-      modelToGet.Meshes.IteratorInitialize();
-      while (modelToGet.Meshes.IteratorGetNext(out looper))
-      {
-        looper.Middle.ExistingReferences++;
-        looper.Right.ExistingReferences++;
-        meshes.Add(looper.Left, new Link3<string,Texture,StaticMesh>(looper.Left, looper.Middle, looper.Right));
-      }
+      //Link3<string, Texture, StaticMesh> looper;
+      //modelToGet.Meshes.IteratorInitialize();
+      //while (modelToGet.Meshes.IteratorGetNext(out looper))
+      //{
+      //  looper.Middle.ExistingReferences++;
+      //  looper.Right.ExistingReferences++;
+      //  meshes.Add(looper.Left, new Link3<string,Texture,StaticMesh>(looper.Left, looper.Middle, looper.Right));
+      //}
 
+      List<Link3<string, Texture, StaticMesh>> meshes = modelToGet.Meshes.Clone(PullOutModelComponents);
 
       //return new StaticModel(modelToGet.Id, modelToGet.Meshes);
       return new StaticModel(modelToGet.Id, meshes);
+    }
+
+    /// <summary>This function is used as a delegate to determine the cloning process of static model meshes.</summary>
+    private static void PullOutModelComponents(string currentId, Link3<string, Texture, StaticMesh> link,
+      out string newId, out Link3<string, Texture, StaticMesh> newLink)
+    {
+      link.Middle.ExistingReferences++;
+      link.Right.ExistingReferences++;
+      newId = currentId;
+      newLink = new Link3<string,Texture,StaticMesh>(link.Left, link.Middle, link.Right);
     }
 
     /// <summary>Loads an 3d model file. NOTE that only obj files are currently supported.</summary>

@@ -1,4 +1,16 @@
-﻿// This file contains the following classes:
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+// This file contains the following classes:
 // - List
 //   - ListNode
 //   - ListException
@@ -13,12 +25,6 @@
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
-
-// Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-17-13
-// Feel free to use this code in any manor you see fit.
-// However, please site me because I put quite a bit of time into it.
-// - Thanks. :)
 
 using System;
 
@@ -57,7 +63,8 @@ namespace SevenEngine.DataStructures
 
     private ListNode _head;
     private ListNode _tail;
-    private ListNode _currentIterator;
+    // This iterator node is no longer used (it was used for the commented function at the end of this class)
+    //private ListNode _currentIterator;
     private int _count;
 
     /// <summary>Returns the number of items in the list.</summary>
@@ -90,12 +97,6 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     private void Add(string id, Type addition, ListNode listNode)
     {
-      //if (listNode == null)
-      //  _head = new ListNode(id, addition, null);
-      //if (listNode.Id == id)
-      //  throw new ListException("Attempting to add an already existing id value.");
-      //else if (listNode.Down == null)
-      //  listNode.Down = new ListNode(id, addition, null);
       if (_tail == null)
         _tail = new ListNode(id, addition, null);
       else
@@ -122,14 +123,6 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(n).</remarks>
     private void Remove(string removalId, ListNode listNode)
     {
-      //if (listNode == null)
-      //  throw new ListException("Attempting to remove a non-existing id value.");
-      //else if (listNode.Id == removalId)
-      //  _head = _head.Down;
-      //else if (listNode.Down.Id == removalId)
-      //  listNode.Down = listNode.Down.Down;
-      //else
-      //  Remove(removalId, listNode.Down);
       if (listNode == null)
         throw new ListException("Attempting to remove a non-existing id value.");
       else if (listNode.Id == removalId)
@@ -144,24 +137,6 @@ namespace SevenEngine.DataStructures
       }
       else
         Remove(removalId, listNode.Next);
-    }
-
-    /// <summary>Initializes an iterator for this list. Use IterateNext to iterate through the list.</summary>
-    /// <remarks>Runtime: O(1).</remarks> 
-    public void IteratorInitialize() { _currentIterator = _head; }
-
-    /// <summary>Gets the next item in the current iteration of this list.</summary>
-    /// <param name="next">The next item in the current iteration of the list.</param>
-    /// <returns>If there is an item to return. "false": nothing to return (end of list). "true": still iterating.</returns>
-    /// <remarks>Runtime: O(1).</remarks> 
-    public bool IteratorGetNext(out Type next)
-    {
-      next = default(Type);
-      if (_currentIterator == null)
-        return false;
-      next = _currentIterator.Value;
-      _currentIterator = _currentIterator.Next;
-      return true;
     }
 
     /// <summary>Allows you to rename an entry within this list.</summary>
@@ -190,6 +165,68 @@ namespace SevenEngine.DataStructures
       _tail = null;
       _count = 0;
     }
+
+    /// <summary>A function to be used in a foreach loop.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a foreach loop.</param>
+    public delegate void ForeachFunction(string id, Type node);
+    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <param name="foreachFunction">The function within a foreach loop.</param>
+    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
+    public void Foreach(ForeachFunction foreachFunction)
+    {
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        foreachFunction(looper.Id, looper.Value);
+        looper = looper.Next;
+      }
+    }
+
+    /// <summary>How how want to clone each item during an entire list clone.</summary>
+    /// <param name="currentid">The current id of the node.</param>
+    /// <param name="node">A single node in teh list.</param>
+    /// <param name="newId">The desired new id in the cloned list.</param>
+    /// <param name="newNode">The cloned item to be used in the cloned list.</param>
+    public delegate void CloneFunction(string currentid, Type node, out string newId, out Type newNode);
+    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
+    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
+    /// <returns>The resulting cloned list.</returns>
+    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
+    public List<Type> Clone(CloneFunction cloneFunction)
+    {
+      List<Type> listClone = new List<Type>();
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        string cloneId;
+        Type cloneValue;
+        cloneFunction(looper.Id, looper.Value, out cloneId, out cloneValue);
+        listClone.Add(cloneId, cloneValue);
+        looper = looper.Next;
+      }
+      return listClone;
+    }
+
+    // The following commented code is an alternative to the delegate functions. I am keeping this here
+    // for educational purposes to show a good use for delegates.
+
+    ///// <summary>Initializes an iterator for this list. Use IterateNext to iterate through the list.</summary>
+    ///// <remarks>Runtime: O(1).</remarks> 
+    //public void IteratorInitialize() { _currentIterator = _head; }
+    ///// <summary>Gets the next item in the current iteration of this list.</summary>
+    ///// <param name="next">The next item in the current iteration of the list.</param>
+    ///// <returns>If there is an item to return. "false": nothing to return (end of list). "true": still iterating.</returns>
+    ///// <remarks>Runtime: O(1).</remarks> 
+    //public bool IteratorGetNext(out Type next)
+    //{
+    //  next = default(Type);
+    //  if (_currentIterator == null)
+    //    return false;
+    //  next = _currentIterator.Value;
+    //  _currentIterator = _currentIterator.Next;
+    //  return true;
+    //}
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class ListException : Exception { public ListException(string message) : base(message) { } }
@@ -273,7 +310,7 @@ namespace SevenEngine.DataStructures
       if (_count == _list.Length)
       {
         if (_list.Length > Int32.MaxValue / 2)
-          throw new ListArrayException("Your list is so large that it can no longer double itself (Int32.MaxValue barrier reached).");
+          throw new ListArrayException("Your list is so large that it can no longer float itself (Int32.MaxValue barrier reached).");
         Type[] newList = new Type[_list.Length * 2];
         _list.CopyTo(newList, 0);
         _list = newList;
@@ -305,6 +342,33 @@ namespace SevenEngine.DataStructures
     {
       _list = new Type[_minimumCapacity];
       _count = 0;
+    }
+
+    /// <summary>A function to be used in a foreach loop.</summary>
+    /// <param name="node">The current node of a foreach loop.</param>
+    public delegate void ForeachFunction(Type node);
+    /// <summary>does a function on every item in the list.</summary>
+    /// <param name="foreachFunction">The funtion to perform on every item in the list.</param>
+    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
+    public void Foreach(ForeachFunction foreachFunction)
+    {
+      for (int i = 0; i < _count; i++)
+        foreachFunction(_list[i]);
+    }
+
+    /// <summary>How how want to clone each item during an entire list clone.</summary>
+    /// <param name="node">The current list node in the cloning traversal.</param>
+    public delegate Type CloneFunction(Type node);
+    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
+    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
+    /// <returns>The resulting cloned list.</returns>
+    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
+    public ListArray<Type> Clone(CloneFunction cloneFunction)
+    {
+      ListArray<Type> listClone = new ListArray<Type>(_list.Length);
+      for (int i = 0; i < _count; i++)
+        listClone.Add(cloneFunction(_list[i]));
+      return listClone;
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>

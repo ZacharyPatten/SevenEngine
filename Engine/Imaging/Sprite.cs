@@ -1,4 +1,16 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -10,26 +22,25 @@ namespace SevenEngine.Imaging
   public class Sprite
   {
     private static readonly int _vertexCount = 6;
-
     private Vector _position;
     private Texture _texture;
     private Point _scale;
-    private double _rotation;
+    private float _rotation;
     private static int _gpuVertexBufferHandle;
     private int _gpuTextureMappingBufferHandle;
 
+    /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
+    /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GPUTextureCoordinateBufferHandle { get { return _gpuTextureMappingBufferHandle; } }
-
+    /// <summary>Returns 6, because sprites always have 6 verteces.</summary>
     internal int VertexCount { get { return _vertexCount; } }
-
     /// <summary>Get and set the position of the sprite.</summary>
     public Vector Position { get { return _position; } set { _position = value; } }
     /// <summary>Get and set the size of the sprite.</summary>
     public Point Scale { get { return _scale; } set { _scale = value; } }
     /// <summary>Get and set the rotation angle of the sprite.</summary>
-    public double Rotation { get { return _rotation; } set { _rotation = value; } }
-
+    public float Rotation { get { return _rotation; } set { _rotation = value; } }
     /// <summary>Get and set the texture the sprite is mapping to.</summary>
     public Texture Texture { get { return _texture; } set { _texture = value; } }
 
@@ -41,7 +52,7 @@ namespace SevenEngine.Imaging
         GenerateVertexBuffer();
       _position = new Vector(0, 0, -10);
       _scale = new Point(1, 1);
-      _rotation = 0d;
+      _rotation = 0f;
       _texture = texture;
       GenerateTextureCoordinateBuffer();
     }

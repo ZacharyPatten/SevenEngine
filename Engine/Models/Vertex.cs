@@ -1,4 +1,16 @@
-﻿using System.Runtime.InteropServices;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System.Runtime.InteropServices;
 
 using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
@@ -27,8 +39,8 @@ namespace SevenEngine.Models
     {
       _position = new Vector(0, 0, 0);
       _normal = new Vector(0, 0, 0);
-      _mapping = new Point();
-      _color = new Color();
+      _mapping = new Point(0, 0);
+      _color = new Color(0, 0, 0, 0);
     }
 
     public Vertex(Vector modelPosition, Vector normal, Point textureMapping, Color color)

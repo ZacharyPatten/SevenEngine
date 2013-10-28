@@ -1,4 +1,16 @@
-﻿// This file contains the following classes:
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+// This file contains the following classes:
 // - AvlTree
 //   - AvlTreeNode
 //   - AvlTreeException
@@ -11,12 +23,6 @@
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Note that if the letter "n" is used, it typically means the current number of items within the set.
-
-// Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-12-13
-// Feel free to use this code in any manor you see fit.
-// However, please site me because I put quite a bit of time into it.
-// - Thanks. :)
 
 using System;
 
@@ -90,7 +96,7 @@ namespace SevenEngine.DataStructures
     private Type Get(string id, AvlTreeNode avlTree)
     {
       if (avlTree == null)
-        throw new AvlTreeException("Attempting to get a non-existing value.");
+        throw new AvlTreeException("Attempting to get a non-existing value: " + id + ".");
       int compResult = id.CompareTo(avlTree.Id);
       if (compResult == 0)
         return avlTree.Value;
@@ -279,14 +285,14 @@ namespace SevenEngine.DataStructures
         if (Height(avlTree.LeftChild.LeftChild) > Height(avlTree.RightChild))
           return SingleRotateRight(avlTree);
         else
-          return DoubleRotateRight(avlTree);
+          return floatRotateRight(avlTree);
       }
       else if (Height(avlTree.RightChild) == Height(avlTree.LeftChild) + 2)
       {
         if (Height(avlTree.RightChild.RightChild) > Height(avlTree.LeftChild))
           return SingleRotateLeft(avlTree);
         else
-          return DoubleRotateLeft(avlTree);
+          return floatRotateLeft(avlTree);
       }
       SetHeight(avlTree);
       return avlTree;
@@ -320,11 +326,11 @@ namespace SevenEngine.DataStructures
       return temp;
     }
 
-    /// <summary>Standard double rotation (to the right) algorithm for an AVL Tree.</summary>
-    /// <param name="avlTree">The tree to double rotate right.</param>
+    /// <summary>Standard float rotation (to the right) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to float rotate right.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode DoubleRotateRight(AvlTreeNode avlTree)
+    private AvlTreeNode floatRotateRight(AvlTreeNode avlTree)
     {
       AvlTreeNode temp = avlTree.LeftChild.RightChild;
       avlTree.LeftChild.RightChild = temp.LeftChild;
@@ -337,11 +343,11 @@ namespace SevenEngine.DataStructures
       return temp;
     }
 
-    /// <summary>Standard double rotation (to the left) algorithm for an AVL Tree.</summary>
-    /// <param name="avlTree">The tree to double rotate left.</param>
+    /// <summary>Standard float rotation (to the left) algorithm for an AVL Tree.</summary>
+    /// <param name="avlTree">The tree to float rotate left.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode DoubleRotateLeft(AvlTreeNode avlTree)
+    private AvlTreeNode floatRotateLeft(AvlTreeNode avlTree)
     {
       AvlTreeNode temp = avlTree.RightChild.LeftChild;
       avlTree.RightChild.LeftChild = temp.RightChild;
@@ -352,6 +358,41 @@ namespace SevenEngine.DataStructures
       SetHeight(temp.RightChild);
       SetHeight(temp);
       return temp;
+    }
+
+    /// <summary>A function to be used in a tree traversal.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a traversal.</param>
+    public delegate void TraversalFunction(string id, Type node);
+
+    /// <summary>Allows an alphebetical ordered traversal using a delegate.</summary>
+    /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public void AlphabeticalTraversal(TraversalFunction traversalFunction)
+    { AlphabeticalTraversal(traversalFunction, _avlTree); }
+    private void AlphabeticalTraversal(TraversalFunction traversalFunction, AvlTreeNode avltreeNode)
+    {
+      if (avltreeNode != null)
+      {
+        AlphabeticalTraversal(traversalFunction, avltreeNode.LeftChild);
+        traversalFunction(avltreeNode.Id, avltreeNode.Value);
+        AlphabeticalTraversal(traversalFunction, avltreeNode.RightChild);
+      }
+    }
+
+    /// <summary>Allows a reverse alphabetical ordered using a delegate.</summary>
+    /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public void ReverseAlphabeticalTraversal(TraversalFunction traversalFunction)
+    { ReverseAlphabeticalTraversal(traversalFunction, _avlTree); }
+    private void ReverseAlphabeticalTraversal(TraversalFunction traversalFunction, AvlTreeNode avltreeNode)
+    {
+      if (avltreeNode != null)
+      {
+        ReverseAlphabeticalTraversal(traversalFunction, avltreeNode.RightChild);
+        traversalFunction(avltreeNode.Id, avltreeNode.Value);
+        ReverseAlphabeticalTraversal(traversalFunction, avltreeNode.LeftChild);
+      }
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>

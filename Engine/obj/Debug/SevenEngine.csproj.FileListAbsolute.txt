@@ -1,4 +1,3 @@
-C:\Users\Seven\SevenEngine\SevenEngine\Engine\obj\Debug\SevenEngine.csprojResolveAssemblyReference.cache
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\bin\Debug\Engine.dll
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\bin\Debug\Engine.pdb
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\bin\Debug\OpenTK.Compatibility.dll
@@ -9,3 +8,4 @@ C:\Users\Seven\SevenEngine\SevenEngine\Engine\bin\Debug\OpenTK.Compatibility.xml
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\bin\Debug\OpenTK.GLControl.xml
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\obj\Debug\Engine.dll
 C:\Users\Seven\SevenEngine\SevenEngine\Engine\obj\Debug\Engine.pdb
+C:\Users\Seven\SevenEngine\SevenEngine\Engine\obj\Debug\SevenEngine.csprojResolveAssemblyReference.cache

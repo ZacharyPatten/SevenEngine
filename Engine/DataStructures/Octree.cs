@@ -1,2111 +1,502 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+// This file contains the following classes:
+// - Octree
+//   - OctreePosition
+//   - OctreeEntry
+//   - OctreeBound
+//   - OctreeNode
+//   - OctreeLeaf
+//   - OctreeBranch
+//   - OctreeException
+// External Dependencies (other than "System" from .Net Framework):
+// - Octree requires AvlTree
+// - Octree requires List
+
+// This file contains runtime values.
+// All runtimes are in O-Notation. Here is a brief explanation:
+// - "O(x)": the member has an upper bound of runtime equation "x"
+// - "Omega(x)": the member has a lower bound of runtime equation "x"
+// - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
+// - "EstAvg(x)": the member has a typically expected runtime equation of "x"
+// Note that if the letter "n" is used, it typically means the current number of items within the set.
+
+using System;
 
 namespace SevenEngine.DataStructures
 {
   #region Octree
 
-  //public class Octree
-  //{
-  //  // Max items per node (structure branching factor)
-  //  static int _nodeMax;
+  public class Octree<Type>
+  {
+    #region OctreePosition
 
-  //  // Number of items within this octree
-  //  private int _count;
+    /// <summary>Represents a single three dimensional vector for positional data only.</summary>
+    //private class OctreePosition
+    //{
+    //  private float _x, _y, _z;
 
-  //  // First vertex location (-x, -y, -z)
-  //  private double _vertexOneX;
-  //  private double _vertexOneY;
-  //  private double _vertexOneZ;
-  //  // Second vertex location (-x, -y, z)
-  //  private double _vertexTwoX;
-  //  private double _vertexTwoY;
-  //  private double _vertexTwoZ;
-  //  // Third vertex location (-x, y, -z)
-  //  private double _vertexThreeX;
-  //  private double _vertexThreeY;
-  //  private double _vertexThreeZ;
-  //  // Fourth vertex location (-x, y, z)
-  //  private double _vertexFourX;
-  //  private double _vertexFourY;
-  //  private double _vertexFourZ;
-  //  // Fifth vertex location (x, -y. -z)
-  //  private double _vertexFiveX;
-  //  private double _vertexFiveY;
-  //  private double _vertexFiveZ;
-  //  // Sixth vertex location (x, -y, z)
-  //  private double _vertexSixX;
-  //  private double _vertexSixY;
-  //  private double _vertexSixZ;
-  //  // Seventh vertex location (x, y, -z)
-  //  private double _vertexSevenX;
-  //  private double _vertexSevenY;
-  //  private double _vertexSevenZ;
-  //  // Eighth vertex position (x, y, z)
-  //  private double _vertexEightX;
-  //  private double _vertexEightY;
-  //  private double _vertexEightZ;
+    //  internal float X { get { return _x; } set { _x = value; } }
+    //  internal float Y { get { return _y; } set { _y = value; } }
+    //  internal float Z { get { return _z; } set { _z = value; } }
 
-  //  // First octree child (-x, -y, -z)
-  //  Octree _octreeOne;
-  //  // First octree child (-x, -y, z)
-  //  Octree _octreeTwo;
-  //  // First octree child (-x, y, -z)
-  //  Octree _octreeThree;
-  //  // First octree child (-x, y, z)
-  //  Octree _octreeFour;
-  //  // First octree child (x, -y, -z)
-  //  Octree _octreeFive;
-  //  // First octree child (x, -y, z)
-  //  Octree _octreeSix;
-  //  // First octree child (x, y, -z)
-  //  Octree _octreeSeven;
-  //  // First octree child (x, y, z)
-  //  Octree _octreeEight;
+    //  internal OctreePosition(float x, float y, float z)
+    //  { _x = x; _y = y; _z = z; }
+    //}
 
-  //}
+    #endregion
 
-  #endregion
+    #region OctreeEntry
 
-  #region Octree Javascript Example
+    /// <summary>Represents a single entry in the octree.</summary>
+    private class OctreeEntry
+    {
+      private string _id;
+      private Type _value;
+      //private OctreePosition _position;
+      private float _x, _y, _z;
 
-  /*
-	
-	function isNumber ( n ) {
-		return !isNaN( n ) && isFinite( n );
-	}
-	
-	function isArray ( target ) {
-		return Object.prototype.toString.call( target ) === '[object Array]';
-	}
-	
-	function toArray ( target ) {
-		return target ? ( isArray ( target ) !== true ? [ target ] : target ) : [];
-	}
+      internal string Id { get { return _id; } }
+      internal Type Value { get { return _value; } }
+      //internal OctreePosition Position { get { return _position; } set { _position = value; } }
+      internal float X { get { return _x; } set { _x = value; } }
+      internal float Y { get { return _y; } set { _y = value; } }
+      internal float Z { get { return _z; } set { _z = value; } }
 
-	===================================================
+      internal OctreeEntry(string id, Type value, float x, float y, float z) //OctreePosition position)
+      {
+        _id = id;
+        _value = value;
+        _x = x; _y = y; _z = z;
+      }
+    }
 
-	octree
+    #endregion
 
-	=====================================================
+    #region OctreeBound
 
-	THREE.Octree = function ( parameters ) {
-		
-		// handle parameters
-		
-		parameters = parameters || {};
-		
-		parameters.tree = this;
-		
-		// static properties ( modification is not recommended )
-		
-		this.nodeCount = 0;
-		
-		this.INDEX_INSIDE_CROSS = -1;
-		this.INDEX_OUTSIDE_OFFSET = 2;
-		
-		this.INDEX_OUTSIDE_POS_X = isNumber( parameters.INDEX_OUTSIDE_POS_X ) ? parameters.INDEX_OUTSIDE_POS_X : 0;
-		this.INDEX_OUTSIDE_NEG_X = isNumber( parameters.INDEX_OUTSIDE_NEG_X ) ? parameters.INDEX_OUTSIDE_NEG_X : 1;
-		this.INDEX_OUTSIDE_POS_Y = isNumber( parameters.INDEX_OUTSIDE_POS_Y ) ? parameters.INDEX_OUTSIDE_POS_Y : 2;
-		this.INDEX_OUTSIDE_NEG_Y = isNumber( parameters.INDEX_OUTSIDE_NEG_Y ) ? parameters.INDEX_OUTSIDE_NEG_Y : 3;
-		this.INDEX_OUTSIDE_POS_Z = isNumber( parameters.INDEX_OUTSIDE_POS_Z ) ? parameters.INDEX_OUTSIDE_POS_Z : 4;
-		this.INDEX_OUTSIDE_NEG_Z = isNumber( parameters.INDEX_OUTSIDE_NEG_Z ) ? parameters.INDEX_OUTSIDE_NEG_Z : 5;
-		
-		this.INDEX_OUTSIDE_MAP = [];
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_X ] = { index: this.INDEX_OUTSIDE_POS_X, count: 0, x: 1, y: 0, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_X ] = { index: this.INDEX_OUTSIDE_NEG_X, count: 0, x: -1, y: 0, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Y ] = { index: this.INDEX_OUTSIDE_POS_Y, count: 0, x: 0, y: 1, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Y ] = { index: this.INDEX_OUTSIDE_NEG_Y, count: 0, x: 0, y: -1, z: 0 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_POS_Z ] = { index: this.INDEX_OUTSIDE_POS_Z, count: 0, x: 0, y: 0, z: 1 };
-		this.INDEX_OUTSIDE_MAP[ this.INDEX_OUTSIDE_NEG_Z ] = { index: this.INDEX_OUTSIDE_NEG_Z, count: 0, x: 0, y: 0, z: -1 };
-		
-		this.FLAG_POS_X = 1 << ( this.INDEX_OUTSIDE_POS_X + 1 );
-		this.FLAG_NEG_X = 1 << ( this.INDEX_OUTSIDE_NEG_X + 1 );
-		this.FLAG_POS_Y = 1 << ( this.INDEX_OUTSIDE_POS_Y + 1 );
-		this.FLAG_NEG_Y = 1 << ( this.INDEX_OUTSIDE_NEG_Y + 1 );
-		this.FLAG_POS_Z = 1 << ( this.INDEX_OUTSIDE_POS_Z + 1 );
-		this.FLAG_NEG_Z = 1 << ( this.INDEX_OUTSIDE_NEG_Z + 1 );
-		
-		this.utilVec31Search = new THREE.Vector3();
-		this.utilVec32Search = new THREE.Vector3();
-		
-		// pass scene to see octree structure
-		
-		this.scene = parameters.scene;
-		
-		// properties
-		
-		this.objects = [];
-		this.objectsData = [];
-		
-		this.depthMax = isNumber( parameters.depthMax ) ? parameters.depthMax : -1;
-		this.objectsThreshold = isNumber( parameters.objectsThreshold ) ? parameters.objectsThreshold : 8;
-		this.overlapPct = isNumber( parameters.overlapPct ) ? parameters.overlapPct : 0.15;
-		
-		this.root = parameters.root instanceof THREE.OctreeNode ? parameters.root : new THREE.OctreeNode( parameters );
-		
-	};
+    /// <summary>Represents a bounding cube. Includes coordinates of the center 
+    /// and a scale of expansion along each axis.</summary>
+    private class OctreeBound
+    {
+      private float _x, _y, _z, _scale;
 
-	THREE.Octree.prototype = {
-		
-		setRoot: function ( root ) { 
-			
-			if ( root instanceof THREE.OctreeNode ) {
-				
-				// store new root
-				
-				this.root = root;
-				
-				// update properties
-				
-				this.root.updateProperties();
-				
-			}
-			
-		},
-		
-		add: function ( object, useFaces ) {
-			
-			var i, l,
-				index,
-				geometry,
-				faces,
-				objectData;
-			
-			// ensure object is not object data
-			
-			if ( object instanceof THREE.OctreeObjectData ) {
-				
-				object = object.object;
-				
-			}
-			
-			// if does not yet contain object
-			
-			index = this.objects.indexOf( object );
-			
-			if ( index === -1 ) {
-				
-				// store
-				
-				this.objects.push( object );
-				
-				// ensure world matrices are updated
-				
-				this.updateObject( object );
-				
-				// if adding faces of object
-				
-				if ( useFaces === true ) {
-					
-					geometry = object.geometry;
-					faces = geometry.faces;
-					
-					for ( i = 0, l = faces.length; i < l; i++ ) {
-						
-						this.addObjectData( object, faces[ i ] );
-						
-					}
-					
-				}
-				// else add object itself
-				else {
-					
-					this.addObjectData( object );
-					
-				}
-				
-			}
-			
-		},
-		
-		addObjectData: function ( object, face ) {
-			
-			var objectData = new THREE.OctreeObjectData( object, face );
-			
-			// add to tree objects data list
-			
-			this.objectsData.push( objectData );
-			
-			// add to nodes
-			
-			this.root.addObject( objectData );
-			
-		},
-		
-		remove: function ( object ) {
-			
-			var i, l,
-				objectData = object,
-				index,
-				objectsDataRemoved;
-			
-			// ensure object is not object data for index search
-			
-			if ( object instanceof THREE.OctreeObjectData ) {
-				
-				object = object.object;
-				
-			}
-			
-			// if contains object
-			
-			index = this.objects.indexOf( object );
-			
-			if ( index !== -1 ) {
-				
-				// remove from objects list
-				
-				this.objects.splice( index, 1 );
-				
-				// remove from nodes
-				
-				objectsDataRemoved = this.root.removeObject( objectData );
-				
-				// remove from objects data list
-				
-				for ( i = 0, l = objectsDataRemoved.length; i < l; i++ ) {
-					
-					objectData = objectsDataRemoved[ i ];
-					
-					index = this.objectsData.indexOf( objectData );
-					
-					if ( index !== -1 ) {
-						
-						this.objectsData.splice( index, 1 );
-						
-					}
-					
-				}
-				
-			}
-			
-		},
-		
-		extend: function ( octree ) {
-			
-			var i, l,
-				objectsData,
-				objectData;
-				
-			if ( octree instanceof THREE.Octree ) {
-				
-				// for each object data
-				
-				objectsData = octree.objectsData;
-				
-				for ( i = 0, l = objectsData.length; i < l; i++ ) {
-					
-					objectData = objectsData[ i ];
-					
-					this.add( objectData, objectData.usesFaces() );
-					
-				}
-				
-			}
-			
-		},
-		
-		update: function () {
-			
-			var i, l,
-				node,
-				object,
-				objectData,
-				indexOctant,
-				indexOctantLast,
-				objectsUpdate = [];
-			
-			// update all objects
-			
-			for ( i = 0, l = this.objects.length; i < l; i++ ) {
-				
-				object = this.objects[ i ];
-				
-				// ensure world matrices are updated
-				
-				this.updateObject( object );
-				
-			}
-			
-			// check all object data for changes in position
-			
-			for ( i = 0, l = this.objectsData.length; i < l; i++ ) {
-				
-				objectData = this.objectsData[ i ];
-				
-				node = objectData.node;
-				
-				// update object
-				
-				objectData.update();
-				
-				// if position has changed since last organization of object in tree
-				
-				if ( node instanceof THREE.OctreeNode && !objectData.positionLast.equals( objectData.position ) ) {
-					
-					// get octant index of object within current node
-					
-					indexOctantLast = objectData.indexOctant;
-					
-					indexOctant = node.getOctantIndex( objectData );
-					
-					// if object octant index has changed
-					
-					if ( indexOctant !== indexOctantLast ) {
-						
-						// add to update list
-						
-						objectsUpdate.push( objectData );
-						
-					}
-					
-				}
-				
-			}
-			
-			// update changed objects
-			
-			for ( i = 0, l = objectsUpdate.length; i < l; i++ ) {
-				
-				objectData = objectsUpdate[ i ];
-				
-				// remove object from current node
-				
-				objectData.node.removeObject( objectData );
-				
-				// add object to tree root
-				
-				this.root.addObject( objectData );
-				
-			}
-			
-		},
-		
-		search: function ( position, radius, organizeByObject, direction ) {
-			
-			var i, l,
-				node,
-				objects,
-				objectData,
-				object,
-				results,
-				resultData,
-				resultsObjectsIndices,
-				resultObjectIndex,
-				directionPct;
-			
-			// add root objects
-			
-			objects = [].concat( this.root.objects );
-			
-			// ensure radius (i.e. distance of ray) is a number
-			
-			if ( isNumber( radius ) !== true ) {
-				
-				radius = Number.MAX_VALUE;
-				
-			}
-			
-			// if direction passed, normalize and find pct
-			
-			if ( direction instanceof THREE.Vector3 ) {
-				
-				direction = this.utilVec31Search.copy( direction ).normalize();
-				directionPct = this.utilVec32Search.set( 1, 1, 1 ).divide( direction );
-				
-			}
-			
-			// search each node of root
-			
-			for ( i = 0, l = this.root.nodesIndices.length; i < l; i++ ) {
-				
-				node = this.root.nodesByIndex[ this.root.nodesIndices[ i ] ];
-				
-				objects = node.search( position, radius, objects, direction, directionPct );
-				
-			}
-			
-			// if should organize results by object
-			
-			if ( organizeByObject === true ) {
-				
-				results = [];
-				resultsObjectsIndices = [];
-				
-				// for each object data found
-				
-				for ( i = 0, l = objects.length; i < l; i++ ) {
-					
-					objectData = objects[ i ];
-					object = objectData.object;
-					
-					resultObjectIndex = resultsObjectsIndices.indexOf( object );
-					
-					// if needed, create new result data
-					
-					if ( resultObjectIndex === -1 ) {
-						
-						resultData = {
-							object: object,
-							faces: []
-						};
-						
-						results.push( resultData );
-						
-						resultsObjectsIndices.push( object );
-						
-					}
-					else {
-						
-						resultData = results[ resultObjectIndex ];
-						
-					}
-					
-					// if object data has face, add to list
-					
-					if ( typeof objectData.faces !== 'undefined' ) {
-						
-						resultData.faces.push( objectData.faces );
-						
-					}
-					
-				}
-				
-			}
-			else {
-				
-				results = objects;
-				
-			}
-			
-			return results;
-			
-		},
-		
-		updateObject: function ( object ) {
-			
-			var i, l,
-				parentCascade = [ object ],
-				parent,
-				parentUpdate;
-			
-			// search all parents between object and root for world matrix update
-			
-			parent = object.parent;
-			
-			while( parent ) {
-				
-				parentCascade.push( parent );
-				parent = parent.parent;
-				
-			}
-			
-			for ( i = 0, l = parentCascade.length; i < l; i++ ) {
-				
-				parent = parentCascade[ i ];
-				
-				if ( parent.matrixWorldNeedsUpdate === true ) {
-					
-					parentUpdate = parent;
-					
-				}
-				
-			}
-			
-			// update world matrix starting at uppermost parent that needs update
-			
-			if ( typeof parentUpdate !== 'undefined' ) {
-				
-				parentUpdate.updateMatrixWorld();
-				
-			}
-			
-		},
-		
-		getDepthEnd: function () {
-			
-			return this.root.getDepthEnd();
-			
-		},
-		
-		getNodeCountEnd: function () {
-			
-			return this.root.getNodeCountEnd();
-			
-		},
-		
-		getObjectCountEnd: function () {
-			
-			return this.root.getObjectCountEnd();
-			
-		},
-		
-		toConsole: function () {
-			
-			this.root.toConsole();
-			
-		}
-		
-	};
+      internal float X { get { return _x; } }
+      internal float Y { get { return _y; } }
+      internal float Z { get { return _z; } }
+      internal float Scale { get { return _scale; } }
 
-	===================================================
+      internal OctreeBound(float x, float y, float z, float scale)
+      { _x = x; _y = y; _z = z; _scale = scale; }
+    }
 
-	object data
+    #endregion
 
-	=====================================================
+    #region OctreeNode
 
-	THREE.OctreeObjectData = function ( object, face ) {
-		
-		// utility
-		
-		this.utilVec31FaceBounds = new THREE.Vector3();
-		
-		// properties
-		
-		this.object = object;
-		this.faces = face;
-		
-		this.radius = 0;
-		this.position = new THREE.Vector3();
-			
-		// initial update
-		
-		if ( this.object instanceof THREE.Object3D ) {
-			
-			this.update();
-			
-		}
-		
-		this.positionLast = this.position.clone();
-		
-	};
+    /// <summary>Represents a single node of the octree. Includes references both upwards and
+    /// downwards the tree.</summary>
+    private abstract class OctreeNode
+    {
+      private float _x, _y, _z, _scale;
+      private OctreeBranch _parent;
 
-	THREE.OctreeObjectData.prototype = {
-		
-		update: function () {
-			
-			if ( this.usesFaces() ) {
-				
-				this.radius = this.getFaceBoundingRadius( this.object, this.faces );
-				this.position.copy( this.faces.centroid ).applyMatrix4( this.object.matrixWorld );
-				
-			}
-			else {
-				
-				this.radius = this.object.geometry instanceof THREE.Geometry ? this.object.geometry.boundingSphere.radius : this.object.boundRadius;
-				this.position.getPositionFromMatrix( this.object.matrixWorld );
-				
-			}
-			
-			this.radius = this.radius * Math.max( this.object.scale.x, this.object.scale.y, this.object.scale.z );
-			
-		},
-		
-		getFaceBoundingRadius: function ( object, face ) {
-			
-			var geometry = object instanceof THREE.Mesh ? object.geometry : object,
-				vertices = geometry.vertices,
-				centroid = face.centroid,
-				va = vertices[ face.a ], vb = vertices[ face.b ], vc = vertices[ face.c ], vd,
-				centroidToVert = this.utilVec31FaceBounds,
-				radius;
-			
-			// handle face type
-			
-			if ( face instanceof THREE.Face4 ) {
-				
-				vd = vertices[ face.d ];
-				
-				centroid.addVectors( va, vb ).add( vc ).add( vd ).divideScalar( 4 );
-				
-				radius = Math.max( centroidToVert.subVectors( centroid, va ).length(), centroidToVert.subVectors( centroid, vb ).length(), centroidToVert.subVectors( centroid, vc ).length(), centroidToVert.subVectors( centroid, vd ).length() );
-				
-			}
-			else {
-				
-				centroid.addVectors( va, vb ).add( vc ).divideScalar( 3 );
-				
-				radius = Math.max( centroidToVert.subVectors( centroid, va ).length(), centroidToVert.subVectors( centroid, vb ).length(), centroidToVert.subVectors( centroid, vc ).length() );
-				
-			}
-			
-			return radius;
-			
-		},
-		
-		usesFaces: function () {
-			
-			return this.faces instanceof THREE.Face3 || this.faces instanceof THREE.Face4;
-			
-		}
-		
-	};
+      internal float X { get { return _x; } }
+      internal float Y { get { return _y; } }
+      internal float Z { get { return _z; } }
+      internal float Scale { get { return _scale; } }
+      internal OctreeBranch Parent { get { return _parent; } }
 
-	===================================================
+      internal OctreeNode(float x, float y, float z, float scale, OctreeBranch parent)
+      {
+        _x = x;
+        _y = y;
+        _z = z;
+        _scale = scale;
+        _parent = parent;
+      }
 
-	node
+      /// <summary>Finds the child index relative to "this" node given x, y, and z coordinates.</summary>
+      internal int DetermineChild(float x, float y, float z)
+      {
+        // Finds the child given an x, y, and z
+        // Possible child (all): 0, 1, 2, 3, 4, 5, 6, 7
+        if (z < _z)
+        {
+          // Possible child: 0, 2, 4, 6
+          if (y < _y)
+            // Possible child: 0, 4
+            if (x < _x) return 0;
+            else return 4;
+          else
+            // Possible child: 2, 6, 
+            if (x < _x) return 2;
+            else return 6;
+        }
+        else
+        {
+          // Possible child: 1, 3, 5, 7
+          if (y < _y)
+            // Possible child: 1, 5
+            if (x < _x) return 1;
+            else return 5;
+          else
+            // Possible child: 3, 7 
+            if (x < _x) return 3;
+            else return 7;
+        }
+      }
 
-	=====================================================
+      /// <summary>Determins the bounds of a child node.</summary>
+      internal OctreeBound DetermineChildBounds(int child)
+      {
+        switch (child)
+        {
+          case 0:
+            return new OctreeBound(_x - _scale / 2, _y - _scale / 2, _z - _scale / 2, _scale / 4);
+          case 1:
+            return new OctreeBound(_x - _scale / 2, _y - _scale / 2, _z + _scale / 2, _scale / 4);
+          case 2:
+            return new OctreeBound(_x - _scale / 2, _y + _scale / 2, _z - _scale / 2, _scale / 4);
+          case 3:
+            return new OctreeBound(_x - _scale / 2, _y + _scale / 2, _z + _scale / 2, _scale / 4);
+          case 4:
+            return new OctreeBound(_x + _scale / 2, _y - _scale / 2, _z - _scale / 2, _scale / 4);
+          case 5:
+            return new OctreeBound(_x + _scale / 2, _y - _scale / 2, _z + _scale / 2, _scale / 4);
+          case 6:
+            return new OctreeBound(_x + _scale / 2, _y + _scale / 2, _z - _scale / 2, _scale / 4);
+          case 7:
+            return new OctreeBound(_x + _scale / 2, _y + _scale / 2, _z + _scale / 2, _scale / 4);
+        }
+        throw new OctreeException("There is a glitch in my octree, sorry...");
+      }
+    }
 
-	THREE.OctreeNode = function ( parameters ) {
-		
-		// utility
-		
-		this.utilVec31Branch = new THREE.Vector3();
-		this.utilVec31Expand = new THREE.Vector3();
-		this.utilVec31Ray = new THREE.Vector3();
-		
-		// handle parameters
-		
-		parameters = parameters || {};
-		
-		// store or create tree
-		
-		if ( parameters.tree instanceof THREE.Octree ) {
-			
-			this.tree = parameters.tree;
-			
-		}
-		else if ( parameters.parent instanceof THREE.OctreeNode !== true ) {
-			
-			parameters.root = this;
-			
-			this.tree = new THREE.Octree( parameters );
-			
-		}
-		
-		// basic properties
-		
-		this.id = this.tree.nodeCount++;
-		this.position = parameters.position instanceof THREE.Vector3 ? parameters.position : new THREE.Vector3();
-		this.radius = isNumber( parameters.radius ) && parameters.radius > 0 ? parameters.radius : 1;
-		this.indexOctant = parameters.indexOctant;
-		this.depth = 0;
-		
-		// reset and assign parent
-		
-		this.reset();
-		this.setParent( parameters.parent );
-		
-		// additional properties
-		
-		this.overlap = this.radius * this.tree.overlapPct;
-		this.radiusOverlap = this.radius + this.overlap;
-		this.left = this.position.x - this.radiusOverlap;
-		this.right = this.position.x + this.radiusOverlap;
-		this.bottom = this.position.y - this.radiusOverlap;
-		this.top = this.position.y + this.radiusOverlap;
-		this.back = this.position.z - this.radiusOverlap;
-		this.front = this.position.z + this.radiusOverlap;
-		
-		// visual
-		
-		if ( this.tree.scene ) {
-			
-			this.visual = new THREE.Mesh( new THREE.CubeGeometry( this.radiusOverlap * 2, this.radiusOverlap * 2, this.radiusOverlap * 2 ), new THREE.MeshBasicMaterial( { color: 0xFF0000, wireframe: true, wireframeLinewidth: 1 } ) );
-			this.visual.position.copy( this.position );
-			this.tree.scene.add( this.visual );
-			
-		}
-		
-	};
+    #endregion
 
-	THREE.OctreeNode.prototype = {
-		
-		setParent: function ( parent ) {
-			
-			// store new parent
-			
-			if ( parent !== this && this.parent !== parent ) {
-				
-				this.parent = parent;
-				
-				// update properties
-				
-				this.updateProperties();
-				
-			}
-			
-		},
-		
-		updateProperties: function () {
-			
-			var i, l;
-			
-			// properties
-			
-			if ( this.parent instanceof THREE.OctreeNode ) {
-				
-				this.tree = this.parent.tree;
-				this.depth = this.parent.depth + 1;
-				
-			}
-			else {
-				
-				this.depth = 0;
-				
-			}
-			
-			// cascade
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				this.nodesByIndex[ this.nodesIndices[ i ] ].updateProperties();
-				
-			}
-			
-		},
-		
-		reset: function ( cascade, removeVisual ) {
-			
-			var i, l,
-				node,
-				nodesIndices = this.nodesIndices || [],
-				nodesByIndex = this.nodesByIndex;
-			
-			this.objects = [];
-			this.nodesIndices = [];
-			this.nodesByIndex = {};
-			
-			// unset parent in nodes
-			
-			for ( i = 0, l = nodesIndices.length; i < l; i++ ) {
-				
-				node = nodesByIndex[ nodesIndices[ i ] ];
-				
-				node.setParent( undefined );
-				
-				if ( cascade === true ) {
-					
-					node.reset( cascade, removeVisual );
-					
-				}
-				
-			}
-			
-			// visual
-			
-			if ( removeVisual === true && this.visual && this.visual.parent ) {
-				
-				this.visual.parent.remove( this.visual );
-				
-			}
-			
-		},
-		
-		addNode: function ( node, indexOctant ) {
-			
-			indexOctant = node.indexOctant = isNumber( indexOctant ) ? indexOctant : isNumber( node.indexOctant ) ? node.indexOctant : this.getOctantIndex( node );
-			
-			if ( this.nodesIndices.indexOf( indexOctant ) === -1 ) {
-				
-				this.nodesIndices.push( indexOctant );
-				
-			}
-			
-			this.nodesByIndex[ indexOctant ] = node;
-			
-			if ( node.parent !== this ) {
-				
-				node.setParent( this );
-				
-			}
-			
-		},
-		
-		removeNode: function ( identifier ) {
-			
-			var indexOctant = -1,
-				index,
-				node;
-			
-			// if identifier is node
-			if ( identifier instanceof THREE.OctreeNode && this.nodesByIndex[ identifier.indexOctant ] === identifier ) {
-				
-				node = identifier;
-				indexOctant = node.indexOctant;
-				
-			}
-			// if identifier is number
-			else if ( isNumber( identifier ) ) {
-				
-				indexOctant = identifier;
-				
-			}
-			// else search all nodes for identifier (slow)
-			else {
-				
-				for ( index in this.nodesByIndex ) {
-					
-					node = this.nodesByIndex[ index ];
-					
-					if ( node === identifier ) {
-						
-						indexOctant = index;
-						
-						break;
-						
-					}
-					
-				}
-				
-			}
-			
-			// if indexOctant found
-			
-			if ( indexOctant !== -1 ) {
-				
-				index = this.nodesIndices.indexOf( indexOctant );
-				
-				this.nodesIndices.splice( index, 1 );
-				
-				node = node || this.nodesByIndex[ indexOctant ];
-				
-				delete this.nodesByIndex[ indexOctant ];
-				
-				if ( node.parent === this ) {
-					
-					node.setParent( undefined );
-					
-				}
-				
-			}
-			
-		},
-		
-		addObject: function ( object ) {
-			
-			var index,
-				indexOctant,
-				node;
-			
-			// get object octant index
-			
-			indexOctant = this.getOctantIndex( object );
-			
-			// if object fully contained by an octant, add to subtree
-			if ( indexOctant > -1 && this.nodesIndices.length > 0 ) {
-				
-				node = this.branch( indexOctant );
-				
-				node.addObject( object );
-				
-			}
-			// if object lies outside bounds, add to parent node
-			else if ( indexOctant < -1 && this.parent instanceof THREE.OctreeNode ) {
-				
-				this.parent.addObject( object );
-				
-			}
-			// else add to self
-			else {
-				
-				// add to this objects list
-				
-				index = this.objects.indexOf( object );
-				
-				if ( index === -1 ) {
-					
-					this.objects.push( object );
-					
-				}
-				
-				// node reference
-				
-				object.node = this;
-				
-				// check if need to expand, split, or both
-				
-				this.checkGrow();
-				
-			}
-			
-		},
-		
-		addObjectWithoutCheck: function ( objects ) {
-			
-			var i, l,
-				object;
+    #region OctreeLeaf
 
-			for ( i = 0, l = objects.length; i < l; i++ ) {
-				
-				object = objects[ i ];
-				
-				this.objects.push( object );
-				
-				object.node = this;
-				
-			}
-			
-		},
-		
-		removeObject: function ( object ) {
-			
-			var i, l,
-				nodesRemovedFrom,
-				removeData;
-			
-			// cascade through tree to find and remove object
-			
-			removeData = this.removeObjectRecursive( object, { searchComplete: false, nodesRemovedFrom: [], objectsDataRemoved: [] } );
-			
-			// if object removed, try to shrink the nodes it was removed from
-			
-			nodesRemovedFrom = removeData.nodesRemovedFrom;
-			
-			if ( nodesRemovedFrom.length > 0 ) {
-				
-				for ( i = 0, l = nodesRemovedFrom.length; i < l; i++ ) {
-					
-					nodesRemovedFrom[ i ].shrink();
-					
-				}
-				
-			}
-			
-			return removeData.objectsDataRemoved;
-			
-		},
-		
-		removeObjectRecursive: function ( object, removeData ) {
-			
-			var i, l,
-				index = -1,
-				objectData,
-				node,
-				objectRemoved;
-			
-			// find index of object in objects list
-			
-			// search and remove object data (fast)
-			if ( object instanceof THREE.OctreeObjectData ) {
-				
-				// remove from this objects list
-				
-				index = this.objects.indexOf( object );
-				
-				if ( index !== -1 ) {
-					
-					this.objects.splice( index, 1 );
-					object.node = undefined;
-					
-					removeData.objectsDataRemoved.push( object );
-					
-					removeData.searchComplete = objectRemoved = true;
-					
-				}
-				
-			}
-			// search each object data for object and remove (slow)
-			else {
-				
-				for ( i = this.objects.length - 1; i >= 0; i-- ) {
-					
-					objectData = this.objects[ i ];
-					
-					if ( objectData.object === object ) {
-						
-						this.objects.splice( i, 1 );
-						objectData.node = undefined;
-						
-						removeData.objectsDataRemoved.push( objectData );
-						
-						objectRemoved = true;
-						
-						if ( typeof objectData.faces === 'undefined' ) {
-							
-							removeData.searchComplete = true;
-							break;
-							
-						}
-						
-					}
-					
-				}
-				
-			}
-			
-			// if object data removed and this is not on nodes removed from
-			
-			if ( objectRemoved === true ) {//&& removeData.nodesRemovedFrom.indexOf( this ) === -1 ) {
-				
-				removeData.nodesRemovedFrom.push( this );
-				
-			}
-			
-			// if search not complete, search nodes
-			
-			if ( removeData.searchComplete !== true ) {
-				
-				for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-					
-					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-					
-					// try removing object from node
-					
-					removeData = node.removeObjectRecursive( object, removeData );
-					
-					if ( removeData.searchComplete === true ) {
-						
-						break;
-						
-					}
-					
-				}
-				
-			}
-			
-			return removeData;
-			
-		},
-		
-		checkGrow: function () {
-			
-			// if object count above max
-			
-			if ( this.objects.length > this.tree.objectsThreshold && this.tree.objectsThreshold > 0 ) {
-				
-				this.grow();
-				
-			}
-			
-		},
-		
-		grow: function () {
-			
-			var indexOctant,
-				object,
-				objectsExpand = [],
-				objectsExpandOctants = [],
-				objectsSplit = [],
-				objectsSplitOctants = [],
-				objectsRemaining = [],
-				i, l;
-			
-			// for each object
-			
-			for ( i = 0, l = this.objects.length; i < l; i++ ) {
-				
-				object = this.objects[ i ];
-				
-				// get object octant index
-				
-				indexOctant = this.getOctantIndex( object );
-				
-				// if lies within octant
-				if ( indexOctant > -1 ) {
-					
-					objectsSplit.push( object );
-					objectsSplitOctants.push( indexOctant );
-				
-				}
-				// if lies outside radius
-				else if ( indexOctant < -1 ) {
-					
-					objectsExpand.push( object );
-					objectsExpandOctants.push( indexOctant );
-					
-				}
-				// else if lies across bounds between octants
-				else {
-					
-					objectsRemaining.push( object );
-					
-				}
-				
-			}
-			
-			// if has objects to split
-			
-			if ( objectsSplit.length > 0) {
-				
-				objectsRemaining = objectsRemaining.concat( this.split( objectsSplit, objectsSplitOctants ) );
-				
-			}
-			
-			// if has objects to expand
-			
-			if ( objectsExpand.length > 0) {
-				
-				objectsRemaining = objectsRemaining.concat( this.expand( objectsExpand, objectsExpandOctants ) );
-				
-			}
-			
-			// store remaining
-			
-			this.objects = objectsRemaining;
-			
-			// merge check
-			
-			this.checkMerge();
-			
-		},
-		
-		split: function ( objects, octants ) {
-			
-			var i, l,
-				indexOctant,
-				object,
-				node,
-				objectsRemaining;
-			
-			// if not at max depth
-			
-			if ( this.tree.depthMax < 0 || this.depth < this.tree.depthMax ) {
-				
-				objects = objects || this.objects;
-				
-				octants = octants || [];
-				
-				objectsRemaining = [];
-				
-				// for each object
-				
-				for ( i = 0, l = objects.length; i < l; i++ ) {
-					
-					object = objects[ i ];
-					
-					// get object octant index
-					
-					indexOctant = isNumber( octants[ i ] ) ? octants[ i ] : this.getOctantIndex( object );
-					
-					// if object contained by octant, branch this tree
-					
-					if ( indexOctant > -1 ) {
-						
-						node = this.branch( indexOctant );
-						
-						node.addObject( object );
-						
-					}
-					// else add to remaining
-					else {
-						
-						objectsRemaining.push( object );
-						
-					}
-					
-				}
-				
-				// if all objects, set remaining as new objects
-				
-				if ( objects === this.objects ) {
-					
-					this.objects = objectsRemaining;
-					
-				}
-				
-			}
-			else {
-				
-				objectsRemaining = this.objects;
-				
-			}
-			
-			return objectsRemaining;
-			
-		},
-		
-		branch: function ( indexOctant ) {
-			
-			var node,
-				overlap,
-				radius,
-				radiusOffset,
-				offset,
-				position;
-			
-			// node exists
-			
-			if ( this.nodesByIndex[ indexOctant ] instanceof THREE.OctreeNode ) {
-				
-				node = this.nodesByIndex[ indexOctant ];
-				
-			}
-			// create new
-			else {
-				
-				// properties
-				
-				radius = ( this.radiusOverlap ) * 0.5;
-				overlap = radius * this.tree.overlapPct;
-				radiusOffset = radius - overlap;
-				offset = this.utilVec31Branch.set( indexOctant & 1 ? radiusOffset : -radiusOffset, indexOctant & 2 ? radiusOffset : -radiusOffset, indexOctant & 4 ? radiusOffset : -radiusOffset );
-				position = new THREE.Vector3().addVectors( this.position, offset );
-				
-				// node
-				
-				node = new THREE.OctreeNode( {
-					tree: this.tree,
-					parent: this,
-					position: position,
-					radius: radius,
-					indexOctant: indexOctant
-				} );
-				
-				// store
-				
-				this.addNode( node, indexOctant );
-			
-			}
-			
-			return node;
-			
-		},
-		
-		expand: function ( objects, octants ) {
-			
-			var i, l,
-				object,
-				objectsRemaining,
-				objectsExpand,
-				indexOctant,
-				flagsOutside,
-				indexOutside,
-				indexOctantInverse,
-				iom = this.tree.INDEX_OUTSIDE_MAP,
-				indexOutsideCounts,
-				infoIndexOutside1,
-				infoIndexOutside2,
-				infoIndexOutside3,
-				indexOutsideBitwise1,
-				indexOutsideBitwise2,
-				infoPotential1,
-				infoPotential2,
-				infoPotential3,
-				indexPotentialBitwise1,
-				indexPotentialBitwise2,
-				octantX, octantY, octantZ,
-				overlap,
-				radius,
-				radiusOffset,
-				radiusParent,
-				overlapParent,
-				offset = this.utilVec31Expand,
-				position,
-				parent;
-			
-			// handle max depth down tree
-			
-			if ( this.tree.depthMax < 0 || this.tree.root.getDepthEnd() < this.tree.depthMax ) {
-				
-				objects = objects || this.objects;
-				octants = octants || [];
-				
-				objectsRemaining = [];
-				objectsExpand = [];
-				
-				// reset counts
-				
-				for ( i = 0, l = iom.length; i < l; i++ ) {
-					
-					iom[ i ].count = 0;
-					
-				}
-				
-				// for all outside objects, find outside octants containing most objects
-				
-				for ( i = 0, l = objects.length; i < l; i++ ) {
-					
-					object = objects[ i ];
-					
-					// get object octant index
-					
-					indexOctant = isNumber( octants[ i ] ) ? octants[ i ] : this.getOctantIndex( object );
-					
-					// if object outside this, include in calculations
-					
-					if ( indexOctant < -1 ) {
-						
-						// convert octant index to outside flags
-						
-						flagsOutside = -indexOctant - this.tree.INDEX_OUTSIDE_OFFSET;
-						
-						// check against bitwise flags
-						
-						// x
-						
-						if ( flagsOutside & this.tree.FLAG_POS_X ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_POS_X ].count++;
-							
-						}
-						else if ( flagsOutside & this.tree.FLAG_NEG_X ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_NEG_X ].count++;
-							
-						}
-						
-						// y
-						
-						if ( flagsOutside & this.tree.FLAG_POS_Y ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_POS_Y ].count++;
-							
-						}
-						else if ( flagsOutside & this.tree.FLAG_NEG_Y ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_NEG_Y ].count++;
-							
-						}
-						
-						// z
-						
-						if ( flagsOutside & this.tree.FLAG_POS_Z ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_POS_Z ].count++;
-							
-						}
-						else if ( flagsOutside & this.tree.FLAG_NEG_Z ) {
-							
-							iom[ this.tree.INDEX_OUTSIDE_NEG_Z ].count++;
-							
-						}
-						
-						// store in expand list
-						
-						objectsExpand.push( object );
-						
-					}
-					// else add to remaining
-					else {
-						
-						objectsRemaining.push( object );
-						
-					}
-					
-				}
-				
-				// if objects to expand
-				
-				if ( objectsExpand.length > 0 ) {
-					
-					// shallow copy index outside map
-					
-					indexOutsideCounts = iom.slice( 0 );
-					
-					// sort outside index count so highest is first
-					
-					indexOutsideCounts.sort( function ( a, b ) {
-						
-						return b.count - a.count;
-						
-					} );
-					
-					// get highest outside indices
-					
-					// first is first
-					infoIndexOutside1 = indexOutsideCounts[ 0 ];
-					indexOutsideBitwise1 = infoIndexOutside1.index | 1;
-					
-					// second is ( one of next two bitwise OR 1 ) that is not opposite of ( first bitwise OR 1 )
-					
-					infoPotential1 = indexOutsideCounts[ 1 ];
-					infoPotential2 = indexOutsideCounts[ 2 ];
-					
-					infoIndexOutside2 = ( infoPotential1.index | 1 ) !== indexOutsideBitwise1 ? infoPotential1 : infoPotential2;
-					indexOutsideBitwise2 = infoIndexOutside2.index | 1;
-					
-					// third is ( one of next three bitwise OR 1 ) that is not opposite of ( first or second bitwise OR 1 )
-					
-					infoPotential1 = indexOutsideCounts[ 2 ];
-					infoPotential2 = indexOutsideCounts[ 3 ];
-					infoPotential3 = indexOutsideCounts[ 4 ];
-					
-					indexPotentialBitwise1 = infoPotential1.index | 1;
-					indexPotentialBitwise2 = infoPotential2.index | 1;
-					
-					infoIndexOutside3 = indexPotentialBitwise1 !== indexOutsideBitwise1 && indexPotentialBitwise1 !== indexOutsideBitwise2 ? infoPotential1 : indexPotentialBitwise2 !== indexOutsideBitwise1 && indexPotentialBitwise2 !== indexOutsideBitwise2 ? infoPotential2 : infoPotential3;
-					
-					// get this octant normal based on outside octant indices
-					
-					octantX = infoIndexOutside1.x + infoIndexOutside2.x + infoIndexOutside3.x;
-					octantY = infoIndexOutside1.y + infoIndexOutside2.y + infoIndexOutside3.y;
-					octantZ = infoIndexOutside1.z + infoIndexOutside2.z + infoIndexOutside3.z;
-					
-					// get this octant indices based on octant normal
-					
-					indexOctant = this.getOctantIndexFromPosition( octantX, octantY, octantZ );
-					indexOctantInverse = this.getOctantIndexFromPosition( -octantX, -octantY, -octantZ );
-					
-					// properties
-					
-					overlap = this.overlap;
-					radius = this.radius;
-					
-					// radius of parent comes from reversing overlap of this, unless overlap percent is 0
-					
-					radiusParent = this.tree.overlapPct > 0 ? overlap / ( ( 0.5 * this.tree.overlapPct ) * ( 1 + this.tree.overlapPct ) ) : radius * 2; 
-					overlapParent = radiusParent * this.tree.overlapPct;
-					
-					// parent offset is difference between radius + overlap of parent and child
-					
-					radiusOffset = ( radiusParent + overlapParent ) - ( radius + overlap );
-					offset.set( indexOctant & 1 ? radiusOffset : -radiusOffset, indexOctant & 2 ? radiusOffset : -radiusOffset, indexOctant & 4 ? radiusOffset : -radiusOffset );
-					position = new THREE.Vector3().addVectors( this.position, offset );
-					
-					// parent
-					
-					parent = new THREE.OctreeNode( {
-						tree: this.tree,
-						position: position,
-						radius: radiusParent
-					} );
-					
-					// set self as node of parent
-					
-					parent.addNode( this, indexOctantInverse );
-					
-					// set parent as root
-					
-					this.tree.setRoot( parent );
-					
-					// add all expand objects to parent
-					
-					for ( i = 0, l = objectsExpand.length; i < l; i++ ) {
-						
-						this.tree.root.addObject( objectsExpand[ i ] );
-						
-					}
-					
-				}
-				
-				// if all objects, set remaining as new objects
-				
-				if ( objects === this.objects ) {
-					
-					this.objects = objectsRemaining;
-					
-				}
-				
-			}
-			else {
-				
-				objectsRemaining = objects;
-				
-			}
-			
-			return objectsRemaining;
-			
-		},
-		
-		shrink: function () {
-			
-			// merge check
-			
-			this.checkMerge();
-			
-			// contract check
-			
-			this.tree.root.checkContract();
-			
-		},
-		
-		checkMerge: function () {
-			
-			var nodeParent = this,
-				nodeMerge;
-			
-			// traverse up tree as long as node + entire subtree's object count is under minimum
-			
-			while ( nodeParent.parent instanceof THREE.OctreeNode && nodeParent.getObjectCountEnd() < this.tree.objectsThreshold ) {
-				
-				nodeMerge = nodeParent;
-				nodeParent = nodeParent.parent;
-				
-			}
-			
-			// if parent node is not this, merge entire subtree into merge node
-			
-			if ( nodeParent !== this ) {
-				
-				nodeParent.merge( nodeMerge );
-				
-			}
-			
-		},
-		
-		merge: function ( nodes ) {
-			
-			var i, l,
-				j, k,
-				node;
-			
-			// handle nodes
-			
-			nodes = toArray( nodes );
-			
-			for ( i = 0, l = nodes.length; i < l; i++ ) {
-				
-				node = nodes[ i ];
-				
-				// gather node + all subtree objects
-				
-				this.addObjectWithoutCheck( node.getObjectsEnd() );
-				
-				// reset node + entire subtree
-				
-				node.reset( true, true );
-				
-				// remove node
-				
-				this.removeNode( node.indexOctant, node );
-				
-			}
-			
-			// merge check
-			
-			this.checkMerge();
-			
-		},
-		
-		checkContract: function () {
-			
-			var i, l,
-				node,
-				nodeObjectsCount,
-				nodeHeaviest,
-				nodeHeaviestObjectsCount,
-				outsideHeaviestObjectsCount;
-			
-			// find node with highest object count
-			
-			if ( this.nodesIndices.length > 0 ) {
-				
-				nodeHeaviestObjectsCount = 0;
-				outsideHeaviestObjectsCount = this.objects.length;
-				
-				for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-					
-					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-					
-					nodeObjectsCount = node.getObjectCountEnd();
-					outsideHeaviestObjectsCount += nodeObjectsCount;
-					
-					if ( nodeHeaviest instanceof THREE.OctreeNode === false || nodeObjectsCount > nodeHeaviestObjectsCount ) {
-						
-						nodeHeaviest = node;
-						nodeHeaviestObjectsCount = nodeObjectsCount;
-						
-					}
-					
-				}
-				
-				// subtract heaviest count from outside count
-				
-				outsideHeaviestObjectsCount -= nodeHeaviestObjectsCount;
-				
-				// if should contract
-				
-				if ( outsideHeaviestObjectsCount < this.tree.objectsThreshold && nodeHeaviest instanceof THREE.OctreeNode ) {
-					
-					this.contract( nodeHeaviest );
-					
-				}
-				
-			}
-			
-		},
-		
-		contract: function ( nodeRoot ) {
-			
-			var i, l,
-				node;
-			
-			// handle all nodes
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-				
-				// if node is not new root
-				
-				if ( node !== nodeRoot ) {
-					
-					// add node + all subtree objects to root
-					
-					nodeRoot.addObjectWithoutCheck( node.getObjectsEnd() );
-					
-					// reset node + entire subtree
-					
-					node.reset( true, true );
-					
-				}
-				
-			}
-			
-			// add own objects to root
-			
-			nodeRoot.addObjectWithoutCheck( this.objects );
-			
-			// reset self
-			
-			this.reset( false, true );
-			
-			// set new root
-			
-			this.tree.setRoot( nodeRoot );
-			
-			// contract check on new root
-			
-			nodeRoot.checkContract();
-			
-		},
-		
-		getOctantIndex: function ( objectData ) {
-			
-			var i, l,
-				positionObj,
-				radiusObj,
-				position = this.position,
-				radiusOverlap = this.radiusOverlap,
-				overlap = this.overlap,
-				deltaX, deltaY, deltaZ,
-				distX, distY, distZ, 
-				distance,
-				indexOctant = 0;
-			
-			// handle type
-			
-			// object data
-			if ( objectData instanceof THREE.OctreeObjectData ) {
-				
-				radiusObj = objectData.radius;
-				
-				positionObj = objectData.position;
-				
-				// update object data position last
-				
-				objectData.positionLast.copy( positionObj );
-				
-			}
-			// node
-			else if ( objectData instanceof THREE.OctreeNode ) {
-				
-				positionObj = objectData.position;
-				
-				radiusObj = 0;
-				
-			}
-			
-			// find delta and distance
-			
-			deltaX = positionObj.x - position.x;
-			deltaY = positionObj.y - position.y;
-			deltaZ = positionObj.z - position.z;
-			
-			distX = Math.abs( deltaX );
-			distY = Math.abs( deltaY );
-			distZ = Math.abs( deltaZ );
-			distance = Math.max( distX, distY, distZ );
-			
-			// if outside, use bitwise flags to indicate on which sides object is outside of
-			
-			if ( distance + radiusObj > radiusOverlap ) {
-				
-				// x
-				
-				if ( distX + radiusObj > radiusOverlap ) {
-					
-					indexOctant = indexOctant ^ ( deltaX > 0 ? this.tree.FLAG_POS_X : this.tree.FLAG_NEG_X );
-					
-				}
-				
-				// y
-				
-				if ( distY + radiusObj > radiusOverlap ) {
-					
-					indexOctant = indexOctant ^ ( deltaY > 0 ? this.tree.FLAG_POS_Y : this.tree.FLAG_NEG_Y );
-					
-				}
-				
-				// z
-				
-				if ( distZ + radiusObj > radiusOverlap ) {
-					
-					indexOctant = indexOctant ^ ( deltaZ > 0 ? this.tree.FLAG_POS_Z : this.tree.FLAG_NEG_Z );
-					
-				}
-				
-				objectData.indexOctant = -indexOctant - this.tree.INDEX_OUTSIDE_OFFSET;
-				
-				return objectData.indexOctant;
-				
-			}
-			
-			// return octant index from delta xyz
-			
-			// x right
-			if ( deltaX - radiusObj > -overlap ) {
-				
-				indexOctant = indexOctant | 1;
-				
-			}
-			// x left
-			else if ( !( deltaX + radiusObj < overlap ) ) {
-				
-				objectData.indexOctant = this.tree.INDEX_INSIDE_CROSS;
-				return objectData.indexOctant;
-				
-			}
-			
-			// y right
-			if ( deltaY - radiusObj > -overlap ) {
-				
-				indexOctant = indexOctant | 2;
-				
-			}
-			// y left
-			else if ( !( deltaY + radiusObj < overlap ) ) {
-				
-				objectData.indexOctant = this.tree.INDEX_INSIDE_CROSS;
-				return objectData.indexOctant;
-				
-			}
-			
-			// z right
-			if ( deltaZ - radiusObj > -overlap ) {
-				
-				indexOctant = indexOctant | 4;
-				
-			}
-			// z left
-			else if ( !( deltaZ + radiusObj < overlap ) ) {
-				
-				objectData.indexOctant = this.tree.INDEX_INSIDE_CROSS;
-				return objectData.indexOctant;
-				
-			}
-			
-			objectData.indexOctant = indexOctant;
-			return objectData.indexOctant;
-			
-		},
-		
-		getOctantIndexFromPosition: function ( x, y, z ) {
-			
-			var indexOctant = 0;
-			
-			if ( x > 0 ) {
-				
-				indexOctant = indexOctant | 1;
-				
-			}
-			
-			if ( y > 0 ) {
-				
-				indexOctant = indexOctant | 2;
-				
-			}
-			
-			if ( z > 0 ) {
-				
-				indexOctant = indexOctant | 4;
-				
-			}
-			
-			return indexOctant;
-			
-		},
-		
-		search: function ( position, radius, objects, direction, directionPct ) {
-			
-			var i, l,
-				node,
-				intersects;
-			
-			// test intersects by parameters
-			
-			if ( direction ) {
-				
-				intersects = this.intersectRay( position, direction, radius, directionPct );
-				
-			}
-			else {
-				
-				intersects = this.intersectSphere( position, radius );
-				
-			}
-			
-			// if intersects
-			
-			if ( intersects === true ) {
-				
-				// gather objects
-				
-				objects = objects.concat( this.objects );
-				
-				// search subtree
-				
-				for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-					
-					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-					
-					objects = node.search( position, radius, objects, direction );
-					
-				}
-				
-			}
-			
-			return objects;
-			
-		},
-		
-		intersectSphere: function ( position, radius ) {
-			
-			var	distance = radius * radius,
-				px = position.x,
-				py = position.y,
-				pz = position.z;
-			
-			if ( px < this.left ) {
-				distance -= Math.pow( px - this.left, 2 );
-			}
-			else if ( px > this.right ) {
-				distance -= Math.pow( px - this.right, 2 );
-			}
-			
-			if ( py < this.bottom ) {
-				distance -= Math.pow( py - this.bottom, 2 );
-			}
-			else if ( py > this.top ) {
-				distance -= Math.pow( py - this.top, 2 );
-			}
-			
-			if ( pz < this.back ) {
-				distance -= Math.pow( pz - this.back, 2 );
-			}
-			else if ( pz > this.front ) {
-				distance -= Math.pow( pz - this.front, 2 );
-			}
-			
-			return distance >= 0;
-			
-		},
-		
-		intersectRay: function ( origin, direction, distance, directionPct ) {
-			
-			if ( typeof directionPct === 'undefined' ) {
-				
-				directionPct = this.utilVec31Ray.set( 1, 1, 1 ).divide( direction );
-				
-			}
-			
-			var t1 = ( this.left - origin.x ) * directionPct.x,
-				t2 = ( this.right - origin.x ) * directionPct.x,
-				t3 = ( this.bottom - origin.y ) * directionPct.y,
-				t4 = ( this.top - origin.y ) * directionPct.y,
-				t5 = ( this.back - origin.z ) * directionPct.z,
-				t6 = ( this.front - origin.z ) * directionPct.z,
-				tmax = Math.min( Math.min( Math.max( t1, t2), Math.max( t3, t4) ), Math.max( t5, t6) ),
-				tmin;
+    /// <summary>Represents a single node of the octree. Includes references both upwards and
+    /// downwards the tree.</summary>
+    private class OctreeLeaf : OctreeNode
+    {
+      private OctreeEntry[] _contents;
+      private int _count;
 
-			// ray would intersect in reverse direction, i.e. this is behind ray
-			if (tmax < 0)
-			{
-				return false;
-			}
-			
-			tmin = Math.max( Math.max( Math.min( t1, t2), Math.min( t3, t4)), Math.min( t5, t6));
-			
-			// if tmin > tmax or tmin > ray distance, ray doesn't intersect AABB
-			if( tmin > tmax || tmin > distance ) {
-				return false;
-			}
-			
-			return true;
-			
-		},
-		
-		getDepthEnd: function ( depth ) {
-			
-			var i, l,
-				node;
+      internal OctreeEntry[] Contents { get { return _contents; } }
+      internal int Count { get { return _count; } set { _count = value; } }
+      internal bool IsFull { get { return _count == _contents.Length; } }
 
-			if ( this.nodesIndices.length > 0 ) {
-				
-				for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
+      internal OctreeLeaf(float x, float y, float z, float scale, OctreeBranch parent, int branchFactor)
+        : base(x, y, z, scale, parent)
+      { _contents = new OctreeEntry[branchFactor]; }
 
-					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
+      internal int GetIndex(string id)
+      {
+        for (int i = 0; i < _count; i++)
+          if (_contents[i].Id == id)
+            return i;
+        throw new OctreeException("There is a glitch in my octree, sorry...");
+      }
 
-					depth = node.getDepthEnd( depth );
+      internal OctreeEntry GetEntry(string id)
+      {
+        for (int i = 0; i < _count; i++)
+          if (_contents[i].Id == id)
+            return _contents[i];
+        throw new OctreeException("There is a glitch in my octree, sorry...");
+      }
 
-				}
-				
-			}
-			else {
+      internal OctreeLeaf Add(OctreeEntry addition)
+      {
+        if (_count == _contents.Length)
+          throw new OctreeException("There is a glitch in my octree, sorry...");
+        _contents[_count++] = addition;
+        return this;
+      }
 
-				depth = !depth || this.depth > depth ? this.depth : depth;
+      internal void Remove(string id)
+      {
+        for (int i = 0; i < _count; i++)
+          if (_contents[i].Id == id)
+          {
+            OctreeEntry swapStorage = _contents[_count - 1];
+            _contents[_count - 1] = _contents[i];
+            _contents[i] = swapStorage;
+            return;
+          }
+        throw new OctreeException("My octree has a glitch, sorry...");
+      }
+    }
 
-			}
+    #endregion
 
-			return depth;
-			
-		},
-		
-		getNodeCountEnd: function () {
-			
-			return this.tree.root.getNodeCountRecursive() + 1;
-			
-		},
-		
-		getNodeCountRecursive: function () {
-			
-			var i, l,
-				count = this.nodesIndices.length;
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				count += this.nodesByIndex[ this.nodesIndices[ i ] ].getNodeCountRecursive();
-				
-			}
-			
-			return count;
-			
-		},
-		
-		getObjectsEnd: function ( objects ) {
-			
-			var i, l,
-				node;
-			
-			objects = ( objects || [] ).concat( this.objects );
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-				
-				objects = node.getObjectsEnd( objects );
-				
-			}
-			
-			return objects;
-			
-		},
-		
-		getObjectCountEnd: function () {
-			
-			var i, l,
-				count = this.objects.length;
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				count += this.nodesByIndex[ this.nodesIndices[ i ] ].getObjectCountEnd();
-				
-			}
-			
-			return count;
-			
-		},
-		
-		getObjectCountStart: function () {
-			
-			var count = this.objects.length,
-				parent = this.parent;
-			
-			while( parent instanceof THREE.OctreeNode ) {
-				
-				count += parent.objects.length;
-				parent = parent.parent;
-				
-			}
-			
-			return count;
-			
-		},
-		
-		toConsole: function ( space ) {
-			
-			var i, l,
-				node,
-				spaceAddition = '   ';
-			
-			space = typeof space === 'string' ? space : spaceAddition;
-			
-			console.log( ( this.parent ? space + ' octree NODE > ' : ' octree ROOT > ' ), this, ' // id: ', this.id, ' // indexOctant: ', this.indexOctant, ' // position: ', this.position.x, this.position.y, this.position.z, ' // radius: ', this.radius, ' // depth: ', this.depth );
-			console.log( ( this.parent ? space + ' ' : ' ' ), '+ objects ( ', this.objects.length, ' ) ', this.objects );
-			console.log( ( this.parent ? space + ' ' : ' ' ), '+ children ( ', this.nodesIndices.length, ' )', this.nodesIndices, this.nodesByIndex );
-			
-			for ( i = 0, l = this.nodesIndices.length; i < l; i++ ) {
-				
-				node = this.nodesByIndex[ this.nodesIndices[ i ] ];
-				
-				node.toConsole( space + spaceAddition );
-				
-			}
-			
-		}
-		
-	};
+    #region OctreeBranch
 
-	===================================================
+    /// <summary>Represents a single node of the octree. Includes references both upwards and
+    /// downwards the tree.</summary>
+    private class OctreeBranch : OctreeNode
+    {
+      // The children are indexed as follows (relative to this node's center):
+      // 0: (-x, -y, -z)   1: (-x, -y, z)   2: (-x, y, -z)   3: (-x, y, z)
+      // 4: (x, -y, -z)   5: (x, -y, z)   6: (x, y, -z)   7: (x, y, z)
+      private OctreeNode[] _children;
 
-	raycaster additional functionality
+      internal OctreeNode[] Children { get { return _children; } }
+      internal bool IsEmpty
+      {
+        get
+        {
+          return _children[0] == null && _children[1] == null && _children[2] == null
+            && _children[3] == null && _children[4] == null && _children[5] == null
+            && _children[6] == null && _children[7] == null;
+        }
+      }
 
-	=====================================================
-	
-	THREE.Raycaster.prototype.intersectOctreeObject = function ( object, recursive ) {
-		
-		var intersects,
-			octreeObject,
-			facesAll,
-			facesSearch;
-		
-		if ( object.object instanceof THREE.Object3D ) {
-			
-			octreeObject = object;
-			object = octreeObject.object;
-			
-			// temporarily replace object geometry's faces with octree object faces
-			
-			facesSearch = octreeObject.faces;
-			facesAll = object.geometry.faces;
-			
-			if ( facesSearch.length > 0 ) {
-				
-				object.geometry.faces = facesSearch;
-				
-			}
-			
-			// intersect
-			
-			intersects = this.intersectObject( object, recursive );
-			
-			// revert object geometry's faces
-			
-			if ( facesSearch.length > 0 ) {
-				
-				object.geometry.faces = facesAll;
-				
-			}
-			
-		}
-		else {
-			
-			intersects = this.intersectObject( object, recursive );
-			
-		}
-		
-		return intersects;
-		
-	};
-	
-	THREE.Raycaster.prototype.intersectOctreeObjects = function ( objects, recursive ) {
-		
-		var i, il,
-			intersects = [];
-		
-		for ( i = 0, il = objects.length; i < il; i++ ) {
-			
-			intersects = intersects.concat( this.intersectOctreeObject( objects[ i ], recursive ) );
-		
-		}
-		
-		return intersects;
-		
-	};
+      internal OctreeBranch(float x, float y, float z, float scale, OctreeBranch parent)
+        : base(x, y, z, scale, parent)
+      { _children = new OctreeNode[8]; }
+    }
 
-}( THREE ) );*/
+    #endregion
+
+    #region OctreeReference
+
+    private class OctreeReference
+    {
+      private Type _value;
+      private OctreeLeaf _leaf;
+
+      internal Type Value { get { return _value; } }
+      internal OctreeLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
+
+      internal OctreeReference(Type value, OctreeLeaf leaf)
+      {
+        _value = value;
+        _leaf = leaf;
+      }
+    }
+
+    #endregion
+
+    // The maximum number of objects per leaf (branch factor)
+    private int _branchFactor;
+    private int _count;
+    // A database of objects and their current octree nodes
+    private AvlTree<OctreeReference> _referenceDatabase;
+    // The top node of the tree
+    private OctreeNode _top;
+
+    /// <summary>Creates an octree for three dimensional space partitioning.</summary>
+    /// <param name="x">The x coordinate of the center of the octree.</param>
+    /// <param name="y">The y coordinate of the center of the octree.</param>
+    /// <param name="z">The z coordinate of the center of the octree.</param>
+    /// <param name="scale">How far the tree expands along each dimension.</param>
+    /// <param name="branchFactor">The maximum items per octree node before expansion.</param>
+    public Octree(float x, float y, float z, float scale, int branchFactor)
+    {
+      _branchFactor = branchFactor;
+      _top = new OctreeLeaf(x, y, z, scale, null, _branchFactor);
+      _referenceDatabase = new AvlTree<OctreeReference>();
+      _count = 0;
+    }
+
+    /// <summary>Adds an item to the Octree.</summary>
+    /// <param name="id">The id associated with the addition.</param>
+    /// <param name="addition">The addition.</param>
+    /// <param name="x">The x coordinate of the addition's location.</param>
+    /// <param name="y">The y coordinate of the addition's location.</param>
+    /// <param name="z">The z coordinate of the addition's location.</param>
+    public void Add(string id, Type addition, float x, float y, float z)
+    {
+      _referenceDatabase.Add(id,
+        new OctreeReference(addition,
+          Add(new OctreeEntry(id, addition, x, y, z), _top)));
+      _count++;
+    }
+
+    /// <summary>Recursively adds an item to the octree and returns the node where the addition was placed
+    /// and adjusts the octree structure as needed.</summary>
+    private OctreeLeaf Add(OctreeEntry addition, OctreeNode octreeNode)
+    {
+      // If the node is a leaf we have reached the bottom of the tree
+      if (octreeNode is OctreeLeaf)
+      {
+        OctreeLeaf leaf = (OctreeLeaf)octreeNode;
+        if (!leaf.IsFull)
+        {
+          // We found a proper leaf, and the leaf has room, just add it
+          leaf.Add(addition);
+          return leaf;
+        }
+        else
+        {
+          // The leaf is full so we need to grow out the tree
+          OctreeBranch parent = octreeNode.Parent;
+          OctreeBranch growth = GrowBranch(parent, parent.DetermineChild(addition.X, addition.Y, addition.Z));
+          foreach (OctreeEntry entry in leaf.Contents)
+            _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
+          return Add(addition, growth);
+        } 
+      }
+      // We are still traversing the tree, determine the next move
+      else
+      {
+        OctreeBranch branch = (OctreeBranch)octreeNode;
+        int child = branch.DetermineChild(addition.X, addition.Y, addition.Z);
+        // If the leaf is null, we must grow one before attempting to add to it
+        if (branch.Children[child] == null)
+          return GrowLeaf(branch, child).Add(addition);
+        return Add(addition, branch.Children[child]);
+      }
+    }
+
+    // Grows a branch on the tree at the desired location
+    private OctreeBranch GrowBranch(OctreeBranch branch, int child)
+    {
+      OctreeBound childBounds = branch.DetermineChildBounds(child);
+      branch.Children[child] =
+        new OctreeBranch(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch);
+      return (OctreeBranch)branch.Children[child];
+    }
+
+    // Grows a leaf on the tree at the desired location
+    private OctreeLeaf GrowLeaf(OctreeBranch branch, int child)
+    {
+      if (branch.Children[child] != null)
+        throw new OctreeException("My octree has a glitched, sorry.");
+      OctreeBound childBounds = branch.DetermineChildBounds(child);
+      branch.Children[child] = 
+        new OctreeLeaf(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch, _branchFactor);
+      return (OctreeLeaf)branch.Children[child];
+    }
+
+    /// <summary>Removes an item from the octree by the id that was assigned to it.</summary>
+    /// <param name="id">The string id of the removal that was given to the item when it was added.</param>
+    public void Remove(string id)
+    {
+      Remove(id, _referenceDatabase.Get(id).Leaf);
+      _referenceDatabase.Remove(id);
+      _count--;
+    }
+
+    /// <summary>Recursively removes an item from the octree and adjusts the octree structure as needed.</summary>
+    private void Remove(string id, OctreeLeaf leaf)
+    {
+      if (leaf.Count > 1)
+        leaf.Remove(id);
+      else
+        PluckLeaf(leaf.Parent, leaf.Parent.DetermineChild(leaf.X, leaf.Y, leaf.Z));
+    }
+
+    private void PluckLeaf(OctreeBranch branch, int child)
+    {
+      if (!(branch.Children[child] is OctreeLeaf) || ((OctreeLeaf)branch.Children[child]).Count > 1)
+        throw new OctreeException("There is a glitch in my octree, sorry.");
+      branch.Children[child] = null;
+      while (branch.IsEmpty)
+      {
+        ChopBranch(branch.Parent, branch.Parent.DetermineChild(branch.X, branch.Y, branch.Z));
+        branch = branch.Parent;
+      }
+    }
+
+    private void ChopBranch(OctreeBranch branch, int child)
+    {
+      if (branch.Children[child] == null)
+        throw new OctreeException("There is a glitch in my octree, sorry...");
+      branch.Children[child] = null;
+    }
+
+    /// <summary>Moves an existing item from one position to another.</summary>
+    /// <param name="id">The string id of the item to be moved.</param>
+    /// <param name="x">The x coordinate of the new position of the item.</param>
+    /// <param name="y">The y coordinate of the new position of the item.</param>
+    /// <param name="z">The z coordinate of the new position of the item.</param>
+    public void Move(string id, float x, float y, float z)
+    {
+      OctreeLeaf leaf = _referenceDatabase.Get(id).Leaf;
+      OctreeEntry entry = leaf.GetEntry(id);
+      entry.X = x;
+      entry.Y = y;
+      entry.Z = z;
+      if ((x > leaf.X - leaf.Scale && x < leaf.X + leaf.Scale)
+        && (y > leaf.Y - leaf.Scale && y < leaf.Y + leaf.Scale)
+        && (z > leaf.Z - leaf.Scale && z < leaf.Z + leaf.Scale))
+        return;
+      else
+      {
+        Remove(id, leaf);
+        Add(entry, _top);
+      }
+    }
+
+    /// <summary>Gets contents within the octree within a specific bounding box.</summary>
+    /// <param name="x">The x coordinate of the center of the bounding box constraint.</param>
+    /// <param name="y">The y coordinate of the center of the bounding box constraint.</param>
+    /// <param name="z">The z coordinate of the center of the bounding box constraint.</param>
+    /// <param name="scale">The scale in every dimension of the bounding box constraint.</param>
+    /// <returns>A list of the contents within the provided bounding box.</returns>
+    public List<Type> Get(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    {
+      List<Type> contents = new List<Type>();
+      Get(xMin, yMin, zMin, xMax, yMax, zMax, contents, _top);
+      return contents;
+    }
+
+    /// <summary>Recursively finds items within a given bounding cube and adds it to the octree.</summary>
+    /// <param name="bounds"></param>
+    /// <param name="contents"></param>
+    /// <param name="octreeNode"></param>
+    private void Get(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, List<Type> contents, OctreeNode octreeNode)
+    {
+      if (octreeNode is OctreeLeaf)
+      {
+        OctreeLeaf leaf = (OctreeLeaf)octreeNode;
+        foreach (OctreeEntry entry in leaf.Contents)
+          if (entry.X > xMin && entry.X < xMax
+            && entry.Y > yMin && entry.Y < yMax
+            && entry.Z > zMin && entry.Z < zMax)
+            contents.Add(entry.Id, entry.Value);
+        return;
+      }
+      else
+      {
+        OctreeBranch branch = (OctreeBranch)octreeNode;
+        foreach (OctreeNode node in branch.Children)
+        {
+          if (xMax < node.X + node.Scale)
+            continue;
+          else if (yMax < node.Y + node.Scale)
+            continue;
+          else if (zMax < node.Z + node.Scale)
+            continue;
+          else if (xMin > node.X - node.Scale)
+            continue;
+          else if (yMin > node.Y - node.Scale)
+            continue;
+          else if (zMin > node.Z - node.Scale)
+            continue;
+          else
+            Get(xMin, yMin, zMin, xMax, yMax, zMax, contents, node);
+        }
+      }
+    }
+
+    /// <summary>This is used for throwing OcTree exceptions only to make debugging faster.</summary>
+    private class OctreeException : Exception { public OctreeException(string message) : base(message) { } }
+  }
 
   #endregion
 }

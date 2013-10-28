@@ -1,4 +1,16 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 
 using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
@@ -15,12 +27,12 @@ namespace SevenEngine.Texts
   //  Vector _dimensions;
   //  int _maxWidth = -1;
 
-  //  public double Width
+  //  public float Width
   //  {
   //    get { return _dimensions.X; }
   //  }
 
-  //  public double Height
+  //  public float Height
   //  {
   //    get { return _dimensions.Y; }
   //  }
@@ -39,16 +51,16 @@ namespace SevenEngine.Texts
   //    CreateText(0, 0, _maxWidth);
   //  }
 
-  //  private void CreateText(double x, double y)
+  //  private void CreateText(float x, float y)
   //  {
   //    CreateText(x, y, _maxWidth);
   //  }
 
-  //  private void CreateText(double x, double y, double maxWidth)
+  //  private void CreateText(float x, float y, float maxWidth)
   //  {
   //    _bitmapText.Clear();
-  //    double currentX = 0;
-  //    double currentY = 0;
+  //    float currentX = 0;
+  //    float currentY = 0;
 
   //    string[] words = _text.Split(' ');
 
@@ -94,7 +106,7 @@ namespace SevenEngine.Texts
   //    SetColor();
   //  }
 
-  //  public void SetPosition(double x, double y)
+  //  public void SetPosition(float x, float y)
   //  {
   //    CreateText(x, y);
   //  }

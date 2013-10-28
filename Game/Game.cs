@@ -24,10 +24,11 @@ namespace Game
       GraphicsSettingsManager.BackFaceCulling = true;
       GraphicsSettingsManager.DepthBuffer = true;
       GraphicsSettingsManager.VerticalSyncronization = true;
-      GraphicsSettingsManager.ClearColor = Color.DarkOrchid;
+      GraphicsSettingsManager.ClearColor = Color.Maroon;
       GraphicsSettingsManager.Texture2D = true;
       GraphicsSettingsManager.Blend = true;
       GraphicsSettingsManager.SetAlphaBlending();
+      GraphicsSettingsManager.Lighting = true;
     }
 
     public override void InitializeSounds()
@@ -48,20 +49,32 @@ namespace Game
       // Just pull non-bitmaps into any standard image editor and export them as bitmap files.
 
       TextureManager.LoadTexture("grass",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\grass.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\grass.bmp");
       TextureManager.LoadTexture("RedRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRangerBody.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\RedRangerBody.bmp");
       TextureManager.LoadTexture("BlueRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\BlueRangerBody.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\BlueRangerBody.bmp");
       TextureManager.LoadTexture("PinkRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\PinkRangerBody.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\PinkRangerBody.bmp");
       TextureManager.LoadTexture("BlackRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\BlackRangerBody.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\BlackRangerBody.bmp");
       TextureManager.LoadTexture("YellowRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\YellowRangerBody.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\YellowRangerBody.bmp");
 
       TextureManager.LoadTexture("Menu",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Menu.bmp");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\Menu.bmp");
+
+      TextureManager.LoadTexture("SkyboxLeft",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerLeft.bmp");
+      TextureManager.LoadTexture("SkyboxRight",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerRight.bmp");
+      TextureManager.LoadTexture("SkyboxFront",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerFront.bmp");
+      TextureManager.LoadTexture("SkyboxBack",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerBack.bmp");
+      TextureManager.LoadTexture("SkyboxTop",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerTop.bmp");
+
     }
 
     public override void InitializeModels()
@@ -76,9 +89,9 @@ namespace Game
       //   I know these are a lot of restrictions, but I'm only one dude writing all this... ill get to it eventually
 
       StaticModelManager.LoadMesh("terrain",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Terrain.obj");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Models\Terrain.obj");
       StaticModelManager.LoadMesh("RedRanger",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Models\RedRanger.obj");
 
       StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
       StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
@@ -88,7 +101,7 @@ namespace Game
       StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
 
       StaticModelManager.LoadSevenModel("RedRangerSeven",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\RedRanger.obj7");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Models\RedRanger.obj7");
     }
 
     public override void InitializeShaders()
@@ -98,22 +111,28 @@ namespace Game
 
       // These basic shaders do not include lighting effects.
       ShaderManager.LoadVertexShader("VertexShaderBasic",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderBasic.VertexShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Vertex\VertexShaderBasic.glsl");
       ShaderManager.LoadFragmentShader("FragmentShaderBasic",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderBasic.FragmentShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Fragment\FragmentShaderBasic.glsl");
 
       // These shaders set stages based of normal values to give a solid shading toon look.
       // WARNING!!! i glitched these shaders up pretty bad, im stil new to shaders... try the other two
       ShaderManager.LoadVertexShader("VertexShaderToon",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderToon.vertexShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Vertex\VertexShaderToon.glsl");
       ShaderManager.LoadFragmentShader("FragmentShaderToon",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderToon.fragmentShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Fragment\FragmentShaderToon.glsl");
 
       // These Lambertian shaders include an algorithm for lighting.
       ShaderManager.LoadVertexShader("VertexShaderLambertian",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\VertexShaderLambertian.VertexShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Vertex\VertexShaderLambertian.glsl");
       ShaderManager.LoadFragmentShader("FragmentShaderLambertian",
-        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\FragmentShaderLambertian.FragmentShader");
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Fragment\FragmentShaderLambertian.glsl");
+
+      // These Phong shaders include an algorithm for lighting.
+      ShaderManager.LoadVertexShader("VertexShaderPhong",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Vertex\VertexShaderPhong.glsl");
+      ShaderManager.LoadFragmentShader("FragmentShaderPhong",
+        Directory.GetCurrentDirectory() + @"\..\..\Assets\Shaders\Fragment\FragmentShaderPhong.glsl");
 
       // LINK TOGETHER YOUR SHADERS HERE
       // Use the static class "ShaderManager"
@@ -140,6 +159,13 @@ namespace Game
         null,
         null);
 
+      ShaderManager.MakeShaderProgram(
+        "ShaderProgramPhong",
+        "VertexShaderPhong",
+        "FragmentShaderPhong",
+        null,
+        null);
+
       // DONT FORGET TO SELECT YOUR SHADERS WHEN YOU WANT TO USE THEM
       // Use the static class "ShaderManager"
 
@@ -154,6 +180,7 @@ namespace Game
       //StateManager.AddState("gameState", new GameState());
       StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
       //StateManager.AddState("spriteTesting", new SpriteState());
+      //StateManager.AddState("SkyboxTesting", new SkyboxState());
       StateManager.ChangeState("priorityHeapTesting");
     }
 
@@ -161,7 +188,7 @@ namespace Game
     {
       // DO NOT UPDATE LOW LEVEL GAME LOGIC HERE!!!
       // Only change states as need be with the static "StateManager" class.
-      string stateStatus = StateManager.Update(elapsedTime);
+      string stateStatus = StateManager.Update((float)elapsedTime);
       // Use the stateStatus string to determine the need for a state change.
       // It defaults to "Don't Change States". An example is if the string is
       // "menuState", you could call - StateManager.ChangeState("menuState").

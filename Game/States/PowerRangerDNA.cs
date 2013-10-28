@@ -14,6 +14,8 @@ namespace Game.States
     StaticModel _terrain;
     StaticModel[] _rangers;
 
+    SkyBox _skybox;
+
     public PowerRangerDNA()
     {
       _camera = new Camera();
@@ -21,6 +23,16 @@ namespace Game.States
       _camera.Move(_camera.Up, 400);
       _camera.Move(_camera.Backward, 1500);
       _camera.Move(_camera.Backward, 300);
+
+      _skybox = new SkyBox();
+      _skybox.Scale.X = 10000;
+      _skybox.Scale.Y = 10000;
+      _skybox.Scale.Z = 10000;
+      _skybox.Left = TextureManager.Get("SkyboxLeft");
+      _skybox.Right = TextureManager.Get("SkyboxRight");
+      _skybox.Front = TextureManager.Get("SkyboxFront");
+      _skybox.Back = TextureManager.Get("SkyboxBack");
+      _skybox.Top = TextureManager.Get("SkyboxTop");
 
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
@@ -66,15 +78,18 @@ namespace Game.States
         foreach (StaticModel model in _rangers)
           Renderer.DrawStaticModel(model);
       }
-
+      Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
     }
 
-    public string Update(double elapsedTime)
+    public string Update(float elapsedTime)
     {
       CameraControls();
       foreach (StaticModel model in _rangers)
         model.RotationAngle += 3;
+      _skybox.Position.X = _camera.Position.X;
+      _skybox.Position.Y = _camera.Position.Y;
+      _skybox.Position.Z = _camera.Position.Z;
       return "Don't Change States";
     }
 

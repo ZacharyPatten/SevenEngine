@@ -1,4 +1,16 @@
-﻿// This file contains the following classes:
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+// This file contains the following classes:
 // - HeapArrayStatic
 //   - HeapArrayStaticLink
 //   - HeapArrayStaticException
@@ -6,7 +18,7 @@
 //   - HeapArrayDynamicLink
 //   - HeapArrayDynamicException
 // External Dependencies (other than "System" from .Net Framework):
-// - HeapArrayDynamic requires HashTable
+// - HeapArrayDynamic requires a HashTable
 
 // This file contains runtime and space values.
 // All runtimes are in O-Notation. Here is a brief explanation:
@@ -15,12 +27,6 @@
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
-
-// Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-12-13
-// Feel free to use this code in any manor you see fit.
-// However, please cite me because I put quite a bit of time into it.
-// - Thanks. :)
 
 using System;
 
@@ -166,6 +172,26 @@ namespace SevenEngine.DataStructures
     /// <summary>Returns this queue to an empty state.</summary>
     /// <remarks>Runtime: O(1).</remarks>
     public void Clear() { _count = 0; }
+
+    /// <summary>A function to be used in a tree traversal.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a traversal.</param>
+    public delegate void TraversalFunction(int priority, Type node);
+
+    /// <summary>Allows foreach traversal. (WARNING this traversal is not in order)</summary>
+    /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public void Traversal(TraversalFunction traversalFunction)
+    { Traversal(traversalFunction, 1); }
+    private void Traversal(TraversalFunction traversalFunction, int index)
+    {
+      if (index < _count + 1)
+      {
+        traversalFunction(_queueArray[index].Priority, _queueArray[index].Value);
+        Traversal(traversalFunction, index * 2);
+        Traversal(traversalFunction, index * 2 + 1);
+      }
+    }
 
     /// <summary>This is used for throwing imutable priority queue exceptions only to make debugging faster.</summary>
     private class HeapArrayStaticException : Exception { public HeapArrayStaticException(string message) : base(message) { } }
@@ -344,6 +370,26 @@ namespace SevenEngine.DataStructures
       _queueArray[indexOne] = swapStorage;
       _indexingReference[_queueArray[indexOne].Value] = indexOne;
       _indexingReference[_queueArray[indexTwo].Value] = indexTwo;
+    }
+
+    /// <summary>A function to be used in a tree traversal.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a traversal.</param>
+    public delegate void TraversalFunction(int priority, Type node);
+
+    /// <summary>Allows foreach traversal. (WARNING this traversal is not in order)</summary>
+    /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public void Traversal(TraversalFunction traversalFunction)
+    { Traversal(traversalFunction, 1); }
+    private void Traversal(TraversalFunction traversalFunction, int index)
+    {
+      if (index < _count + 1)
+      {
+        traversalFunction(_queueArray[index].Priority, _queueArray[index].Value);
+        Traversal(traversalFunction, index * 2);
+        Traversal(traversalFunction, index * 2 + 1);
+      }
     }
 
     /// <summary>This is used for throwing mutable priority queue exceptions only to make debugging faster.</summary>

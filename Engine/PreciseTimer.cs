@@ -1,4 +1,16 @@
-﻿using System.Diagnostics;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken 
+// from the SevenEngine project must include citation to its original author(s) located at the
+// top of each source code file, or you may include a reference to the SevenEngine project as
+// a whole but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System.Diagnostics;
 //using System.Runtime.InteropServices;
 
 namespace SevenEngine
@@ -14,9 +26,9 @@ namespace SevenEngine
       _stopwatch.Reset();
     }
 
-    public double GetElaspedMilliseconds()
+    public float GetElaspedMilliseconds()
     {
-      double elapsed = _stopwatch.ElapsedMilliseconds;
+      float elapsed = _stopwatch.ElapsedMilliseconds;
       _stopwatch.Restart();
       return elapsed;
     }
@@ -49,12 +61,12 @@ namespace SevenEngine
 
     ///// <summary>Gets the elasped time since the last call (or since initialization if first time calling) in SECONDS.</summary>
     ///// <returns>Time since last call in SECONDS as the unit.</returns>
-    //public double GetElapsedTime()
+    //public float GetElapsedTime()
     //{
     //  long time = 0;
     //  QueryPerformanceCounter(ref time);
 
-    //  double elapsedTime = (double)(time - _previousElapsedTime) / (double)_ticksPerSecond;
+    //  float elapsedTime = (float)(time - _previousElapsedTime) / (float)_ticksPerSecond;
     //  _previousElapsedTime = time;
 
     //  return elapsedTime;

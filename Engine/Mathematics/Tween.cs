@@ -1,28 +1,40 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 
 namespace SevenEngine.Mathematics
 {
   public class Tween
   {
-    double _original;
-    double _distance;
-    double _current;
-    double _totalTimePassed = 0;
-    double _totalDuration = 5;
+    float _original;
+    float _distance;
+    float _current;
+    float _totalTimePassed = 0;
+    float _totalDuration = 5;
     bool _finished = false;
     TweenFunction _tweenF = null;
 
-    public delegate double TweenFunction(double timePassed, double start, double distance, double duration);
+    public delegate float TweenFunction(float timePassed, float start, float distance, float duration);
 
-    public double Value() { return _current; }
+    public float Value() { return _current; }
 
     public bool IsFinished() { return _finished; }
 
-    public Tween(double start, double end, double time) { Construct(start, end, time, Tween.Linear); }
+    public Tween(float start, float end, float time) { Construct(start, end, time, Tween.Linear); }
 
-    public Tween(double start, double end, double time, TweenFunction tweenF) { Construct(start, end, time, tweenF); }
+    public Tween(float start, float end, float time, TweenFunction tweenF) { Construct(start, end, time, tweenF); }
 
-    public void Construct(double start, double end, double time, TweenFunction tweenF)
+    public void Construct(float start, float end, float time, TweenFunction tweenF)
     {
       _distance = end - start;
       _original = start;
@@ -31,7 +43,7 @@ namespace SevenEngine.Mathematics
       _tweenF = tweenF;
     }
 
-    public void Update(double elapsedTime)
+    public void Update(float elapsedTime)
     {
       _totalTimePassed += elapsedTime;
       _current = _tweenF(_totalTimePassed, _original, _distance, _totalDuration);
@@ -43,33 +55,33 @@ namespace SevenEngine.Mathematics
       }
     }
 
-    public static double Linear(double timePassed, double start, double distance, double duration)
+    public static float Linear(float timePassed, float start, float distance, float duration)
     {
       return distance * timePassed / duration + start;
     }
 
-    public static double EaseOutExpo(double timePassed, double start, double distance, double duration)
+    public static float EaseOutExpo(float timePassed, float start, float distance, float duration)
     {
       if (timePassed == duration)
         return start + distance;
-      return distance * (-Math.Pow(2, -10 * timePassed / duration) + 1) + start;
+      return (float)(distance * (-Math.Pow(2, -10 * timePassed / duration) + 1) + start);
     }
 
-    public static double EaseInExpo(double timePassed, double start, double distance, double duration)
+    public static float EaseInExpo(float timePassed, float start, float distance, float duration)
     {
       if (timePassed == 0)
         return start;
-      return distance * Math.Pow(2, 10 * (timePassed / duration - 1)) + start;
+      return (float)(distance * Math.Pow(2, 10 * (timePassed / duration - 1)) + start);
     }
 
-    public static double EaseOutCirc(double timePassed, double start, double distance, double duration)
+    public static float EaseOutCirc(float timePassed, float start, float distance, float duration)
     {
-      return distance * Math.Sqrt(1 - (timePassed = timePassed / duration - 1) * timePassed) + start;
+      return (float)(distance * Math.Sqrt(1 - (timePassed = timePassed / duration - 1) * timePassed) + start);
     }
 
-    public static double EaseInCirc(double timePassed, double start, double distance, double duration)
+    public static float EaseInCirc(float timePassed, float start, float distance, float duration)
     {
-      return -distance * (Math.Sqrt(1 - (timePassed /= duration) * timePassed) - 1) + start;
+      return (float)(-distance * (Math.Sqrt(1 - (timePassed /= duration) * timePassed) - 1) + start);
     }
   }
 }

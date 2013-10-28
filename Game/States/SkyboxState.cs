@@ -8,7 +8,7 @@ using SevenEngine.Mathematics;
 
 namespace Game.States
 {
-  public class GameState : IGameState
+  public class SkyboxState : IGameState
   {
     Camera _camera;
 
@@ -20,7 +20,9 @@ namespace Game.States
     StaticModel _yellowRanger;
     StaticModel _RedRangerTwo;
 
-    public GameState()
+    SkyBox _skybox;
+
+    public SkyboxState()
     {
       // Creates a camera and sets the initial positions
       _camera = new Camera();
@@ -72,6 +74,16 @@ namespace Game.States
       _RedRangerTwo.Scale = new Vector(20, 20, 20);
       _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
 
+      _skybox = new SkyBox();
+      _skybox.Scale.X = 10000;
+      _skybox.Scale.Y = 10000;
+      _skybox.Scale.Z = 10000;
+      _skybox.Left = TextureManager.Get("SkyboxLeft");
+      _skybox.Right = TextureManager.Get("SkyboxRight");
+      _skybox.Front = TextureManager.Get("SkyboxFront");
+      _skybox.Back = TextureManager.Get("SkyboxBack");
+      _skybox.Top = TextureManager.Get("SkyboxTop");
+
     }
 
     public void Render()
@@ -89,6 +101,8 @@ namespace Game.States
       Renderer.DrawStaticModel(_pinkRanger);
       Renderer.DrawStaticModel(_yellowRanger);
       Renderer.DrawStaticModel(_RedRangerTwo);
+
+      Renderer.DrawSkybox(_skybox);
     }
 
     public string Update(float elapsedTime)
@@ -111,6 +125,11 @@ namespace Game.States
       _blackRanger.RotationAngle++;
       _blueRanger.RotationAngle++;
       _pinkRanger.RotationAngle++;
+
+      _skybox.Position.X = _camera.Position.X;
+      _skybox.Position.Y = _camera.Position.Y;
+      _skybox.Position.Z = _camera.Position.Z;
+      
       return "Don't Change States";
     }
 

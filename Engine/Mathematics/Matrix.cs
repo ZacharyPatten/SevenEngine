@@ -1,143 +1,144 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace SevenEngine.Mathematics
 {
+  /// <summary>Implements a 3x3 rotational matrix.</summary>
   [StructLayout(LayoutKind.Sequential)]
   public struct Matrix
   {
-    private double
-      _row0Column0, _row0Column1, _row0Column2,
-      _row1Column0, _row1Column1, _row1Column2,
-      _row2Column0, _row2Column1, _row2Column2;
+    private float
+      _r0c0, _r0c1, _r0c2,
+      _r1c0, _r1c1, _r1c2,
+      _r2c0, _r2c1, _r2c2;
 
-    /// <summary>Indexing for getting matrix values in row major order.</summary>
-    public double this[int row, int column]
+    public float this[int row, int column]
     {
       get
       {
         switch (row)
-        {
-          case 0:
+        { case 0:
             switch (column)
-            {
-              case 0: return _row0Column0;
-              case 1: return _row0Column1;
-              case 2: return _row0Column2;
-            }
+            { case 0: return _r0c0;
+              case 1: return _r0c1;
+              case 2: return _r0c2; }
             break;
           case 1:
             switch (column)
-            {
-              case 0: return _row1Column0;
-              case 1: return _row1Column1;
-              case 2: return _row1Column2;
-            }
+            { case 0: return _r1c0;
+              case 1: return _r1c1;
+              case 2: return _r1c2; }
             break;
           case 2:
             switch (column)
-            {
-              case 0: return _row2Column0;
-              case 1: return _row2Column1;
-              case 2: return _row2Column2;
-            }
-            break;
-        }
-        throw new MatrixException("index out of range during indexed look up.");
+            { case 0: return _r2c0;
+              case 1: return _r2c1;
+              case 2: return _r2c2; }
+            break; }
+        throw new MatrixException("Index out of range during indexed look up.");
       }
       set
       {
         switch (row)
-        {
-          case 0:
+        { case 0:
             switch (column)
-            {
-              case 0: _row0Column0 = value; return;
-              case 1: _row0Column1 = value; return;
-              case 2: _row0Column2 = value; return;
-            }
+            { case 0: _r0c0 = value; return;
+              case 1: _r0c1 = value; return;
+              case 2: _r0c2 = value; return; }
             break;
           case 1:
             switch (column)
-            {
-              case 0: _row1Column0 = value; return;
-              case 1: _row1Column1 = value; return;
-              case 2: _row1Column2 = value; return;
-            }
+            { case 0: _r1c0 = value; return;
+              case 1: _r1c1 = value; return;
+              case 2: _r1c2 = value; return; }
             break;
           case 2:
             switch (column)
-            {
-              case 0: _row2Column0 = value; return;
-              case 1: _row2Column1 = value; return;
-              case 2: _row2Column2 = value; return;
-            }
-            break;
-        }
-        throw new MatrixException("index out of range during indexed look up.");
+            { case 0: _r2c0 = value; return;
+              case 1: _r2c1 = value; return;
+              case 2: _r2c2 = value; return; }
+            break; }
+        throw new MatrixException("Index out of range during indexed look up.");
       }
     }
 
-    /// <summary>Constructs a matrix with the given values.</summary>
     public Matrix(
-      double row0Column0, double row0Column1, double row0Column2,
-      double row1Column0, double row1Column1, double row1Column2,
-      double row2Column0, double row2Column1, double row2Column2)
+      float r0c0, float r0c1, float r0c2,
+      float r1c0, float r1c1, float r1c2,
+      float r2c0, float r2c1, float r2c2)
     {
-      _row0Column0 = row0Column0; _row0Column1 = row0Column1; _row0Column2 = row0Column2;
-      _row1Column0 = row1Column0; _row1Column1 = row1Column1; _row1Column2 = row1Column2;
-      _row2Column0 = row2Column0; _row2Column1 = row2Column1; _row2Column2 = row2Column2;
+      _r0c0 = r0c0; _r0c1 = r0c1; _r0c2 = r0c2;
+      _r1c0 = r1c0; _r1c1 = r1c1; _r1c2 = r1c2;
+      _r2c0 = r2c0; _r2c1 = r2c1; _r2c2 = r2c2;
     }
 
-    /// <summary>Constructs an instance of a matrix with all values initialized to zero.</summary>
-    public static Matrix FactoryZero() { return new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0); }
-
-    /// <summary>Constructs an instance of a matrix initialized as an identity matrix.</summary>
-    public static Matrix FactoryIdentity() { return new Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1); }
-
-    /// <summary>Constructs a matrix initialized as a transformation matrix about the X-axis.</summary>
-    /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationX(double angle)
+    public Matrix(float[,] floatArray)
     {
-      double cos = Trigonometry.Cos(angle);
-      double sin = Trigonometry.Sin(angle);
+      if (floatArray == null)
+        throw new MatrixException("Attempting to create a matrix with an null float[,].");
+      else if (floatArray.GetLength(0) != 3)
+        throw new MatrixException("Attempting to create a matrix with an invalid sized float[,].");
+      else if (floatArray.GetLength(1) != 3)
+        throw new MatrixException("Attempting to create a matrix with an invalid sized float[,].");
+      _r0c0 = floatArray[0, 0]; _r0c1 = floatArray[0, 1]; _r0c2 = floatArray[0, 2];
+      _r1c0 = floatArray[1, 0]; _r1c1 = floatArray[1, 1]; _r1c2 = floatArray[1, 2];
+      _r2c0 = floatArray[2, 0]; _r2c1 = floatArray[2, 1]; _r2c2 = floatArray[2, 2];
+    }
+
+    public static Matrix ZeroFactory = new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    public static Matrix IdentityFactory = new Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+
+    /// <param name="angle">Angle of rotation in radians.</param>
+    public static Matrix FactoryRotationX(float angle)
+    {
+      float cos = Trigonometry.Cos(angle);
+      float sin = Trigonometry.Sin(angle);
       return new Matrix(
         1, 0, 0,
         0, cos, sin,
         0, -sin, cos);
     }
 
-    /// <summary>Constructs a matrix initialized as a transformation matrix about the Y-axis.</summary>
     /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationY(double angle)
+    public static Matrix FactoryRotationY(float angle)
     {
-      double cos = Trigonometry.Cos(angle);
-      double sin = Trigonometry.Sin(angle);
+      float cos = Trigonometry.Cos(angle);
+      float sin = Trigonometry.Sin(angle);
       return new Matrix(
         cos, 0, -sin,
         0, 1, 0,
         sin, 0, cos);
     }
 
-    /// <summary>Constructs a matrix initialized as a transformation matrix about the Z-axis.</summary>
     /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationZ(double angle)
+    public static Matrix FactoryRotationZ(float angle)
     {
-      double cos = Trigonometry.Cos(angle);
-      double sin = Trigonometry.Sin(angle);
+      float cos = Trigonometry.Cos(angle);
+      float sin = Trigonometry.Sin(angle);
       return new Matrix(
         cos, -sin, 0,
         sin, cos, 0,
         0, 0, 1);
     }
 
-    /// <summary>Constructs a matrix instance initialized to rotate geometry about the X-axis, THEN the Y-axis, THEN the Z-axis.</summary>
     /// <param name="angleX">Angle about the X-axis in radians.</param>
     /// <param name="angleY">Angle about the Y-axis in radians.</param>
     /// <param name="angleZ">Angle about the Z-axis in radians.</param>
-    public static Matrix FactoryRotationXthenYthenZ(double angleX, double angleY, double angleZ)
+    public static Matrix FactoryRotationXthenYthenZ(float angleX, float angleY, float angleZ)
     {
-      double
+      float
         xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
         yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
         zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
@@ -147,13 +148,12 @@ namespace SevenEngine.Mathematics
         xSin * zSin - xCos * ySin * zCos, xSin * zCos + xCos * ySin * zSin, xCos * yCos);
     }
 
-    /// <summary>Constructs a matrix instance initialized to rotate geometry about the Z-axis, THEN the Y-axis, THEN the X-axis.</summary>
     /// <param name="angleX">Angle about the X-axis in radians.</param>
     /// <param name="angleY">Angle about the Y-axis in radians.</param>
     /// <param name="angleZ">Angle about the Z-axis in radians.</param>
-    public static Matrix FactoryRotationZthenYthenX(double angleX, double angleY, double angleZ)
+    public static Matrix FactoryRotationZthenYthenX(float angleX, float angleY, float angleZ)
     {
-      double
+      float
         xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
         yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
         zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
@@ -163,14 +163,15 @@ namespace SevenEngine.Mathematics
         -ySin, yCos * xSin, xCos * yCos);
     }
 
-    /// <summary>Cunstructs an instance of a matrix initialized to shear 3D geometry according to the parameters.</summary>
     /// <param name="shearXbyY">The shear along the X-axis in the Y-direction.</param>
     /// <param name="shearXbyZ">The shear along the X-axis in the Z-direction.</param>
     /// <param name="shearYbyX">The shear along the Y-axis in the X-direction.</param>
     /// <param name="shearYbyZ">The shear along the Y-axis in the Z-direction.</param>
     /// <param name="shearZbyX">The shear along the Z-axis in the X-direction.</param>
     /// <param name="shearZbyY">The shear along the Z-axis in the Y-direction.</param>
-    public static Matrix FactoryShear(double shearXbyY, double shearXbyZ, double shearYbyX, double shearYbyZ, double shearZbyX, double shearZbyY)
+    public static Matrix FactoryShear(
+      float shearXbyY, float shearXbyZ, float shearYbyX,
+      float shearYbyZ, float shearZbyX, float shearZbyY)
     {
       return new Matrix(
         1, shearYbyX, shearZbyX,
@@ -178,128 +179,212 @@ namespace SevenEngine.Mathematics
         shearXbyZ, shearYbyZ, 1);
     }
 
-    /// <summary>Constructs left matrix from the given array of double-precision floating-point numbers.</summary>
-    public Matrix(double[,] doubleArray)
+    public static Matrix operator +(Matrix left, Matrix right) { return left.Add(right); }
+    public static Matrix operator -(Matrix left, Matrix right) { return left.Add(-right); }
+    public static Matrix operator -(Matrix matrix) { return matrix.Negate(); }
+    public static Matrix operator *(Matrix left, Matrix right) { return left.Multiply(right); }
+    public static Vector operator *(Matrix matrix, Vector vector) { return matrix.Multiply(vector); }
+    public static Matrix operator *(Matrix matrix, float scalar) { return matrix.Multiply(scalar); }
+    public static Matrix operator /(Matrix matrix, float scalar) { return matrix.Divide(scalar); }
+    public static Matrix operator ^(Matrix matrix, int power) { return matrix.Power(power); }
+
+    public float Determinant
     {
-      if (doubleArray == null) { throw new MissingFieldException(); }
-      else if (doubleArray.GetLength(0) < 3) { throw new MissingFieldException(); }
-      else if (doubleArray.GetLength(1) < 3) { throw new MissingFieldException(); }
-      _row0Column0 = doubleArray[0, 0]; _row0Column1 = doubleArray[0, 1]; _row0Column2 = doubleArray[0, 2];
-      _row1Column0 = doubleArray[1, 0]; _row1Column1 = doubleArray[1, 1]; _row1Column2 = doubleArray[1, 2];
-      _row2Column0 = doubleArray[2, 0]; _row2Column1 = doubleArray[2, 1]; _row2Column2 = doubleArray[2, 2];
+      get
+      { return
+          _r0c0 * _r1c1 * _r2c2 -
+          _r0c0 * _r1c2 * _r2c1 -
+          _r0c1 * _r1c0 * _r2c2 +
+          _r0c2 * _r1c0 * _r2c1 +
+          _r0c1 * _r1c2 * _r2c0 -
+          _r0c2 * _r1c1 * _r2c0; }
     }
 
-    /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
-    public bool Equals(Matrix matrix)
+    public bool EqualsApproximation(Matrix matrix, float tolerance)
     {
       return
-        _row0Column0 == matrix._row0Column0 && _row0Column1 == matrix._row0Column1 && _row0Column2 == matrix._row0Column2 &&
-        _row1Column0 == matrix._row1Column0 && _row1Column1 == matrix._row1Column1 && _row1Column2 == matrix._row1Column2 &&
-        _row2Column0 == matrix._row2Column0 && _row2Column1 == matrix._row2Column1 && _row2Column2 == matrix._row2Column2;
+        Foundations.Abs(_r0c0 - matrix._r0c0) <= tolerance &&
+        Foundations.Abs(_r0c1 - matrix._r0c1) <= tolerance &&
+        Foundations.Abs(_r0c2 - matrix._r0c2) <= tolerance &&
+        Foundations.Abs(_r1c0 - matrix._r1c0) <= tolerance &&
+        Foundations.Abs(_r1c1 - matrix._r1c1) <= tolerance &&
+        Foundations.Abs(_r1c2 - matrix._r1c2) <= tolerance &&
+        Foundations.Abs(_r2c0 - matrix._r2c0) <= tolerance &&
+        Foundations.Abs(_r2c1 - matrix._r2c1) <= tolerance &&
+        Foundations.Abs(_r2c2 - matrix._r2c2) <= tolerance;
     }
 
-    /// <summary>Indicates whether the current matrix is approximately equal to another matrix.</summary>
-    public bool EqualsApproximation(Matrix matrix, double tolerance)
+    public Matrix Negate()
     {
-      return
-        Math.Abs(_row0Column0 - matrix._row0Column0) <= tolerance &&
-        Math.Abs(_row0Column1 - matrix._row0Column1) <= tolerance &&
-        Math.Abs(_row0Column2 - matrix._row0Column2) <= tolerance &&
-        Math.Abs(_row1Column0 - matrix._row1Column0) <= tolerance &&
-        Math.Abs(_row1Column1 - matrix._row1Column1) <= tolerance &&
-        Math.Abs(_row1Column2 - matrix._row1Column2) <= tolerance &&
-        Math.Abs(_row2Column0 - matrix._row2Column0) <= tolerance &&
-        Math.Abs(_row2Column1 - matrix._row2Column1) <= tolerance &&
-        Math.Abs(_row2Column2 - matrix._row2Column2) <= tolerance;
+      return new Matrix(
+        -_r0c0, -_r0c1, -_r0c2,
+        -_r1c0, -_r1c1, -_r1c2,
+        -_r2c0, -_r2c1, -_r2c2);
     }
 
-    /// <summary>Add left matrix to this matrix.</summary>
     public Matrix Add(Matrix matrix)
     {
       return new Matrix(
-        _row0Column0 + matrix._row0Column0, _row0Column1 + matrix._row0Column1, _row0Column2 + matrix._row0Column2,
-        _row1Column0 + matrix._row1Column0, _row1Column1 + matrix._row1Column1, _row1Column2 + matrix._row1Column2,
-        _row2Column0 + matrix._row2Column0, _row2Column1 + matrix._row2Column1, _row2Column2 + matrix._row2Column2);
+        _r0c0 + matrix._r0c0, _r0c1 + matrix._r0c1, _r0c2 + matrix._r0c2,
+        _r1c0 + matrix._r1c0, _r1c1 + matrix._r1c1, _r1c2 + matrix._r1c2,
+        _r2c0 + matrix._r2c0, _r2c1 + matrix._r2c1, _r2c2 + matrix._r2c2);
     }
 
-    /// <summary>Multiply matrix times this matrix.</summary>
     public Matrix Multiply(Matrix matrix)
     {
       return new Matrix(
-        matrix._row0Column0 * _row0Column0 + matrix._row0Column1 * _row1Column0 + matrix._row0Column2 * _row2Column0,
-        matrix._row0Column0 * _row0Column1 + matrix._row0Column1 * _row1Column1 + matrix._row0Column2 * _row2Column1,
-        matrix._row0Column0 * _row0Column2 + matrix._row0Column1 * _row1Column2 + matrix._row0Column2 * _row2Column2,
-        matrix._row1Column0 * _row0Column0 + matrix._row1Column1 * _row1Column0 + matrix._row1Column2 * _row2Column0,
-        matrix._row1Column0 * _row0Column1 + matrix._row1Column1 * _row1Column1 + matrix._row1Column2 * _row2Column1,
-        matrix._row1Column0 * _row0Column2 + matrix._row1Column1 * _row1Column2 + matrix._row1Column2 * _row2Column2,
-        matrix._row2Column0 * _row0Column0 + matrix._row2Column1 * _row1Column0 + matrix._row2Column2 * _row2Column0,
-        matrix._row2Column0 * _row0Column1 + matrix._row2Column1 * _row1Column1 + matrix._row2Column2 * _row2Column1,
-        matrix._row2Column0 * _row0Column2 + matrix._row2Column1 * _row1Column2 + matrix._row2Column2 * _row2Column2);
+        matrix._r0c0 * _r0c0 + matrix._r0c1 * _r1c0 + matrix._r0c2 * _r2c0,
+        matrix._r0c0 * _r0c1 + matrix._r0c1 * _r1c1 + matrix._r0c2 * _r2c1,
+        matrix._r0c0 * _r0c2 + matrix._r0c1 * _r1c2 + matrix._r0c2 * _r2c2,
+        matrix._r1c0 * _r0c0 + matrix._r1c1 * _r1c0 + matrix._r1c2 * _r2c0,
+        matrix._r1c0 * _r0c1 + matrix._r1c1 * _r1c1 + matrix._r1c2 * _r2c1,
+        matrix._r1c0 * _r0c2 + matrix._r1c1 * _r1c2 + matrix._r1c2 * _r2c2,
+        matrix._r2c0 * _r0c0 + matrix._r2c1 * _r1c0 + matrix._r2c2 * _r2c0,
+        matrix._r2c0 * _r0c1 + matrix._r2c1 * _r1c1 + matrix._r2c2 * _r2c1,
+        matrix._r2c0 * _r0c2 + matrix._r2c1 * _r1c2 + matrix._r2c2 * _r2c2);
     }
 
-    /// <summary>Multiply matrix times this matrix.</summary>
-    /// <param name="matrix">The matrix to multiply.</param>
-    public Matrix Multiply(double scalar)
+    public Vector Multiply(Vector vector)
+    {
+      return new Vector(
+        _r0c0 * vector.X + _r0c1 * vector.Y + _r0c2 * vector.Z,
+        _r1c0 * vector.X + _r1c1 * vector.Y + _r1c2 * vector.Z,
+        _r2c0 * vector.X + _r2c1 * vector.Y + _r2c2 * vector.Z);
+    }
+
+    public Matrix Multiply(float scalar)
     {
       return new Matrix(
-        scalar * _row0Column0, scalar * _row0Column1, scalar * _row0Column2,
-        scalar * _row1Column0, scalar * _row1Column1, scalar * _row1Column2,
-        scalar * _row2Column0, scalar * _row2Column1, scalar * _row2Column2);
+        scalar * _r0c0, scalar * _r0c1, scalar * _r0c2,
+        scalar * _r1c0, scalar * _r1c1, scalar * _r1c2,
+        scalar * _r2c0, scalar * _r2c1, scalar * _r2c2);
     }
 
-    /// <summary>Computes the determinent of the matrix.</summary>
-    public double Determinant
+    public Matrix Divide(float scalar)
     {
-      get
+      return new Matrix(
+        _r0c0 / scalar, _r0c1 / scalar, _r0c2 / scalar,
+        _r1c0 / scalar, _r1c1 / scalar, _r1c2 / scalar,
+        _r2c0 / scalar, _r2c1 / scalar, _r2c2 / scalar);
+    }
+
+    public Matrix Power(int power)
+    {
+      if (power < 0)
+        throw new MatrixException("Attempting to raise a matrix by a power less than zero. (can't do dat)");
+      else if (power == 0)
+        return IdentityFactory;
+      else
       {
-        return
-          _row0Column0 * _row1Column1 * _row2Column2 -
-          _row0Column0 * _row1Column2 * _row2Column1 -
-          _row0Column1 * _row1Column0 * _row2Column2 +
-          _row0Column2 * _row1Column0 * _row2Column1 +
-          _row0Column1 * _row1Column2 * _row2Column0 -
-          _row0Column2 * _row1Column1 * _row2Column0;
+        Matrix result = Clone();
+        for (int i = 1; i < power; i++)
+          result = result * result;
+        return result;
       }
     }
 
-    /// <summary>Returns the transpose of the matrix.</summary>
     public Matrix Transpose()
     {
       return new Matrix(
-        _row0Column0, _row1Column0, _row2Column0,
-        _row0Column1, _row1Column1, _row2Column1,
-        _row0Column2, _row1Column1, _row2Column2);
+        _r0c0, _r1c0, _r2c0,
+        _r0c1, _r1c1, _r2c1,
+        _r0c2, _r1c1, _r2c2);
     }
 
-    //public Quaterniond ToQuaternion()
-    /*public Quaternion ToQuaternion()
+    public Quaternion ToQuaternion()
     {
-      throw new MatrixException("ToQuaternion() method is not yet implemented.");
-      //return new Quaterniond(this);
-    }*/
+      float qX = ( _r0c0 + _r1c1 + _r2c2 + 1.0f) / 4.0f;
+      float qY = ( _r0c0 - _r1c1 - _r2c2 + 1.0f) / 4.0f;
+      float qZ = (-_r0c0 + _r1c1 - _r2c2 + 1.0f) / 4.0f;
+      float qW = (-_r0c0 - _r1c1 + _r2c2 + 1.0f) / 4.0f;
 
-    /// <summary>Computes a unique hash code for the instaance (overflow warning).</summary>
+      if (qX < 0.0f) qX = 0.0f;
+      if (qY < 0.0f) qY = 0.0f;
+      if (qZ < 0.0f) qZ = 0.0f;
+      if (qW < 0.0f) qW = 0.0f;
+      
+      qX = Foundations.SquareRoot(qX);
+      qY = Foundations.SquareRoot(qY);
+      qZ = Foundations.SquareRoot(qZ);
+      qW = Foundations.SquareRoot(qW);
+
+      if (qX >= qY && qX >= qZ && qX >= qW)
+      {
+        qX *= +1.0f;
+        qY *= Trigonometry.Sin(_r2c1 - _r1c2);
+        qZ *= Trigonometry.Sin(_r0c2 - _r2c0);
+        qW *= Trigonometry.Sin(_r1c0 - _r0c1);
+      }
+      else if (qY >= qX && qY >= qZ && qY >= qW)
+      {
+        qX *= Trigonometry.Sin(_r2c1 - _r1c2);
+        qY *= +1.0f;
+        qZ *= Trigonometry.Sin(_r1c0 + _r0c1);
+        qW *= Trigonometry.Sin(_r0c2 + _r2c0);
+      }
+      else if (qZ >= qX && qZ >= qY && qZ >= qW)
+      {
+        qX *= Trigonometry.Sin(_r0c2 - _r2c0);
+        qY *= Trigonometry.Sin(_r1c0 + _r0c1);
+        qZ *= +1.0f;
+        qW *= Trigonometry.Sin(_r2c1 + _r1c2);
+      }
+      else if (qW >= qX && qW >= qY && qW >= qZ)
+      {
+        qX *= Trigonometry.Sin(_r1c0 - _r0c1);
+        qY *= Trigonometry.Sin(_r2c0 + _r0c2);
+        qZ *= Trigonometry.Sin(_r2c1 + _r1c2);
+        qW *= +1.0f;
+      }
+      else
+        throw new MatrixException("There is a glitch in my my matrix to quaternion function. Sorry..");
+
+      float length = Foundations.SquareRoot(qX * qX + qY * qY + qZ * qZ + qW * qW);
+
+      return new Quaternion(
+        qX /= length,
+        qY /= length,
+        qZ /= length,
+        qW /= length);
+
+    }
+
+    public Matrix Clone()
+    {
+      return new Matrix(
+        _r0c0, _r0c1, _r0c2,
+        _r1c0, _r1c1, _r1c2,
+        _r2c0, _r2c1, _r2c2);
+    }
+
+    public bool Equals(Matrix matrix)
+    {
+      return
+        _r0c0 == matrix._r0c0 && _r0c1 == matrix._r0c1 && _r0c2 == matrix._r0c2 &&
+        _r1c0 == matrix._r1c0 && _r1c1 == matrix._r1c1 && _r1c2 == matrix._r1c2 &&
+        _r2c0 == matrix._r2c0 && _r2c1 == matrix._r2c1 && _r2c2 == matrix._r2c2;
+    }
+
     public override int GetHashCode()
     {
       return
-        _row0Column0.GetHashCode() ^ _row0Column1.GetHashCode() ^ _row0Column2.GetHashCode() ^
-        _row1Column0.GetHashCode() ^ _row1Column1.GetHashCode() ^ _row1Column2.GetHashCode() ^
-        _row2Column0.GetHashCode() ^ _row2Column1.GetHashCode() ^ _row2Column2.GetHashCode();
+        _r0c0.GetHashCode() ^ _r0c1.GetHashCode() ^ _r0c2.GetHashCode() ^
+        _r1c0.GetHashCode() ^ _r1c1.GetHashCode() ^ _r1c2.GetHashCode() ^
+        _r2c0.GetHashCode() ^ _r2c1.GetHashCode() ^ _r2c2.GetHashCode();
     }
 
-    /// <summary>Gets a string representation of the matrix.</summary>
     public override string ToString()
     {
       return String.Format(
-        "|{00}, {01}, {02}|\n" +
-        "|{03}, {04}, {05}|\n" +
-        "|{06}, {07}, {08}|\n" +
-        _row0Column0, _row0Column1, _row0Column2,
-        _row1Column0, _row1Column1, _row1Column2,
-        _row2Column0, _row2Column1, _row2Column2);
+        "Row0: |{0}, {1}, {2}|\n" +
+        "Row1: |{3}, {4}, {5}|\n" +
+        "Row2: |{6}, {7}, {8}|\n" +
+        _r0c0, _r0c1, _r0c2,
+        _r1c0, _r1c1, _r1c2,
+        _r2c0, _r2c1, _r2c2);
     }
 
-    /// <summary>Class for throwing unique matrix related exceptions.</summary>
+    /// <summary>This is used for throwing matrix exceptions only to make debugging faster.</summary>
     private class MatrixException : Exception { public MatrixException(string message) : base(message) { } }
   }
 }

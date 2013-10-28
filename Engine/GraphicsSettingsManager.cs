@@ -1,4 +1,16 @@
-﻿using SevenEngine.Imaging;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken 
+// from the SevenEngine project must include citation to its original author(s) located at the
+// top of each source code file, or you may include a reference to the SevenEngine project as
+// a whole but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using SevenEngine.Imaging;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -17,6 +29,7 @@ namespace SevenEngine
     private static bool _backFaceCulling;
     private static bool _texture2d;
     private static bool _blend;
+    private static bool _lighting;
 
     public static void InitializeWindow(GameWindow sevenEngineWindow) { _sevenEngineWindow = sevenEngineWindow; }
 
@@ -45,9 +58,9 @@ namespace SevenEngine
       get { return _clearColor; } 
       set
       {
-        GL.ClearColor((float)value.Red / 255f, (float)value.Green / 255f, (float)value.Blue / 255f, 1.0f);
+        GL.ClearColor(value.R / 255f, value.G / 255f, value.B / 255f, 1.0f);
         _clearColor = value;
-        Output.WriteLine("Clear color set to: red " + value.Red + ", green " + value.Green + ", blue " + value.Blue + ";");
+        Output.WriteLine("Clear color set to: red " + value.R + ", green " + value.G + ", blue " + value.B + ";");
       } 
     }
 
@@ -129,6 +142,26 @@ namespace SevenEngine
           Output.WriteLine("Alpha blanding disabled;");
         }
       } 
+    }
+
+    public static bool Lighting
+    {
+      get { return _lighting; }
+      set
+      {
+        if (value == true)
+        {
+          GL.Enable(EnableCap.Lighting);
+          _lighting = value;
+          Output.WriteLine("Lighting enabled;");
+        }
+        else
+        {
+          GL.Disable(EnableCap.Lighting);
+          _lighting = value;
+          Output.WriteLine("Lighting disabled;");
+        }
+      }
     }
 
     public static void SetAlphaBlending()

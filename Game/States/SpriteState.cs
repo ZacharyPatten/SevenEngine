@@ -16,7 +16,7 @@ namespace Game.States
     Sprite _sprites3;
     StaticModel _terrain;
 
-    double spriteTimer = -10;
+    float spriteTimer = -10;
 
     public SpriteState()
     {
@@ -56,16 +56,16 @@ namespace Game.States
       Renderer.DrawStaticModel(_terrain);
     }
 
-    public string Update(double elapsedTime)
+    public string Update(float elapsedTime)
     {
       CameraControls();
 
-      spriteTimer += .05;
+      spriteTimer += .05f;
       _sprites.Position.X = (Trigonometry.Sin(spriteTimer) * 100) + 100;
       _sprites.Position.Y = (Trigonometry.Cos(spriteTimer) * 100) + 100;
 
-      _sprites2.Position.X = (Math.Sin(spriteTimer) * 100) - 100;
-      _sprites2.Position.Y = (Math.Cos(spriteTimer) * 100) - 100;
+      _sprites2.Position.X = (float)(Math.Sin(spriteTimer) * 100) - 100;
+      _sprites2.Position.Y = (float)(Math.Cos(spriteTimer) * 100) - 100;
 
       _sprites3.Position.X = (Trigonometry.Sin(spriteTimer) * 100);
       _sprites3.Position.Y = (Trigonometry.Cos(spriteTimer) * 100);

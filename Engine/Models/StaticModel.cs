@@ -1,4 +1,16 @@
-﻿using System;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+using System;
 
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
@@ -7,13 +19,14 @@ using SevenEngine.Shaders;
 
 namespace SevenEngine.Models
 {
-  /// <summary>Represents single static model of values stored on RAM. Multiples references to the same 
-  /// StaticModel should not exists because the contents are not being hardware instanced on the GPU.</summary>
+  /// <summary>Represents a collection of static meshes that all use the same transformational matrices. Multiples references to the same 
+  /// StaticModel should not exists because the contents are NOT being hardware instanced on the GPU.</summary>
   public class StaticModel
   {
     protected string _id;
     protected Vector _position;
     protected Vector _scale;
+    protected Quaternion _orientation;
     protected Vector _rotationAxis;
     protected float _rotationAngle;
     protected ShaderProgram _shaderOverride;
@@ -27,6 +40,8 @@ namespace SevenEngine.Models
     public Vector Position { get { return _position; } set { _position = value; } }
     /// <summary>The scale vector (scale of each axis separately) of this static model (used in rendering transformations).</summary>
     public Vector Scale { get { return _scale; } set { _scale = value; } }
+    /// <summary>Represents the orientation of a static model by a quaternion rotation.</summary>
+    public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
     /// <summary>The axis of rotation for determining the orientation of this model (used in rendering transformations).</summary>
     public Vector RotationAmmounts { get { return _rotationAxis; } set { _rotationAxis = value; } }
     /// <summary>The angle of rotation about the "RotationAmmounts" vector for this model (used in rendering transformations).</summary>

@@ -1,4 +1,16 @@
-﻿// This file contains the following classes:
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use with the following condition: any code using or originally taken from the 
+// SevenEngine project must include citation to its original author(s) located at the top of each
+// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
+// but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 10-26-13
+
+// This file contains the following classes:
 // - HashTable
 //   - HashTableListNode
 
@@ -9,13 +21,6 @@
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
-
-// Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-12-13
-// Feel free to use this code in any manor you see fit.
-// However, please site me because I put quite a bit of time into it.
-// - Thanks. :)
-
 using System;
 using System.Collections;
 
