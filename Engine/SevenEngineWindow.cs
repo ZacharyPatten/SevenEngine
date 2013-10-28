@@ -156,7 +156,7 @@ namespace SevenEngine
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       base.OnRenderFrame(e);
-      // Clear the color buffer
+      // Clear the color buffer and depth buffer
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       // Call the state rendering functions.
       StateManager.Render();

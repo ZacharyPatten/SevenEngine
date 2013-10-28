@@ -26,8 +26,8 @@ namespace SevenEngine.Mathematics
 
     public Point(float x, float y)
     {
-      X = x;
-      Y = y;
+      _x = x;
+      _y = y;
     }
 
     public Point Lerp(Point right, float blend)

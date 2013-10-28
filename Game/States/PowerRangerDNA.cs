@@ -10,6 +10,8 @@ namespace Game.States
 {
   public class PowerRangerDNA : IGameState
   {
+    Octree<StaticModel> octree = new Octree<StaticModel>(0, 0, 0, 1000000, 10);
+
     Camera _camera;
     StaticModel _terrain;
     StaticModel[] _rangers;
@@ -52,6 +54,7 @@ namespace Game.States
         _rangers[i].Scale = new Vector(5, 5, 5);
         _rangers[i].RotationAmmounts = new Vector(0, 1, 0);
         _rangers[i].RotationAngle = i * 2;
+        octree.Add("Ranger" + i, _rangers[i], _rangers[i].Position.X, _rangers[i].Position.Y, _rangers[i].Position.Z);
       }
 
       for (int i = 0; i < _rangers.Length; i+=2)
@@ -67,7 +70,10 @@ namespace Game.States
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       Renderer.SetProjectionMatrix();
 
-      if (InputManager.Keyboard.Vdown)
+      List<StaticModel> items = octree.Get(-100, -100, -100, 100, 500, 100);
+      items.Foreach(RenderModel);
+
+      /*if (InputManager.Keyboard.Vdown)
       {
         foreach (StaticModel model in _rangers)
           Renderer.AddStaticModel(model);
@@ -77,9 +83,14 @@ namespace Game.States
       {
         foreach (StaticModel model in _rangers)
           Renderer.DrawStaticModel(model);
-      }
+      }*/
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
+    }
+
+    private void RenderModel(string id, StaticModel model)
+    {
+      Renderer.DrawStaticModel(model);
     }
 
     public string Update(float elapsedTime)

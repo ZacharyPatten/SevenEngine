@@ -8,11 +8,10 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 10-26-13
+// Last Edited: 10-27-13
 
 // This file contains the following classes:
 // - Octree
-//   - OctreePosition
 //   - OctreeEntry
 //   - OctreeBound
 //   - OctreeNode
@@ -39,23 +38,6 @@ namespace SevenEngine.DataStructures
 
   public class Octree<Type>
   {
-    #region OctreePosition
-
-    /// <summary>Represents a single three dimensional vector for positional data only.</summary>
-    //private class OctreePosition
-    //{
-    //  private float _x, _y, _z;
-
-    //  internal float X { get { return _x; } set { _x = value; } }
-    //  internal float Y { get { return _y; } set { _y = value; } }
-    //  internal float Z { get { return _z; } set { _z = value; } }
-
-    //  internal OctreePosition(float x, float y, float z)
-    //  { _x = x; _y = y; _z = z; }
-    //}
-
-    #endregion
-
     #region OctreeEntry
 
     /// <summary>Represents a single entry in the octree.</summary>
@@ -160,24 +142,25 @@ namespace SevenEngine.DataStructures
       /// <summary>Determins the bounds of a child node.</summary>
       internal OctreeBound DetermineChildBounds(int child)
       {
+        float halfScale = _scale / 2;
         switch (child)
         {
           case 0:
-            return new OctreeBound(_x - _scale / 2, _y - _scale / 2, _z - _scale / 2, _scale / 4);
+            return new OctreeBound(_x - halfScale, _y - halfScale, _z - halfScale, halfScale);
           case 1:
-            return new OctreeBound(_x - _scale / 2, _y - _scale / 2, _z + _scale / 2, _scale / 4);
+            return new OctreeBound(_x - halfScale, _y - halfScale, _z + halfScale, halfScale);
           case 2:
-            return new OctreeBound(_x - _scale / 2, _y + _scale / 2, _z - _scale / 2, _scale / 4);
+            return new OctreeBound(_x - halfScale, _y + halfScale, _z - halfScale, halfScale);
           case 3:
-            return new OctreeBound(_x - _scale / 2, _y + _scale / 2, _z + _scale / 2, _scale / 4);
+            return new OctreeBound(_x - halfScale, _y + halfScale, _z + halfScale, halfScale);
           case 4:
-            return new OctreeBound(_x + _scale / 2, _y - _scale / 2, _z - _scale / 2, _scale / 4);
+            return new OctreeBound(_x + halfScale, _y - halfScale, _z - halfScale, halfScale);
           case 5:
-            return new OctreeBound(_x + _scale / 2, _y - _scale / 2, _z + _scale / 2, _scale / 4);
+            return new OctreeBound(_x + halfScale, _y - halfScale, _z + halfScale, halfScale);
           case 6:
-            return new OctreeBound(_x + _scale / 2, _y + _scale / 2, _z - _scale / 2, _scale / 4);
+            return new OctreeBound(_x + halfScale, _y + halfScale, _z - halfScale, halfScale);
           case 7:
-            return new OctreeBound(_x + _scale / 2, _y + _scale / 2, _z + _scale / 2, _scale / 4);
+            return new OctreeBound(_x + halfScale, _y + halfScale, _z + halfScale, halfScale);
         }
         throw new OctreeException("There is a glitch in my octree, sorry...");
       }
@@ -344,11 +327,15 @@ namespace SevenEngine.DataStructures
         {
           // The leaf is full so we need to grow out the tree
           OctreeBranch parent = octreeNode.Parent;
-          OctreeBranch growth = GrowBranch(parent, parent.DetermineChild(addition.X, addition.Y, addition.Z));
+          OctreeBranch growth;
+          if (parent == null)
+            growth = (OctreeBranch)(_top = new OctreeBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
+          else
+            growth = GrowBranch(parent, parent.DetermineChild(addition.X, addition.Y, addition.Z));
           foreach (OctreeEntry entry in leaf.Contents)
             _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
           return Add(addition, growth);
-        } 
+        }
       }
       // We are still traversing the tree, determine the next move
       else
@@ -377,7 +364,7 @@ namespace SevenEngine.DataStructures
       if (branch.Children[child] != null)
         throw new OctreeException("My octree has a glitched, sorry.");
       OctreeBound childBounds = branch.DetermineChildBounds(child);
-      branch.Children[child] = 
+      branch.Children[child] =
         new OctreeLeaf(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch, _branchFactor);
       return (OctreeLeaf)branch.Children[child];
     }
@@ -442,11 +429,13 @@ namespace SevenEngine.DataStructures
       }
     }
 
-    /// <summary>Gets contents within the octree within a specific bounding box.</summary>
-    /// <param name="x">The x coordinate of the center of the bounding box constraint.</param>
-    /// <param name="y">The y coordinate of the center of the bounding box constraint.</param>
-    /// <param name="z">The z coordinate of the center of the bounding box constraint.</param>
-    /// <param name="scale">The scale in every dimension of the bounding box constraint.</param>
+    /// <summary>Gets contents within the octree within a specific axis-aligned bounding rectanglular prism.</summary>
+    /// <param name="xMin">The minimum x coordinate of the bounding rectangle.</param>
+    /// <param name="yMin">The minimum y coordinate of the bounding rectangle.</param>
+    /// <param name="zMin">The minimum z coordinate of the bounding rectangle.</param>
+    /// <param name="xMax">The maximum x coordinate of the bounding rectangle.</param>
+    /// <param name="yMax">The maximum y coordinate of the bounding rectangle.</param>
+    /// <param name="zMax">The maximum z coordinate of the bounding rectangle.</param>
     /// <returns>A list of the contents within the provided bounding box.</returns>
     public List<Type> Get(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
@@ -465,7 +454,8 @@ namespace SevenEngine.DataStructures
       {
         OctreeLeaf leaf = (OctreeLeaf)octreeNode;
         foreach (OctreeEntry entry in leaf.Contents)
-          if (entry.X > xMin && entry.X < xMax
+          if (entry != null &&
+            entry.X > xMin && entry.X < xMax
             && entry.Y > yMin && entry.Y < yMax
             && entry.Z > zMin && entry.Z < zMax)
             contents.Add(entry.Id, entry.Value);
@@ -476,17 +466,19 @@ namespace SevenEngine.DataStructures
         OctreeBranch branch = (OctreeBranch)octreeNode;
         foreach (OctreeNode node in branch.Children)
         {
-          if (xMax < node.X + node.Scale)
+          if (node == null)
             continue;
-          else if (yMax < node.Y + node.Scale)
+          else if (xMax < node.X - node.Scale)
             continue;
-          else if (zMax < node.Z + node.Scale)
+          else if (yMax < node.Y - node.Scale)
             continue;
-          else if (xMin > node.X - node.Scale)
+          else if (zMax < node.Z - node.Scale)
             continue;
-          else if (yMin > node.Y - node.Scale)
+          else if (xMin > node.X + node.Scale)
             continue;
-          else if (zMin > node.Z - node.Scale)
+          else if (yMin > node.Y + node.Scale)
+            continue;
+          else if (zMin > node.Z + node.Scale)
             continue;
           else
             Get(xMin, yMin, zMin, xMax, yMax, zMax, contents, node);

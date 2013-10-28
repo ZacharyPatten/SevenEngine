@@ -81,7 +81,9 @@
     <Compile Include="DataStructures\Octree.cs" />
     <Compile Include="DataStructures\QuadTree.cs" />
     <Compile Include="DataStructures\Queue.cs" />
+    <Compile Include="DataStructures\SplayTree.cs" />
     <Compile Include="DataStructures\Stack.cs" />
+    <Compile Include="DataStructures\TangoTree.cs" />
     <Compile Include="GraphicsSettingsManager.cs" />
     <Compile Include="IGameState.cs" />
     <Compile Include="Mathematics\Foundations.cs" />

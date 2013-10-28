@@ -21,6 +21,7 @@
 // - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
 // - "EstAvg(x)": the runtime equation "x" to typically expect
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
+
 using System;
 using System.Collections;
 

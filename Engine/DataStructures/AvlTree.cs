@@ -8,7 +8,10 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 10-26-13
+//   - Contribution: All but the remove method.
+// - Nicholas Boen
+//   - Contribution: The remove method.
+// Last Edited: 10-27-13
 
 // This file contains the following classes:
 // - AvlTree
