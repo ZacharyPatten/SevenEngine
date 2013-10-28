@@ -38,6 +38,9 @@ Global
 		{7FEC005B-B67A-4543-8D29-E85C782B70C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7FEC005B-B67A-4543-8D29-E85C782B70C3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Game\Game.csproj
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
