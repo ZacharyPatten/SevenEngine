@@ -11,11 +11,15 @@ namespace Game
         String newPath = path.Trim().Replace("\\", Path.DirectorySeparatorChar.ToString());
         if (newPath[0] == '/')
         {
-          newPath = newPath.Remove(0,1);
+          newPath = newPath.Remove(0, 1);
         }
         return newPath;
       }
-      return path;
+      else
+      {
+        return Directory.GetCurrentDirectory() + path;
+      }
+      //return path;
     }
 
    
