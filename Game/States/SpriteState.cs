@@ -28,7 +28,7 @@ namespace Game.States
 
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
-      _terrain.RotationAmmounts = new Vector(0, 0, 0);
+      //_terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
       _sprites = new Sprite(TextureManager.Get("Menu"));

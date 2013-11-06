@@ -13,40 +13,118 @@
 using System;
 
 using SevenEngine.DataStructures;
+using SevenEngine.DataStructures.Interfaces;
 using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.Shaders;
 
 namespace SevenEngine.Models
 {
+  /// <summary>Represents a single mesh that has been loaded on the GPU. multiple references of this class SHOULD exist,
+  /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
+  /// same buffers on the GPU, which is good for both speed and memory space.</summary>
+  public class StaticMesh
+  {
+    private int _existingReferences;
+    protected string _filePath;
+    protected string _id;
+    protected int _vertexBufferHandle;
+    protected int _colorBufferHandle;
+    protected int _textureCoordinateBufferHandle;
+    protected int _normalBufferHandle;
+    protected int _elementBufferHandle;
+    protected int _vertexCount;
+
+    /// <summary>The number of existing hardware instances of this model reference.</summary>
+    public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
+    /// <summary>Holds the filepath of the imported file.</summary>
+    internal string FilePath { get { return _filePath; } set { _filePath = value; } }
+    /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>
+    internal string Id { get { return _id; } set { _id = value; } }
+    /// <summary>The handle of the vertex buffer on the GPU.</summary>
+    internal int VertexBufferHandle { get { return _vertexBufferHandle; } set { _vertexBufferHandle = value; } }
+    /// <summary>The location of the color buffer on the GPU.</summary>
+    internal int ColorBufferHandle { get { return _colorBufferHandle; } set { _colorBufferHandle = value; } }
+    /// <summary>The location of the texture coordinate buffer on the GPU.</summary>
+    internal int TextureCoordinateBufferHandle { get { return _textureCoordinateBufferHandle; } set { _textureCoordinateBufferHandle = value; } }
+    /// <summary>The location of the normal buffer on the GPU.</summary>
+    internal int NormalBufferHandle { get { return _normalBufferHandle; } set { _normalBufferHandle = value; } }
+    /// <summary>The location of the element buffer on the GPU.</summary>
+    internal int ElementBufferHandle { get { return _elementBufferHandle; } set { _elementBufferHandle = value; } }
+    /// <summary>The number of verteces in this model.</summary>
+    internal int VertexCount { get { return _vertexCount; } set { _vertexCount = value; } }
+
+    /// <summary>Creates an instance of a StaticMesh.</summary>
+    /// <param name="filePath">The file path of the model that the data came from.</param>
+    /// <param name="staticMeshId">The name associated with this mash when in was created.</param>
+    /// <param name="vertexBufferHandle">The number reference of the vertex buffer on the GPU (default is 0).</param>
+    /// <param name="colorBufferHandle">The number reference of the color buffer on the GPU (default is 0).</param>
+    /// <param name="textureCoordinatesHandle">The number reference of the texture coordinate buffer on the GPU (default is 0).</param>
+    /// <param name="normalBufferHandle">The number reference of the normal buffer on the GPU (default is 0).</param>
+    /// <param name="elementBufferHandle">The number reference of the element buffer on the GPU (default is 0).</param>
+    /// <param name="vertexCount">The number of verteces making up the mesh.</param>
+    internal StaticMesh(
+      string filePath,
+      string staticMeshId,
+      int vertexBufferHandle,
+      int colorBufferHandle,
+      int textureCoordinatesHandle,
+      int normalBufferHandle,
+      int elementBufferHandle,
+      int vertexCount)
+    {
+      _existingReferences = 0;
+
+      _filePath = filePath;
+      _vertexBufferHandle = vertexBufferHandle;
+      _colorBufferHandle = colorBufferHandle;
+      _textureCoordinateBufferHandle = textureCoordinatesHandle;
+      _normalBufferHandle = normalBufferHandle;
+      _elementBufferHandle = elementBufferHandle;
+      _vertexCount = vertexCount;
+    }
+  }
+
+  public class StaticModelMesh : InterfaceStringId
+  {
+    private string _id;
+    private Texture _texture;
+    private StaticMesh _staticMesh;
+
+    public string Id { get { return _id; } set { _id = value; } }
+    public Texture Texture { get { return _texture; } set { _texture = value; } }
+    public StaticMesh StaticMesh { get { return _staticMesh; } set { _staticMesh = value; } }
+
+    public StaticModelMesh(string id, Texture texture, StaticMesh staticMesh)
+    {
+      _id = id;
+      _texture = texture;
+      _staticMesh = staticMesh;
+    }
+  }
+
   /// <summary>Represents a collection of static meshes that all use the same transformational matrices. Multiples references to the same 
   /// StaticModel should not exists because the contents are NOT being hardware instanced on the GPU.</summary>
-  public class StaticModel
+  public class StaticModel : InterfaceStringId, InterfacePositionVector
   {
     protected string _id;
     protected Vector _position;
     protected Vector _scale;
     protected Quaternion _orientation;
-    protected Vector _rotationAxis;
-    protected float _rotationAngle;
     protected ShaderProgram _shaderOverride;
-    protected List<Link3<string, Texture, StaticMesh>> _meshes;
+    protected List<StaticModelMesh> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public List<Link3<string, Texture, StaticMesh>> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public List<StaticModelMesh> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
-    internal string Id { get { return _id; } set { _id = value; } }
+    public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
     public Vector Position { get { return _position; } set { _position = value; } }
     /// <summary>The scale vector (scale of each axis separately) of this static model (used in rendering transformations).</summary>
     public Vector Scale { get { return _scale; } set { _scale = value; } }
     /// <summary>Represents the orientation of a static model by a quaternion rotation.</summary>
     public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
-    /// <summary>The axis of rotation for determining the orientation of this model (used in rendering transformations).</summary>
-    public Vector RotationAmmounts { get { return _rotationAxis; } set { _rotationAxis = value; } }
-    /// <summary>The angle of rotation about the "RotationAmmounts" vector for this model (used in rendering transformations).</summary>
-    public float RotationAngle { get { return _rotationAngle; } set { _rotationAngle = value; } }
-    /// <summary>This lets you change the shader per model. Instead of using the global default shader, it will use this one.</summary>
+    
     public string ShaderOverride
     {
       get
@@ -72,11 +150,10 @@ namespace SevenEngine.Models
     {
       _id = "From Scratch";
       _shaderOverride = null;
-      _meshes = new List<Link3<string, Texture, StaticMesh>>();
+      _meshes = new List<StaticModelMesh>();
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
-      _rotationAxis = new Vector(0, 0, 0);
-      _rotationAngle = 0;
+      _orientation = Quaternion.FactoryIdentity;
     }
 
     /// <summary>Creates a static model from the ids provided.</summary>
@@ -91,30 +168,28 @@ namespace SevenEngine.Models
 
       _id = staticModelId;
       //_meshes = new ListArray<Link<Texture, StaticMesh>>(10);
-      _meshes = new List<Link3<string, Texture, StaticMesh>>();
+      _meshes = new List<StaticModelMesh>();
 
       for (int i = 0; i < textures.Length; i++)
-        _meshes.Add(meshNames[i], new Link3<string, Texture, StaticMesh>(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i])));
+        _meshes.Add(new StaticModelMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i])));
 
       _shaderOverride = null;
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
-      _rotationAxis = new Vector(0, 0, 0);
-      _rotationAngle = 0;
+      _orientation = Quaternion.FactoryIdentity;
     }
 
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, List<Link3<string, Texture, StaticMesh>> meshes)
+    internal StaticModel(string staticModelId, List<StaticModelMesh> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;
       _meshes = meshes;
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
-      _rotationAxis = new Vector(0, 0, 0);
-      _rotationAngle = 0;
+      _orientation = Quaternion.FactoryIdentity;
     }
   }
 }

@@ -81,7 +81,7 @@ namespace SevenEngine.Mathematics
       //    + ((angleToTheFifth) / 120);
       //}
       //// quadrant 3
-      //else if (angle <= ThreeHalvesPi) 
+      //else if (angle <= ThreeHalvesPi)
       //{
       //  angle = angle % Pi;
       //  angleCubed = angle * angle * angle;
@@ -114,6 +114,7 @@ namespace SevenEngine.Mathematics
 
       // THE FOLLOWING IS MY PERSONAL FUNCTION. IT WORKS BUT IT IS NOT AS FAST AS
       // THE SYSTEM FUNCTION IN ITS CURRENT STATE
+
       #region Custom Cos Function
       //// If you wanted to be cheap, you could just use the following commented line...
       //// return Sin(angle + (Pi / 2));

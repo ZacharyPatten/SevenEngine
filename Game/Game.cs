@@ -24,7 +24,7 @@ namespace Game
       GraphicsSettingsManager.BackFaceCulling = true;
       GraphicsSettingsManager.DepthBuffer = true;
       GraphicsSettingsManager.VerticalSyncronization = true;
-      GraphicsSettingsManager.ClearColor = Color.Maroon;
+      GraphicsSettingsManager.ClearColor = Color.DEFAULT;
       GraphicsSettingsManager.Texture2D = true;
       GraphicsSettingsManager.Blend = true;
       GraphicsSettingsManager.SetAlphaBlending();
@@ -49,31 +49,37 @@ namespace Game
       // Just pull non-bitmaps into any standard image editor and export them as bitmap files.
 
       TextureManager.LoadTexture("grass",
-                                  PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\grass.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\grass.bmp"));
+      TextureManager.LoadTexture("rock",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\rock3.bmp"));
+      TextureManager.LoadTexture("rock2",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\rock4.bmp"));
       TextureManager.LoadTexture("RedRanger",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\RedRangerBody.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\RedRangerBody.bmp"));
+      TextureManager.LoadTexture("Tux",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\tux.bmp"));
       TextureManager.LoadTexture("BlueRanger",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\BlueRangerBody.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\BlueRangerBody.bmp"));
       TextureManager.LoadTexture("PinkRanger",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\PinkRangerBody.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\PinkRangerBody.bmp"));
       TextureManager.LoadTexture("BlackRanger",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\BlackRangerBody.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\BlackRangerBody.bmp"));
       TextureManager.LoadTexture("YellowRanger",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\YellowRangerBody.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\YellowRangerBody.bmp"));
 
       TextureManager.LoadTexture("Menu",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\Menu.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\Menu.bmp"));
 
       TextureManager.LoadTexture("SkyboxLeft",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerLeft.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerLeft.bmp"));
       TextureManager.LoadTexture("SkyboxRight",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerRight.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerRight.bmp"));
       TextureManager.LoadTexture("SkyboxFront",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerFront.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerFront.bmp"));
       TextureManager.LoadTexture("SkyboxBack",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerBack.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerBack.bmp"));
       TextureManager.LoadTexture("SkyboxTop",
-                                 PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerTop.bmp"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerTop.bmp"));
 
     }
 
@@ -89,11 +95,18 @@ namespace Game
       //   I know these are a lot of restrictions, but I'm only one dude writing all this... ill get to it eventually
 
       StaticModelManager.LoadMesh("terrain",
-                                  PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\Terrain.obj"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\Terrain.obj"));
       StaticModelManager.LoadMesh("RedRanger",
-                                  PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\RedRanger.obj"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\RedRanger.obj"));
+      StaticModelManager.LoadMesh("Tux",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\tux.obj"));
+      StaticModelManager.LoadMesh("mountain",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\mountain.obj"));
 
       StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
+      StaticModelManager.LoadModel("Mountain", new string[] { "rock" }, new string[] { "mountain" }, new string[] { "mountain" });
+      StaticModelManager.LoadModel("Mountain2", new string[] { "rock2" }, new string[] { "mountain" }, new string[] { "mountain" });
+      StaticModelManager.LoadModel("Tux", new string[] { "Tux" }, new string[] { "Tux" }, new string[] { "Body" });
       StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
       StaticModelManager.LoadModel("BlueRanger", new string[] { "BlueRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
       StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
@@ -101,7 +114,7 @@ namespace Game
       StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
 
       StaticModelManager.LoadSevenModel("RedRangerSeven",
-                                        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\RedRanger.obj7"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\RedRanger.obj7"));
     }
 
     public override void InitializeShaders()
@@ -113,26 +126,26 @@ namespace Game
       ShaderManager.LoadVertexShader("VertexShaderBasic",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderBasic.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderBasic",
-                                       PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderBasic.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderBasic.glsl"));
 
       // These shaders set stages based of normal values to give a solid shading toon look.
       // WARNING!!! i glitched these shaders up pretty bad, im stil new to shaders... try the other two
       ShaderManager.LoadVertexShader("VertexShaderToon",
-                                     PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderToon.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderToon.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderToon",
-                                     PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderToon.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderToon.glsl"));
 
       // These Lambertian shaders include an algorithm for lighting.
       ShaderManager.LoadVertexShader("VertexShaderLambertian",
-                                     PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderLambertian.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderLambertian.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderLambertian",
-                                       PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLambertian.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLambertian.glsl"));
 
       // These Phong shaders include an algorithm for lighting.
       ShaderManager.LoadVertexShader("VertexShaderPhong",
-                                     PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderPhong.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderPhong.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderPhong",
-                                       PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderPhong.glsl"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderPhong.glsl"));
 
       // LINK TOGETHER YOUR SHADERS HERE
       // Use the static class "ShaderManager"

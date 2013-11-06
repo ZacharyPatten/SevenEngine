@@ -11,12 +11,10 @@
 // Last Edited: 10-26-13
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace SevenEngine.Mathematics
 {
   /// <summary>Implements a x, y, z, and w component quaternion for 3D rotatoins.</summary>
-  [StructLayout(LayoutKind.Sequential)]
   public class Quaternion
   {
     float _x, _y, _z, _w;
@@ -26,13 +24,14 @@ namespace SevenEngine.Mathematics
     public float Z { get { return _z; } set { _z = value; } }
     public float W { get { return _w; } set { _w = value; } }
 
-    public static readonly Quaternion IdentityFactory = new Quaternion(0, 0, 0, 1);
+    public static readonly Quaternion FactoryIdentity = new Quaternion(0, 0, 0, 1);
 
     public Quaternion(float x, float y, float z, float w) { _x = x; _y = y; _z = z; _w = w; }
 
     public static Quaternion operator +(Quaternion left, Quaternion right) { return left.Add(right); }
     public static Quaternion operator -(Quaternion left, Quaternion right) { return left.Subtract(right); }
     public static Quaternion operator *(Quaternion left, Quaternion right) { return left.Multiply(right); }
+    public static Quaternion operator *(Quaternion quaternion, Vector vector) { return quaternion.Multiply(vector); }
     public static Quaternion operator *(Quaternion quaternion, float scalor) { return quaternion.Multiply(scalor); }
     public static Quaternion operator *(float scalor, Quaternion quaternion) { return quaternion.Multiply(scalor); }
     
@@ -153,7 +152,7 @@ namespace SevenEngine.Mathematics
     public static Quaternion FromAxisAngle(Vector axis, float angle)
     {
       if (axis.LengthSquared == 0.0f)
-        return IdentityFactory;
+        return FactoryIdentity;
       float sinAngleOverAxisLength = Trigonometry.Sin(angle / 2) / axis.Length;
       return new Quaternion(
         axis.X * sinAngleOverAxisLength,
@@ -169,7 +168,7 @@ namespace SevenEngine.Mathematics
 
       if (LengthSquared == 0.0f)
       { if (right.LengthSquared == 0.0f)
-          return IdentityFactory;
+          return FactoryIdentity;
         else
           return new Quaternion(right.X, right.Y, right.Z, right.W); }
       else if (right.LengthSquared == 0.0f)
@@ -184,7 +183,7 @@ namespace SevenEngine.Mathematics
       if (result.LengthSquared > 0.0f)
         return result.Normalize();
       else
-        return IdentityFactory;
+        return FactoryIdentity;
     }
 
     public Quaternion Slerp(Quaternion right, float blend)
@@ -194,7 +193,7 @@ namespace SevenEngine.Mathematics
 
       if (LengthSquared == 0.0f)
       { if (right.LengthSquared == 0.0f)
-          return IdentityFactory;
+          return FactoryIdentity;
         else
           return new Quaternion(right.X, right.Y, right.Z, right.W); }
       else if (right.LengthSquared == 0.0f)
@@ -224,7 +223,7 @@ namespace SevenEngine.Mathematics
       if (result.LengthSquared > 0.0f)
         return result.Normalize();
       else
-        return IdentityFactory;
+        return FactoryIdentity;
     }
 
     public Matrix ToMatrix()

@@ -10,17 +10,11 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 10-26-13
 
-using System.Runtime.InteropServices;
-
 namespace SevenEngine.Imaging
 {
   /// <summary>Represents a single color by RGBA values.</summary>
-  [StructLayout(LayoutKind.Sequential)]
   public class Color
   {
-    // YOU CAN SET A DEFAULT COLOR HERE IF YOU WANT TO!!!
-    public static readonly Color DEFAULT = Teal; // I like Teal :)
-
     private float _red;
     private float _green;
     private float _blue;
@@ -335,5 +329,9 @@ namespace SevenEngine.Imaging
     /// <summary>Hex: 0x9acd32.</summary>
     public static readonly Color YellowGreen = new Color(154, 205, 50, 0);
     #endregion
+
+    /// <summary>YOU CAN SET A DEFAULT COLOR HERE IF YOU WANT TO!!!
+    /// I personally like Teal, so it is Teal. :)</summary>
+    public static readonly Color DEFAULT = Teal;
   }
 }

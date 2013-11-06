@@ -11,12 +11,10 @@
 // Last Edited: 10-26-13
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace SevenEngine.Mathematics
 {
   /// <summary>Implements a 3-component vector.</summary>
-  [StructLayout(LayoutKind.Sequential)]
   public class Vector
   {
     private float _x, _y, _z;
@@ -27,7 +25,7 @@ namespace SevenEngine.Mathematics
 
     public Vector(float x, float y, float z) { _x = x; _y = y; _z = z; }
 
-    public static readonly Vector ZeroFactory = new Vector(0, 0, 0);
+    public static readonly Vector FactoryZero = new Vector(0, 0, 0);
 
     public static Vector operator +(Vector left, Vector right) { return left.Add(right); }
     public static Vector operator -(Vector left, Vector right) { return left.Subtract(right); }

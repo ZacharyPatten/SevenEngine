@@ -11,11 +11,9 @@
 // Last Edited: 10-26-13
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace SevenEngine.Mathematics
 {
-  [StructLayout(LayoutKind.Sequential)]
   public class Point
   {
     private float _x;

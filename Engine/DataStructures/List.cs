@@ -27,16 +27,181 @@
 // Notes: if the letter "n" is used, it typically means the current number of items within the structure
 
 using System;
+using System.Runtime.CompilerServices;
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
+  #region List
+
+  #region InterfaceStringId
+  //// This interface is in the "Interfaces" folder, but here it is if you
+  //// can't find it:
+  // public interface InterfaceStringId
+  // {
+  //   string Id { get; set; }
+  // }
+  #endregion
+
+  /// <summary>Implements a growing, singularly-linked list data structure.</summary>
+  /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
+  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
+  /// Seven (Zachary Patten) 10-12-13.</remarks>
+  public class List<Type> where Type : InterfaceStringId
+  {
+    #region ListNode
+
+    /// <summary>This class just holds the data for each individual node of the list.</summary>
+    private class ListNode
+    {
+      private Type _value;
+      private ListNode _next;
+
+      internal Type Value { get { return _value; } set { _value = value; } }
+      internal ListNode Next { get { return _next; } set { _next = value; } }
+
+      internal ListNode(Type data) { _value = data; }
+    }
+
+    #endregion
+
+    private ListNode _head;
+    private ListNode _tail;
+    private int _count;
+
+    /// <summary>Returns the number of items in the list.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public int Count { get { return _count; } }
+
+    /// <summary>Creates an instance of a stalistck.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public List()
+    {
+      _head = _tail = null;
+      _count = 0;
+    }
+
+    /// <summary>Adds an item to the list.</summary>
+    /// <param name="id">The string id of the item to add to the list.</param>
+    /// <param name="addition">The item to add to the list.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    public void Add(Type addition)
+    {
+      if (_tail == null)
+        _head = _tail = new ListNode(addition);
+      else
+        _tail = _tail.Next = new ListNode(addition);
+      _count++;
+    }
+
+    /// <summary>Removes an item from the list with the matching string id.</summary>
+    /// <param name="removalId">The string id of the item to remove.</param>
+    /// <remarks>Runtime: O(n).</remarks>
+    public void Remove(string removalId)
+    {
+      if (_head == null)
+        throw new ListException("Attempting to remove a non-existing id value.");
+      if (_head.Value.Id == removalId)
+      {
+        _head = _head.Next;
+        _count--;
+        return;
+      }
+      ListNode listNode = _head;
+      while (listNode != null)
+      {
+        if (listNode.Next == null)
+          throw new ListException("Attempting to remove a non-existing id value.");
+        else if (listNode.Next.Value.Id == removalId)
+        {
+          if (listNode.Next.Equals(_tail))
+            _tail = listNode;
+          listNode.Next = listNode.Next.Next;
+        }
+        else
+          listNode = listNode.Next;
+      }
+      throw new ListException("Attempting to remove a non-existing id value.");
+    }
+
+    /// <summary>Allows you to rename an entry within this list.</summary>
+    /// <param name="oldName">The id of the list entry to rename.</param>
+    /// <param name="newName">The new id to apply to the node.</param>
+    /// <remarks>Runtime: Theta(n).</remarks>
+    public void RenameEntry(string oldName, string newName)
+    {
+      ListNode looper = _head;
+      ListNode rename = null;
+      while (looper != null)
+      {
+        if (looper.Value.Id == newName)
+          throw new ListException("Attempting to rename a list entry to an already existing id.");
+        if (looper.Value.Id == oldName)
+          rename = looper;
+        looper = looper.Next;
+      }
+      rename.Value.Id = newName;
+    }
+
+    /// <summary>Resets the list to an empty state. WARNING could cause excessive garbage collection.</summary>
+    public void Clear()
+    {
+      _head = _tail = null;
+      _count = 0;
+    }
+
+    /// <summary>A function to be used in a foreach loop.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a foreach loop.</param>
+    public delegate void ForeachFunction(Type node);
+    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <param name="foreachFunction">The function within a foreach loop.</param>
+    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
+    public void Foreach(ForeachFunction foreachFunction)
+    {
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        foreachFunction(looper.Value);
+        looper = looper.Next;
+      }
+    }
+
+    /// <summary>How how want to clone each item during an entire list clone.</summary>
+    /// <param name="currentid">The current id of the node.</param>
+    /// <param name="node">A single node in teh list.</param>
+    /// <param name="newId">The desired new id in the cloned list.</param>
+    /// <param name="newNode">The cloned item to be used in the cloned list.</param>
+    public delegate Type CloneFunction(Type node);
+    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
+    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
+    /// <returns>The resulting cloned list.</returns>
+    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
+    public List<Type> Clone(CloneFunction cloneFunction)
+    {
+      List<Type> listClone = new List<Type>();
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        listClone.Add(cloneFunction(looper.Value));
+        looper = looper.Next;
+      }
+      return listClone;
+    }
+
+    /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
+    private class ListException : Exception { public ListException(string message) : base(message) { } }
+  }
+
+  #endregion
+
   #region List
 
   /// <summary>Implements a growing, singularly-linked list data structure.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class List<Type>
+  /*public class List<Type>
   {
     #region ListNode
 
@@ -86,17 +251,6 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public void Add(string id, Type addition)
     {
-      Add(id, addition, _head);
-      _count++;
-    }
-
-    /// <summary>Adds an item to the list.</summary>
-    /// <param name="id">The string id of the addition.</param>
-    /// <param name="addition">The item to add to the list.</param>
-    /// <param name="listNode">The current location during recursion.</param>
-    /// <remarks>Runtime: O(1).</remarks>
-    private void Add(string id, Type addition, ListNode listNode)
-    {
       if (_tail == null)
         _tail = new ListNode(id, addition, null);
       else
@@ -106,6 +260,7 @@ namespace SevenEngine.DataStructures
       }
       if (_head == null)
         _head = _tail;
+      _count++;
     }
 
     /// <summary>Removes an item from the list with the matching string id.</summary>
@@ -230,7 +385,7 @@ namespace SevenEngine.DataStructures
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class ListException : Exception { public ListException(string message) : base(message) { } }
-  }
+  }*/
 
   #endregion
 
@@ -310,7 +465,7 @@ namespace SevenEngine.DataStructures
       if (_count == _list.Length)
       {
         if (_list.Length > Int32.MaxValue / 2)
-          throw new ListArrayException("Your list is so large that it can no longer float itself (Int32.MaxValue barrier reached).");
+          throw new ListArrayException("Your list is so large that it can no longer double itself (Int32.MaxValue barrier reached).");
         Type[] newList = new Type[_list.Length * 2];
         _list.CopyTo(newList, 0);
         _list = newList;
@@ -325,10 +480,11 @@ namespace SevenEngine.DataStructures
     {
       if (index < 0 || index > _count)
         throw new ListArrayException("Attempting to remove an index outside the ListArray's current size.");
-      if (_count < _list.Length / 4 && _list.Length / 4 > _minimumCapacity)
+      if (_count < _list.Length / 4 && _list.Length / 2 > _minimumCapacity)
       {
         Type[] newList = new Type[_list.Length / 2];
-        _list.CopyTo(newList, 0);
+        for (int i = 0; i < _count; i++)
+          newList[i] = _list[i];
         _list = newList;
       }
       for (int i = index; i < _count; i++)

@@ -11,6 +11,8 @@
 //   - Contribution: All but the remove method.
 // - Nicholas Boen
 //   - Contribution: The remove method.
+// Special Thanks:
+// - AVL Trees were originally invented by G. M. Adelson-Velskii and E. M. Landis in 1962
 // Last Edited: 10-27-13
 
 // This file contains the following classes:
@@ -109,6 +111,33 @@ namespace SevenEngine.DataStructures
         return Get(id, avlTree.RightChild);
     }
 
+
+    /// <summary>Reassigns the item with the designated by the string.</summary>
+    /// <param name="id">The string ID to look for.</param>
+    /// <returns>The object with the desired string ID if it exists.</returns>
+    /// <remarks>Runtime: O(ln(n)), Omega(1).</remarks>
+    public void Reassign(string id, Type newValue) { Reassign(id, newValue, _avlTree); }
+
+    /// <summary>Standard AVL Tree searching algorithm using recursion.</summary>
+    /// <param name="id">The string ID to look for.</param>
+    /// <param name="avlTree">The AVL Tree node to look in.</param>
+    /// <remarks>Runtime: O(ln(n)), Omega(1).</remarks>
+    private void Reassign(string id, Type newValue, AvlTreeNode avlTree)
+    {
+      if (avlTree == null)
+        throw new AvlTreeException("Attempting to reassign a non-existing value: " + id + ".");
+      int compResult = id.CompareTo(avlTree.Id);
+      if (compResult == 0)
+      {
+        avlTree.Value = newValue;
+        return;
+      }
+      else if (compResult < 0)
+        Reassign(id, newValue, avlTree.LeftChild);
+      else
+        Reassign(id, newValue, avlTree.RightChild);
+    }
+
     /// <summary>Checks to see if the tree contains a specific key.</summary>
     /// <param name="id">The id to check for existance.</param>
     /// <returns>"true" if the key exists; "false" if the key does not exist.</returns>
@@ -156,7 +185,7 @@ namespace SevenEngine.DataStructures
       {
         int compResult = id.CompareTo(avlTree.Id);
         if (compResult == 0)
-          throw new AvlTreeException("A NameInfo with the given name already exists.");
+          throw new AvlTreeException("Attempting to add an already existing id exists.");
         else if (compResult < 0)
           avlTree.LeftChild = Add(id, addition, avlTree.LeftChild);
         else
@@ -210,9 +239,9 @@ namespace SevenEngine.DataStructures
           return Balance(avlTree);
         }
         else if (compResult < 0)
-          avlTree = Remove(removal, avlTree.LeftChild);
+          avlTree.LeftChild = Remove(removal, avlTree.LeftChild);
         else
-          avlTree = Remove(removal, avlTree.RightChild);
+          avlTree.RightChild = Remove(removal, avlTree.RightChild);
         SetHeight(avlTree);
         return Balance(avlTree);
       }
@@ -288,14 +317,14 @@ namespace SevenEngine.DataStructures
         if (Height(avlTree.LeftChild.LeftChild) > Height(avlTree.RightChild))
           return SingleRotateRight(avlTree);
         else
-          return floatRotateRight(avlTree);
+          return DoubleRotateRight(avlTree);
       }
       else if (Height(avlTree.RightChild) == Height(avlTree.LeftChild) + 2)
       {
         if (Height(avlTree.RightChild.RightChild) > Height(avlTree.LeftChild))
           return SingleRotateLeft(avlTree);
         else
-          return floatRotateLeft(avlTree);
+          return DoubleRotateLeft(avlTree);
       }
       SetHeight(avlTree);
       return avlTree;
@@ -329,11 +358,11 @@ namespace SevenEngine.DataStructures
       return temp;
     }
 
-    /// <summary>Standard float rotation (to the right) algorithm for an AVL Tree.</summary>
+    /// <summary>Standard double rotation (to the right) algorithm for an AVL Tree.</summary>
     /// <param name="avlTree">The tree to float rotate right.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode floatRotateRight(AvlTreeNode avlTree)
+    private AvlTreeNode DoubleRotateRight(AvlTreeNode avlTree)
     {
       AvlTreeNode temp = avlTree.LeftChild.RightChild;
       avlTree.LeftChild.RightChild = temp.LeftChild;
@@ -346,11 +375,11 @@ namespace SevenEngine.DataStructures
       return temp;
     }
 
-    /// <summary>Standard float rotation (to the left) algorithm for an AVL Tree.</summary>
+    /// <summary>Standard double rotation (to the left) algorithm for an AVL Tree.</summary>
     /// <param name="avlTree">The tree to float rotate left.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode floatRotateLeft(AvlTreeNode avlTree)
+    private AvlTreeNode DoubleRotateLeft(AvlTreeNode avlTree)
     {
       AvlTreeNode temp = avlTree.RightChild.LeftChild;
       avlTree.RightChild.LeftChild = temp.RightChild;
@@ -401,6 +430,5 @@ namespace SevenEngine.DataStructures
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class AvlTreeException : Exception { public AvlTreeException(string message) : base(message) { } }
   }
-
   #endregion
 }

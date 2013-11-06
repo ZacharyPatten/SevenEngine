@@ -12,7 +12,6 @@
 
 // This file contains the following classes:
 // - Octree
-//   - OctreeEntry
 //   - OctreeBound
 //   - OctreeNode
 //   - OctreeLeaf
@@ -31,40 +30,14 @@
 // Note that if the letter "n" is used, it typically means the current number of items within the set.
 
 using System;
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
   #region Octree
 
-  public class Octree<Type>
+  public class Octree<Type> where Type : InterfaceStringId, InterfacePositionVector
   {
-    #region OctreeEntry
-
-    /// <summary>Represents a single entry in the octree.</summary>
-    private class OctreeEntry
-    {
-      private string _id;
-      private Type _value;
-      //private OctreePosition _position;
-      private float _x, _y, _z;
-
-      internal string Id { get { return _id; } }
-      internal Type Value { get { return _value; } }
-      //internal OctreePosition Position { get { return _position; } set { _position = value; } }
-      internal float X { get { return _x; } set { _x = value; } }
-      internal float Y { get { return _y; } set { _y = value; } }
-      internal float Z { get { return _z; } set { _z = value; } }
-
-      internal OctreeEntry(string id, Type value, float x, float y, float z) //OctreePosition position)
-      {
-        _id = id;
-        _value = value;
-        _x = x; _y = y; _z = z;
-      }
-    }
-
-    #endregion
-
     #region OctreeBound
 
     /// <summary>Represents a bounding cube. Includes coordinates of the center 
@@ -174,16 +147,18 @@ namespace SevenEngine.DataStructures
     /// downwards the tree.</summary>
     private class OctreeLeaf : OctreeNode
     {
-      private OctreeEntry[] _contents;
+      //private OctreeEntry[] _contents;
+      private Type[] _contents;
       private int _count;
 
-      internal OctreeEntry[] Contents { get { return _contents; } }
+      //internal OctreeEntry[] Contents { get { return _contents; } }
+      internal Type[] Contents { get { return _contents; } }
       internal int Count { get { return _count; } set { _count = value; } }
       internal bool IsFull { get { return _count == _contents.Length; } }
 
       internal OctreeLeaf(float x, float y, float z, float scale, OctreeBranch parent, int branchFactor)
         : base(x, y, z, scale, parent)
-      { _contents = new OctreeEntry[branchFactor]; }
+      { _contents = new Type[branchFactor]; }
 
       internal int GetIndex(string id)
       {
@@ -193,7 +168,7 @@ namespace SevenEngine.DataStructures
         throw new OctreeException("There is a glitch in my octree, sorry...");
       }
 
-      internal OctreeEntry GetEntry(string id)
+      internal Type GetEntry(string id)
       {
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
@@ -201,7 +176,7 @@ namespace SevenEngine.DataStructures
         throw new OctreeException("There is a glitch in my octree, sorry...");
       }
 
-      internal OctreeLeaf Add(OctreeEntry addition)
+      internal OctreeLeaf Add(Type addition)
       {
         if (_count == _contents.Length)
           throw new OctreeException("There is a glitch in my octree, sorry...");
@@ -214,7 +189,7 @@ namespace SevenEngine.DataStructures
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
           {
-            OctreeEntry swapStorage = _contents[_count - 1];
+            Type swapStorage = _contents[_count - 1];
             _contents[_count - 1] = _contents[i];
             _contents[i] = swapStorage;
             return;
@@ -254,30 +229,11 @@ namespace SevenEngine.DataStructures
 
     #endregion
 
-    #region OctreeReference
-
-    private class OctreeReference
-    {
-      private Type _value;
-      private OctreeLeaf _leaf;
-
-      internal Type Value { get { return _value; } }
-      internal OctreeLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
-
-      internal OctreeReference(Type value, OctreeLeaf leaf)
-      {
-        _value = value;
-        _leaf = leaf;
-      }
-    }
-
-    #endregion
-
     // The maximum number of objects per leaf (branch factor)
     private int _branchFactor;
     private int _count;
     // A database of objects and their current octree nodes
-    private AvlTree<OctreeReference> _referenceDatabase;
+    private AvlTree<OctreeLeaf> _referenceDatabase;
     // The top node of the tree
     private OctreeNode _top;
 
@@ -291,7 +247,7 @@ namespace SevenEngine.DataStructures
     {
       _branchFactor = branchFactor;
       _top = new OctreeLeaf(x, y, z, scale, null, _branchFactor);
-      _referenceDatabase = new AvlTree<OctreeReference>();
+      _referenceDatabase = new AvlTree<OctreeLeaf>();
       _count = 0;
     }
 
@@ -301,17 +257,16 @@ namespace SevenEngine.DataStructures
     /// <param name="x">The x coordinate of the addition's location.</param>
     /// <param name="y">The y coordinate of the addition's location.</param>
     /// <param name="z">The z coordinate of the addition's location.</param>
-    public void Add(string id, Type addition, float x, float y, float z)
+    public void Add(Type addition)
     {
-      _referenceDatabase.Add(id,
-        new OctreeReference(addition,
-          Add(new OctreeEntry(id, addition, x, y, z), _top)));
+      _referenceDatabase.Add(addition.Id,
+          Add(addition, _top));
       _count++;
     }
 
     /// <summary>Recursively adds an item to the octree and returns the node where the addition was placed
     /// and adjusts the octree structure as needed.</summary>
-    private OctreeLeaf Add(OctreeEntry addition, OctreeNode octreeNode)
+    private OctreeLeaf Add(Type addition, OctreeNode octreeNode)
     {
       // If the node is a leaf we have reached the bottom of the tree
       if (octreeNode is OctreeLeaf)
@@ -331,9 +286,9 @@ namespace SevenEngine.DataStructures
           if (parent == null)
             growth = (OctreeBranch)(_top = new OctreeBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
           else
-            growth = GrowBranch(parent, parent.DetermineChild(addition.X, addition.Y, addition.Z));
-          foreach (OctreeEntry entry in leaf.Contents)
-            _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
+            growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
+          foreach (Type entry in leaf.Contents)
+            _referenceDatabase.Reassign(entry.Id, Add(entry, growth));
           return Add(addition, growth);
         }
       }
@@ -341,7 +296,7 @@ namespace SevenEngine.DataStructures
       else
       {
         OctreeBranch branch = (OctreeBranch)octreeNode;
-        int child = branch.DetermineChild(addition.X, addition.Y, addition.Z);
+        int child = branch.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z);
         // If the leaf is null, we must grow one before attempting to add to it
         if (branch.Children[child] == null)
           return GrowLeaf(branch, child).Add(addition);
@@ -373,7 +328,7 @@ namespace SevenEngine.DataStructures
     /// <param name="id">The string id of the removal that was given to the item when it was added.</param>
     public void Remove(string id)
     {
-      Remove(id, _referenceDatabase.Get(id).Leaf);
+      Remove(id, _referenceDatabase.Get(id));
       _referenceDatabase.Remove(id);
       _count--;
     }
@@ -413,11 +368,11 @@ namespace SevenEngine.DataStructures
     /// <param name="z">The z coordinate of the new position of the item.</param>
     public void Move(string id, float x, float y, float z)
     {
-      OctreeLeaf leaf = _referenceDatabase.Get(id).Leaf;
-      OctreeEntry entry = leaf.GetEntry(id);
-      entry.X = x;
-      entry.Y = y;
-      entry.Z = z;
+      OctreeLeaf leaf = _referenceDatabase.Get(id);
+      Type entry = leaf.GetEntry(id);
+      entry.Position.X = x;
+      entry.Position.Y = y;
+      entry.Position.Z = z;
       if ((x > leaf.X - leaf.Scale && x < leaf.X + leaf.Scale)
         && (y > leaf.Y - leaf.Scale && y < leaf.Y + leaf.Scale)
         && (z > leaf.Z - leaf.Scale && z < leaf.Z + leaf.Scale))
@@ -453,12 +408,12 @@ namespace SevenEngine.DataStructures
       if (octreeNode is OctreeLeaf)
       {
         OctreeLeaf leaf = (OctreeLeaf)octreeNode;
-        foreach (OctreeEntry entry in leaf.Contents)
+        foreach (Type entry in leaf.Contents)
           if (entry != null &&
-            entry.X > xMin && entry.X < xMax
-            && entry.Y > yMin && entry.Y < yMax
-            && entry.Z > zMin && entry.Z < zMax)
-            contents.Add(entry.Id, entry.Value);
+            entry.Position.X > xMin && entry.Position.X < xMax
+            && entry.Position.Y > yMin && entry.Position.Y < yMax
+            && entry.Position.Z > zMin && entry.Position.Z < zMax)
+            contents.Add(entry);
         return;
       }
       else

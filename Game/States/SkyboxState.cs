@@ -34,43 +34,51 @@ namespace Game.States
       // Gets a copy of the "Terrain" model and tracks the number of hardware instances of each component
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
-      _terrain.RotationAmmounts = new Vector(0, 0, 0);
+      //_terrain.RotationAmmounts = new Vector(0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
       // Gets a copy of the "RedRanger" model and tracks the number of hardware instances of each component
       _redRanger = StaticModelManager.GetModel("RedRanger");
-      _redRanger.RotationAmmounts = new Vector(0, 1, 0);
-      _redRanger.RotationAngle = 180f;
+      //_redRanger.RotationAmmounts = new Vector(0, 1, 0);
+      //_redRanger.RotationAngle = 180f;
       _redRanger.Scale = new Vector(5, 5, 5);
       _redRanger.Position = new Vector(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "YellowRanger" model and tracks the number of hardware instances of each component
       _yellowRanger = StaticModelManager.GetModel("YellowRanger");
-      _yellowRanger.RotationAmmounts = new Vector(0, 1, 1);
+      //_yellowRanger.RotationAmmounts = new Vector(0, 1, 1);
+      _yellowRanger.Orientation.X = 0;
       _yellowRanger.Scale = new Vector(10, 10, 10);
       _yellowRanger.Position = new Vector(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "BlackRanger" model and tracks the number of hardware instances of each component
       _blackRanger = StaticModelManager.GetModel("BlackRanger");
-      _blackRanger.RotationAmmounts = new Vector(1, 1, 0);
+      //_blackRanger.RotationAmmounts = new Vector(1, 1, 0);
+      _yellowRanger.Orientation.Z = 0;
       _blackRanger.Scale = new Vector(10, 10, 10);
       _blackRanger.Position = new Vector(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "BlueRanger" model and tracks the number of hardware instances of each component
       _blueRanger = StaticModelManager.GetModel("BlueRanger");
-      _blueRanger.RotationAmmounts = new Vector(0, 1, 2);
+      //_blueRanger.RotationAmmounts = new Vector(0, 1, 2);
+      _blueRanger.Orientation.X = 0;
+      _blueRanger.Orientation.Z = 2;
       _blueRanger.Scale = new Vector(10, 10, 10);
       _blueRanger.Position = new Vector(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "PinkRanger" model and tracks the number of hardware instances of each component
       _pinkRanger = StaticModelManager.GetModel("PinkRanger");
-      _pinkRanger.RotationAmmounts = new Vector(0, 1, 0);
+      //_pinkRanger.RotationAmmounts = new Vector(0, 1, 0);
+      _pinkRanger.Orientation.X = 0;
+      _pinkRanger.Orientation.Z = 0;
       _pinkRanger.Scale = new Vector(10, 10, 10);
       _pinkRanger.Position = new Vector(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "RedRangerSeven" model and tracks the number of hardware instances of each component
       _RedRangerTwo = StaticModelManager.GetModel("RedRangerSeven");
-      _RedRangerTwo.RotationAmmounts = new Vector(0, 1, 0);
+      //_RedRangerTwo.RotationAmmounts = new Vector(0, 1, 0);
+      _RedRangerTwo.Orientation.X = 0;
+      _RedRangerTwo.Orientation.Z = 0;
       _RedRangerTwo.Scale = new Vector(20, 20, 20);
       _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
 
@@ -111,20 +119,20 @@ namespace Game.States
 
       if (InputManager.Keyboard.Rdown)
       {
-        _redRanger.RotationAngle += 75;
-        _yellowRanger.RotationAngle += 100;
-        _blackRanger.RotationAngle += 200;
-        _blueRanger.RotationAngle += 400;
-        _pinkRanger.RotationAngle += 300;
+        _redRanger.Orientation.W += 75;
+        _yellowRanger.Orientation.W += 100;
+        _blackRanger.Orientation.W += 200;
+        _blueRanger.Orientation.W += 400;
+        _pinkRanger.Orientation.W += 300;
       }
 
-      _RedRangerTwo.RotationAngle++;
-      _RedRangerTwo.RotationAngle++;
+      _RedRangerTwo.Orientation.W++;
+      _RedRangerTwo.Orientation.W++;
 
-      _yellowRanger.RotationAngle++;
-      _blackRanger.RotationAngle++;
-      _blueRanger.RotationAngle++;
-      _pinkRanger.RotationAngle++;
+      _yellowRanger.Orientation.W++;
+      _blackRanger.Orientation.W++;
+      _blueRanger.Orientation.W++;
+      _pinkRanger.Orientation.W++;
 
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;

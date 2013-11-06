@@ -10,14 +10,11 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 10-26-13
 
-using System.Runtime.InteropServices;
-
 namespace SevenEngine.Shaders
 {
   /// <summary>Represents a single extended geometry shader that has been loaded on the GPU. multiple references of this class SHOULD exist,
   /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
   /// same buffers on the GPU, which is good for with speed and memory space.</summary>
-  [StructLayout(LayoutKind.Sequential)]
   public class ExtendedGeometryShader
   {
     protected string _id;

@@ -18,7 +18,7 @@
 //   - HeapArrayDynamicLink
 //   - HeapArrayDynamicException
 // External Dependencies (other than "System" from .Net Framework):
-// - HeapArrayDynamic requires a HashTable
+// - HeapArrayDynamic requires HashTable
 
 // This file contains runtime and space values.
 // All runtimes are in O-Notation. Here is a brief explanation:

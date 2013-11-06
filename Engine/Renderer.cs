@@ -101,9 +101,6 @@ namespace SevenEngine
 
     #endregion
 
-    //private static SpriteBatch _batch = new SpriteBatch();
-    private static HeapArray<StaticModel> _staticModelBatch = new HeapArray<StaticModel>(100000);
-
     public static void DrawImmediateModeVertex(Vector position, Color color, Point uvs)
     {
       GL.Color4(color.R, color.G, color.B, color.A);
@@ -207,126 +204,6 @@ namespace SevenEngine
       GL.BindTexture(TextureTarget.Texture2D, skybox.Top.GpuHandle);
       // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
       GL.DrawArrays(BeginMode.Triangles, 24, 6);
-
-      /*//DRAW FACE 1 (LEFT)
-
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      // Bind the texture to which the UVs are mapping to.
-      GL.BindTexture(TextureTarget.Texture2D, skybox.Left.GpuHandle);
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GPUTextureCoordinateBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);
-
-      //DRAW FACE 2 (FRONT)
-
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, new IntPtr(18));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      // Bind the texture to which the UVs are mapping to.
-      GL.BindTexture(TextureTarget.Texture2D, skybox.Front.GpuHandle);
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GPUTextureCoordinateBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, new IntPtr(12));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);
-
-      //DRAW FACE 3 (Right)
-
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, new IntPtr(36));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      // Bind the texture to which the UVs are mapping to.
-      GL.BindTexture(TextureTarget.Texture2D, skybox.Right.GpuHandle);
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GPUTextureCoordinateBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, new IntPtr(24));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);
-
-      //DRAW FACE 4 (Back)
-
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, new IntPtr(54));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      // Bind the texture to which the UVs are mapping to.
-      GL.BindTexture(TextureTarget.Texture2D, skybox.Back.GpuHandle);
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GPUTextureCoordinateBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, new IntPtr(36));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);
-
-      //DRAW FACE 5 (Top)
-
-      // Vertex Array Buffer
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.VertexPointer(3, VertexPointerType.Float, 0, new IntPtr(72));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.VertexArray);
-
-      // Bind the texture to which the UVs are mapping to.
-      GL.BindTexture(TextureTarget.Texture2D, skybox.Top.GpuHandle);
-      // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GPUTextureCoordinateBufferHandle);
-      // Set the Pointer to the current bound array describing how the data ia stored
-      GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, new IntPtr(48));
-      // Enable the client state so it will use this array buffer pointer
-      GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-      // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-      GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.GpuVertexBufferHandle);
-      // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);*/
     }
     
     ///// <summary>Renders a single static model using "GL.DrawArrays()".</summary>
@@ -466,18 +343,19 @@ namespace SevenEngine
 
       // Apply the world transformation due to the mesh's position, scale, and rotation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
-      GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
+      //GL.Rotate(staticModel.RotationAngle, staticModel.RotationAmmounts.X, staticModel.RotationAmmounts.Y, staticModel.RotationAmmounts.Z);
+      GL.Rotate(staticModel.Orientation.W, staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       staticModel.Meshes.Foreach(DrawStaticModelPart);
     }
 
-    private static void DrawStaticModelPart(string id, Link3<string, Texture, StaticMesh> subStaticModel)
+    private static void DrawStaticModelPart(StaticModelMesh subStaticModel)
     {
       // If there is no vertex buffer, nothing will render anyway, so we can stop it now.
-      if (subStaticModel.Right.VertexBufferHandle == 0 ||
+      if (subStaticModel.StaticMesh.VertexBufferHandle == 0 ||
         // If there is no color or texture, nothing will render anyway
-        (subStaticModel.Right.ColorBufferHandle == 0 && subStaticModel.Right.TextureCoordinateBufferHandle == 0))
+        (subStaticModel.StaticMesh.ColorBufferHandle == 0 && subStaticModel.StaticMesh.TextureCoordinateBufferHandle == 0))
         return;
 
       // Push current Array Buffer state so we can restore it later
@@ -486,10 +364,10 @@ namespace SevenEngine
       if (GL.IsEnabled(EnableCap.Lighting))
       {
         // Normal Array Buffer
-        if (subStaticModel.Right.NormalBufferHandle != 0)
+        if (subStaticModel.StaticMesh.NormalBufferHandle != 0)
         {
           // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.Right.NormalBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.NormalBufferHandle);
           // Set the Pointer to the current bound array describing how the data ia stored
           GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
           // Enable the client state so it will use this array buffer pointer
@@ -499,10 +377,10 @@ namespace SevenEngine
       else
       {
         // Color Array Buffer (Colors not used when lighting is enabled)
-        if (subStaticModel.Right.ColorBufferHandle != 0)
+        if (subStaticModel.StaticMesh.ColorBufferHandle != 0)
         {
           // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.Right.ColorBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.ColorBufferHandle);
           // Set the Pointer to the current bound array describing how the data ia stored
           GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
           // Enable the client state so it will use this array buffer pointer
@@ -513,12 +391,12 @@ namespace SevenEngine
       // Texture Array Buffer
       if (GL.IsEnabled(EnableCap.Texture2D))
       {
-        if (subStaticModel.Right.TextureCoordinateBufferHandle != 0)
+        if (subStaticModel.StaticMesh.TextureCoordinateBufferHandle != 0)
         {
           // Bind the texture to which the UVs are mapping to.
-          GL.BindTexture(TextureTarget.Texture2D, subStaticModel.Middle.GpuHandle);
+          GL.BindTexture(TextureTarget.Texture2D, subStaticModel.Texture.GpuHandle);
           // Bind to the Array Buffer ID
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.Right.TextureCoordinateBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.TextureCoordinateBufferHandle);
           // Set the Pointer to the current bound array describing how the data ia stored
           GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
           // Enable the client state so it will use this array buffer pointer
@@ -531,51 +409,34 @@ namespace SevenEngine
 
       // Vertex Array Buffer
       // Bind to the Array Buffer ID
-      GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.Right.VertexBufferHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.VertexBufferHandle);
       // Set the Pointer to the current bound array describing how the data ia stored
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       // Enable the client state so it will use this array buffer pointer
       GL.EnableClientState(ArrayCap.VertexArray);
 
-      if (subStaticModel.Right.ElementBufferHandle != 0)
+      if (subStaticModel.StaticMesh.ElementBufferHandle != 0)
       {
         // Element Array Buffer
         // Bind to the Array Buffer ID
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subStaticModel.Right.ElementBufferHandle);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subStaticModel.StaticMesh.ElementBufferHandle);
         // Set the Pointer to the current bound array describing how the data ia stored
         GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
         // Enable the client state so it will use this array buffer pointer
         GL.EnableClientState(ArrayCap.IndexArray);
         // Draw the elements in the element array buffer
         // Draws up items in the Color, Vertex, TexCoordinate, and Normal Buffers using indices in the ElementArrayBuffer
-        GL.DrawElements(BeginMode.Triangles, subStaticModel.Right.VertexCount, DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMesh.VertexCount, DrawElementsType.UnsignedInt, 0);
       }
       else
       {
         // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
-        GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.Right.VertexBufferHandle);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.VertexBufferHandle);
         // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-        GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.Right.VertexCount);
+        GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.StaticMesh.VertexCount);
       }
 
       GL.PopClientAttrib();
-    }
-
-    public static void AddStaticModel(StaticModel model)
-    {
-      _staticModelBatch.Enqueue(
-        model,
-        (int)Math.Sqrt(
-        Math.Pow(Renderer.CurrentCamera.Position.X - model.Position.X, 2) +
-        Math.Pow(Renderer.CurrentCamera.Position.Y - model.Position.Y, 2) +
-        Math.Pow(Renderer.CurrentCamera.Position.Z - model.Position.Z, 2)));
-    }
-
-    public static void Render()
-    {
-      StaticModel model = _staticModelBatch.Dequeue();
-      while (_staticModelBatch.Count > 0)
-        DrawStaticModel(_staticModelBatch.Dequeue());
     }
   }
 }

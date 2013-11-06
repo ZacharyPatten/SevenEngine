@@ -16,7 +16,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -80,6 +80,8 @@
     <Compile Include="Algorithms\Sorting.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
     <Compile Include="DataStructures\Heap.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfaceStringId.cs" />
     <Compile Include="DataStructures\List.cs" />
     <Compile Include="DataStructures\Octree.cs" />
     <Compile Include="DataStructures\QuadTree.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Mathematics\Trigonometry.cs" />
     <Compile Include="Models\Primitives\PrimitiveMovelDatabase.cs" />
-    <Compile Include="Models\StaticMesh.cs" />
     <Compile Include="Models\StaticModel.cs" />
     <Compile Include="PhysicsManager.cs" />
     <Compile Include="SevenEngineWindow.cs" />

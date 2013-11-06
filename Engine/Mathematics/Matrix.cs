@@ -11,12 +11,10 @@
 // Last Edited: 10-26-13
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace SevenEngine.Mathematics
 {
   /// <summary>Implements a 3x3 rotational matrix.</summary>
-  [StructLayout(LayoutKind.Sequential)]
   public struct Matrix
   {
     private float
@@ -97,8 +95,8 @@ namespace SevenEngine.Mathematics
       _r2c0 = floatArray[2, 0]; _r2c1 = floatArray[2, 1]; _r2c2 = floatArray[2, 2];
     }
 
-    public static Matrix ZeroFactory = new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0);
-    public static Matrix IdentityFactory = new Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    public static Matrix FactoryZero = new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    public static Matrix FactoryIdentity = new Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix FactoryRotationX(float angle)
@@ -273,7 +271,7 @@ namespace SevenEngine.Mathematics
       if (power < 0)
         throw new MatrixException("Attempting to raise a matrix by a power less than zero. (can't do dat)");
       else if (power == 0)
-        return IdentityFactory;
+        return FactoryIdentity;
       else
       {
         Matrix result = Clone();
