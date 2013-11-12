@@ -161,106 +161,6 @@ namespace SevenEngine
 
             // Face
             case "f":
-              // DEVELOPMENT NOTE: The triangulation algorithm works, but it 
-              // could be optimized beyond its current state.
-
-              // The following variables are used for triangulation of a polygon
-              // with greater than three verteces.
-              //int previousPosition = 0, previousTextureCoordinates = 0, previousNormal = 0,
-              //  twoPreviousPosition = 0, twoPreviousTextureCoordinates = 0, twoPreviousNormal = 0;
-
-              //if (parameters.Length > 3)
-              //{
-              //  // First Vertex (we have to store it this way for possible triangulation)
-              //  string[] indexReferences = parameters[1].Split('/');
-
-              //  // These values are not only used to prevent array out of bounds exceptions
-              //  if (hasNormals && indexReferences.Length < 3)
-              //    hasNormals = false;
-              //  if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
-              //    hasTextureCoordinates = false;
-
-              //  if (indexReferences[0] == "")
-              //    throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
-              //  previousPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
-
-              //  // Store the previous verteces's indeces
-              //  if (hasTextureCoordinates && indexReferences[1] != "")
-              //    previousTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
-              //  else
-              //    previousTextureCoordinates = 0;
-
-              //  if (hasNormals && indexReferences[2] != "")
-              //    previousNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
-              //  else
-              //    previousNormal = 0;
-
-              //  // Second Vertex (we have to store it this way for possible triangulation)
-              //  indexReferences = parameters[2].Split('/');
-
-              //  // Once again we must do the out of bounds checks
-              //  if (hasNormals && indexReferences.Length < 3)
-              //    hasNormals = false;
-              //  if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
-              //    hasTextureCoordinates = false;
-
-              //  if (indexReferences[0] == "")
-              //    throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
-              //  twoPreviousPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
-
-              //  if (hasTextureCoordinates && indexReferences[1] != "")
-              //    twoPreviousTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
-              //  else
-              //    twoPreviousTextureCoordinates = 0;
-
-              //  if (hasNormals && indexReferences[2] != "")
-              //    twoPreviousNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
-              //  else
-              //    twoPreviousNormal = 0;
-              //}
-              //else
-              //  throw new Exception("ERROR: obj file corrupted:" + filePath);
-
-              // Verteces past the first two
-              //for (int i = 3; i < parameters.Length; i++)
-              //{
-              //  if (i > 3)
-              //    Console.WriteLine();
-
-              //  // Triangulate using the first two verteces
-              //  fileIndeces.Add(previousPosition);
-              //  fileIndeces.Add(previousTextureCoordinates);
-              //  fileIndeces.Add(previousNormal);
-              //  fileIndeces.Add(twoPreviousPosition);
-              //  fileIndeces.Add(twoPreviousTextureCoordinates);
-              //  fileIndeces.Add(twoPreviousNormal);
-
-              //  // Now include the new vertex
-              //  string[] indexReferences = parameters[i].Split('/');
-              //  if (indexReferences[0] == "")
-              //    throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
-              //  fileIndeces.Add(int.Parse(indexReferences[0], CultureInfo.InvariantCulture));
-
-              //  if (hasNormals && indexReferences.Length < 3)
-              //    hasNormals = false;
-              //  if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
-              //    hasTextureCoordinates = false;
-
-              //  if (hasTextureCoordinates && indexReferences[1] != "")
-              //  {
-
-              //    fileIndeces.Add(int.Parse(indexReferences[1], CultureInfo.InvariantCulture));
-              //  }
-              //  else
-              //    fileIndeces.Add(0);
-
-              //  if (hasNormals && indexReferences[2] != "")
-              //    fileIndeces.Add(int.Parse(indexReferences[2], CultureInfo.InvariantCulture));
-              //  else
-              //    fileIndeces.Add(0);
-              //}
-
-
               int first = fileIndeces.Count;
               for (int i = 1; i < parameters.Length; i++)
               {
@@ -306,8 +206,6 @@ namespace SevenEngine
                 else
                   fileIndeces.Add(0);
               }
-
-
               break;
           }
         }
