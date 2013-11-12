@@ -10,13 +10,14 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 10-26-13
 
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.Shaders
 {
   /// <summary>Represents a single geometry shader that has been loaded on the GPU. multiple references of this class SHOULD exist,
   /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
   /// same buffers on the GPU, which is good for with speed and memory space.</summary>
-  public class GeometryShader
+  public class GeometryShader : InterfaceStringId
   {
     protected string _filePath;
     protected string _id;

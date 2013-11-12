@@ -21,13 +21,21 @@ namespace SevenEngine.Imaging
 {
   public class Sprite
   {
-    private static readonly int _vertexCount = 6;
-    private Vector _position;
-    private Texture _texture;
-    private Point _scale;
-    private float _rotation;
-    private static int _gpuVertexBufferHandle;
-    private int _gpuTextureMappingBufferHandle;
+    // Every sprite uses the same vertex positions
+    protected static readonly float[] _verteces = new float[] {
+      1f, 1f, 0f,   -1f, 1f, 0f,   1f, -1f, 0f,
+      -1f, -1f, 0f,   1f, -1f, 0f,   -1f, 1f, 0f };
+    protected static readonly int _vertexCount = 6;
+    protected static readonly float[] _textureMappingsDefault = new float[] {
+      1f,0f,  0f,0f,  1f,1f,
+      0f,1f,  1f,1f,  0f,0f };
+    protected Vector _position;
+    protected Texture _texture;
+    protected Point _scale;
+    protected float _rotation;
+    protected static int _gpuVertexBufferHandle;
+    protected static int _gpuTextureMappingBufferHandleDefault;
+    protected int _gpuTextureMappingBufferHandle;
 
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
@@ -49,21 +57,43 @@ namespace SevenEngine.Imaging
     public Sprite(Texture texture)
     {
       if (_gpuVertexBufferHandle == 0)
-        GenerateVertexBuffer();
+        GenerateVertexBuffer(_verteces);
       _position = new Vector(0, 0, -10);
       _scale = new Point(1, 1);
       _rotation = 0f;
       _texture = texture;
-      GenerateTextureCoordinateBuffer();
+      if (_gpuTextureMappingBufferHandleDefault == 0)
+      {
+        GenerateTextureCoordinateBuffer(_textureMappingsDefault);
+        _gpuTextureMappingBufferHandleDefault = _gpuTextureMappingBufferHandle;
+      }
+      else
+        _gpuTextureMappingBufferHandle = _gpuTextureMappingBufferHandleDefault;
+    }
+
+    /// <summary>Creates an instance of a sprite.</summary>
+    /// <param name="texture">The texture to have this sprite mapped to.</param>
+    /// <param name="textureMappings">The texture mappings for this sprite.</param>
+    public Sprite(Texture texture, float[] textureMappings)
+    {
+      if (_gpuVertexBufferHandle == 0)
+        GenerateVertexBuffer(
+          // Every sprite uses the same vertex positions
+          new float[] {
+            1f,1f,0f,  -1f,1f,0f,  1f,-1f,0f,
+            -1f,-1f,0f,  1f,-1f,0f,  -1f,1f,0f });
+      _position = new Vector(0, 0, -10);
+      _scale = new Point(1, 1);
+      _rotation = 0f;
+      _texture = texture;
+      if (textureMappings.Length != 12)
+        throw new Exception("Invalid number of texture coordinates in sprite constructor.");
+      GenerateTextureCoordinateBuffer(textureMappings);
     }
 
     /// <summary>Generates the vertex buffer that all sprites will use.</summary>
-    private void GenerateVertexBuffer()
+    private void GenerateVertexBuffer(float[] verteces)
     {
-      // Every sprite uses the same vertex positions
-      float[] verteces = new float[] {
-        1f,1f,0f,  -1f,1f,0f,  1f,-1f,0f,
-        -1f,-1f,0f,  1f,-1f,0f,  -1f,1f,0f };
       // Declare the buffer
       GL.GenBuffers(1, out _gpuVertexBufferHandle);
       // Select the new buffer
@@ -79,12 +109,9 @@ namespace SevenEngine.Imaging
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
 
-    /// <summary>Generates the vertex buffer that all sprites will use.</summary>
-    private void GenerateTextureCoordinateBuffer()
+    /// <summary>Generates the texture coordinate buffer that sprite will default to.</summary>
+    private void GenerateTextureCoordinateBuffer(float[] textureMappings)
     {
-      float[] textureMappings = new float[] {
-        1f,0f,  0f,0f,  1f,1f,
-        0f,1f,  1f,1f,  0f,0f, };
       // Declare the buffer
       GL.GenBuffers(1, out _gpuTextureMappingBufferHandle);
       // Select the new buffer

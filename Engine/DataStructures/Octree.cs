@@ -229,11 +229,27 @@ namespace SevenEngine.DataStructures
 
     #endregion
 
+    #region OctreeReference
+
+    private class OctreeReference : InterfaceStringId
+    {
+      private Type _value;
+      private OctreeLeaf _leaf;
+
+      public string Id { get { return _value.Id; } set { _value.Id = value; } }
+      internal Type Value { get { return _value; } set { _value = value; } }
+      internal OctreeLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
+
+      internal OctreeReference(Type value, OctreeLeaf leaf) { _value = value; _leaf = leaf; }
+    }
+
+    #endregion
+
     // The maximum number of objects per leaf (branch factor)
     private int _branchFactor;
     private int _count;
     // A database of objects and their current octree nodes
-    private AvlTree<OctreeLeaf> _referenceDatabase;
+    private AvlTree<OctreeReference> _referenceDatabase;
     // The top node of the tree
     private OctreeNode _top;
 
@@ -247,7 +263,7 @@ namespace SevenEngine.DataStructures
     {
       _branchFactor = branchFactor;
       _top = new OctreeLeaf(x, y, z, scale, null, _branchFactor);
-      _referenceDatabase = new AvlTree<OctreeLeaf>();
+      _referenceDatabase = new AvlTree<OctreeReference>();
       _count = 0;
     }
 
@@ -259,8 +275,7 @@ namespace SevenEngine.DataStructures
     /// <param name="z">The z coordinate of the addition's location.</param>
     public void Add(Type addition)
     {
-      _referenceDatabase.Add(addition.Id,
-          Add(addition, _top));
+      _referenceDatabase.Add(new OctreeReference(addition, Add(addition, _top)));
       _count++;
     }
 
@@ -288,7 +303,7 @@ namespace SevenEngine.DataStructures
           else
             growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
           foreach (Type entry in leaf.Contents)
-            _referenceDatabase.Reassign(entry.Id, Add(entry, growth));
+            _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
           return Add(addition, growth);
         }
       }
@@ -328,7 +343,7 @@ namespace SevenEngine.DataStructures
     /// <param name="id">The string id of the removal that was given to the item when it was added.</param>
     public void Remove(string id)
     {
-      Remove(id, _referenceDatabase.Get(id));
+      Remove(id, _referenceDatabase.Get(id).Leaf);
       _referenceDatabase.Remove(id);
       _count--;
     }
@@ -368,7 +383,7 @@ namespace SevenEngine.DataStructures
     /// <param name="z">The z coordinate of the new position of the item.</param>
     public void Move(string id, float x, float y, float z)
     {
-      OctreeLeaf leaf = _referenceDatabase.Get(id);
+      OctreeLeaf leaf = _referenceDatabase.Get(id).Leaf;
       Type entry = leaf.GetEntry(id);
       entry.Position.X = x;
       entry.Position.Y = y;
@@ -392,10 +407,10 @@ namespace SevenEngine.DataStructures
     /// <param name="yMax">The maximum y coordinate of the bounding rectangle.</param>
     /// <param name="zMax">The maximum z coordinate of the bounding rectangle.</param>
     /// <returns>A list of the contents within the provided bounding box.</returns>
-    public List<Type> Get(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    public List<Type> GetList(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       List<Type> contents = new List<Type>();
-      Get(xMin, yMin, zMin, xMax, yMax, zMax, contents, _top);
+      GetList(xMin, yMin, zMin, xMax, yMax, zMax, contents, _top);
       return contents;
     }
 
@@ -403,7 +418,7 @@ namespace SevenEngine.DataStructures
     /// <param name="bounds"></param>
     /// <param name="contents"></param>
     /// <param name="octreeNode"></param>
-    private void Get(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, List<Type> contents, OctreeNode octreeNode)
+    private void GetList(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, List<Type> contents, OctreeNode octreeNode)
     {
       if (octreeNode is OctreeLeaf)
       {
@@ -436,7 +451,64 @@ namespace SevenEngine.DataStructures
           else if (zMin > node.Z + node.Scale)
             continue;
           else
-            Get(xMin, yMin, zMin, xMax, yMax, zMax, contents, node);
+            GetList(xMin, yMin, zMin, xMax, yMax, zMax, contents, node);
+        }
+      }
+    }
+
+    /// <summary>Gets contents within the octree within a specific axis-aligned bounding rectanglular prism.</summary>
+    /// <param name="xMin">The minimum x coordinate of the bounding rectangle.</param>
+    /// <param name="yMin">The minimum y coordinate of the bounding rectangle.</param>
+    /// <param name="zMin">The minimum z coordinate of the bounding rectangle.</param>
+    /// <param name="xMax">The maximum x coordinate of the bounding rectangle.</param>
+    /// <param name="yMax">The maximum y coordinate of the bounding rectangle.</param>
+    /// <param name="zMax">The maximum z coordinate of the bounding rectangle.</param>
+    /// <returns>A list of the contents within the provided bounding box.</returns>
+    public ListArray<Type> GetListArray(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    {
+      ListArray<Type> contents = new ListArray<Type>(1);
+      GetListArray(xMin, yMin, zMin, xMax, yMax, zMax, contents, _top);
+      return contents;
+    }
+
+    /// <summary>Recursively finds items within a given bounding cube and adds it to the octree.</summary>
+    /// <param name="bounds"></param>
+    /// <param name="contents"></param>
+    /// <param name="octreeNode"></param>
+    private void GetListArray(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, ListArray<Type> contents, OctreeNode octreeNode)
+    {
+      if (octreeNode is OctreeLeaf)
+      {
+        OctreeLeaf leaf = (OctreeLeaf)octreeNode;
+        foreach (Type entry in leaf.Contents)
+          if (entry != null &&
+            entry.Position.X > xMin && entry.Position.X < xMax
+            && entry.Position.Y > yMin && entry.Position.Y < yMax
+            && entry.Position.Z > zMin && entry.Position.Z < zMax)
+            contents.Add(entry);
+        return;
+      }
+      else
+      {
+        OctreeBranch branch = (OctreeBranch)octreeNode;
+        foreach (OctreeNode node in branch.Children)
+        {
+          if (node == null)
+            continue;
+          else if (xMax < node.X - node.Scale)
+            continue;
+          else if (yMax < node.Y - node.Scale)
+            continue;
+          else if (zMax < node.Z - node.Scale)
+            continue;
+          else if (xMin > node.X + node.Scale)
+            continue;
+          else if (yMin > node.Y + node.Scale)
+            continue;
+          else if (zMin > node.Z + node.Scale)
+            continue;
+          else
+            GetListArray(xMin, yMin, zMin, xMax, yMax, zMax, contents, node);
         }
       }
     }

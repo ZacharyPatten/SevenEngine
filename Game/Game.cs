@@ -67,6 +67,9 @@ namespace Game
       TextureManager.LoadTexture("YellowRanger",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\YellowRangerBody.bmp"));
 
+      TextureManager.LoadTexture("MushroomCloud",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\MushCloud.bmp"));
+
       TextureManager.LoadTexture("Menu",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\Menu.bmp"));
 
@@ -103,6 +106,10 @@ namespace Game
       StaticModelManager.LoadMesh("mountain",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\mountain.obj"));
 
+      StaticModelManager.LoadMesh("MushroomCloud",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\MushCloud3.obj"));
+      StaticModelManager.LoadModel("MushroomCloud", new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" });
+      
       StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
       StaticModelManager.LoadModel("Mountain", new string[] { "rock" }, new string[] { "mountain" }, new string[] { "mountain" });
       StaticModelManager.LoadModel("Mountain2", new string[] { "rock2" }, new string[] { "mountain" }, new string[] { "mountain" });
@@ -112,7 +119,7 @@ namespace Game
       StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
       StaticModelManager.LoadModel("PinkRanger", new string[] { "PinkRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
       StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
-
+      
       StaticModelManager.LoadSevenModel("RedRangerSeven",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\RedRanger.obj7"));
     }
@@ -135,11 +142,18 @@ namespace Game
       ShaderManager.LoadFragmentShader("FragmentShaderToon",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderToon.glsl"));
 
+      // Standard lighting attempt.
+      ShaderManager.LoadVertexShader("VertexShaderLight",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderLight.glsl"));
+      ShaderManager.LoadFragmentShader("FragmentShaderLight",
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLight.glsl"));
+
       // These Lambertian shaders include an algorithm for lighting.
       ShaderManager.LoadVertexShader("VertexShaderLambertian",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Vertex\VertexShaderLambertian.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderLambertian",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLambertian.glsl"));
+
 
       // These Phong shaders include an algorithm for lighting.
       ShaderManager.LoadVertexShader("VertexShaderPhong",
@@ -173,15 +187,22 @@ namespace Game
         null);
 
       ShaderManager.MakeShaderProgram(
+        "ShaderProgramLight",
+        "VertexShaderLight",
+        "FragmentShaderLight",
+        null,
+        null);
+
+      ShaderManager.MakeShaderProgram(
         "ShaderProgramPhong",
         "VertexShaderPhong",
         "FragmentShaderPhong",
         null,
         null);
-
+      
       // DONT FORGET TO SELECT YOUR SHADERS WHEN YOU WANT TO USE THEM
       // Use the static class "ShaderManager"
-
+      
       ShaderManager.SetActiveShader("ShaderProgramBasic");
     }
 
@@ -191,8 +212,8 @@ namespace Game
       // Use the static class "StateManager"
 
       //StateManager.AddState("gameState", new GameState());
-      StateManager.AddState("priorityHeapTesting", new PowerRangerDNA());
-      //StateManager.AddState("spriteTesting", new SpriteState());
+      StateManager.AddState(new PowerRangerDNA("priorityHeapTesting"));
+      //StateManager.AddState(new SpriteState("spriteTesting"));
       //StateManager.AddState("SkyboxTesting", new SkyboxState());
       StateManager.ChangeState("priorityHeapTesting");
     }

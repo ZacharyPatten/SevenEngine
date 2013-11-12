@@ -112,6 +112,7 @@
     <Compile Include="StaticModelManager.cs" />
     <Compile Include="Models\Vertex.cs" />
     <Compile Include="Output.cs" />
+    <Compile Include="TextManager.cs" />
     <Compile Include="Texts\CharacterData.cs" />
     <Compile Include="Texts\CharacterSprite.cs" />
     <Compile Include="Imaging\Color.cs" />

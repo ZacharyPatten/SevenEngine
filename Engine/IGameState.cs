@@ -10,10 +10,13 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 10-26-13
 
+using SevenEngine.DataStructures.Interfaces;
+
 namespace SevenEngine
 {
-  public interface IGameState
+  public interface IGameState : InterfaceStringId
   {
+    string Id { get; set; }
     string Update(float elapsedTime);
     void Render();
   }

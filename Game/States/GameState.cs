@@ -10,6 +10,9 @@ namespace Game.States
 {
   public class GameState : IGameState
   {
+    private string _id;
+    public string Id { get { return _id; } set { _id = value; } }
+
     Camera _camera;
 
     StaticModel _terrain;
@@ -20,8 +23,10 @@ namespace Game.States
     StaticModel _yellowRanger;
     StaticModel _RedRangerTwo;
 
-    public GameState()
+    public GameState(string id)
     {
+      _id = id;
+
       // Creates a camera and sets the initial positions
       _camera = new Camera();
       _camera.PositionSpeed = 5;

@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Globalization;
 
 using SevenEngine.DataStructures;
 using SevenEngine.Models;
@@ -62,7 +63,7 @@ namespace SevenEngine
     /// <param name="filePath">The filepath of the model file you are attempting to load.</param>
     public static void LoadMesh(string staticMeshId, string filePath)
     {
-      _staticMeshDatabase.Add(staticMeshId, LoadObj(staticMeshId, filePath));
+      _staticMeshDatabase.Add(LoadObj(staticMeshId, filePath));
       string[] pathSplit = filePath.Split('\\');
       Output.WriteLine("Model file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
     }
@@ -73,12 +74,12 @@ namespace SevenEngine
     /// <param name="filePath">The filepath of the model file you are attempting to load.</param>
     public static void LoadSevenModel(string staticModelId, string filePath)
     {
-      _staticModelDatabase.Add(staticModelId, LoadSevenModelFromDisk(staticModelId, filePath));
+      _staticModelDatabase.Add(LoadSevenModelFromDisk(staticModelId, filePath));
       string[] pathSplit = filePath.Split('\\');
       Output.WriteLine("Model file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
     }
 
-    public static void LoadModel(string staticModelId, string[] textures, string[] meshs, string[] meshNames) { _staticModelDatabase.Add(staticModelId, new StaticModel(staticModelId, textures, meshs, meshNames)); }
+    public static void LoadModel(string staticModelId, string[] textures, string[] meshs, string[] meshNames) { _staticModelDatabase.Add(new StaticModel(staticModelId, textures, meshs, meshNames)); }
 
     public static void RemoveModel(string staticMeshId)
     {
@@ -126,6 +127,10 @@ namespace SevenEngine
       ListArray<float> fileTextureCoordinates = new ListArray<float>(10000);
       ListArray<int> fileIndeces = new ListArray<int>(10000);
 
+      // Obj files are not required to include texture coordinates or normals
+      bool hasTextureCoordinates = true;
+      bool hasNormals = true;
+
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))
       {
@@ -136,38 +141,156 @@ namespace SevenEngine
           {
             // Vertex
             case "v":
-              fileVerteces.Add(float.Parse(parameters[1]));
-              fileVerteces.Add(float.Parse(parameters[2]));
-              fileVerteces.Add(float.Parse(parameters[3]));
+              fileVerteces.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileVerteces.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
+              fileVerteces.Add(float.Parse(parameters[3], CultureInfo.InvariantCulture));
               break;
 
             // Texture Coordinate
             case "vt":
-              fileTextureCoordinates.Add(float.Parse(parameters[1]));
-              fileTextureCoordinates.Add(float.Parse(parameters[2]));
+              fileTextureCoordinates.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileTextureCoordinates.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
               break;
 
             // Normal
             case "vn":
-              fileNormals.Add(float.Parse(parameters[1]));
-              fileNormals.Add(float.Parse(parameters[2]));
-              fileNormals.Add(float.Parse(parameters[3]));
+              fileNormals.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileNormals.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
+              fileNormals.Add(float.Parse(parameters[3], CultureInfo.InvariantCulture));
               break;
 
             // Face
             case "f":
-              // NOTE! This does not yet triangulate faces
-              // NOTE! This needs all possible values (position, texture mapping, and normal).
-              for (int i = 1; i < parameters.Length; i++)
+              // DEVELOPMENT NOTE: The triangulation algorithm works, but it 
+              // could be optimized beyond its current state.
+
+              // The following variables are used for triangulation of a polygon
+              // with greater than three verteces.
+              int firstPosition = 0, firstTextureCoordinates = 0, firstNormal = 0,
+                secondPosition = 0, secondTextureCoordinates = 0, secondNormal = 0;
+              if (parameters.Length > 3)
               {
-                string[] indexReferences = parameters[i].Split('/');
-                fileIndeces.Add(int.Parse(indexReferences[0]));
-                if (indexReferences[1] != "")
-                  fileIndeces.Add(int.Parse(indexReferences[1]));
+                // First Vertex (we have to store it this way for possible triangulation)
+                string[] indexReferences = parameters[1].Split('/');
+
+                if (hasNormals && indexReferences.Length < 3)
+                  hasNormals = false;
+                if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
+                  hasTextureCoordinates = false;
+
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
+                firstPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
+
+                if (hasTextureCoordinates)
+                {
+                  if (indexReferences[1] != "")
+                    firstTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
+                  else
+                    firstTextureCoordinates = 0;
+                }
+                else
+                  firstTextureCoordinates = 0;
+
+                if (hasNormals)
+                {
+                  if (indexReferences[2] != "")
+                    firstNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
+                  else
+                    firstNormal = 0;
+                }
+                else
+                  firstNormal = 0;
+
+                // Second Vertex (we have to store it this way for possible triangulation)
+                indexReferences = parameters[2].Split('/');
+
+                if (hasNormals && indexReferences.Length < 3)
+                  hasNormals = false;
+                if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
+                  hasTextureCoordinates = false;
+
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
+                secondPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
+
+                if (hasTextureCoordinates)
+                {
+                  if (indexReferences[1] != "")
+                    secondTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
+                  else
+                    secondTextureCoordinates = 0;
+                }
+                else
+                  secondTextureCoordinates = 0;
+
+                if (hasNormals)
+                {
+                  if (indexReferences[2] != "")
+                    secondNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
+                  else
+                    secondNormal = 0;
+                }
+                else
+                  secondNormal = 0;
+              }
+              else
+                throw new Exception("ERROR: obj file corrupted:" + filePath);
+
+              // Verteces past the first two
+              for (int i = 3; i < parameters.Length; i++)
+              {
+                if (i > 3)
+                  Console.WriteLine();
+
+                // Triangulate using the first two verteces
+                fileIndeces.Add(firstPosition);
+                if (hasTextureCoordinates)
+                  fileIndeces.Add(firstTextureCoordinates);
                 else
                   fileIndeces.Add(0);
-                if (indexReferences[2] != "")
-                  fileIndeces.Add(int.Parse(indexReferences[2]));
+                if (hasNormals)
+                  fileIndeces.Add(firstNormal);
+                else
+                  fileIndeces.Add(0);
+                fileIndeces.Add(secondPosition);
+                if (hasTextureCoordinates)
+                  fileIndeces.Add(secondTextureCoordinates);
+                else
+                  fileIndeces.Add(0);
+                if (hasNormals)
+                  fileIndeces.Add(secondNormal);
+                else
+                  fileIndeces.Add(0);
+
+                // Now include the new vertex
+                string[] indexReferences = parameters[i].Split('/');
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition):" + filePath);
+                fileIndeces.Add(int.Parse(indexReferences[0], CultureInfo.InvariantCulture));
+
+                if (hasNormals && indexReferences.Length < 3)
+                  hasNormals = false;
+                if (hasTextureCoordinates && (indexReferences.Length < 2 || indexReferences[1] == ""))
+                  hasTextureCoordinates = false;
+
+                if (hasTextureCoordinates)
+                {
+                  if (indexReferences[1] != "")
+                    fileIndeces.Add(int.Parse(indexReferences[1], CultureInfo.InvariantCulture));
+                  else
+                    fileIndeces.Add(0);
+                }
+                else
+                  fileIndeces.Add(0);
+
+                if (hasNormals)
+                {
+                  if (indexReferences[2] != "")
+                    fileIndeces.Add(int.Parse(indexReferences[2], CultureInfo.InvariantCulture));
+                  else
+                    fileIndeces.Add(0);
+                }
                 else
                   fileIndeces.Add(0);
               }
@@ -187,27 +310,35 @@ namespace SevenEngine
         verteces[i + 2] = fileVerteces[index + 2];
       }
 
-      // Pull the final texture coordinates order out of the indexed references
-      // Note, arrays start at 0 but the index references start at 1
-      // Note, every other value needs to be inverse (not sure why but it works :P)
-      float[] textureCoordinates = new float[fileIndeces.Count / 3 * 2];
-      for (int i = 1; i < fileIndeces.Count; i += 3)
+      float[] textureCoordinates = null;
+      if (hasTextureCoordinates)
       {
-        int index = (fileIndeces[i] - 1) * 2;
-        int offset = (i - 1) / 3;
-        textureCoordinates[i - 1 - offset] = fileTextureCoordinates[index];
-        textureCoordinates[i - offset] = 1 - fileTextureCoordinates[(index + 1)];
+        // Pull the final texture coordinates order out of the indexed references
+        // Note, arrays start at 0 but the index references start at 1
+        // Note, every other value needs to be inverse (not sure why but it works :P)
+        textureCoordinates = new float[fileIndeces.Count / 3 * 2];
+        for (int i = 1; i < fileIndeces.Count; i += 3)
+        {
+          int index = (fileIndeces[i] - 1) * 2;
+          int offset = (i - 1) / 3;
+          textureCoordinates[i - 1 - offset] = fileTextureCoordinates[index];
+          textureCoordinates[i - offset] = 1 - fileTextureCoordinates[(index + 1)];
+        }
       }
 
-      // Pull the final normal order out of the indexed references
-      // Note, arrays start at 0 but the index references start at 1
-      float[] normals = new float[fileIndeces.Count];
-      for (int i = 2; i < fileIndeces.Count; i += 3)
+      float[] normals = null;
+      if (hasNormals)
       {
-        int index = (fileIndeces[i] - 1) * 3;
-        normals[i - 2] = fileNormals[index];
-        normals[i - 1] = fileNormals[(index + 1)];
-        normals[i] = fileNormals[(index + 2)];
+        // Pull the final normal order out of the indexed references
+        // Note, arrays start at 0 but the index references start at 1
+        normals = new float[fileIndeces.Count];
+        for (int i = 2; i < fileIndeces.Count; i += 3)
+        {
+          int index = (fileIndeces[i] - 1) * 3;
+          normals[i - 2] = fileNormals[index];
+          normals[i - 1] = fileNormals[(index + 1)];
+          normals[i] = fileNormals[(index + 2)];
+        }
       }
 
       int vertexBufferId;
@@ -230,7 +361,7 @@ namespace SevenEngine
       else { vertexBufferId = 0; }
 
       int textureCoordinateBufferId;
-      if (textureCoordinates != null)
+      if (hasTextureCoordinates && textureCoordinates != null)
       {
         // Declare the buffer
         GL.GenBuffers(1, out textureCoordinateBufferId);
@@ -249,7 +380,7 @@ namespace SevenEngine
       else { textureCoordinateBufferId = 0; }
 
       int normalBufferId;
-      if (normals != null)
+      if (hasNormals && normals != null)
       {
         // Declare the buffer
         GL.GenBuffers(1, out normalBufferId);
@@ -312,42 +443,109 @@ namespace SevenEngine
 
             // Vertex
             case "v":
-              fileVerteces.Add(float.Parse(parameters[1]));
-              fileVerteces.Add(float.Parse(parameters[2]));
-              fileVerteces.Add(float.Parse(parameters[3]));
+              fileVerteces.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileVerteces.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
+              fileVerteces.Add(float.Parse(parameters[3], CultureInfo.InvariantCulture));
               break;
 
             // Texture Coordinate
             case "vt":
-              fileTextureCoordinates.Add(float.Parse(parameters[1]));
-              fileTextureCoordinates.Add(float.Parse(parameters[2]));
+              fileTextureCoordinates.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileTextureCoordinates.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
               break;
 
             // Normal
             case "vn":
-              fileNormals.Add(float.Parse(parameters[1]));
-              fileNormals.Add(float.Parse(parameters[2]));
-              fileNormals.Add(float.Parse(parameters[3]));
+              fileNormals.Add(float.Parse(parameters[1], CultureInfo.InvariantCulture));
+              fileNormals.Add(float.Parse(parameters[2], CultureInfo.InvariantCulture));
+              fileNormals.Add(float.Parse(parameters[3], CultureInfo.InvariantCulture));
               break;
 
             // Face
             case "f":
-              // NOTE! This does not yet triangulate faces
-              // NOTE! This needs all possible values (position, texture mapping, and normal).
-              for (int i = 1; i < parameters.Length; i++)
+              // DEVELOPMENT NOTE: The following triangulation algorithm works, but it 
+              // could be optimized beyond its current state.
+
+              // The following variables are used for triangulation of a polygon
+              // with greater than three verteces.
+              int firstPosition, firstTextureCoordinates, firstNormal,
+                secondPosition, secondTextureCoordinates, secondNormal;
+              if (parameters.Length > 3)
               {
-                string[] indexReferences = parameters[i].Split('/');
-                fileIndeces.Add(int.Parse(indexReferences[0]));
+                // First Vertex (we have to store it this way for possible triangulation)
+                string[] indexReferences = parameters[1].Split('/');
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition): " + filePath);
+                firstPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
                 if (indexReferences[1] != "")
-                  fileIndeces.Add(int.Parse(indexReferences[1]));
+                  firstTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
+                else
+                  firstTextureCoordinates = 0;
+                if (indexReferences[2] != "")
+                  firstNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
+                else
+                  firstNormal = 0;
+
+                // Second Vertex (we have to store it this way for possible triangulation)
+                indexReferences = parameters[2].Split('/');
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition): " + filePath);
+                secondPosition = int.Parse(indexReferences[0], CultureInfo.InvariantCulture);
+                if (indexReferences[1] != "")
+                  secondTextureCoordinates = int.Parse(indexReferences[1], CultureInfo.InvariantCulture);
+                else
+                  secondTextureCoordinates = 0;
+                if (indexReferences[2] != "")
+                  secondNormal = int.Parse(indexReferences[2], CultureInfo.InvariantCulture);
+                else
+                  secondNormal = 0;
+              }
+              else
+                throw new Exception("ERROR: obj file corrupted:" + filePath);
+
+              // Verteces past the first two
+              for (int i = 3; i < parameters.Length; i++)
+              {
+                // Triangulate using the first two verteces
+                fileIndeces.Add(firstPosition);
+                fileIndeces.Add(firstTextureCoordinates);
+                fileIndeces.Add(firstNormal);
+                fileIndeces.Add(secondPosition);
+                fileIndeces.Add(secondTextureCoordinates);
+                fileIndeces.Add(secondNormal);
+                // Now include the new vertex
+                string[] indexReferences = parameters[i].Split('/');
+                if (indexReferences[0] == "")
+                  throw new Exception("ERROR: obj file corrupted (missing vertex possition): " + filePath);
+                fileIndeces.Add(int.Parse(indexReferences[0], CultureInfo.InvariantCulture));
+                if (indexReferences[1] != "")
+                  fileIndeces.Add(int.Parse(indexReferences[1], CultureInfo.InvariantCulture));
                 else
                   fileIndeces.Add(0);
                 if (indexReferences[2] != "")
-                  fileIndeces.Add(int.Parse(indexReferences[2]));
+                  fileIndeces.Add(int.Parse(indexReferences[2], CultureInfo.InvariantCulture));
                 else
                   fileIndeces.Add(0);
               }
               break;
+
+              //// OLD VERSION OF THE FACE PARSING
+              //// NOTE! This does not yet triangulate faces
+              //// NOTE! This needs all possible values (position, texture mapping, and normal).
+              //for (int i = 1; i < parameters.Length; i++)
+              //{
+              //  string[] indexReferences = parameters[i].Split('/');
+              //  fileIndeces.Add(int.Parse(indexReferences[0], CultureInfo.InvariantCulture));
+              //  if (indexReferences[1] != "")
+              //    fileIndeces.Add(int.Parse(indexReferences[1], CultureInfo.InvariantCulture));
+              //  else
+              //    fileIndeces.Add(0);
+              //  if (indexReferences[2] != "")
+              //    fileIndeces.Add(int.Parse(indexReferences[2], CultureInfo.InvariantCulture));
+              //  else
+              //    fileIndeces.Add(0);
+              //}
+              //break;
 
             // End Current Mesh
             case "7":

@@ -10,6 +10,9 @@ namespace Game.States
 {
   public class SpriteState : IGameState
   {
+    private string _id;
+    public string Id { get { return _id; } set { _id = value; } }
+
     Camera _camera;
     Sprite _sprites;
     Sprite _sprites2;
@@ -18,8 +21,10 @@ namespace Game.States
 
     float spriteTimer = -10;
 
-    public SpriteState()
+    public SpriteState(string id)
     {
+      _id = id;
+
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);

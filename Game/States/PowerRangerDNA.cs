@@ -10,6 +10,10 @@ namespace Game.States
 {
   public class PowerRangerDNA : IGameState
   {
+    private string _id;
+
+    public string Id { get { return _id; } set { _id = value; } }
+
     Octree<StaticModel> _octree = new Octree<StaticModel>(0, 0, 0, 1000000, 10);
 
     Camera _camera;
@@ -18,11 +22,16 @@ namespace Game.States
     StaticModel _mountain2;
     StaticModel[] _rangers;
     StaticModel[] _tuxes;
+    StaticModel _mushroomCloud;
+    float _time;
+    bool _bool;
 
     SkyBox _skybox;
 
-    public PowerRangerDNA()
+    public PowerRangerDNA(string id)
     {
+      _id = id;
+
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);
@@ -44,6 +53,15 @@ namespace Game.States
       _terrain.Orientation = new Quaternion(0, 0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
+      _mushroomCloud = StaticModelManager.GetModel("MushroomCloud");
+      _mushroomCloud.Scale = new Vector(500, 20, 500);
+      _mushroomCloud.Orientation = new Quaternion(0, 0, 0, 0);
+      _mushroomCloud.Position.X = 0;
+      _mushroomCloud.Position.Y = _terrain.Position.Y + 30;
+      _mushroomCloud.Position.Z = 0;
+      _time = 0;
+      _bool = false;
+
       _mountain = StaticModelManager.GetModel("Mountain");
       _mountain.Scale = new Vector(5000, 5000, 5000);
       _mountain.Orientation = new Quaternion(0, 0, 0, 0);
@@ -63,7 +81,7 @@ namespace Game.States
         _rangers[i] = StaticModelManager.GetModel(colors[random.Next(0, 5)]);
         _rangers[i].Position.X = -100;
         _rangers[i].Position.Y = _terrain.Position.Y + 10;
-        _rangers[i].Position.Z = i * 50;
+        _rangers[i].Position.Z = -i * 50;
         _rangers[i].Scale = new Vector(5, 5, 5);
         _rangers[i].Orientation = new Quaternion(0, 1, 0, 0);
         _rangers[i].Orientation.W = i * 2;
@@ -100,7 +118,7 @@ namespace Game.States
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       Renderer.SetProjectionMatrix();
 
-      List<StaticModel> items = _octree.Get(-10000, -10000, -1000, 10000, 500, 10000);
+      List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
       items.Foreach(RenderModel);
 
       /*if (InputManager.Keyboard.Vdown)
@@ -118,6 +136,10 @@ namespace Game.States
       Renderer.DrawStaticModel(_terrain);
       Renderer.DrawStaticModel(_mountain);
       Renderer.DrawStaticModel(_mountain2);
+
+      //if (_mushroomCloud.Scale.X > 0)
+      if (_mushroomCloud.Scale.X > 0 && _bool)
+        Renderer.DrawStaticModel(_mushroomCloud);
     }
 
     private void RenderModel(StaticModel model)
@@ -127,6 +149,14 @@ namespace Game.States
 
     public string Update(float elapsedTime)
     {
+      _time += elapsedTime / 4f;
+
+      if (_time > 200)
+      {
+        _time = 0;
+        _bool = !_bool;
+      }
+
       CameraControls();
       foreach (StaticModel model in _rangers)
         model.Orientation.W += 3;
@@ -135,6 +165,15 @@ namespace Game.States
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;
       _skybox.Position.Z = _camera.Position.Z;
+
+      _mushroomCloud.Scale.X = _time;
+      _mushroomCloud.Scale.Y = _time;
+      _mushroomCloud.Scale.Z = _time;
+
+      //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
+      //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
+      //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
+
       return "Don't Change States";
     }
 

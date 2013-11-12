@@ -19,7 +19,7 @@ namespace SevenEngine
 {
   public class SpriteManager
   {
-    private static AvlTree<Sprite> _spriteDatabase = new AvlTree<Sprite>();
+    /*private static AvlTree<Sprite> _spriteDatabase = new AvlTree<Sprite>();
 
     /// <summary>Gets a sprite by the id and tracks the number of hardware instancings.</summary>
     /// <param name="spriteId">The id of the desired sprite.</param>
@@ -29,7 +29,7 @@ namespace SevenEngine
       Sprite sprite = _spriteDatabase.Get(spriteId);
       sprite.Texture.ExistingReferences++;
       return new Sprite(sprite.Texture);
-    }
+    }*/
 
 
   }

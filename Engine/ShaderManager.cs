@@ -115,7 +115,7 @@ namespace SevenEngine
       }
 
       // The load and comilation was successful, we can add it to the database.
-      _vertexShaderDatabase.Add(shaderId, new VertexShader(shaderId, filePath, shaderHandle));
+      _vertexShaderDatabase.Add(new VertexShader(shaderId, filePath, shaderHandle));
       Output.WriteLine("Shader file compiled \"" + filePathSplit[filePathSplit.Length - 1] + "\";");
       return true;
     }
@@ -148,7 +148,7 @@ namespace SevenEngine
       }
 
       // The load and comilation was successful, we can add it to the database.
-      _fragmentShaderDatabase.Add(shaderId, new FragmentShader(shaderId, filePath, shaderLocation));
+      _fragmentShaderDatabase.Add(new FragmentShader(shaderId, filePath, shaderLocation));
       Output.WriteLine("Shader file compiled \"" + filePathSplit[filePathSplit.Length - 1] + "\";");
       return true;
     }
@@ -180,7 +180,7 @@ namespace SevenEngine
       }
 
       // The load and comilation was successful, we can add it to the database.
-      _geometryShaderDatabase.Add(shaderId, new GeometryShader(shaderId, filePath, shaderHandle));
+      _geometryShaderDatabase.Add(new GeometryShader(shaderId, filePath, shaderHandle));
       Output.WriteLine("Shader file compiled \"" + filePathSplit[filePathSplit.Length - 1] + "\";");
       return true;
     }
@@ -212,7 +212,7 @@ namespace SevenEngine
       }
 
       // The load and comilation was successful, we can add it to the database.
-      _extendedGeometryShaderDatabase.Add(shaderId, new ExtendedGeometryShader(shaderId, filePath, shaderHandle));
+      _extendedGeometryShaderDatabase.Add(new ExtendedGeometryShader(shaderId, filePath, shaderHandle));
       Output.WriteLine("Shader file compiled \"" + filePathSplit[filePathSplit.Length - 1] + "\";");
       return true;
     }
@@ -252,7 +252,7 @@ namespace SevenEngine
       //}
 
       // The program has been successfully created. Add it to the database so we can use it.
-      _shaderProgramDatabase.Add(programId, new ShaderProgram(programId, programHandle));
+      _shaderProgramDatabase.Add(new ShaderProgram(programId, programHandle));
       Output.WriteLine("Shader program created: \"" + programId + "\";");
       return true;
     }

@@ -42,18 +42,18 @@ namespace SevenEngine
     /// <summary>Adds a game state to the game</summary>
     /// <param name="stateId">What you want this state to be called so that you can access it.</param>
     /// <param name="state">The reference to the game state object to be added.</param>
-    public static void AddState(string stateId, IGameState state)
+    public static void AddState(IGameState state)
     {
-      if (StateExists(stateId))
+      if (StateExists(state.Id))
       {
         Output.ClearIndent();
-        Output.WriteLine("ERROR!\nStateSystem.cs\\AddState(): " + stateId + " already exits.");
-        throw new StateSystemException("ERROR!\nStateSystem.cs\\AddState(): " + stateId + " already exits.");
+        Output.WriteLine("ERROR!\nStateSystem.cs\\AddState(): " + state.Id + " already exits.");
+        throw new StateSystemException("ERROR!\nStateSystem.cs\\AddState(): " + state.Id + " already exits.");
       }
       else
       {
-        _stateDatabase.Add(stateId, state);
-        Output.WriteLine("\"" + stateId + "\" state loaded;");
+        _stateDatabase.Add(state);
+        Output.WriteLine("\"" + state.Id + "\" state loaded;");
       }
     }
 

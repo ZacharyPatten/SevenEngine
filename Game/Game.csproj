@@ -38,22 +38,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dlls\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK.Compatibility, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\OpenTK.Compatibility.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dlls\OpenTK.GLControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
@@ -63,6 +49,16 @@
     <Compile Include="States\PowerRangerDNA.cs" />
     <Compile Include="States\SkyboxState.cs" />
     <Compile Include="States\SpriteState.cs" />
+    <Compile Include="Units\Types\Ai\KillemKamakazi.cs" />
+    <Compile Include="Units\Types\Ai\KillemMelee.cs" />
+    <Compile Include="Units\Types\Ai\KillemRanged.cs" />
+    <Compile Include="Units\Types\Ai\ZackKamakazi.cs" />
+    <Compile Include="Units\Types\Ai\ZackMelee.cs" />
+    <Compile Include="Units\Types\Ai\ZackRanged.cs" />
+    <Compile Include="Units\Types\Kamakazi.cs" />
+    <Compile Include="Units\Types\Melee.cs" />
+    <Compile Include="Units\Types\Ranged.cs" />
+    <Compile Include="Units\Unit.cs" />
     <Compile Include="Util\PathTool.cs" />
   </ItemGroup>
   <ItemGroup>
