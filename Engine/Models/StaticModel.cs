@@ -23,7 +23,7 @@ namespace SevenEngine.Models
   /// <summary>Represents a single mesh that has been loaded on the GPU. multiple references of this class SHOULD exist,
   /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
   /// same buffers on the GPU, which is good for both speed and memory space.</summary>
-  public class StaticMesh
+  public class StaticMesh : InterfaceStringId
   {
     private int _existingReferences;
     protected string _filePath;
@@ -40,7 +40,7 @@ namespace SevenEngine.Models
     /// <summary>Holds the filepath of the imported file.</summary>
     internal string FilePath { get { return _filePath; } set { _filePath = value; } }
     /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>
-    internal string Id { get { return _id; } set { _id = value; } }
+    public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The handle of the vertex buffer on the GPU.</summary>
     internal int VertexBufferHandle { get { return _vertexBufferHandle; } set { _vertexBufferHandle = value; } }
     /// <summary>The location of the color buffer on the GPU.</summary>
@@ -56,7 +56,7 @@ namespace SevenEngine.Models
 
     /// <summary>Creates an instance of a StaticMesh.</summary>
     /// <param name="filePath">The file path of the model that the data came from.</param>
-    /// <param name="staticMeshId">The name associated with this mash when in was created.</param>
+    /// <param name="id">The name associated with this mash when in was created.</param>
     /// <param name="vertexBufferHandle">The number reference of the vertex buffer on the GPU (default is 0).</param>
     /// <param name="colorBufferHandle">The number reference of the color buffer on the GPU (default is 0).</param>
     /// <param name="textureCoordinatesHandle">The number reference of the texture coordinate buffer on the GPU (default is 0).</param>
@@ -65,7 +65,7 @@ namespace SevenEngine.Models
     /// <param name="vertexCount">The number of verteces making up the mesh.</param>
     internal StaticMesh(
       string filePath,
-      string staticMeshId,
+      string id,
       int vertexBufferHandle,
       int colorBufferHandle,
       int textureCoordinatesHandle,
@@ -76,6 +76,7 @@ namespace SevenEngine.Models
       _existingReferences = 0;
 
       _filePath = filePath;
+      _id = id;
       _vertexBufferHandle = vertexBufferHandle;
       _colorBufferHandle = colorBufferHandle;
       _textureCoordinateBufferHandle = textureCoordinatesHandle;

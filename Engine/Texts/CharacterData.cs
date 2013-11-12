@@ -10,17 +10,23 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 10-26-13
 
+using SevenEngine.DataStructures;
+using SevenEngine.DataStructures.Interfaces;
+
 namespace SevenEngine.Texts
 {
-  public class CharacterData
-  {
-    public int Id { get; set; }
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int XOffset { get; set; }
-    public int YOffset { get; set; }
-    public int XAdvance { get; set; }
-  }
+  //public class CharacterData : InterfaceStringId
+  //{
+
+
+  //  public string Id { get; set; }
+  //  public int X { get; set; }
+  //  public int Y { get; set; }
+  //  public int Width { get; set; }
+  //  public int Height { get; set; }
+  //  public int XOffset { get; set; }
+  //  public int YOffset { get; set; }
+  //  public int XAdvance { get; set; }
+  //  public List<Link2<int, int>> 
+  //}
 }

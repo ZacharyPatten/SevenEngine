@@ -21,7 +21,7 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
-  // THE SOUND CLASSES ARE NOT YET FUNCTINAL, PLEASE WAIT FOR ME TO FINISH THEM...
+/*  // THE SOUND CLASSES ARE NOT YET FUNCTINAL, PLEASE WAIT FOR ME TO FINISH THEM...
   public static class SoundManager
   {
     struct SoundSource
@@ -191,4 +191,5 @@ namespace SevenEngine
       //  AL.Source(channel, ALSourcef.Gain, value);
     }
   }
+ * */
 }

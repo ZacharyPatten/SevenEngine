@@ -101,12 +101,18 @@ namespace SevenEngine
 
     #endregion
 
+    #region DrawImmediateMode
+
     public static void DrawImmediateModeVertex(Vector position, Color color, Point uvs)
     {
       GL.Color4(color.R, color.G, color.B, color.A);
       GL.TexCoord2(uvs.X, uvs.Y);
       GL.Vertex3(position.X, position.Y, position.Z);
     }
+
+    #endregion
+
+    #region DrawSprite2d
 
     public static void DrawSprite(Sprite sprite)
     {
@@ -149,6 +155,10 @@ namespace SevenEngine
       // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
       GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
     }
+
+    #endregion
+
+    #region DrawSkybox
 
     public static void DrawSkybox(SkyBox skybox)
     {
@@ -205,7 +215,11 @@ namespace SevenEngine
       // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
       GL.DrawArrays(BeginMode.Triangles, 24, 6);
     }
-    
+
+    #endregion
+
+    #region DrawStaticModel - OLD!
+
     ///// <summary>Renders a single static model using "GL.DrawArrays()".</summary>
     ///// <param name="camera">The camera used to capture the world (needed for the world to camera transformation).</param>
     ///// <param name="staticModel">The mesh to be rendered.</param>
@@ -324,6 +338,10 @@ namespace SevenEngine
     //  }
     //}
 
+    #endregion
+
+    #region DrawStaticModel
+
     /// <summary>Renders a single static model using "GL.DrawArrays()".</summary>
     /// <param name="camera">The camera used to capture the world (needed for the world to camera transformation).</param>
     /// <param name="staticModel">The mesh to be rendered.</param>
@@ -438,5 +456,7 @@ namespace SevenEngine
 
       GL.PopClientAttrib();
     }
+
+    #endregion
   }
 }

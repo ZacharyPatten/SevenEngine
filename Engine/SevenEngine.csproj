@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Algorithms\Sorting.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
+    <Compile Include="DataStructures\CyclicArray.cs" />
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
     <Compile Include="DataStructures\Interfaces\InterfaceStringId.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="StaticModelManager.cs" />
     <Compile Include="Models\Vertex.cs" />
     <Compile Include="Output.cs" />
+    <Compile Include="TextManager.cs" />
     <Compile Include="Texts\CharacterData.cs" />
     <Compile Include="Texts\CharacterSprite.cs" />
     <Compile Include="Imaging\Color.cs" />

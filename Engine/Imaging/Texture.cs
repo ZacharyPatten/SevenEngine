@@ -26,7 +26,7 @@ namespace SevenEngine.Imaging
     protected int _height;
 
     /// <summary>The number of existing hardware instances of this model reference.</summary>
-    public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
+    internal int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
     /// <summary>The string id associated with this specific texture when it was loaded.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The handle of the texture on the GPU.</summary>

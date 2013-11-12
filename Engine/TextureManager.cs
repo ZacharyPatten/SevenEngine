@@ -63,7 +63,7 @@ namespace SevenEngine
         Output.WriteLine("ERROR loading texture file: \"" + pathSplit[pathSplit.Length - 1] + "\".");
       else
       {
-        _textureDatabase.Add(textureId, new Texture(textureId, textureIdNum, width, height));
+        _textureDatabase.Add(new Texture(textureId, textureIdNum, width, height));
         Output.WriteLine("Texture file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
       }
     }

@@ -10,6 +10,9 @@ namespace Game.States
 {
   public class SkyboxState : IGameState
   {
+    private string _id;
+    public string Id { get { return _id; } set { _id = value; } }
+
     Camera _camera;
 
     StaticModel _terrain;
@@ -22,8 +25,10 @@ namespace Game.States
 
     SkyBox _skybox;
 
-    public SkyboxState()
+    public SkyboxState(string id)
     {
+      _id = id;
+
       // Creates a camera and sets the initial positions
       _camera = new Camera();
       _camera.PositionSpeed = 5;
