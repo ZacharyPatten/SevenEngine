@@ -107,7 +107,8 @@ namespace Game
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\mountain.obj"));
 
       StaticModelManager.LoadMesh("MushroomCloud",
-        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\MushCloud5.obj"));
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Models\MushCloud3.obj"));
+
       StaticModelManager.LoadModel("MushroomCloud", new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" });
       
       StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
