@@ -45,8 +45,8 @@ namespace Game
       // LOAD TEXTURES HERE.
       // Use the static class "TextureManager"
 
-      // Note: I only support ".bmp"files at the moment.
-      // Just pull non-bitmaps into any standard image editor and export them as bitmap files.
+      // Note: I support the following image files:
+        // bmp, jpeg, png, gif, ttf
 
       TextureManager.LoadTexture("grass",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\grass.bmp"));
@@ -84,6 +84,25 @@ namespace Game
       TextureManager.LoadTexture("SkyboxTop",
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerTop.bmp"));
 
+    }
+
+    public override void InitializeFonts()
+    {
+      // LOAD Fonts HERE.
+      // Use the static class "TextManager"
+
+      // Note: I support the following image files:
+        // fnt
+
+      // NOTE: the image files used by the fnt files must be supported by my image importer
+
+      TextManager.LoadFontFile(
+        // What you want to call this font
+        "Calibri",
+        // The path to the font file
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Texts\Calibri.fnt"),
+        // The folder location where the texture files for this text file are
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Texts\"));
     }
 
     public override void InitializeModels()

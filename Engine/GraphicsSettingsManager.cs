@@ -11,7 +11,6 @@
 // Last Edited: 10-26-13
 
 using SevenEngine.Imaging;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 

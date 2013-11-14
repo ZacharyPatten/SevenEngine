@@ -11,10 +11,8 @@
 // Last Edited: 10-26-13
 
 using System;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
 using SevenEngine;
 using SevenEngine.Imaging;
 
@@ -34,6 +32,7 @@ namespace SevenEngine
       BaseInitializeDisplay();
       BaseInitializeSounds();
       BaseInitializeTextures();
+      BaseInitializeFonts();
       BaseInitializeModels();
       BaseInitializeShaders();
       BaseInitializeStates();
@@ -101,6 +100,18 @@ namespace SevenEngine
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
     public virtual void InitializeTextures() { Output.WriteLine("ERROR: you are not overriding the \"InitializeTextures()\" during game initilization."); }
+
+    private void BaseInitializeFonts()
+    {
+      Output.WriteLine("Initializing Fonts {");
+      Output.IncreaseIndent();
+      InitializeFonts();
+      Output.DecreaseIndent();
+      Output.WriteLine("} Fonts Initialized;");
+    }
+    /// <summary>OVERRIDE THIS FUNCTION!</summary>
+    public virtual void InitializeFonts() { Output.WriteLine("ERROR: you are not overriding the \"InitializeFonts()\" during game initilization."); }
+
 
     private void BaseInitializeModels()
     {

@@ -11,7 +11,6 @@
 // Last Edited: 10-26-13
 
 using System;
-
 using OpenTK.Input;
 
 namespace SevenEngine

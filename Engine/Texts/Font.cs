@@ -11,23 +11,32 @@
 // Last Edited: 10-26-13
 
 using System;
-
 using SevenEngine.Imaging;
+using SevenEngine.DataStructures;
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.Texts
 {
-  //public class Font
-  //{
-  //  private Texture _texture;
-  //  private CharacterData[] _characterDatum;
+  public class Font : InterfaceStringId
+  {
+    private string _id;
+    private ListArray<CharacterSprite> _characterDatum;
+    private int _existingHardwareInstances;
 
-  //  internal Texture Texture { get { return _texture; } }
-  //  internal CharacterData[] Characters { get { return _characterDatum; } }
+    public string Id { get { return _id; } set { _id = value; } }
 
-  //  public Font(Texture texture, CharacterData[] characterData)
-  //  {
-  //    _texture = texture;
-  //    _characterDatum = characterData;
-  //  }
-  //}
+    public Font(string id, ListArray<CharacterSprite> characters)
+    {
+      _id = id;
+      _characterDatum = characters;
+    }
+
+    public CharacterSprite Get(int id)
+    {
+      for (int i = 0; i < _characterDatum.Count; i++)
+        if (_characterDatum[i].Id == id)
+          return _characterDatum[i];
+      throw new Exception("Character not found");
+    }
+  }
 }

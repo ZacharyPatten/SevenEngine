@@ -22,20 +22,20 @@ namespace SevenEngine.Imaging
   public class Sprite
   {
     // Every sprite uses the same vertex positions
-    protected static readonly float[] _verteces = new float[] {
+    private static readonly float[] _verteces = new float[] {
       1f, 1f, 0f,   -1f, 1f, 0f,   1f, -1f, 0f,
       -1f, -1f, 0f,   1f, -1f, 0f,   -1f, 1f, 0f };
-    protected static readonly int _vertexCount = 6;
-    protected static readonly float[] _textureMappingsDefault = new float[] {
+    private static readonly int _vertexCount = 6;
+    private static readonly float[] _textureMappingsDefault = new float[] {
       1f,0f,  0f,0f,  1f,1f,
       0f,1f,  1f,1f,  0f,0f };
-    protected Vector _position;
-    protected Texture _texture;
-    protected Point _scale;
-    protected float _rotation;
-    protected static int _gpuVertexBufferHandle;
-    protected static int _gpuTextureMappingBufferHandleDefault;
-    protected int _gpuTextureMappingBufferHandle;
+    private Vector _position;
+    private Texture _texture;
+    private Point _scale;
+    private float _rotation;
+    private static int _gpuVertexBufferHandle;
+    private static int _gpuTextureMappingBufferHandleDefault;
+    private int _gpuTextureMappingBufferHandle;
 
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
@@ -77,11 +77,7 @@ namespace SevenEngine.Imaging
     public Sprite(Texture texture, float[] textureMappings)
     {
       if (_gpuVertexBufferHandle == 0)
-        GenerateVertexBuffer(
-          // Every sprite uses the same vertex positions
-          new float[] {
-            1f,1f,0f,  -1f,1f,0f,  1f,-1f,0f,
-            -1f,-1f,0f,  1f,-1f,0f,  -1f,1f,0f });
+        GenerateVertexBuffer(_verteces);
       _position = new Vector(0, 0, -10);
       _scale = new Point(1, 1);
       _rotation = 0f;

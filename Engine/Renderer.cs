@@ -11,10 +11,8 @@
 // Last Edited: 10-26-13
 
 using System;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
 using SevenEngine;
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
@@ -108,6 +106,61 @@ namespace SevenEngine
       GL.Color4(color.R, color.G, color.B, color.A);
       GL.TexCoord2(uvs.X, uvs.Y);
       GL.Vertex3(position.X, position.Y, position.Z);
+    }
+
+    #endregion
+
+    #region Text
+    private static float _pixelAdjust = 8f;
+
+    private static Font _font;
+    public static Font Font { get { return _font; } set { _font = value; } }
+
+    public static void RenderText(string message, Point location, Point scale, float rotation, Color color)
+    {
+      // NOTE: I DON'T SUPPORT VARIABLE COLOR YET
+      SetOrthographicMatrix();
+      GL.MatrixMode(MatrixMode.Modelview);
+      GL.LoadIdentity();
+      GL.Translate(location.X, location.Y, 1);
+      GL.Rotate(rotation, 0, 0, 1);
+      GL.Scale(scale.X, scale.Y, 0);
+      for (int i = 0; i < message.Length; i++)
+      {
+        CharacterSprite sprite = _font.Get(message[i]);
+
+        GL.Translate(sprite.XOffset / _pixelAdjust, sprite.YOffset / _pixelAdjust, 0);
+
+        // Vertex Array Buffer
+        // Bind to the Array Buffer ID
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
+        // Set the Pointer to the current bound array describing how the data ia stored
+        GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
+        // Enable the client state so it will use this array buffer pointer
+        GL.EnableClientState(ArrayCap.VertexArray);
+
+        // Bind the texture to which the UVs are mapping to.
+        GL.BindTexture(TextureTarget.Texture2D, sprite.Texture.GpuHandle);
+        // Bind to the Array Buffer ID
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GPUTextureCoordinateBufferHandle);
+        // Set the Pointer to the current bound array describing how the data ia stored
+        GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
+        // Enable the client state so it will use this array buffer pointer
+        GL.EnableClientState(ArrayCap.TextureCoordArray);
+
+        // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
+        // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
+        GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
+
+        // Remove the offset
+        GL.Translate(-sprite.XOffset / _pixelAdjust, -sprite.YOffset / _pixelAdjust, 0);
+        // Advance by the letter advancement
+        GL.Translate(sprite.XAdvance / _pixelAdjust, 0, 0);
+        // Advance by the possible kearning value
+        if (i + 1 <= message.Length - 1)
+          GL.Translate(sprite.CheckKearning(message[i + 1]) / _pixelAdjust, 0, 0);
+      }
     }
 
     #endregion

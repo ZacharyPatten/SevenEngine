@@ -109,6 +109,8 @@ namespace Game.States
         //_octree.Remove("Ranger" + i);
         _tuxes[i].Meshes.Remove("Body");
       }
+
+      Renderer.Font = TextManager.GetFont("Calibri");
     }
 
     public void Render()
@@ -140,6 +142,9 @@ namespace Game.States
       //if (_mushroomCloud.Scale.X > 0)
       if (_mushroomCloud.Scale.X > 0 && _bool)
         Renderer.DrawStaticModel(_mushroomCloud);
+
+      Renderer.RenderText("WELCOME TO", new Point(-300, 50), new Point(11, 11), 30f, Color.Black);
+      Renderer.RenderText("SEVENENGINE", new Point(-300, 0), new Point(11, 11), 30f, Color.Black);
     }
 
     private void RenderModel(StaticModel model)

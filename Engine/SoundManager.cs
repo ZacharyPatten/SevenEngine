@@ -12,10 +12,8 @@
 
 using System;
 using System.IO;
-
 using OpenTK;
 using OpenTK.Audio.OpenAL;
-
 using SevenEngine.Audio;
 using SevenEngine.DataStructures;
 

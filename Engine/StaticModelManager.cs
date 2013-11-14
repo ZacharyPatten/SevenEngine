@@ -13,11 +13,9 @@
 using System;
 using System.IO;
 using System.Globalization;
-
 using SevenEngine.DataStructures;
 using SevenEngine.Models;
 using SevenEngine.Imaging;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -136,7 +134,7 @@ namespace SevenEngine
       {
         while (!reader.EndOfStream)
         {
-          string[] parameters = reader.ReadLine().Trim().Split(' ');
+          string[] parameters = reader.ReadLine().Trim().Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
           switch (parameters[0])
           {
             // Vertex
@@ -161,6 +159,8 @@ namespace SevenEngine
 
             // Face
             case "f":
+              if (parameters.Length < 4)
+                throw new Exception("obj file corrupt.");
               int first = fileIndeces.Count;
               for (int i = 1; i < parameters.Length; i++)
               {
@@ -168,7 +168,7 @@ namespace SevenEngine
                 {
                   // Triangulate using the previous two verteces
 
-                  // Last two
+                  // Last two (triangle strip)
                   //fileIndeces.Add(fileIndeces[fileIndeces.Count - 6]);
                   //fileIndeces.Add(fileIndeces[fileIndeces.Count - 6]);
                   //fileIndeces.Add(fileIndeces[fileIndeces.Count - 6]);
@@ -176,7 +176,7 @@ namespace SevenEngine
                   //fileIndeces.Add(fileIndeces[fileIndeces.Count - 6]);
                   //fileIndeces.Add(fileIndeces[fileIndeces.Count - 6]);
 
-                  // First then previous
+                  // First then previous (triangle fan)
                   fileIndeces.Add(fileIndeces[first]);
                   fileIndeces.Add(fileIndeces[first + 1]);
                   fileIndeces.Add(fileIndeces[first + 2]);
@@ -338,7 +338,7 @@ namespace SevenEngine
       {
         while (!reader.EndOfStream)
         {
-          string[] parameters = reader.ReadLine().Trim().Split(' ');
+          string[] parameters = reader.ReadLine().Trim().Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
           switch (parameters[0])
           {
             // MeshName

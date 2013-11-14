@@ -12,10 +12,8 @@
 
 using System;
 using System.IO;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
 using SevenEngine.Shaders;
 using SevenEngine.DataStructures;
 

@@ -13,10 +13,8 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
 using SevenEngine.Imaging;
 using SevenEngine.DataStructures;
 

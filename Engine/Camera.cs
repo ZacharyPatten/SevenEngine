@@ -11,10 +11,8 @@
 // Last Edited: 10-26-13
 
 using System;
-
 using OpenTK;
 using OpenTK.Input;
-
 using SevenEngine.Mathematics;
 
 namespace SevenEngine

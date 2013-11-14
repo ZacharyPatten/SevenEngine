@@ -17,16 +17,7 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine.Texts
 {
-  /// <summary>
-  /// This parser doesn't support kerning! It's also quite brittle and will die on unexpected input.
-  /// 
-  /// Kerning is the minor adjustments made to certain characters when they're next to each other.
-  /// Implementing kerning will make your text look a lot better!
-  /// 
-  /// But it's easy to add - you need to fill in a dictionary that
-  /// takes a pair of characters for key and returns an int kerning amount.
-  /// such as: Dictionary<Tuple<char, char>, int>> (this definition requires C# 4.0)
-  /// </summary>
+  ///// <summary></summary>
   //public class FontParser
   //{
   //  static int HeaderSize = 4;
@@ -39,9 +30,9 @@ namespace SevenEngine.Texts
   //    return int.Parse(value);
   //  }
 
-  //  public static AvlTree<CharacterData> Parse(string filePath)
+  //  public static AvlTree<CharacterSprite> Parse(string filePath)
   //  {
-  //    AvlTree<CharacterData> charDictionary = new AvlTree<CharacterData>();
+  //    AvlTree<CharacterSprite> charDictionary = new AvlTree<CharacterSprite>();
 
   //    string[] lines = File.ReadAllLines(filePath);
 
@@ -53,7 +44,7 @@ namespace SevenEngine.Texts
 
   //      // All the data comes in a certain order,
   //      // used to make the parser shorter
-  //      CharacterData charData = new CharacterData
+  //      CharacterSprite charData = new CharacterSprite
   //      {
   //        Id = typesAndValues[1],
   //        X = GetValue(typesAndValues[2]),
