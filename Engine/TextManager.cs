@@ -26,7 +26,7 @@ namespace SevenEngine
     public static void LoadFontFile(string id, string filePath, string textureLocations)
     {
       ListArray<CharacterSprite> characters = new ListArray<CharacterSprite>(100);
-      ListArray<string> textures = new ListArray<string>(10);
+      ListArray<string> textures = new ListArray<string>(1);
       using (StreamReader reader = new StreamReader(filePath))
       {
         while (!reader.EndOfStream)
@@ -60,9 +60,16 @@ namespace SevenEngine
                 // X Offset
                 int.Parse(parameters[6].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture),
                 // Y Offset
-                int.Parse(parameters[7].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture)
-              ));
-              break;
+                int.Parse(parameters[7].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture)));
+                break;
+            case "kerning":
+              int first = int.Parse(parameters[1].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture);
+              for (int i = 0; i < characters.Count; i++)
+                if (characters[i].Id == first)
+                  characters[i].AddKearning(
+                    int.Parse(parameters[2].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture),
+                    int.Parse(parameters[3].Split("=".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], CultureInfo.InvariantCulture));
+                break;
           }
         }
       }

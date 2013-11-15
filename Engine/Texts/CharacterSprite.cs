@@ -21,8 +21,8 @@ namespace SevenEngine.Texts
   {
     // Every character sprite uses the same vertex positions
     private static readonly float[] _verteces = new float[] {
-      1f, 1f, 0f,   -1f, 1f, 0f,   1f, -1f, 0f,
-      -1f, -1f, 0f,   1f, -1f, 0f,   -1f, 1f, 0f };
+      1f, 1f, 0f,   0f, 1f, 0f,   1f, 0f, 0f,
+      0f, 0f, 0f,   1f, 0f, 0f,   0f, 1f, 0f };
     private static readonly int _vertexCount = 6;
     private Texture _texture;
     private static int _gpuVertexBufferHandle;
@@ -32,6 +32,8 @@ namespace SevenEngine.Texts
     private int _id;
     private int _xOffset;
     private int _yOffset;
+    private int _originalWidth;
+    private int _originalHeight;
 
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
@@ -45,32 +47,32 @@ namespace SevenEngine.Texts
     internal int XAdvance { get { return _xAdvance; } }
     internal int XOffset { get { return _xOffset; } }
     internal int YOffset { get { return _yOffset; } }
+    internal int OriginalWidth { get { return _originalWidth; } }
+    internal int OriginalHeight { get { return _originalHeight; } }
 
     /// <summary>Creates an instance of a sprite.</summary>
     /// <param name="texture">The texture to have this sprite mapped to.</param>
     /// <param name="textureMappings">The texture mappings for this sprite.</param>
     public CharacterSprite(Texture texture, int id, int xAdvance, int x, int y, int width, int height, int xOffset, int yOffset)
     {
-      // OMFG this part sucked...
-      float[] textureMappings = new float[] {
-        (float)(x + width) / (float)texture.Width, (float)y / (float)texture.Height,
-        (float)x / (float)texture.Width, (float)y / (float)texture.Height,
-        (float)(x + width) / (float)texture.Width, (float)(y + height) / (float)texture.Height,
-        (float)x / (float)texture.Width, (float)(y + height) / (float)texture.Height,
-        (float)(x + width) / (float)texture.Width, (float)(y + height) / (float)texture.Height,
-        (float)x / (float)texture.Width, (float)y / (float)texture.Height,
-        };
-      if (_gpuVertexBufferHandle == 0)
-        GenerateVertexBuffer(_verteces);
       _texture = texture;
-      if (textureMappings.Length != 12)
-        throw new Exception("Invalid number of texture coordinates in sprite constructor.");
-      GenerateTextureCoordinateBuffer(textureMappings);
       _id = id;
       _xAdvance = xAdvance;
       _xOffset = xOffset;
       _yOffset = yOffset;
+      _originalWidth = width;
+      _originalHeight = height;
       _kearnings = new ListArray<Link2<int, int>>(1);
+
+      if (_gpuVertexBufferHandle == 0)
+        GenerateVertexBuffer(_verteces);
+      GenerateTextureCoordinateBuffer( new float[] {
+        (x + width) / (float)_texture.Width, y / (float)_texture.Height,
+        x / (float)_texture.Width, y / (float)_texture.Height,
+        (x + width) / (float)_texture.Width, (y + height) / (float)_texture.Height,
+        x / (float)_texture.Width, (y + height) / (float)_texture.Height,
+        (x + width) / (float)_texture.Width, (y + height) / (float)_texture.Height,
+        x / (float)_texture.Width, y / (float)_texture.Height });
     }
 
     /// <summary>Generates the vertex buffer that all character sprites will use.</summary>

@@ -100,7 +100,7 @@ namespace Game
         // What you want to call this font
         "Calibri",
         // The path to the font file
-        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Texts\Calibri.fnt"),
+        PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Texts\Calibri2.fnt"),
         // The folder location where the texture files for this text file are
         PathTool.GenerateCorrectRelativePath(@"\..\..\Assets\Texts\"));
     }

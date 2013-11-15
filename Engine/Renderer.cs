@@ -111,25 +111,30 @@ namespace SevenEngine
     #endregion
 
     #region Text
-    private static float _pixelAdjust = 8f;
+    // THIS NEEDS TP BE THE RATIO OF CHARACTER ON SPRITE SHEET TO SIZE ON SCREEN
+    private static float _pixelAdjust = 7f;
 
     private static Font _font;
     public static Font Font { get { return _font; } set { _font = value; } }
 
-    public static void RenderText(string message, Point location, Point scale, float rotation, Color color)
+    public static void RenderText(string message, float x, float y, float scale, float rotation, Color color)
     {
       // NOTE: I DON'T SUPPORT VARIABLE COLOR YET
       SetOrthographicMatrix();
       GL.MatrixMode(MatrixMode.Modelview);
       GL.LoadIdentity();
-      GL.Translate(location.X, location.Y, 1);
-      GL.Rotate(rotation, 0, 0, 1);
-      GL.Scale(scale.X, scale.Y, 0);
+      GL.Translate(x * _screenWidth - _screenWidth / 2, y * _screenHeight - _screenHeight / 2, 0);
+      if (rotation != 0)
+        GL.Rotate(rotation, 0, 0, 1);
       for (int i = 0; i < message.Length; i++)
       {
         CharacterSprite sprite = _font.Get(message[i]);
 
-        GL.Translate(sprite.XOffset / _pixelAdjust, sprite.YOffset / _pixelAdjust, 0);
+        // Aply the character offsets
+        //GL.Translate(sprite.XOffset / _pixelAdjust, -sprite.YOffset / _pixelAdjust, 0);
+        GL.Translate(sprite.XOffset * scale, -sprite.YOffset * scale, 0);
+
+        GL.Scale(sprite.OriginalWidth * scale, sprite.OriginalHeight * scale, 0);
 
         // Vertex Array Buffer
         // Bind to the Array Buffer ID
@@ -153,13 +158,26 @@ namespace SevenEngine
         // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
         GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
 
-        // Remove the offset
-        GL.Translate(-sprite.XOffset / _pixelAdjust, -sprite.YOffset / _pixelAdjust, 0);
-        // Advance by the letter advancement
-        GL.Translate(sprite.XAdvance / _pixelAdjust, 0, 0);
-        // Advance by the possible kearning value
-        if (i + 1 <= message.Length - 1)
-          GL.Translate(sprite.CheckKearning(message[i + 1]) / _pixelAdjust, 0, 0);
+        GL.Scale(1 / (sprite.OriginalWidth * scale), 1 / (sprite.OriginalHeight * scale), 0);
+
+        if (i + 1 < message.Length)
+          GL.Translate(
+            // Remove the xoffset
+            -sprite.XOffset * scale +
+            // Advance by the letter advancement
+            sprite.XAdvance * scale +
+            // Advance by the possible kearning value
+            sprite.CheckKearning(message[i + 1]) * scale,
+            // Remove the yoffset and
+            sprite.YOffset * scale, 0);
+        else
+          GL.Translate(
+            // Remove the xoffset
+            -sprite.XOffset * scale +
+            // Advance by the letter advancement
+            sprite.XAdvance * scale,
+            // Remove the yoffset and
+            sprite.YOffset * scale, 0);
       }
     }
 
