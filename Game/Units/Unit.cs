@@ -1,7 +1,6 @@
 ﻿using System;
-
 using SevenEngine.DataStructures;
-using SevenEngine.Models;
+using SevenEngine.StaticModels;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures.Interfaces;
 

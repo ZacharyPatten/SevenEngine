@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SevenEngine")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyDescription("A C# game engine using the OpenTK bindings for OpenGL.")]
+[assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("SevenEngine")]
 [assembly: AssemblyProduct("SevenEngine")]
 [assembly: AssemblyCopyright("Copyright © Zachary Patten 2013")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Sevengine")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

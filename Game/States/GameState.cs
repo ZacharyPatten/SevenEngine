@@ -3,7 +3,7 @@
 using SevenEngine;
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
-using SevenEngine.Models;
+using SevenEngine.StaticModels;
 using SevenEngine.Mathematics;
 
 namespace Game.States
@@ -11,111 +11,179 @@ namespace Game.States
   public class GameState : IGameState
   {
     private string _id;
+
     public string Id { get { return _id; } set { _id = value; } }
 
-    Camera _camera;
+    Octree<StaticModel> _octree = new Octree<StaticModel>(0, 0, 0, 1000000, 10);
 
+    Camera _camera;
     StaticModel _terrain;
-    StaticModel _redRanger;
-    StaticModel _pinkRanger;
-    StaticModel _blueRanger;
-    StaticModel _blackRanger;
-    StaticModel _yellowRanger;
-    StaticModel _RedRangerTwo;
+    StaticModel _mountain;
+    StaticModel _mountain2;
+    StaticModel[] _rangers;
+    StaticModel[] _tuxes;
+    StaticModel _mushroomCloud;
+    float _time;
+    bool _bool;
+
+    SkyBox _skybox;
 
     public GameState(string id)
     {
       _id = id;
 
-      // Creates a camera and sets the initial positions
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);
       _camera.Move(_camera.Backward, 1500);
       _camera.Move(_camera.Backward, 300);
 
-      // Gets a copy of the "Terrain" model and tracks the number of hardware instances of each component
+      _skybox = new SkyBox();
+      _skybox.Scale.X = 10000;
+      _skybox.Scale.Y = 10000;
+      _skybox.Scale.Z = 10000;
+      _skybox.Left = TextureManager.Get("SkyboxLeft");
+      _skybox.Right = TextureManager.Get("SkyboxRight");
+      _skybox.Front = TextureManager.Get("SkyboxFront");
+      _skybox.Back = TextureManager.Get("SkyboxBack");
+      _skybox.Top = TextureManager.Get("SkyboxTop");
+
       _terrain = StaticModelManager.GetModel("Terrain");
       _terrain.Scale = new Vector(500, 20, 500);
       _terrain.Orientation = new Quaternion(0, 0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
 
-      // Gets a copy of the "RedRanger" model and tracks the number of hardware instances of each component
-      _redRanger = StaticModelManager.GetModel("RedRanger");
-      _redRanger.Orientation = new Quaternion(0, 1, 0, 0);
-      //_redRanger.RotationAngle = 180f;
-      _redRanger.Scale = new Vector(5, 5, 5);
-      _redRanger.Position = new Vector(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _mushroomCloud = StaticModelManager.GetModel("MushroomCloud");
+      _mushroomCloud.Scale = new Vector(500, 20, 500);
+      _mushroomCloud.Orientation = new Quaternion(0, 0, 0, 0);
+      _mushroomCloud.Position.X = 0;
+      _mushroomCloud.Position.Y = _terrain.Position.Y + 30;
+      _mushroomCloud.Position.Z = 0;
+      _time = 0;
+      _bool = false;
 
-      // Gets a copy of the "YellowRanger" model and tracks the number of hardware instances of each component
-      _yellowRanger = StaticModelManager.GetModel("YellowRanger");
-      _yellowRanger.Orientation = new Quaternion(0, 1, 1, 0);
-      _yellowRanger.Scale = new Vector(10, 10, 10);
-      _yellowRanger.Position = new Vector(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _mountain = StaticModelManager.GetModel("Mountain");
+      _mountain.Scale = new Vector(5000, 5000, 5000);
+      _mountain.Orientation = new Quaternion(0, 0, 0, 0);
+      _mountain.Position = new Vector(4000, 0, 1000);
 
-      // Gets a copy of the "BlackRanger" model and tracks the number of hardware instances of each component
-      _blackRanger = StaticModelManager.GetModel("BlackRanger");
-      _blackRanger.Orientation = new Quaternion(1, 1, 0, 0);
-      _blackRanger.Scale = new Vector(10, 10, 10);
-      _blackRanger.Position = new Vector(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _mountain2 = StaticModelManager.GetModel("Mountain2");
+      _mountain2.Scale = new Vector(3500, 3500, 3500);
+      _mountain2.Orientation = new Quaternion(0, 0, 0, 0);
+      _mountain2.Position = new Vector(0, 0, 2500);
 
-      // Gets a copy of the "BlueRanger" model and tracks the number of hardware instances of each component
-      _blueRanger = StaticModelManager.GetModel("BlueRanger");
-      _blueRanger.Orientation = new Quaternion(0, 1, 2, 0);
-      _blueRanger.Scale = new Vector(10, 10, 10);
-      _blueRanger.Position = new Vector(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
+      string[] colors = new string[] { "YellowRanger", "RedRanger", "BlueRanger", "BlackRanger", "PinkRanger" };
 
-      // Gets a copy of the "PinkRanger" model and tracks the number of hardware instances of each component
-      _pinkRanger = StaticModelManager.GetModel("PinkRanger");
-      _pinkRanger.Orientation = new Quaternion(0, 1, 0, 0);
-      _pinkRanger.Scale = new Vector(10, 10, 10);
-      _pinkRanger.Position = new Vector(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
+      Random random = new Random();
+      _rangers = new StaticModel[80];
+      for (int i = 0; i < _rangers.Length; i++)
+      {
+        _rangers[i] = StaticModelManager.GetModel(colors[random.Next(0, 5)]);
+        _rangers[i].Position.X = -100;
+        _rangers[i].Position.Y = _terrain.Position.Y + 10;
+        _rangers[i].Position.Z = -i * 50;
+        _rangers[i].Scale = new Vector(5, 5, 5);
+        _rangers[i].Orientation = new Quaternion(0, 1, 0, 0);
+        _rangers[i].Orientation.W = i * 2;
+        _rangers[i].Id = "Ranger" + i;
+        _octree.Add(_rangers[i]);
+      }
 
-      // Gets a copy of the "RedRangerSeven" model and tracks the number of hardware instances of each component
-      _RedRangerTwo = StaticModelManager.GetModel("RedRangerSeven");
-      _RedRangerTwo.Orientation = new Quaternion(0, 1, 0, 0);
-      _RedRangerTwo.Scale = new Vector(20, 20, 20);
-      _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
+      _tuxes = new StaticModel[80];
+      for (int i = 0; i < _tuxes.Length; i++)
+      {
+        _tuxes[i] = StaticModelManager.GetModel("Tux");
+        _tuxes[i].Position.X = 100;
+        _tuxes[i].Position.Y = _terrain.Position.Y + 10;
+        _tuxes[i].Position.Z = i * 50;
+        _tuxes[i].Scale = new Vector(25, 25, 25);
+        _tuxes[i].Orientation = new Quaternion(0, 1, 0, 0);
+        _tuxes[i].Orientation.W = i * 2;
+        _tuxes[i].Id = "Tux" + i;
+        _octree.Add(_tuxes[i]);
+      }
 
+      for (int i = 0; i < _rangers.Length; i+=2)
+      {
+        _rangers[i].Meshes.Remove("Body");
+        //_octree.Remove("Ranger" + i);
+        _tuxes[i].Meshes.Remove("Body");
+      }
+
+      Renderer.Font = TextManager.GetFont("Calibri");
     }
 
     public void Render()
     {
-      // Set the camera for the rendering (alters the positions & orientations of objdects)
       Renderer.CurrentCamera = _camera;
 
-      // You will alter the projection matrix here. Just use this for now, the Renderer is still under heavy development.
+      // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       Renderer.SetProjectionMatrix();
 
+      List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
+      items.Foreach(RenderModel);
+
+      /*if (InputManager.Keyboard.Vdown)
+      {
+        foreach (StaticModel model in _rangers)
+          Renderer.AddStaticModel(model);
+        Renderer.Render();
+      }
+      else
+      {
+        foreach (StaticModel model in _rangers)
+          Renderer.DrawStaticModel(model);
+      }*/
+      Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
-      Renderer.DrawStaticModel(_redRanger);
-      Renderer.DrawStaticModel(_blueRanger);
-      Renderer.DrawStaticModel(_blackRanger);
-      Renderer.DrawStaticModel(_pinkRanger);
-      Renderer.DrawStaticModel(_yellowRanger);
-      Renderer.DrawStaticModel(_RedRangerTwo);
+      Renderer.DrawStaticModel(_mountain);
+      Renderer.DrawStaticModel(_mountain2);
+
+      //if (_mushroomCloud.Scale.X > 0)
+      if (_mushroomCloud.Scale.X > 0 && _bool)
+        Renderer.DrawStaticModel(_mushroomCloud);
+
+      Renderer.RenderText("Welcome To", 0f, .95f, .5f, 0f, Color.Black);
+      Renderer.RenderText("SevenEngine!", 0f, .85f, .5f, 0f, Color.Black);
+
+      Renderer.RenderText("Close: ESC", 0f, .2f, .3f, 0f, Color.Black);
+      Renderer.RenderText("Fullscreen: F1", 0f, .15f, .3f, 0f, Color.Black);
+      Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, .3f, 0f, Color.Black);
+      Renderer.RenderText("Camera Angle: j, k, l, u", 0f, .05f, .3f, 0f, Color.Black);
+    }
+
+    private void RenderModel(StaticModel model)
+    {
+      Renderer.DrawStaticModel(model);
     }
 
     public string Update(float elapsedTime)
     {
-      CameraControls();
+      _time += elapsedTime / 4f;
 
-      if (InputManager.Keyboard.Rdown)
+      if (_time > 200)
       {
-        _redRanger.Orientation.W += 75;
-        _yellowRanger.Orientation.W += 100;
-        _blackRanger.Orientation.W += 200;
-        _blueRanger.Orientation.W += 400;
-        _pinkRanger.Orientation.W += 300;
+        _time = 0;
+        _bool = !_bool;
       }
 
-      _RedRangerTwo.Orientation.W++;
-      _RedRangerTwo.Orientation.W++;
+      CameraControls();
+      foreach (StaticModel model in _rangers)
+        model.Orientation.W += 3;
+      foreach (StaticModel model in _tuxes)
+        model.Orientation.W += 3;
+      _skybox.Position.X = _camera.Position.X;
+      _skybox.Position.Y = _camera.Position.Y;
+      _skybox.Position.Z = _camera.Position.Z;
 
-      _yellowRanger.Orientation.W++;
-      _blackRanger.Orientation.W++;
-      _blueRanger.Orientation.W++;
-      _pinkRanger.Orientation.W++;
+      _mushroomCloud.Scale.X = _time;
+      _mushroomCloud.Scale.Y = _time;
+      _mushroomCloud.Scale.Z = _time;
+
+      //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
+      //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
+      //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
+
       return "Don't Change States";
     }
 
@@ -123,17 +191,35 @@ namespace Game.States
     {
       // Camera position movement
       if (InputManager.Keyboard.Qdown)
-        _camera.Move(_camera.Down, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown)
+          _camera.Move(_camera.Down, _camera.PositionSpeed * 100);
+        else 
+          _camera.Move(_camera.Down, _camera.PositionSpeed);
       if (InputManager.Keyboard.Edown)
-        _camera.Move(_camera.Up, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown) 
+          _camera.Move(_camera.Up, _camera.PositionSpeed * 100);
+        else
+          _camera.Move(_camera.Up, _camera.PositionSpeed);
       if (InputManager.Keyboard.Adown)
-        _camera.Move(_camera.Left, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown)
+          _camera.Move(_camera.Left, _camera.PositionSpeed * 100);
+        else
+          _camera.Move(_camera.Left, _camera.PositionSpeed);
       if (InputManager.Keyboard.Wdown)
-        _camera.Move(_camera.Forward, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown)
+          _camera.Move(_camera.Forward, _camera.PositionSpeed * 100);
+        else
+          _camera.Move(_camera.Forward, _camera.PositionSpeed);
       if (InputManager.Keyboard.Sdown)
-        _camera.Move(_camera.Backward, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown)
+          _camera.Move(_camera.Backward, _camera.PositionSpeed * 100);
+        else
+          _camera.Move(_camera.Backward, _camera.PositionSpeed);
       if (InputManager.Keyboard.Ddown)
-        _camera.Move(_camera.Right, _camera.PositionSpeed);
+        if (InputManager.Keyboard.ShiftLeftdown)
+          _camera.Move(_camera.Right, _camera.PositionSpeed * 100);
+        else
+          _camera.Move(_camera.Right, _camera.PositionSpeed);
 
       // Camera look angle adjustment
       if (InputManager.Keyboard.Kdown)

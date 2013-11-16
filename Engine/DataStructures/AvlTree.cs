@@ -1,9 +1,9 @@
 ﻿// SEVENENGINE LISCENSE:
 // You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use with the following condition: any code using or originally taken from the 
-// SevenEngine project must include citation to its original author(s) located at the top of each
-// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
-// but you must include the current SevenEngine official website URL and logo.
+// including commercial use with the following condition: any code using or originally taken 
+// from the SevenEngine project must include citation to its original author(s) located at the
+// top of each source code file, or you may include a reference to the SevenEngine project as
+// a whole but you must include the current SevenEngine official website URL and logo.
 // - Thanks.  :)  (support: seven@sevenengine.com)
 
 // Author(s):
@@ -13,7 +13,7 @@
 //   - Contribution: The remove method.
 // Special Thanks:
 // - AVL Trees were originally invented by G. M. Adelson-Velskii and E. M. Landis in 1962
-// Last Edited: 10-27-13
+// Last Edited: 11-16-13
 
 // This file contains the following classes:
 // - AvlTree

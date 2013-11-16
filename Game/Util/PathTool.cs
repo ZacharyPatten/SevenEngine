@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+
 namespace Game
 {
   public class PathTool
@@ -10,16 +11,11 @@ namespace Game
       {
         String newPath = path.Trim().Replace("\\", Path.DirectorySeparatorChar.ToString());
         if (newPath[0] == '/')
-        {
           newPath = newPath.Remove(0, 1);
-        }
         return newPath;
       }
       else
-      {
         return Directory.GetCurrentDirectory() + path;
-      }
-      //return path;
     }
 
    
@@ -28,8 +24,5 @@ namespace Game
       int systemIdentifier = (int)Environment.OSVersion.Platform;
       return (systemIdentifier == 4) || (systemIdentifier == 6) || (systemIdentifier == 128);
     }
-
-       
   }
 }
-

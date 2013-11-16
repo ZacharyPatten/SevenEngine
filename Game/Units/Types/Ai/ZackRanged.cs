@@ -2,7 +2,7 @@
 
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
-using SevenEngine.Models;
+using SevenEngine.StaticModels;
 
 namespace Game.Units.Types.Ai
 {

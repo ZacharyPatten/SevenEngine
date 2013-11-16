@@ -3,7 +3,7 @@
 using SevenEngine;
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
-using SevenEngine.Models;
+using SevenEngine.StaticModels;
 using SevenEngine.Mathematics;
 
 namespace Game.States

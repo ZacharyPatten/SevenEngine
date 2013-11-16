@@ -1,7 +1,5 @@
 ﻿using System;
 
-using SevenEngine;
-
 namespace Game
 {
   static class Program

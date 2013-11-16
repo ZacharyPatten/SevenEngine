@@ -1,6 +1,6 @@
 ﻿using System;
 
-using SevenEngine.Models;
+using SevenEngine.StaticModels;
 
 namespace Game.Units
 {

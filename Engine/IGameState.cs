@@ -8,7 +8,7 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 10-26-13
+// Last Edited: 11-16-13
 
 using SevenEngine.DataStructures.Interfaces;
 
