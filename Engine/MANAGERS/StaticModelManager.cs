@@ -24,7 +24,7 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTree<StaticMesh>();
+    private static AvlTree<StaticMeshInstance> _staticMeshDatabase = new AvlTree<StaticMeshInstance>();
     private static AvlTree<StaticModel> _staticModelDatabase = new AvlTree<StaticModel>();
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
@@ -37,9 +37,9 @@ namespace SevenEngine
     /// <returns>The desired static mesh if it exists.</returns>
     public static StaticMesh GetMesh(string staticMeshId)
     {
-      StaticMesh mesh = _staticMeshDatabase.Get(staticMeshId);
+      StaticMeshInstance mesh = _staticMeshDatabase.Get(staticMeshId);
       mesh.ExistingReferences++;
-      return mesh;
+      return new StaticMesh(mesh.Id, null, mesh);
     }
 
     /// <summary>Gets a static model you loaded that you have loaded.</summary>
@@ -48,16 +48,16 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      List<StaticModelMesh> meshes = modelToGet.Meshes.Clone(PullOutModelComponents);
+      List<StaticMesh> meshes = modelToGet.Meshes.Clone(PullOutModelComponents);
       return new StaticModel(modelToGet.Id, meshes);
     }
 
     /// <summary>This function is used as a delegate to determine the cloning process of static model meshes.</summary>
-    private static StaticModelMesh PullOutModelComponents(StaticModelMesh staticModelMesh)
+    private static StaticMesh PullOutModelComponents(StaticMesh staticModelMesh)
     {
       staticModelMesh.Texture.ExistingReferences++;
-      staticModelMesh.StaticMesh.ExistingReferences++;
-      return new StaticModelMesh(staticModelMesh.Id, staticModelMesh.Texture, staticModelMesh.StaticMesh);
+      staticModelMesh.StaticMeshInstance.ExistingReferences++;
+      return new StaticMesh(staticModelMesh.Id, staticModelMesh.Texture, staticModelMesh.StaticMeshInstance);
     }
 
     #region Parsers
@@ -90,38 +90,39 @@ namespace SevenEngine
     public static void RemoveModel(string staticMeshId)
     {
       // Get the struct with the GPU mappings.
-      StaticMesh removal = GetMesh(staticMeshId);
+      StaticMesh mesh = GetMesh(staticMeshId);
+      StaticMeshInstance meshInstance = mesh.StaticMeshInstance;
 
       // If the game tries to remove a texture that still has active references then
         // lets warn them.
-      if (removal.ExistingReferences > 1)
+      if (meshInstance.ExistingReferences > 1)
         Output.WriteLine("WARNING: texture removal \"" + staticMeshId + "\" still has active references.");
 
       // Delete the vertex buffer if it exists.
-      int vertexBufferId = removal.VertexBufferHandle;
+      int vertexBufferId = meshInstance.VertexBufferHandle;
       if (vertexBufferId != 0)
         GL.DeleteBuffers(1, ref vertexBufferId);
       // Delete the normal buffer if it exists.
-      int normalbufferId = removal.NormalBufferHandle;
+      int normalbufferId = meshInstance.NormalBufferHandle;
       if (normalbufferId != 0)
         GL.DeleteBuffers(1, ref normalbufferId);
       // Delete the color buffer if it exists.
-      int colorBufferId = removal.ColorBufferHandle;
+      int colorBufferId = meshInstance.ColorBufferHandle;
       if (colorBufferId != 0)
         GL.DeleteBuffers(1, ref colorBufferId);
       // Delete the texture coordinate buffer if it exists.
-      int textureCoordinateBufferId = removal.TextureCoordinateBufferHandle;
+      int textureCoordinateBufferId = meshInstance.TextureCoordinateBufferHandle;
       if (textureCoordinateBufferId != 0)
         GL.DeleteBuffers(1, ref textureCoordinateBufferId);
       // Delete the element buffer if it exists.
-      int elementBufferId = removal.ElementBufferHandle;
+      int elementBufferId = meshInstance.ElementBufferHandle;
       if (elementBufferId != 0)
         GL.DeleteBuffers(1, ref elementBufferId);
       // Now we can remove it from the dictionary.
       _staticMeshDatabase.Remove(staticMeshId);
     }
 
-    private static StaticMesh LoadObj(string staticMeshId, string filePath)
+    private static StaticMeshInstance LoadObj(string staticMeshId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
       // Its better to use "ListArrays" vs "Lists" because they will be accessed by indeces
@@ -320,7 +321,7 @@ namespace SevenEngine
       }
       else { normalBufferId = 0; }
 
-      return new StaticMesh(
+      return new StaticMeshInstance(
         filePath,
         staticMeshId,
         vertexBufferId,
@@ -342,7 +343,7 @@ namespace SevenEngine
       Texture texture = null;
       string meshName = "defaultMeshName";
 
-      List<StaticModelMesh> meshes = new List<StaticModelMesh>();
+      List<StaticMesh> meshes = new List<StaticMesh>();
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))
@@ -564,10 +565,10 @@ namespace SevenEngine
               else { normalBufferId = 0; }
 
               meshes.Add(
-                new StaticModelMesh(
+                new StaticMesh(
                   meshName,
                   texture,
-                  new StaticMesh(
+                  new StaticMeshInstance(
                   filePath,
                   staticModelId + "sub" + meshes.Count,
                   vertexBufferId,

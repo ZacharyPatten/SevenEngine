@@ -7,10 +7,8 @@ namespace Game
     [STAThread]
     static void Main()
     {
-      using (Game game = new Game())
-      {
-        game.Run();
-      }
+      // you can select the starting window size here
+      using (Game game = new Game(800, 600)) { game.Run(); }
     }
   }
 }

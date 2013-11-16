@@ -61,7 +61,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithms\Sorting.cs" />
+    <Compile Include="DataStructures\Algorithms\Sorting.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
@@ -75,8 +75,19 @@
     <Compile Include="Mathematics\Foundations.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Mathematics\Trigonometry.cs" />
-    <Compile Include="Physics\Primitives\PrimitiveMovelDatabase.cs" />
+    <Compile Include="Physics\InterfaceGas.cs" />
+    <Compile Include="Physics\InterfaceLiquid.cs" />
+    <Compile Include="Physics\InterfacePlasma.cs" />
+    <Compile Include="Physics\InterfaceSolid.cs" />
+    <Compile Include="Physics\Shapes\Cone.cs" />
+    <Compile Include="Physics\Shapes\Cube.cs" />
+    <Compile Include="Physics\Shapes\Cylinder.cs" />
+    <Compile Include="Physics\Shapes\RectangularPrism.cs" />
+    <Compile Include="Physics\Shapes\Sphere.cs" />
+    <Compile Include="Physics\Shapes\TriangularPrism.cs" />
+    <Compile Include="Physics\Shapes\TriangularPyramid.cs" />
     <Compile Include="StaticModels\StaticMesh.cs" />
+    <Compile Include="StaticModels\StaticMeshInstance.cs" />
     <Compile Include="StaticModels\StaticModel.cs" />
     <Compile Include="MANAGERS\PhysicsManager.cs" />
     <Compile Include="SevenEngineWindow.cs" />
@@ -86,6 +97,7 @@
     <Compile Include="Shaders\GeometryShader.cs" />
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="Shaders\VertexShader.cs" />
+    <Compile Include="UTILITIES\FilePath.cs" />
     <Compile Include="UTILITIES\SkyBox.cs" />
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
@@ -106,8 +118,8 @@
     <Compile Include="UTILITIES\PreciseTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UTILITIES\Renderer.cs" />
-    <Compile Include="Sounds\Sound.cs" />
-    <Compile Include="MANAGERS\SoundManager.cs" />
+    <Compile Include="Audio\Sound.cs" />
+    <Compile Include="MANAGERS\AudioManager.cs" />
     <Compile Include="Imaging\Sprite.cs" />
     <Compile Include="MANAGERS\StateManager.cs" />
     <Compile Include="Texts\Text.cs" />

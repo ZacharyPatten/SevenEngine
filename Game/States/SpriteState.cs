@@ -11,7 +11,10 @@ namespace Game.States
   public class SpriteState : IGameState
   {
     private string _id;
+    private bool _isReady;
+
     public string Id { get { return _id; } set { _id = value; } }
+    public bool IsReady { get { return _isReady; } }
 
     Camera _camera;
     Sprite _sprites;
@@ -24,7 +27,11 @@ namespace Game.States
     public SpriteState(string id)
     {
       _id = id;
+      _isReady = false;
+    }
 
+    public void Load()
+    {
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);
@@ -45,6 +52,8 @@ namespace Game.States
       _sprites3 = new Sprite(TextureManager.Get("Menu"));
       _sprites3.Scale.X = 50;
       _sprites3.Scale.Y = 50;
+
+      _isReady = true;
     }
 
     public void Render()

@@ -12,7 +12,7 @@
 
 using OpenTK.Input;
 
-namespace SevenEngine
+namespace SevenEngine.Input
 {
   /// <summary>Manages mouse input using a state system consisting of two states.</summary>
   public class Mouse

@@ -14,9 +14,12 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine
 {
+  /// <summary>INHERIT ME!</summary>
   public interface IGameState : InterfaceStringId
   {
     string Id { get; set; }
+    bool IsReady { get; }
+    void Load();
     string Update(float elapsedTime);
     void Render();
   }

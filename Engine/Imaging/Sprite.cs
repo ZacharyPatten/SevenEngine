@@ -11,7 +11,6 @@
 // Last Edited: 11-16-13
 
 using System;
-
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 

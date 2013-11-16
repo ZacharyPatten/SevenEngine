@@ -11,7 +11,10 @@ namespace Game.States
   public class StaticModelState : IGameState
   {
     private string _id;
+    private bool _isReady;
+
     public string Id { get { return _id; } set { _id = value; } }
+    public bool IsReady { get { return _isReady; } }
 
     Camera _camera;
 
@@ -26,7 +29,11 @@ namespace Game.States
     public StaticModelState(string id)
     {
       _id = id;
+      _isReady = false;
+    }
 
+    public void Load()
+    {
       // Creates a camera and sets the initial positions
       _camera = new Camera();
       _camera.PositionSpeed = 5;
@@ -77,6 +84,7 @@ namespace Game.States
       _RedRangerTwo.Scale = new Vector(20, 20, 20);
       _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
 
+      _isReady = true;
     }
 
     public void Render()

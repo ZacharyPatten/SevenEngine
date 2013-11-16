@@ -58,7 +58,6 @@
     <Compile Include="Units\Types\Melee.cs" />
     <Compile Include="Units\Types\Ranged.cs" />
     <Compile Include="Units\Unit.cs" />
-    <Compile Include="Util\PathTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

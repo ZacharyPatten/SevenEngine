@@ -19,32 +19,6 @@ using SevenEngine.Shaders;
 
 namespace SevenEngine.StaticModels
 {
-  #region StaticModelMesh
-
-  /// <summary>Represents a small wrapper for static meshes that adds a texture reference, and string id.
-  /// The reason for this wrapper is for possible dismemberment from its StaticModel.</summary>
-  public class StaticModelMesh : InterfaceStringId
-  {
-    private string _id;
-    private Texture _texture;
-    private StaticMesh _staticMesh;
-
-    public string Id { get { return _id; } set { _id = value; } }
-    public Texture Texture { get { return _texture; } set { _texture = value; } }
-    public StaticMesh StaticMesh { get { return _staticMesh; } set { _staticMesh = value; } }
-
-    public StaticModelMesh(string id, Texture texture, StaticMesh staticMesh)
-    {
-      _id = id;
-      _texture = texture;
-      _staticMesh = staticMesh;
-    }
-  }
-
-  #endregion
-
-  #region StaticModel
-
   /// <summary>Represents a collection of static meshes that all use the same model-view matrix.</summary>
   public class StaticModel : InterfaceStringId, InterfacePositionVector
   {
@@ -53,10 +27,10 @@ namespace SevenEngine.StaticModels
     protected Vector _scale;
     protected Quaternion _orientation;
     protected ShaderProgram _shaderOverride;
-    protected List<StaticModelMesh> _meshes;
+    protected List<StaticMesh> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public List<StaticModelMesh> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public List<StaticMesh> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
@@ -91,7 +65,7 @@ namespace SevenEngine.StaticModels
     {
       _id = "From Scratch";
       _shaderOverride = null;
-      _meshes = new List<StaticModelMesh>();
+      _meshes = new List<StaticMesh>();
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
       _orientation = Quaternion.FactoryIdentity;
@@ -109,10 +83,10 @@ namespace SevenEngine.StaticModels
 
       _id = staticModelId;
       //_meshes = new ListArray<Link<Texture, StaticMesh>>(10);
-      _meshes = new List<StaticModelMesh>();
+      _meshes = new List<StaticMesh>();
 
       for (int i = 0; i < textures.Length; i++)
-        _meshes.Add(new StaticModelMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i])));
+        _meshes.Add(new StaticMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i]).StaticMeshInstance));
 
       _shaderOverride = null;
       _position = new Vector(0, 0, 0);
@@ -123,7 +97,7 @@ namespace SevenEngine.StaticModels
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, List<StaticModelMesh> meshes)
+    internal StaticModel(string staticModelId, List<StaticMesh> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;
@@ -133,6 +107,4 @@ namespace SevenEngine.StaticModels
       _orientation = Quaternion.FactoryIdentity;
     }
   }
-
-  #endregion
 }

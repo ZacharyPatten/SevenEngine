@@ -19,7 +19,6 @@ namespace SevenEngine
   public static class StateManager
   {
     private static AvlTree<IGameState> _stateDatabase = new AvlTree<IGameState>();
-
     private static IGameState _currentState = null;
 
     /// <summary>Calls the "Update()" function for the current state relative to the timespan since the last update in SECONDS.</summary>
@@ -35,6 +34,21 @@ namespace SevenEngine
     {
       if (_currentState == null) return;
       _currentState.Render();
+    }
+
+    /// <summary>Gets a reference to a state.</summary>
+    /// <param name="stateId">The name associated with that desired state.</param>
+    /// <returns>The desired state.</returns>
+    public static IGameState GetState(string stateId) { return _stateDatabase.Get(stateId); }
+
+    /// <summary>Tries to get a desired state, but returns a bool rather than crashing.</summary>
+    /// <param name="stateId">The name of the state to get.</param>
+    /// <param name="state">The reference to the state.</param>
+    /// <returns>Whether or not it could get the value.</returns>
+    public static bool TryGet(string stateId, out IGameState state)
+    {
+      try { state = _stateDatabase.Get(stateId); return true; }
+      catch { state = null; return false; }
     }
 
     /// <summary>Adds a game state to the game</summary>
@@ -55,19 +69,29 @@ namespace SevenEngine
       }
     }
 
+    /// <summary>Triggers the load method of a state.</summary>
+    /// <param name="stateId">The name of the state to trigger the Load.</param>
+    public static void TriggerStateLoad(string stateId) { _stateDatabase.Get(stateId).Load(); }
+
     /// <summary>Select the current state to be updated and rendered.</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     public static void ChangeState(string stateId)
     {
-      if (!StateExists(stateId))
+      IGameState state;
+      if (!TryGet(stateId, out state))
       {
         Output.ClearIndent();
-        Output.WriteLine("ERROR!\nStateSystem.cs\\ChangeState(): " + stateId + "does not exits.");
-        throw new StateSystemException("ERROR!\nStateSystem.cs\\ChangeState(): " + stateId + " does not exits.");
+        Output.WriteLine("ERROR: state \"" + stateId + "\" does not exits.");
+        throw new StateSystemException("Attempting to change states to a non-existent state \"" + stateId + "\".");
+      }
+      else if (!state.IsReady)
+      {
+        Output.ClearIndent();
+        Output.WriteLine("ERROR: state \"" + stateId + "\" is not ready to become the current state.");
+        throw new StateSystemException("Attempting to change states to a state that has not been fully loaded \"" + stateId + "\".");
       }
       else
       {
-        //_currentState = _stateDatabase[stateId];
         _currentState = _stateDatabase.Get(stateId);
         Output.WriteLine("\"" + stateId + "\" state selected;");
       }
@@ -78,7 +102,6 @@ namespace SevenEngine
     /// <returns>"true if the state exists. "false""</returns>
     public static bool StateExists(string stateId)
     {
-      //return _stateDatabase.ContainsKey(stateId);
       return _stateDatabase.Contains(stateId);
     }
 

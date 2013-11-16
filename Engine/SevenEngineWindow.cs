@@ -18,12 +18,13 @@ using SevenEngine.Imaging;
 
 namespace SevenEngine
 {
+  /// <summary>INHERIT ME!</summary>
   public abstract class SevenEngineWindow : GameWindow
   {
     // This timer calculates the time between updates in SECONDS.
     protected PreciseTimer _timer;
 
-    public SevenEngineWindow() : base(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Game")
+    public SevenEngineWindow(int width, int height) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, "Game")
     {
       Output.WriteLine("GAME INITIALIZATION {");
       Output.IncreaseIndent();

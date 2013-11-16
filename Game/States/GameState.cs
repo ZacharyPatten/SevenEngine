@@ -11,8 +11,12 @@ namespace Game.States
   public class GameState : IGameState
   {
     private string _id;
+    private bool _isReady;
 
     public string Id { get { return _id; } set { _id = value; } }
+    public bool IsReady { get { return _isReady; } }
+
+    #region State Fields
 
     Octree<StaticModel> _octree = new Octree<StaticModel>(0, 0, 0, 1000000, 10);
 
@@ -25,13 +29,20 @@ namespace Game.States
     StaticModel _mushroomCloud;
     float _time;
     bool _bool;
-
     SkyBox _skybox;
+
+    #endregion
 
     public GameState(string id)
     {
       _id = id;
+      _isReady = false;
+    }
 
+    #region Loading
+
+    public void Load()
+    {
       _camera = new Camera();
       _camera.PositionSpeed = 5;
       _camera.Move(_camera.Up, 400);
@@ -103,7 +114,7 @@ namespace Game.States
         _octree.Add(_tuxes[i]);
       }
 
-      for (int i = 0; i < _rangers.Length; i+=2)
+      for (int i = 0; i < _rangers.Length; i += 2)
       {
         _rangers[i].Meshes.Remove("Body");
         //_octree.Remove("Ranger" + i);
@@ -111,29 +122,32 @@ namespace Game.States
       }
 
       Renderer.Font = TextManager.GetFont("Calibri");
+
+      // ONCE YOU ARE DONE LOADING, BE SURE TO SET YOUR READY 
+      // PROPERTY TO TRUE SO MY ENGINE DOESN'T SCREAM AT YOU
+      _isReady = true;
     }
+
+    #endregion
+
+    #region Rendering
 
     public void Render()
     {
+      // RENDER YOUR GAME HERE
+      // Use the static class "Renderer"
+      // EXAMPLES:
+        // Renderer.CurrentCamera = cameraYouWantToUse;
+        //
+
       Renderer.CurrentCamera = _camera;
 
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
-      Renderer.SetProjectionMatrix();
+      //Renderer.SetProjectionMatrix();
 
       List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
       items.Foreach(RenderModel);
 
-      /*if (InputManager.Keyboard.Vdown)
-      {
-        foreach (StaticModel model in _rangers)
-          Renderer.AddStaticModel(model);
-        Renderer.Render();
-      }
-      else
-      {
-        foreach (StaticModel model in _rangers)
-          Renderer.DrawStaticModel(model);
-      }*/
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
       Renderer.DrawStaticModel(_mountain);
@@ -143,6 +157,10 @@ namespace Game.States
       if (_mushroomCloud.Scale.X > 0 && _bool)
         Renderer.DrawStaticModel(_mushroomCloud);
 
+      // EXAMPLE:
+        // Renderer.RenderText("whatToWrite", x, y, size, rotation, color);
+      // NOTE: color doesn't work yet, and the size is relative to the size of the character
+        // on the sprite sheet (I'll fix that as soon as I can)
       Renderer.RenderText("Welcome To", 0f, .95f, .5f, 0f, Color.Black);
       Renderer.RenderText("SevenEngine!", 0f, .85f, .5f, 0f, Color.Black);
 
@@ -156,6 +174,10 @@ namespace Game.States
     {
       Renderer.DrawStaticModel(model);
     }
+
+    #endregion
+
+    #region Updating
 
     public string Update(float elapsedTime)
     {
@@ -231,5 +253,7 @@ namespace Game.States
       if (InputManager.Keyboard.Ldown)
         _camera.RotateY(-.01f);
     }
+
+    #endregion
   }
 }

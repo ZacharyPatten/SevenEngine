@@ -311,11 +311,11 @@ namespace SevenEngine
       staticModel.Meshes.Foreach(DrawStaticModelPart);
     }
 
-    private static void DrawStaticModelPart(StaticModelMesh subStaticModel)
+    private static void DrawStaticModelPart(StaticMesh subStaticModel)
     {
       // Make sure something will render
-      if (subStaticModel.StaticMesh.VertexBufferHandle == 0 ||
-        (subStaticModel.StaticMesh.ColorBufferHandle == 0 && subStaticModel.StaticMesh.TextureCoordinateBufferHandle == 0))
+      if (subStaticModel.StaticMeshInstance.VertexBufferHandle == 0 ||
+        (subStaticModel.StaticMeshInstance.ColorBufferHandle == 0 && subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle == 0))
         return;
 
       // Push current Array Buffer state so we can restore it later
@@ -324,10 +324,10 @@ namespace SevenEngine
       if (GL.IsEnabled(EnableCap.Lighting))
       {
         // Normal Array Buffer
-        if (subStaticModel.StaticMesh.NormalBufferHandle != 0)
+        if (subStaticModel.StaticMeshInstance.NormalBufferHandle != 0)
         {
           // Set up normals
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.NormalBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.NormalBufferHandle);
           GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
           GL.EnableClientState(ArrayCap.NormalArray);
         }
@@ -335,21 +335,21 @@ namespace SevenEngine
       else
       {
         // Color Array Buffer
-        if (subStaticModel.StaticMesh.ColorBufferHandle != 0)
+        if (subStaticModel.StaticMeshInstance.ColorBufferHandle != 0)
         {
           // Set up colors
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.ColorBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.ColorBufferHandle);
           GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
           GL.EnableClientState(ArrayCap.ColorArray);
         }
       }
 
       // Texture Array Buffer
-      if (GL.IsEnabled(EnableCap.Texture2D) && subStaticModel.StaticMesh.TextureCoordinateBufferHandle != 0)
+      if (GL.IsEnabled(EnableCap.Texture2D) && subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle != 0)
       {
         // Select the texture and set up texture coordinates
         GL.BindTexture(TextureTarget.Texture2D, subStaticModel.Texture.GpuHandle);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.TextureCoordinateBufferHandle);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle);
         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
         GL.EnableClientState(ArrayCap.TextureCoordArray);
       }
@@ -358,23 +358,23 @@ namespace SevenEngine
         return;
 
       // Set up verteces
-      GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMesh.VertexBufferHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.VertexBufferHandle);
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       GL.EnableClientState(ArrayCap.VertexArray);
 
-      if (subStaticModel.StaticMesh.ElementBufferHandle != 0)
+      if (subStaticModel.StaticMeshInstance.ElementBufferHandle != 0)
       {
         // Set up indeces
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subStaticModel.StaticMesh.ElementBufferHandle);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subStaticModel.StaticMeshInstance.ElementBufferHandle);
         GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
         GL.EnableClientState(ArrayCap.IndexArray);
         
         // Ready to render using an index buffer
-        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMesh.VertexCount, DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMeshInstance.VertexCount, DrawElementsType.UnsignedInt, 0);
       }
       else
         // Ready to render
-        GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.StaticMesh.VertexCount);
+        GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.StaticMeshInstance.VertexCount);
 
       GL.PopClientAttrib();
     }

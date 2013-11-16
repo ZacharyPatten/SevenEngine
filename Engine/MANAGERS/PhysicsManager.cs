@@ -14,8 +14,8 @@ using System;
 
 namespace SevenEngine
 {
-  /// <summary>PhysicsManager is still in development...</summary>
-  public class PhysicsManager
+  /// <summary>PhysicsManager is used for physics management (collisions, gravity, destruction, etc).</summary>
+  internal class PhysicsManager
   {
   }
 }

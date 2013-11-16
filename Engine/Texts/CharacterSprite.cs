@@ -43,6 +43,9 @@ namespace SevenEngine.Texts
     internal int VertexCount { get { return _vertexCount; } }
     /// <summary>Get and set the texture the sprite is mapping to.</summary>
     internal Texture Texture { get { return _texture; } set { _texture = value; } }
+
+    // These are font specific values.
+    // Look up documentation on fnt files for more info.
     internal int Id { get { return _id; } }
     internal int XAdvance { get { return _xAdvance; } }
     internal int XOffset { get { return _xOffset; } }
@@ -112,9 +115,7 @@ namespace SevenEngine.Texts
     }
 
     internal void AddKearning(int followingCharacter, int ammount)
-    {
-      _kearnings.Add(new Link2<int,int>(followingCharacter, ammount));
-    }
+    { _kearnings.Add(new Link2<int,int>(followingCharacter, ammount)); }
 
     internal int CheckKearning(int followinCharacter)
     {
