@@ -36,7 +36,7 @@ namespace SevenEngine.Texts
     private int _originalHeight;
 
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
-    internal int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
+    internal static int GpuVertexBufferHandle { get { return _gpuVertexBufferHandle; } }
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GPUTextureCoordinateBufferHandle { get { return _gpuTextureMappingBufferHandle; } }
     /// <summary>Returns 6, because character sprites always have 6 verteces.</summary>

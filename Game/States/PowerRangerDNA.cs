@@ -143,10 +143,11 @@ namespace Game.States
       if (_mushroomCloud.Scale.X > 0 && _bool)
         Renderer.DrawStaticModel(_mushroomCloud);
 
-      //Renderer.RenderText("WELCOME TO", -300f, 50f, 22f, 30f, Color.Black);
-      //Renderer.RenderText("SEVENENGINE", -300f, 0f, 22f, 30f, Color.Black);
-      Renderer.RenderText("WELCOME TO", 0f, .8f, 1.2f, 0f, Color.Black);
-      Renderer.RenderText("SEVENENGINE", 0f, .6f, 1.2f, 0f, Color.Black);
+      Renderer.RenderText("Welcome To", 0f, .8f, .5f, 0f, Color.Black);
+      Renderer.RenderText("SevenEngine!", 0f, .7f, .5f, 0f, Color.Black);
+
+      //Renderer.RenderText("Welcome To", 0f, .8f, 100f, 0f, Color.Black);
+      //Renderer.RenderText("SevenEngine!", 0f, .6f, 100f, 0f, Color.Black);
     }
 
     private void RenderModel(StaticModel model)

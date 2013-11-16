@@ -20,6 +20,8 @@ using SevenEngine.Shaders;
 
 namespace SevenEngine.Models
 {
+  #region StaticMesh
+
   /// <summary>Represents a single mesh that has been loaded on the GPU. multiple references of this class SHOULD exist,
   /// because each reference of this class means another hardware instance. Hardware instancing is when you re-use the
   /// same buffers on the GPU, which is good for both speed and memory space.</summary>
@@ -86,6 +88,10 @@ namespace SevenEngine.Models
     }
   }
 
+  #endregion
+
+  #region StaticModelMesh
+
   public class StaticModelMesh : InterfaceStringId
   {
     private string _id;
@@ -103,6 +109,10 @@ namespace SevenEngine.Models
       _staticMesh = staticMesh;
     }
   }
+
+  #endregion
+
+  #region StaticModel
 
   /// <summary>Represents a collection of static meshes that all use the same transformational matrices. Multiples references to the same 
   /// StaticModel should not exists because the contents are NOT being hardware instanced on the GPU.</summary>
@@ -193,4 +203,6 @@ namespace SevenEngine.Models
       _orientation = Quaternion.FactoryIdentity;
     }
   }
+
+  #endregion
 }
