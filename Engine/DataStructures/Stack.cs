@@ -13,6 +13,7 @@
 // This file contains the following classes:
 // - Stack
 //   - StackNode
+//   - StackEnumerator
 //   - StackException
 
 using System;
@@ -21,7 +22,7 @@ namespace SevenEngine.DataStructures
 {
   #region Stack
 
-  /// <summary>Implements a first in first out stack data structure.</summary>
+  /// <summary>Implements a First-In-Last-Out stack data structure.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the stack.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
@@ -98,6 +99,40 @@ namespace SevenEngine.DataStructures
     {
       _top = null;
       _count = 0;
+    }
+
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this AvlTree class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new StackEnumerator(_top); }
+    private class StackEnumerator : System.Collections.IEnumerator
+    {
+      private StackNode _head;
+      private StackNode _current;
+
+      public StackEnumerator(StackNode node) { _head = node; _current = new StackNode(default(Type), _head); }
+
+      public object Current { get { return _current.Value; } }
+      public void Reset() { _current = _head; }
+      public bool MoveNext()
+      { if (_current.Down != null) { _current = _current.Down; return true; } return false; }
+    }
+
+    /// <summary>Converts the list into a standard array.</summary>
+    /// <returns>A standard array of all the items.</returns>
+    /// /// <remarks>Runtime: Theta(n).</remarks>
+    public Type[] ToArray()
+    {
+      if (_count == 0)
+        return null;
+      Type[] array = new Type[_count];
+       StackNode looper = _top;
+      for (int i = 0; i < _count; i++)
+      {
+        array[i] = looper.Value;
+        looper = looper.Down;
+      }
+      return array;
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>

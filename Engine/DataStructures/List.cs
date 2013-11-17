@@ -162,7 +162,7 @@ namespace SevenEngine.DataStructures
 
       public ListEnumerator(ListNode node)
       {
-        _head = _current = node;
+        _head = node;
         _current = new ListNode(default(Type));
         _current.Next = _head;
       }

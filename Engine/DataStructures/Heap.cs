@@ -28,7 +28,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags. 
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class HeapArray<Type>
+  public class HeapArray<Type> : System.Collections.IEnumerable
   {
     #region HeapArrayLink
 
@@ -183,6 +183,35 @@ namespace SevenEngine.DataStructures
       }
     }
 
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this AvlTree class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new HeapEnumerator(this); }
+    // THIS COUL BE DONE MORE EFFICIENTLY! It will require stacks to 
+    // track the traversal of the tree.
+    private class HeapEnumerator : System.Collections.IEnumerator
+    {
+      private Type[] _array;
+      private int _position;
+
+      public HeapEnumerator(HeapArray<Type> heap) { _array = heap.ToArray(); _position = -1; }
+
+      public object Current { get { return _array[_position]; } }
+      public bool MoveNext() { if (_position++ < _array.Length) return true; return false; }
+      public void Reset() { _position = -1; }
+    }
+
+    public Type[] ToArray() { Type[] array = new Type[_count]; ToArray(array, 1, 0); return array; }
+    private void ToArray(Type[] array, int node, int position)
+    {
+      if (node < _count + 1)
+      {
+        array[position++] = _queueArray[node].Value;
+        ToArray(array, node * 2, position);
+        ToArray(array, node * 2 + 1, position);
+      }
+    }
+
     /// <summary>This is used for throwing imutable priority queue exceptions only to make debugging faster.</summary>
     private class HeapArrayStaticException : Exception { public HeapArrayStaticException(string message) : base(message) { } }
   }
@@ -195,7 +224,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class HeapArrayDynamic<Type>
+  public class HeapArrayDynamic<Type> : System.Collections.IEnumerable
   {
     #region HeapArrayDynamicLink
 
@@ -379,6 +408,34 @@ namespace SevenEngine.DataStructures
         traversalFunction(_queueArray[index].Priority, _queueArray[index].Value);
         Traversal(traversalFunction, index * 2);
         Traversal(traversalFunction, index * 2 + 1);
+      }
+    }
+
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this heap class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new HeapEnumerator(this); }
+    // THIS COUL BE DONE MORE EFFICIENTLY!
+    private class HeapEnumerator : System.Collections.IEnumerator
+    {
+      private Type[] _array;
+      private int _position;
+
+      public HeapEnumerator(HeapArrayDynamic<Type> heap) { _array = heap.ToArray(); _position = -1; }
+
+      public object Current { get { return _array[_position]; } }
+      public bool MoveNext() { if (_position++ < _array.Length) return true; return false; }
+      public void Reset() { _position = -1; }
+    }
+
+    public Type[] ToArray() { Type[] array = new Type[_count]; ToArray(array, 1, 0); return array; }
+    private void ToArray(Type[] array, int node, int position)
+    {
+      if (node < _count + 1)
+      {
+        array[position++] = _queueArray[node].Value;
+        ToArray(array, node * 2, position);
+        ToArray(array, node * 2 + 1, position);
       }
     }
 

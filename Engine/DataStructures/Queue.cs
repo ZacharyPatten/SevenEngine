@@ -13,6 +13,7 @@
 // This file contains the following classes:
 // - Queue
 //   - QueueNode
+//   - QueueEnumerator
 //   - QueueException
 
 using System;
@@ -21,37 +22,30 @@ namespace SevenEngine.DataStructures
 {
   #region Queue
 
-  /// <summary>Implements a first in last out queue data structure.</summary>
-  /// <typeparam name="Type">The type of objects to be placed in the queue.</typeparam>
+  /// <summary>Implements First-In-First-Out queue data structure.</summary>
+  /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class Queue<Type>
+  public class Queue<Type> : System.Collections.IEnumerable
   {
     #region QueueNode
 
-    /// <summary>This class just holds the data for each individual node of the queue.</summary>
+    /// <summary>This class just holds the data for each individual node of the list.</summary>
     private class QueueNode
     {
       private Type _value;
-      private QueueNode _previous;
       private QueueNode _next;
 
       internal Type Value { get { return _value; } set { _value = value; } }
-      internal QueueNode Previous { get { return _previous; } set { _previous = value; } }
       internal QueueNode Next { get { return _next; } set { _next = value; } }
 
-      internal QueueNode(Type data, QueueNode previous, QueueNode next) 
-      {
-        _value = data;
-        _previous = previous;
-        _next = next;
-      }
+      internal QueueNode(Type data) { _value = data; }
     }
 
     #endregion
 
-    private QueueNode _front;
-    private QueueNode _back;
+    private QueueNode _head;
+    private QueueNode _tail;
     private int _count;
 
     /// <summary>Returns the number of items in the queue.</summary>
@@ -62,53 +56,97 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public Queue()
     {
-      _front = new QueueNode(default(Type), null, null);
-      _back = new QueueNode(default(Type), null, null);
-      _front.Next = _back;
-      _back.Previous = _front;
+      _head = _tail = null;
       _count = 0;
     }
 
-    /// <summary>Adds an item to the queue.</summary>
-    /// <param name="addition">The item to add to the queue.</param>
+    /// <summary>Adds an item to the back of the queue.</summary>
+    /// <param name="enqueue">The item to add to the queue.</param>
     /// <remarks>Runtime: O(1).</remarks>
-    public void Enqueue(Type addition)
+    public void Enqueue(Type enqueue)
     {
-      QueueNode cell = new QueueNode(addition, _back.Previous, _back);
-      _back.Previous = cell;
-      cell.Previous.Next = cell;
+      if (_tail == null)
+        _head = _tail = new QueueNode(enqueue);
+      else
+        _tail = _tail.Next = new QueueNode(enqueue);
       _count++;
     }
 
-    /// <summary>Returns the oldest item in the queue without removing it.</summary>
-    /// <returns>The oldest item in the queue.</returns>
-    /// <remarks>Runtime: O(1).</remarks>
-    public Type Peek()
-    {
-      if (_count == 0)
-        throw new QueueException("Attempting to remove from an empty queue.");
-      return _front.Next.Value;
-    }
-
-    /// <summary>Removes and returns the oldest item in the queue.</summary>
-    /// <returns>The oldest item in the queue.</returns>
+    /// <summary>Removes the oldest item in the queue.</summary>
     /// <remarks>Runtime: O(1).</remarks>
     public Type Dequeue()
     {
-      Type x = Peek();
-      _front.Next = _front.Next.Next;
-      _front.Next.Previous = _front;
+      if (_head == null)
+        throw new QueueException("Attempting to remove a non-existing id value.");
+      Type value = _head.Value;
+      if (_head == _tail)
+        _tail = null;
+      _head = null;
       _count--;
-      return x;
+      return value;
     }
 
-    /// <summary>Clears the queue to an empty state.</summary>
-    /// <remarks>Runtime: O(1), but causes considerably garbage collection.</remarks>
+    /// <summary>Resets the queue to an empty state.</summary>
     public void Clear()
     {
-      _front.Next = _back;
-      _back.Previous = _front;
+      _head = _tail = null;
       _count = 0;
+    }
+
+    /// <summary>A function to be used in a foreach loop.</summary>
+    /// <param name="id">The id of the current node.</param>
+    /// <param name="node">The current node of a foreach loop.</param>
+    public delegate void ForeachFunction(Type node);
+    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <param name="foreachFunction">The function within a foreach loop.</param>
+    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
+    public void Foreach(ForeachFunction foreachFunction)
+    {
+      QueueNode looper = _head;
+      while (looper != null)
+      {
+        foreachFunction(looper.Value);
+        looper = looper.Next;
+      }
+    }
+
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this AvlTree class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new ListEnumerator(_head); }
+    private class ListEnumerator : System.Collections.IEnumerator
+    {
+      private QueueNode _head;
+      private QueueNode _current;
+
+      public ListEnumerator(QueueNode node)
+      {
+        _head = node;
+        _current = new QueueNode(default(Type));
+        _current.Next = _head;
+      }
+
+      public object Current { get { return _current.Value; } }
+      public void Reset() { _current = _head; }
+      public bool MoveNext()
+      { if (_current.Next != null) { _current = _current.Next; return true; } return false; }
+    }
+
+    /// <summary>Converts the list into a standard array.</summary>
+    /// <returns>A standard array of all the items.</returns>
+    /// /// <remarks>Runtime: Theta(n).</remarks>
+    public Type[] ToArray()
+    {
+      if (_count == 0)
+        return null;
+      Type[] array = new Type[_count];
+      QueueNode looper = _head;
+      for (int i = 0; i < _count; i++)
+      {
+        array[i] = looper.Value;
+        looper = looper.Next;
+      }
+      return array;
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
