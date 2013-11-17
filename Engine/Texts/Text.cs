@@ -17,8 +17,22 @@ using SevenEngine.DataStructures;
 
 namespace SevenEngine.Texts
 {
-  //public class Text
-  //{
+  /// <summary>Represents a message to be rendered, along with its font, color, and transformational attributes.</summary>
+  public class Text
+  {
+    Font _font;
+    string _message;
+    int _scale;
+    Vector _position;
+    Quaternion _orientation;
+    Color _color;
+
+    
+
+
+
+
+
   //  Font _font;
   //  ListArray<CharacterSprite> _bitmapText = new ListArray<CharacterSprite>(10);
   //  string _text;
@@ -109,5 +123,5 @@ namespace SevenEngine.Texts
   //  {
   //    CreateText(x, y);
   //  }
-  //}
+  }
 }

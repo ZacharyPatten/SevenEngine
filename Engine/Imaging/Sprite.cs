@@ -13,7 +13,6 @@
 using System;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
 using SevenEngine.Mathematics;
 
 namespace SevenEngine.Imaging
@@ -23,8 +22,8 @@ namespace SevenEngine.Imaging
   {
     // Every sprite uses the same vertex positions
     private static readonly float[] _verteces = new float[] {
-      1f, 1f, 0f,   -1f, 1f, 0f,   1f, -1f, 0f,
-      -1f, -1f, 0f,   1f, -1f, 0f,   -1f, 1f, 0f };
+      1f, 1f, 0f,   0f, 1f, 0f,   1f, 0f, 0f,
+      0f, 0f, 0f,   1f, 0f, 0f,   0f, 1f, 0f };
     private static readonly int _vertexCount = 6;
     private static readonly float[] _textureMappingsDefault = new float[] {
       1f,0f,  0f,0f,  1f,1f,
@@ -87,6 +86,8 @@ namespace SevenEngine.Imaging
       GenerateTextureCoordinateBuffer(textureMappings);
     }
 
+    #region Buffer Generators
+
     /// <summary>Generates the vertex buffer that all sprites will use.</summary>
     private void GenerateVertexBuffer(float[] verteces)
     {
@@ -122,5 +123,7 @@ namespace SevenEngine.Imaging
       // Deselect the new buffer
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
+
+    #endregion
   }
 }

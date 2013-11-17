@@ -10,6 +10,7 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
+using SevenEngine.Imaging;
 using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.StaticModels
@@ -26,9 +27,10 @@ namespace SevenEngine.StaticModels
     protected int _normalBufferHandle;
     protected int _elementBufferHandle;
     protected int _vertexCount;
+    protected Texture _originalTexture;
 
     /// <summary>The number of existing hardware instances of this model reference.</summary>
-    public int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
+    internal int ExistingReferences { get { return _existingReferences; } set { _existingReferences = value; } }
     /// <summary>Holds the filepath of the imported file.</summary>
     internal string FilePath { get { return _filePath; } set { _filePath = value; } }
     /// <summary>The id associated with this mesh in the "StaticModelManager".</summary>
@@ -45,6 +47,8 @@ namespace SevenEngine.StaticModels
     internal int ElementBufferHandle { get { return _elementBufferHandle; } set { _elementBufferHandle = value; } }
     /// <summary>The number of verteces in this model.</summary>
     internal int VertexCount { get { return _vertexCount; } set { _vertexCount = value; } }
+    /// <summary>The original texture that was assigned when the mesh was loaded.</summary>
+    internal Texture OriginalTexture { get { return _originalTexture; } set { _originalTexture = value; } }
 
     /// <summary>Creates an instance of a StaticMesh.</summary>
     /// <param name="filePath">The file path of the model that the data came from.</param>
@@ -64,6 +68,7 @@ namespace SevenEngine.StaticModels
       int normalBufferHandle,
       int elementBufferHandle,
       int vertexCount)
+      //Texture originalTexture)
     {
       _existingReferences = 0;
 
@@ -75,6 +80,7 @@ namespace SevenEngine.StaticModels
       _normalBufferHandle = normalBufferHandle;
       _elementBufferHandle = elementBufferHandle;
       _vertexCount = vertexCount;
+      // _originalTexture = originalTexture;
     }
   }
 }

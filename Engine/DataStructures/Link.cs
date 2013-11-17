@@ -13,24 +13,6 @@
 // This file contains the following classes:
 // - Link2
 // - Link3
-// This file has no external dependencies (other than "System" from .Net Framework).
-
-// This file contains runtime and space values.
-// All runtime and space values are in O-Notation. Here is a brief explanation:
-// - "O(x)": the member has an upper bound of runtime equation "x"
-// - "Omega(x)": the member has a lower bound of runtime equation "x"
-// - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
-// - "EstAvg(x)": the runtime equation "x" to typically expect
-// Notes:
-// - if the letter "n" is used, it typically means the current number of items within the structure
-// - the space values are located in the "remarks" of each constructor
-// - the runtimes are in simplified while the spaces are not simplified to be more specific with space allocation
-
-// Written by Seven (Zachary Aaron Patten)
-// Last Edited on date 10-12-13
-// Feel free to use this code in any manor you see fit.
-// However, please site me because I put quite a bit of time into it.
-// - Thanks. :)
 
 namespace SevenEngine.DataStructures
 {

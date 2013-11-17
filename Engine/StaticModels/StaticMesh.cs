@@ -14,9 +14,9 @@ namespace SevenEngine.StaticModels
 
     public string Id { get { return _id; } set { _id = value; } }
     public Texture Texture { get { return _texture; } set { _texture = value; } }
-    public StaticMeshInstance StaticMeshInstance { get { return _staticMesh; } set { _staticMesh = value; } }
+    internal StaticMeshInstance StaticMeshInstance { get { return _staticMesh; } set { _staticMesh = value; } }
 
-    public StaticMesh(string id, Texture texture, StaticMeshInstance staticMesh)
+    internal StaticMesh(string id, Texture texture, StaticMeshInstance staticMesh)
     {
       _id = id;
       _texture = texture;

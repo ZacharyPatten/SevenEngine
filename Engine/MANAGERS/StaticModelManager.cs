@@ -48,16 +48,14 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      List<StaticMesh> meshes = modelToGet.Meshes.Clone(PullOutModelComponents);
+      List<StaticMesh> meshes = new List<StaticMesh>();
+      foreach (StaticMesh mesh in modelToGet.Meshes)
+      {
+        mesh.Texture.ExistingReferences++;
+        mesh.StaticMeshInstance.ExistingReferences++;
+        meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
+      }
       return new StaticModel(modelToGet.Id, meshes);
-    }
-
-    /// <summary>This function is used as a delegate to determine the cloning process of static model meshes.</summary>
-    private static StaticMesh PullOutModelComponents(StaticMesh staticModelMesh)
-    {
-      staticModelMesh.Texture.ExistingReferences++;
-      staticModelMesh.StaticMeshInstance.ExistingReferences++;
-      return new StaticMesh(staticModelMesh.Id, staticModelMesh.Texture, staticModelMesh.StaticMeshInstance);
     }
 
     #region Parsers

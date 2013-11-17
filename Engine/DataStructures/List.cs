@@ -13,41 +13,25 @@
 // This file contains the following classes:
 // - List
 //   - ListNode
+//   - ListEnumerator
 //   - ListException
 // - ListArray
+//   - ListArrayEnumerator
 //   - ListArrayException
-// This file has no external dependencies (other than "System" from .Net Framework).
-
-// This file contains runtime values.
-// All runtimes are in O-Notation. Here is a brief explanation:
-// - "O(x)": the member has an upper bound of runtime equation "x"
-// - "Omega(x)": the member has a lower bound of runtime equation "x"
-// - "Theta(x)": the member has an upper and lower bound of runtime equation "x"
-// - "EstAvg(x)": the runtime equation "x" to typically expect
-// Notes: if the letter "n" is used, it typically means the current number of items within the structure
 
 using System;
-using System.Runtime.CompilerServices;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine;
 
 namespace SevenEngine.DataStructures
 {
   #region List
-
-  #region InterfaceStringId
-  //// This interface is in the "Interfaces" folder, but here it is if you
-  //// can't find it:
-  // public interface InterfaceStringId
-  // {
-  //   string Id { get; set; }
-  // }
-  #endregion
-
+  
   /// <summary>Implements a growing, singularly-linked list data structure.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class List<Type> where Type : InterfaceStringId
+  public class List<Type> : System.Collections.IEnumerable
+    where Type : SevenEngine.DataStructures.Interfaces.InterfaceStringId
   {
     #region ListNode
 
@@ -167,225 +151,48 @@ namespace SevenEngine.DataStructures
       }
     }
 
-    /// <summary>How how want to clone each item during an entire list clone.</summary>
-    /// <param name="currentid">The current id of the node.</param>
-    /// <param name="node">A single node in teh list.</param>
-    /// <param name="newId">The desired new id in the cloned list.</param>
-    /// <param name="newNode">The cloned item to be used in the cloned list.</param>
-    public delegate Type CloneFunction(Type node);
-    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
-    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
-    /// <returns>The resulting cloned list.</returns>
-    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
-    public List<Type> Clone(CloneFunction cloneFunction)
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this AvlTree class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new ListEnumerator(_head); }
+    private class ListEnumerator : System.Collections.IEnumerator
     {
-      List<Type> listClone = new List<Type>();
-      ListNode looper = _head;
-      while (looper != null)
+      private ListNode _head;
+      private ListNode _current;
+
+      public ListEnumerator(ListNode node)
       {
-        listClone.Add(cloneFunction(looper.Value));
+        _head = _current = node;
+        _current = new ListNode(default(Type));
+        _current.Next = _head;
+      }
+
+      public object Current { get { return _current.Value; } }
+      public void Reset() { _current = _head; }
+      public bool MoveNext()
+      { if (_current.Next != null) { _current = _current.Next; return true; } return false; }
+    }
+
+    /// <summary>Converts the list into a standard array.</summary>
+    /// <returns>A standard array of all the items.</returns>
+    /// /// <remarks>Runtime: Theta(n).</remarks>
+    public Type[] ToArray()
+    {
+      if (_count == 0)
+        return null;
+      Type[] array = new Type[_count];
+      ListNode looper = _head;
+      for (int i = 0; i < _count; i++)
+      {
+        array[i] = looper.Value;
         looper = looper.Next;
       }
-      return listClone;
+      return array;
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class ListException : Exception { public ListException(string message) : base(message) { } }
   }
-
-  #endregion
-
-  #region List
-
-  /// <summary>Implements a growing, singularly-linked list data structure.</summary>
-  /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
-  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
-  /// Seven (Zachary Patten) 10-12-13.</remarks>
-  /*public class List<Type>
-  {
-    #region ListNode
-
-    /// <summary>This class just holds the data for each individual node of the list.</summary>
-    private class ListNode
-    {
-      private string _id;
-      private Type _value;
-      private ListNode _next;
-
-      internal string Id { get { return _id; } set { _id = value; } }
-      internal Type Value { get { return _value; } set { _value = value; } }
-      internal ListNode Next { get { return _next; } set { _next = value; } }
-
-      internal ListNode(string id, Type data, ListNode down)
-      {
-        _id = id;
-        _value = data;
-        _next = down;
-      }
-    }
-
-    #endregion
-
-    private ListNode _head;
-    private ListNode _tail;
-    // This iterator node is no longer used (it was used for the commented function at the end of this class)
-    //private ListNode _currentIterator;
-    private int _count;
-
-    /// <summary>Returns the number of items in the list.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public int Count { get { return _count; } }
-
-    /// <summary>Creates an instance of a stalistck.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public List()
-    {
-      _head = null;
-      _tail = null;
-      _count = 0;
-    }
-
-    /// <summary>Adds an item to the list.</summary>
-    /// <param name="id">The string id of the item to add to the list.</param>
-    /// <param name="addition">The item to add to the list.</param>
-    /// <remarks>Runtime: O(1).</remarks>
-    public void Add(string id, Type addition)
-    {
-      if (_tail == null)
-        _tail = new ListNode(id, addition, null);
-      else
-      {
-        _tail.Next = new ListNode(id, addition, null);
-        _tail = _tail.Next;
-      }
-      if (_head == null)
-        _head = _tail;
-      _count++;
-    }
-
-    /// <summary>Removes an item from the list with the matching string id.</summary>
-    /// <param name="removalId">The string id of the item to remove.</param>
-    /// <remarks>Runtime: O(n).</remarks>
-    public void Remove(string removalId)
-    {
-      Remove(removalId, _head);
-      _count--;
-    }
-
-    /// <summary>Removes an item from the list with the matching string id.</summary>
-    /// <param name="removalId">The string id of the item to remove.</param>
-    /// <param name="listNode">The current location during recursion.</param>
-    /// <remarks>Runtime: O(n).</remarks>
-    private void Remove(string removalId, ListNode listNode)
-    {
-      if (listNode == null)
-        throw new ListException("Attempting to remove a non-existing id value.");
-      else if (listNode.Id == removalId)
-        _head = _head.Next;
-      else if (listNode.Next == null)
-        throw new ListException("Attempting to remove a non-existing id value.");
-      else if (listNode.Next.Id == removalId)
-      {
-        if (listNode.Next.Equals(_tail))
-          _tail = listNode;
-        listNode.Next = listNode.Next.Next;
-      }
-      else
-        Remove(removalId, listNode.Next);
-    }
-
-    /// <summary>Allows you to rename an entry within this list.</summary>
-    /// <param name="oldName">The id of the list entry to rename.</param>
-    /// <param name="newName">The new id to apply to the node.</param>
-    /// <remarks>Runtime: Theta(n).</remarks>
-    public void RenameEntry(string oldName, string newName)
-    {
-      ListNode looper = _head;
-      ListNode rename = null;
-      while (looper != null)
-      {
-        if (looper.Id == newName)
-          throw new ListException("Attempting to rename a list entry to an already existing id.");
-        if (looper.Id == oldName)
-          rename = looper;
-        looper = looper.Next;
-      }
-      rename.Id = newName;
-    }
-
-    /// <summary>Resets the list to an empty state. WARNING could cause excessive garbage collection.</summary>
-    public void Clear()
-    {
-      _head = null;
-      _tail = null;
-      _count = 0;
-    }
-
-    /// <summary>A function to be used in a foreach loop.</summary>
-    /// <param name="id">The id of the current node.</param>
-    /// <param name="node">The current node of a foreach loop.</param>
-    public delegate void ForeachFunction(string id, Type node);
-    /// <summary>Allows a foreach loop using a delegate.</summary>
-    /// <param name="foreachFunction">The function within a foreach loop.</param>
-    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public void Foreach(ForeachFunction foreachFunction)
-    {
-      ListNode looper = _head;
-      while (looper != null)
-      {
-        foreachFunction(looper.Id, looper.Value);
-        looper = looper.Next;
-      }
-    }
-
-    /// <summary>How how want to clone each item during an entire list clone.</summary>
-    /// <param name="currentid">The current id of the node.</param>
-    /// <param name="node">A single node in teh list.</param>
-    /// <param name="newId">The desired new id in the cloned list.</param>
-    /// <param name="newNode">The cloned item to be used in the cloned list.</param>
-    public delegate void CloneFunction(string currentid, Type node, out string newId, out Type newNode);
-    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
-    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
-    /// <returns>The resulting cloned list.</returns>
-    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
-    public List<Type> Clone(CloneFunction cloneFunction)
-    {
-      List<Type> listClone = new List<Type>();
-      ListNode looper = _head;
-      while (looper != null)
-      {
-        string cloneId;
-        Type cloneValue;
-        cloneFunction(looper.Id, looper.Value, out cloneId, out cloneValue);
-        listClone.Add(cloneId, cloneValue);
-        looper = looper.Next;
-      }
-      return listClone;
-    }
-
-    // The following commented code is an alternative to the delegate functions. I am keeping this here
-    // for educational purposes to show a good use for delegates.
-
-    ///// <summary>Initializes an iterator for this list. Use IterateNext to iterate through the list.</summary>
-    ///// <remarks>Runtime: O(1).</remarks> 
-    //public void IteratorInitialize() { _currentIterator = _head; }
-    ///// <summary>Gets the next item in the current iteration of this list.</summary>
-    ///// <param name="next">The next item in the current iteration of the list.</param>
-    ///// <returns>If there is an item to return. "false": nothing to return (end of list). "true": still iterating.</returns>
-    ///// <remarks>Runtime: O(1).</remarks> 
-    //public bool IteratorGetNext(out Type next)
-    //{
-    //  next = default(Type);
-    //  if (_currentIterator == null)
-    //    return false;
-    //  next = _currentIterator.Value;
-    //  _currentIterator = _currentIterator.Next;
-    //  return true;
-    //}
-
-    /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
-    private class ListException : Exception { public ListException(string message) : base(message) { } }
-  }*/
 
   #endregion
 
@@ -395,7 +202,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class ListArray<Type>
+  public class ListArray<Type> : System.Collections.IEnumerable
   {
     private Type[] _list;
     private int _count;
@@ -512,19 +319,32 @@ namespace SevenEngine.DataStructures
         foreachFunction(_list[i]);
     }
 
-    /// <summary>How how want to clone each item during an entire list clone.</summary>
-    /// <param name="node">The current list node in the cloning traversal.</param>
-    public delegate Type CloneFunction(Type node);
-    /// <summary>Allows the user to clone the list however they choose (reference clone vs value clone).</summary>
-    /// <param name="cloneFunction">he function to perform on each node during cloning.</param>
-    /// <returns>The resulting cloned list.</returns>
-    /// <remarks>Runtime: O(n * cloneFunction).</remarks>
-    public ListArray<Type> Clone(CloneFunction cloneFunction)
+    // The following "IEnumerable" functions allow you to use a "foreach"
+    // loop on this AvlTree class.
+    public System.Collections.IEnumerator GetEnumerator()
+    { return new ListArrayEnumerator(_list); }
+    // THIS COUL BE DONE MORE EFFICIENTLY! It will require stacks to 
+    // track the traversal of the tree.
+    private class ListArrayEnumerator : System.Collections.IEnumerator
     {
-      ListArray<Type> listClone = new ListArray<Type>(_list.Length);
+      private Type[] _list;
+      private int _position;
+
+      public ListArrayEnumerator(Type[] list) { _list = list; _position = -1; }
+
+      public object Current { get { return _list[_position]; } }
+      public bool MoveNext() { if (_position++ < _list.Length) return true; return false; }
+      public void Reset() { _position = -1; }
+    }
+
+    /// <summary>Converts the list array into a standard array.</summary>
+    /// <returns>A standard array of all the elements.</returns>
+    public Type[] ToArray()
+    {
+      Type[] array = new Type[_count];
       for (int i = 0; i < _count; i++)
-        listClone.Add(cloneFunction(_list[i]));
-      return listClone;
+        array[i] = _list[i];
+      return array;
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
