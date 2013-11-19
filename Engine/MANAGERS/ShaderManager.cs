@@ -31,7 +31,7 @@ namespace SevenEngine
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    internal static VertexShader GetVertexShader(string shaderId)
+    public static VertexShader GetVertexShader(string shaderId)
     {
       //VertexShader shader = _vertexShaderDatabase[shaderId];
       VertexShader shader = _vertexShaderDatabase.Get(shaderId);
@@ -42,7 +42,7 @@ namespace SevenEngine
     /// <summary>Get a fragment shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    internal static FragmentShader GetFragmentShader(string shaderId)
+    public static FragmentShader GetFragmentShader(string shaderId)
     {
       //FragmentShader shader = _fragmentShaderDatabase[shaderId];
       FragmentShader shader = _fragmentShaderDatabase.Get(shaderId);
@@ -53,7 +53,7 @@ namespace SevenEngine
     /// <summary>Get a geometry shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    internal static GeometryShader GetGeometryShader(string shaderId)
+    public static GeometryShader GetGeometryShader(string shaderId)
     {
       //GeometryShader shader = _geometryShaderDatabase[shaderId];
       GeometryShader shader = _geometryShaderDatabase.Get(shaderId);
@@ -64,7 +64,7 @@ namespace SevenEngine
     /// <summary>Get an extended geometry shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    internal static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
+    public static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
     {
       //ExtendedGeometryShader shader = _extendedGeometryShaderDatabase[shaderId];
       ExtendedGeometryShader shader = _extendedGeometryShaderDatabase.Get(shaderId);
@@ -75,7 +75,7 @@ namespace SevenEngine
     /// <summary>Get a shader program that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
-    internal static ShaderProgram GetShaderProgram(string shaderId)
+    public static ShaderProgram GetShaderProgram(string shaderId)
     {
       //ShaderProgram shaderProgram = _shaderProgramDatabase[shaderId];
       ShaderProgram shaderProgram = _shaderProgramDatabase.Get(shaderId);
@@ -250,7 +250,7 @@ namespace SevenEngine
 
       // The program has been successfully created. Add it to the database so we can use it.
       _shaderProgramDatabase.Add(new ShaderProgram(programId, programHandle));
-      Output.WriteLine("Shader program created: \"" + programId + "\";");
+      Output.WriteLine("Shader program created: \"" + programError + "\";");
       return true;
     }
 

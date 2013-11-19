@@ -19,13 +19,15 @@
 //   - OctreeException
 
 using System;
-using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
   #region Octree
 
-  public class Octree<Type> where Type : InterfaceStringId, InterfacePositionVector
+  public class Octree<Type>
+    where Type :
+      SevenEngine.DataStructures.Interfaces.InterfaceStringId,
+      SevenEngine.DataStructures.Interfaces.InterfacePositionVector
   {
     #region OctreeBound
 
@@ -220,7 +222,7 @@ namespace SevenEngine.DataStructures
 
     #region OctreeReference
 
-    private class OctreeReference : InterfaceStringId
+    private class OctreeReference : SevenEngine.DataStructures.Interfaces.InterfaceStringId
     {
       private Type _value;
       private OctreeLeaf _leaf;

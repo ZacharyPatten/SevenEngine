@@ -26,7 +26,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The type of objects to be placed in the stack.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class Stack<Type>
+  public class Stack<Type> : System.Collections.IEnumerable
   {
     #region StackNode
 

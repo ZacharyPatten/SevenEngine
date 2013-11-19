@@ -98,6 +98,7 @@
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="UTILITIES\FilePath.cs" />
+    <Compile Include="UTILITIES\Light.cs" />
     <Compile Include="UTILITIES\SkyBox.cs" />
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="DataStructures\HashTable.cs" />

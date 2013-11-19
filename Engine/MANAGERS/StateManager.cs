@@ -100,10 +100,7 @@ namespace SevenEngine
     /// <summary>Checks if a state exists (an example could be if a specific menu is already loaded then use it; if not then it needs to be loaded first).</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     /// <returns>"true if the state exists. "false""</returns>
-    public static bool StateExists(string stateId)
-    {
-      return _stateDatabase.Contains(stateId);
-    }
+    public static bool StateExists(string stateId) { return _stateDatabase.Contains(stateId); }
 
     /// <summary>A unique class for throwing StateSystem exceptions only.</summary>
     private class StateSystemException : Exception { public StateSystemException(string message) : base(message) { } }

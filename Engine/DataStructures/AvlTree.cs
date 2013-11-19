@@ -21,7 +21,12 @@
 //   - AvlTreeEnumerator
 //   - AvlTreeException
 
+// Notes:
+// This class uses the Many-Readers-One-Writer multithreading pattern. This probably not 
+// the most efficient multithreading pattern, but it will protect the tree if multithreaded.
+
 using System;
+using System.Threading;
 using SevenEngine;
 
 namespace SevenEngine.DataStructures
@@ -30,7 +35,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class AvlTree<Type> : System.Collections.IEnumerable
+  public class AvlTree<Type>// : System.Collections.IEnumerable
     where Type : SevenEngine.DataStructures.Interfaces.InterfaceStringId
   {
     #region AvlTreeNode
@@ -43,24 +48,40 @@ namespace SevenEngine.DataStructures
       private AvlTreeNode _rightChild;
       private int _height;
 
+      // private AvlTreeNode _next;
+      // private AvlTreeNode _previous;
+
       internal Type Value { get { return _value; } set { _value = value; } }
       internal AvlTreeNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
       internal AvlTreeNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
       internal int Height { get { return _height; } set { _height = value; } }
 
-      internal AvlTreeNode(Type value, AvlTreeNode leftChild, AvlTreeNode rightChild, int height)
+      // internal AvlTreeNode Next { get { return _next; } set { _next = value; } }
+      // internal AvlTreeNode Previous { get { return _previous; } set { _previous = value; } }
+
+      internal AvlTreeNode(Type value, int height)
       {
         _value = value;
-        _leftChild = leftChild;
-        _rightChild = rightChild;
+        _leftChild = null;
+        _rightChild = null;
         _height = height;
+        // Note: removed threaded tree functionality
+        // _next = next;
+        // _previous = null;
       }
     }
 
     #endregion
-
+    
     private AvlTreeNode _avlTree;
     private int _count;
+
+    // private AvlTreeNode _head;
+
+    private Lock _lock;
+    private int _readers;
+    private int _writers;
+    private int _waitingWriters;
 
     /// <summary>Gets the number of elements in the collection.</summary>
     /// <remarks>Runtime: O(1).</remarks>
@@ -75,13 +96,55 @@ namespace SevenEngine.DataStructures
     {
       _avlTree = null;
       _count = 0;
+
+      _lock = new Lock();
+      _readers = 0;
+      _writers = 0;
+      _waitingWriters = 0;
     }
 
     /// <summary>Gets the item with the designated by the string.</summary>
     /// <param name="id">The string ID to look for.</param>
     /// <returns>The object with the desired string ID if it exists.</returns>
     /// <remarks>Runtime: O(ln(n)), Omega(1).</remarks>
-    public Type Get(string id) { return Get(id, _avlTree); }
+    public Type Get(string id)
+    {
+      lock (_lock)
+      {
+        while (!(_writers == 0)) { Monitor.Wait(_lock); }
+        _readers++;
+      }
+      #region Recursive
+      // Type returnValue = Get(id, _avlTree);
+      // lock (_lock)
+      //{
+      //  _readers--;
+      //  Monitor.Pulse(_lock);
+      //}
+      // return returnValue;
+      #endregion
+      #region Iterative
+      AvlTreeNode _current = _avlTree;
+      while (_current != null)
+      {
+        int compareResult = id.CompareTo(_current.Value.Id);
+        if (compareResult == 0)
+        {
+          lock (_lock)
+          {
+            _readers--;
+            Monitor.Pulse(_lock);
+          }
+          return _current.Value;
+        }
+        else if (compareResult < 0)
+          _current = _current.LeftChild;
+        else
+          _current = _current.RightChild;
+      }
+      throw new AvlTreeException("Attempting to get a non-existing value: " + id + ".");
+      #endregion
+    }
 
     /// <summary>Standard AVL Tree searching algorithm using recursion.</summary>
     /// <param name="id">The string ID to look for.</param>
@@ -105,7 +168,44 @@ namespace SevenEngine.DataStructures
     /// <param name="id">The id to check for existance.</param>
     /// <returns>"true" if the key exists; "false" if the key does not exist.</returns>
     /// <remarks>Runtime: O(ln(n)).</remarks>
-    public bool Contains(string id) { return Contains(id, _avlTree); }
+    public bool Contains(string id)
+    {
+      lock (_lock)
+      {
+        while (!(_writers == 0)) { Monitor.Wait(_lock); }
+        _readers++;
+      }
+      #region Recursive
+      // bool returnValue = Contains(id, _avlTree);
+      // lock (_lock)
+      //{
+      //  _readers--;
+      //  Monitor.Pulse(_lock);
+      //}
+      // return returnValue;
+      #endregion
+      #region Iterative
+      AvlTreeNode _current = _avlTree;
+      while (_current != null)
+      {
+        int compareResult = id.CompareTo(_current.Value.Id);
+        if (compareResult == 0)
+        {
+          lock (_lock)
+          {
+            _readers--;
+            Monitor.Pulse(_lock);
+          }
+          return true;
+        }
+        else if (compareResult < 0)
+          _current = _current.LeftChild;
+        else
+          _current = _current.RightChild;
+      }
+      return false;
+      #endregion
+    }
 
     /// <summary>Checks to see if the tree contains a specific key.</summary>
     /// <param name="id">The id to check for existance.</param>
@@ -116,10 +216,10 @@ namespace SevenEngine.DataStructures
     {
       if (avlTree == null)
         return false;
-      int compResult = id.CompareTo(avlTree.Value.Id);
-      if (compResult == 0)
+      int compareResult = id.CompareTo(avlTree.Value.Id);
+      if (compareResult == 0)
         return true;
-      else if (compResult < 0)
+      else if (compareResult < 0)
         return Contains(id, avlTree.LeftChild);
       else
         return Contains(id, avlTree.RightChild);
@@ -131,8 +231,24 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
     public void Add(Type addition)
     {
+      lock (_lock)
+      {
+        _waitingWriters++;
+        while (!(_writers == 0) && !(_readers == 0)) { Monitor.Wait(_lock); }
+        _waitingWriters--;
+        _writers++;
+      }
+      #region Recursive
       _avlTree = Add(addition, _avlTree);
+      #endregion
+      #region Iterative
+      #endregion
       _count++;
+      lock (_lock)
+      {
+        _writers--;
+        Monitor.PulseAll(_lock);
+      }
     }
 
     /// <summary>Adds an object to the AVL Tree.</summary>
@@ -143,7 +259,14 @@ namespace SevenEngine.DataStructures
     private AvlTreeNode Add(Type addition, AvlTreeNode avlTree)
     {
       if (avlTree == null)
-        return new AvlTreeNode(addition, null, null, 0);
+      {
+        //if (_head == null)
+        //  return _head = new AvlTreeNode(addition, 0, null);
+        //_head.Previous = new AvlTreeNode(addition, 0, _head);
+        //_head = _head.Previous;
+        //return _head;
+        return  new AvlTreeNode(addition, 0);
+      }
       else
       {
         int compResult = addition.Id.CompareTo(avlTree.Value.Id);
@@ -153,7 +276,6 @@ namespace SevenEngine.DataStructures
           avlTree.LeftChild = Add(addition, avlTree.LeftChild);
         else
           avlTree.RightChild = Add(addition, avlTree.RightChild);
-        // We added the new object, now we need to check the tree balancing
         return Balance(avlTree);
       }
     }
@@ -163,8 +285,24 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
     public void Remove(string removal)
     {
+      lock (_lock)
+      {
+        _waitingWriters++;
+        while (!(_writers == 0) && !(_readers == 0)) { Monitor.Wait(_lock); }
+        _waitingWriters--;
+        _writers++;
+      }
+      #region Recursive
       _avlTree = Remove(removal, _avlTree);
+      #endregion
+      #region Iterative
+      #endregion
       _count--;
+      lock (_lock)
+      {
+        _writers--;
+        Monitor.PulseAll(_lock);
+      }
     }
 
     /// <summary>Removes an object from the AVL Tree.</summary>
@@ -177,7 +315,6 @@ namespace SevenEngine.DataStructures
       if (avlTree != null)
       {
         int compResult = removal.CompareTo(avlTree.Value.Id);
-        // If the compResult is 0 with strings, it means they are identical, the entry already exists
         if (compResult == 0)
         {
           if (avlTree.RightChild != null)
@@ -191,7 +328,7 @@ namespace SevenEngine.DataStructures
           else if (avlTree.LeftChild != null)
           {
             AvlTreeNode rightMostOfLeft;
-            avlTree.RightChild = RemoveLeftMost(avlTree.RightChild, out rightMostOfLeft);
+            avlTree.LeftChild = RemoveRightMost(avlTree.LeftChild, out rightMostOfLeft);
             rightMostOfLeft.RightChild = avlTree.RightChild;
             rightMostOfLeft.LeftChild = avlTree.LeftChild;
             avlTree = rightMostOfLeft;
@@ -364,7 +501,19 @@ namespace SevenEngine.DataStructures
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
     public void AlphabeticalTraversal(TraversalFunction traversalFunction)
-    { AlphabeticalTraversal(traversalFunction, _avlTree); }
+    {
+      lock (_lock)
+      {
+        while (!(_writers == 0)) { Monitor.Wait(_lock); }
+        _readers++;
+      }
+      AlphabeticalTraversal(traversalFunction, _avlTree);
+      lock (_lock)
+      {
+        _readers--;
+        Monitor.Pulse(_lock);
+      }
+    }
     private void AlphabeticalTraversal(TraversalFunction traversalFunction, AvlTreeNode avltreeNode)
     {
       if (avltreeNode != null)
@@ -379,7 +528,19 @@ namespace SevenEngine.DataStructures
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
     public void ReverseAlphabeticalTraversal(TraversalFunction traversalFunction)
-    { ReverseAlphabeticalTraversal(traversalFunction, _avlTree); }
+    {
+      lock (_lock)
+      {
+        while (!(_writers == 0)) { Monitor.Wait(_lock); }
+        _readers++;
+      }
+      ReverseAlphabeticalTraversal(traversalFunction, _avlTree);
+      lock (_lock)
+      {
+        _readers--;
+        Monitor.Pulse(_lock);
+      }
+    }
     private void ReverseAlphabeticalTraversal(TraversalFunction traversalFunction, AvlTreeNode avltreeNode)
     {
       if (avltreeNode != null)
@@ -390,29 +551,49 @@ namespace SevenEngine.DataStructures
       }
     }
 
-    // The following "IEnumerable" functions allow you to use a "foreach"
-    // loop on this AvlTree class.
-    public System.Collections.IEnumerator GetEnumerator()
-    { return new AvlTreeEnumerator(this); }
-    // THIS COUL BE DONE MORE EFFICIENTLY! It will require stacks to 
-    // track the traversal of the tree.
-    private class AvlTreeEnumerator : System.Collections.IEnumerator
-    {
-      private Type[] _array;
-      private int _position;
+    //// The following "IEnumerable" functions allow you to use a "foreach"
+    //// loop on this AvlTree class.
+    //public System.Collections.IEnumerator GetEnumerator()
+    //{ return new AvlTreeEnumerator(_head); }
+    //// THIS COUL BE DONE MORE EFFICIENTLY! It will require stacks to 
+    //// track the traversal of the tree.
+    //private class AvlTreeEnumerator : System.Collections.IEnumerator
+    //{
+    //  private AvlTreeNode _head;
+    //  private AvlTreeNode _current;
+      
+    //  public AvlTreeEnumerator(AvlTreeNode list) { 
+    //    _current = _head = new AvlTreeNode(default(Type), 0, list); }
 
-      public AvlTreeEnumerator(AvlTree<Type> avlTree) { _array = avlTree.ToArray(); _position = -1; }
-
-      public object Current { get { return _array[_position]; } }
-      public bool MoveNext() { if (_position++ < _array.Length) return true; return false; }
-      public void Reset() { _position = -1; }
-    }
+    //  public object Current { get { return _current.Value; } }
+    //  public bool MoveNext()
+    //  {
+    //    if (_current.Next != null) { _current = _current.Next; return true; }
+    //    return false;
+    //  }
+    //  public void Reset() { 
+    //    _current = _head; }
+    //}
 
     /// <summary>Puts all the items in the tree into a list by alphabetical order.</summary>
     /// <returns>The alphabetized list of items.</returns>
     /// <remarks>Runtime: Theta(n).</remarks>
     public Type[] ToArray()
-    { Type[] array = new Type[_count]; ToArray(array, _avlTree, 0); return array; }
+    {
+      lock (_lock)
+      {
+        while (!(_writers == 0)) { Monitor.Wait(_lock); }
+        _readers++;
+      }
+      Type[] array = new Type[_count];
+      ToArray(array, _avlTree, 0);
+      lock (_lock)
+      {
+        _readers--;
+        Monitor.Pulse(_lock);
+      }
+      return array;
+    }
     private void ToArray(Type[] array, AvlTreeNode avltreeNode, int position)
     {
       if (avltreeNode != null)
@@ -422,6 +603,9 @@ namespace SevenEngine.DataStructures
         ToArray(array, avltreeNode.LeftChild, position);
       }
     }
+
+    /// <summary>Represents a lockable object for multi-threading.</summary>
+    private class Lock { internal Lock() { } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class AvlTreeException : Exception { public AvlTreeException(string message) : base(message) { } }

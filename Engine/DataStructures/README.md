@@ -1,4 +1,4 @@
-﻿This data structure files contain runtime values.
+﻿These data structure files contain runtime values.
 All runtimes are in O-Notation. Here is a brief explanation:
 - "O(x)": the member has an upper bound of runtime equation "x"
 - "Omega(x)": the member has a lower bound of runtime equation "x"

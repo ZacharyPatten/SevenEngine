@@ -1,11 +1,11 @@
-﻿varying vec3 normal;
+uniform vec3 lightDir;
+varying vec3 normal;
 
 void main()
 {
 	float intensity;
 	vec4 color;
-	vec3 n = normalize(normal);
-	intensity = dot(vec3(gl_LightSource[0].position),n);
+	intensity = dot(lightDir,normal);
 
 	if (intensity > 0.95)
 		color = vec4(1.0,0.5,0.5,1.0);

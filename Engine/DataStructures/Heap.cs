@@ -13,9 +13,11 @@
 // This file contains the following classes:
 // - HeapArrayStatic
 //   - HeapArrayStaticLink
+//   - HeapArrayStaticEnumerator
 //   - HeapArrayStaticException
 // - HeapArrayDynamic
 //   - HeapArrayDynamicLink
+//   - HeapArrayDynamicEnumerator
 //   - HeapArrayDynamicException
 
 using System;
@@ -28,7 +30,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags. 
   /// Seven (Zachary Patten) 10-12-13.</remarks>
-  public class HeapArray<Type> : System.Collections.IEnumerable
+  public class HeapArrayStatic<Type> : System.Collections.IEnumerable
   {
     #region HeapArrayLink
 
@@ -68,7 +70,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Generates a priority queue with a capacity of the parameter. Runtime O(1).</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
     /// <remarks>Runtime: Theta(capacity).</remarks>
-    public HeapArray(int capacity)
+    public HeapArrayStatic(int capacity)
     {
       _queueArray = new HeapArrayLink[capacity + 1];
       _queueArray[0] = new HeapArrayLink(int.MaxValue, default(Type));
@@ -194,7 +196,7 @@ namespace SevenEngine.DataStructures
       private Type[] _array;
       private int _position;
 
-      public HeapEnumerator(HeapArray<Type> heap) { _array = heap.ToArray(); _position = -1; }
+      public HeapEnumerator(HeapArrayStatic<Type> heap) { _array = heap.ToArray(); _position = -1; }
 
       public object Current { get { return _array[_position]; } }
       public bool MoveNext() { if (_position++ < _array.Length) return true; return false; }

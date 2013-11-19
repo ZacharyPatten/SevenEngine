@@ -3,7 +3,10 @@ using System.IO;
 using SevenEngine;
 using SevenEngine.Imaging;
 using SevenEngine.DataStructures;
+using SevenEngine.Shaders;
 using Game.States;
+
+using OpenTK.Graphics.OpenGL;
 
 namespace Game
 {
@@ -100,7 +103,7 @@ namespace Game
       // EXAMPLES:
         // StaticModelManager.LoadMesh("meshName", "filePath");
         // string[] textures; string[] meshes; string[] meshNamesRelativeToTheModel;
-        // StaticModelManager.LoadModel("modelName", );
+        // StaticModelManager.LoadModel("modelName", textures, meshes, meshNamesRelativeToTheModel);
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
 
       // Loading the meshes
@@ -156,7 +159,8 @@ namespace Game
         // StateManager.ChangeState("nameOfState");
 
       StateManager.AddState(new GameState("gameState"));
-      // The following line calls the "Load" function of your state
+      // The following line calls the "Load" function of your state.
+      // The state must be loaded before you make it the current state.
       StateManager.TriggerStateLoad("gameState");
       StateManager.ChangeState("gameState");
     }
