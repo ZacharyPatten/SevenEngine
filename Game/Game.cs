@@ -146,6 +146,10 @@ namespace Game
       ShaderManager.LoadFragmentShader("FragmentShaderBasic", FilePath.FromRelative(@"\..\..\Assets\Shaders\Fragment\FragmentShaderBasic.glsl"));
       ShaderManager.MakeShaderProgram("ShaderProgramBasic", "VertexShaderBasic", "FragmentShaderBasic", null, null);
 
+      ShaderManager.LoadVertexShader("VertexShaderLight", FilePath.FromRelative(@"\..\..\Assets\Shaders\Vertex\VertexShaderLight2.glsl"));
+      ShaderManager.LoadFragmentShader("FragmentShaderLight", FilePath.FromRelative(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLight2.glsl"));
+      ShaderManager.MakeShaderProgram("ShaderProgramLight", "VertexShaderLight", "FragmentShaderLight", null, null);
+
       ShaderManager.SetActiveShader("ShaderProgramBasic");
     }
 
