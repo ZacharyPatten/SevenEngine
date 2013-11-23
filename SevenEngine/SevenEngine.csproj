@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{78E91C0F-F05D-4BBA-92B3-E5A84705F63D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SevenEngine</RootNamespace>
+    <AssemblyName>SevenEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\Temporary\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Seven.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataStructures\Algorithms\Sorting.cs" />
+    <Compile Include="DataStructures\Array.cs" />
+    <Compile Include="DataStructures\AvlTree.cs" />
+    <Compile Include="DataStructures\Heap.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfaceLinearlyExpandable.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfaceStringId.cs" />
+    <Compile Include="DataStructures\Interfaces\InterfaceTraversable.cs" />
+    <Compile Include="DataStructures\List.cs" />
+    <Compile Include="DataStructures\Octree.cs" />
+    <Compile Include="DataStructures\Queue.cs" />
+    <Compile Include="DataStructures\Stack.cs" />
+    <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
+    <Compile Include="IGameState.cs" />
+    <Compile Include="Mathematics\Foundations.cs" />
+    <Compile Include="Mathematics\Quaternion.cs" />
+    <Compile Include="Mathematics\Trigonometry.cs" />
+    <Compile Include="Physics\InterfaceGas.cs" />
+    <Compile Include="Physics\InterfaceLiquid.cs" />
+    <Compile Include="Physics\InterfacePlasma.cs" />
+    <Compile Include="Physics\InterfaceSolid.cs" />
+    <Compile Include="Physics\Shapes\Cone.cs" />
+    <Compile Include="Physics\Shapes\Cube.cs" />
+    <Compile Include="Physics\Shapes\Cylinder.cs" />
+    <Compile Include="Physics\Shapes\RectangularPrism.cs" />
+    <Compile Include="Physics\Shapes\Sphere.cs" />
+    <Compile Include="Physics\Shapes\TriangularPrism.cs" />
+    <Compile Include="Physics\Shapes\TriangularPyramid.cs" />
+    <Compile Include="StaticModels\StaticMesh.cs" />
+    <Compile Include="StaticModels\StaticMeshInstance.cs" />
+    <Compile Include="StaticModels\StaticModel.cs" />
+    <Compile Include="MANAGERS\PhysicsManager.cs" />
+    <Compile Include="SevenEngineWindow.cs" />
+    <Compile Include="MANAGERS\ShaderManager.cs" />
+    <Compile Include="Shaders\ExtendedGeometryShader.cs" />
+    <Compile Include="Shaders\FragmentShader.cs" />
+    <Compile Include="Shaders\GeometryShader.cs" />
+    <Compile Include="Shaders\ShaderProgram.cs" />
+    <Compile Include="Shaders\VertexShader.cs" />
+    <Compile Include="UTILITIES\FilePath.cs" />
+    <Compile Include="UTILITIES\Light.cs" />
+    <Compile Include="UTILITIES\SkyBox.cs" />
+    <Compile Include="UTILITIES\Camera.cs" />
+    <Compile Include="DataStructures\HashTable.cs" />
+    <Compile Include="DataStructures\Link.cs" />
+    <Compile Include="Mathematics\Matrix.cs" />
+    <Compile Include="MANAGERS\SpriteManager.cs" />
+    <Compile Include="MANAGERS\StaticModelManager.cs" />
+    <Compile Include="Mathematics\Vertex.cs" />
+    <Compile Include="UTILITIES\Output.cs" />
+    <Compile Include="MANAGERS\TextManager.cs" />
+    <Compile Include="Texts\CharacterSprite.cs" />
+    <Compile Include="Imaging\Color.cs" />
+    <Compile Include="Texts\Font.cs" />
+    <Compile Include="MANAGERS\InputManager.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\Mouse.cs" />
+    <Compile Include="Mathematics\Point.cs" />
+    <Compile Include="UTILITIES\PreciseTimer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UTILITIES\Renderer.cs" />
+    <Compile Include="Audio\Sound.cs" />
+    <Compile Include="MANAGERS\AudioManager.cs" />
+    <Compile Include="Imaging\Sprite.cs" />
+    <Compile Include="MANAGERS\StateManager.cs" />
+    <Compile Include="Texts\Text.cs" />
+    <Compile Include="Imaging\Texture.cs" />
+    <Compile Include="MANAGERS\TextureManager.cs" />
+    <Compile Include="Mathematics\Tween.cs" />
+    <Compile Include="Mathematics\Vector.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DataStructures\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Seven.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

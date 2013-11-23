@@ -51,7 +51,7 @@ namespace Game
       // EXAMPLES:
         // TextureManager.LoadTexture("nameOfTexture", "filePath");
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
-
+      
       // Textures for models
       TextureManager.LoadTexture("grass", FilePath.FromRelative(@"\..\..\Assets\Textures\grass.bmp"));
       TextureManager.LoadTexture("rock", FilePath.FromRelative(@"\..\..\Assets\Textures\rock3.bmp"));
@@ -73,7 +73,6 @@ namespace Game
       TextureManager.LoadTexture("SkyboxFront", FilePath.FromRelative(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerFront.bmp"));
       TextureManager.LoadTexture("SkyboxBack", FilePath.FromRelative(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerBack.bmp"));
       TextureManager.LoadTexture("SkyboxTop", FilePath.FromRelative(@"\..\..\Assets\Textures\SkyBoxes\NightWalker\NightWalkerTop.bmp"));
-
     }
 
     public override void InitializeFonts()
@@ -140,7 +139,7 @@ namespace Game
         // // NOTE: PARAMETERS TO THE "MakeShaderProgram()" METHOD MAY BE "null" IF YOU AREN'T USING THOSE SHADERS
         // ShaderManager.SetActiveShader("shaderProgramName");
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
-      
+
       // These basic shaders do not include lighting effects.
       ShaderManager.LoadVertexShader("VertexShaderBasic", FilePath.FromRelative(@"\..\..\Assets\Shaders\Vertex\VertexShaderBasic.glsl"));
       ShaderManager.LoadFragmentShader("FragmentShaderBasic", FilePath.FromRelative(@"\..\..\Assets\Shaders\Fragment\FragmentShaderBasic.glsl"));

@@ -63,7 +63,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Engine\SevenEngine.csproj">
+    <ProjectReference Include="..\SevenEngine\SevenEngine.csproj">
       <Project>{78E91C0F-F05D-4BBA-92B3-E5A84705F63D}</Project>
       <Name>SevenEngine</Name>
     </ProjectReference>

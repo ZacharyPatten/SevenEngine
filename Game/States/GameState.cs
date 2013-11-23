@@ -145,8 +145,11 @@ namespace Game.States
       // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       //Renderer.SetProjectionMatrix();
 
-      List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
-      items.Foreach(RenderModel);
+      //List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
+
+      _octree.Traversal(RenderModel, -100000, -100000, -100000, 100000, 100000, 100000);
+
+      //items.Traversal(RenderModel);
 
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
@@ -161,18 +164,19 @@ namespace Game.States
         // Renderer.RenderText("whatToWrite", x, y, size, rotation, color);
       // NOTE: color doesn't work yet, and the size is relative to the size of the character
         // on the sprite sheet (I'll fix that as soon as I can)
-      Renderer.RenderText("Welcome To", 0f, .95f, .5f, 0f, Color.Black);
-      Renderer.RenderText("SevenEngine!", 0f, .85f, .5f, 0f, Color.Black);
+      Renderer.RenderText("Welcome To", 0f, .95f, 50f, 0, Color.Black);
+      Renderer.RenderText("SevenEngine!", 0f, .85f, 50f, 0, Color.Black);
 
-      Renderer.RenderText("Close: ESC", 0f, .2f, .3f, 0f, Color.Black);
-      Renderer.RenderText("Fullscreen: F1", 0f, .15f, .3f, 0f, Color.Black);
-      Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, .3f, 0f, Color.Black);
-      Renderer.RenderText("Camera Angle: j, k, l, u", 0f, .05f, .3f, 0f, Color.Black);
+      Renderer.RenderText("Close: ESC", 0f, .2f, 30f, 0, Color.Black);
+      Renderer.RenderText("Fullscreen: F1", 0f, .15f, 30f, 0, Color.Black);
+      Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, 30f, 0, Color.Black);
+      Renderer.RenderText("Camera Angle: j, k, l, u", 0f, .05f, 30f, 0, Color.Black);
     }
 
-    private void RenderModel(StaticModel model)
+    private bool RenderModel(StaticModel model)
     {
       Renderer.DrawStaticModel(model);
+      return true;
     }
 
     #endregion
