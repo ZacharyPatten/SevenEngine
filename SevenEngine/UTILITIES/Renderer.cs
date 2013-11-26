@@ -12,6 +12,7 @@
 
 using System;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine;
 using SevenEngine.DataStructures;
@@ -135,6 +136,10 @@ namespace SevenEngine
     {
       // Apply the 2D orthographic matrix transformation
       SetOrthographicMatrix();
+
+      GL.UseProgram(ShaderManager.TextShader.GpuHandle);
+      int uniformLocation = GL.GetUniformLocation(ShaderManager.TextShader.GpuHandle, "color");
+      GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G/ 255f, color.B / 255f, color.A / 255f));
 
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);

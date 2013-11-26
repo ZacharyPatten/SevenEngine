@@ -129,6 +129,7 @@ namespace SevenEngine
     {
       Output.WriteLine("Initializing Shaders {");
       Output.IncreaseIndent();
+      ShaderManager.SetUpBuiltInShaders();
       InitializeShaders();
       Output.DecreaseIndent();
       Output.WriteLine("} Shaders Initialized;");

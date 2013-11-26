@@ -22,6 +22,12 @@ namespace SevenEngine
   /// <summary>ShaderManager is used for shader management (loading, storing, hardware instance controling, disposing, and GPU compilation).</summary>
   public static class ShaderManager
   {
+    internal static ShaderProgram _defaultShader;
+    internal static ShaderProgram _textShader;
+
+    internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
+    internal static ShaderProgram TextShader { get { return _textShader; } }
+
     private static AvlTree<VertexShader, string> _vertexShaderDatabase = new AvlTree<VertexShader, string>
     (
       (VertexShader left, VertexShader right) => { return left.Id.CompareTo(right.Id); },
@@ -290,8 +296,46 @@ namespace SevenEngine
       //}
 
       GL.UseProgram(GetShaderProgram(shaderProgramId).GpuHandle);
-      Output.WriteLine("Shader program activated: \"" + shaderProgramId + "\";");
+      Output.WriteLine("Shader program set to default: \"" + shaderProgramId + "\";");
       return true;
+    }
+
+    internal static void SetUpBuiltInShaders()
+    {
+      // Basic Vertex Shader
+      int basicVertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+      GL.ShaderSource(basicVertexShaderHandle, VertexShader.Basic);
+      GL.CompileShader(basicVertexShaderHandle);
+      VertexShader basicVertexShader =
+        new VertexShader("VertexShaderBasic", "Built-In", basicVertexShaderHandle);
+
+      // Basic Fragment Shader
+      int basicFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+      GL.ShaderSource(basicFragmentShaderHandle, FragmentShader.Basic);
+      GL.CompileShader(basicFragmentShaderHandle);
+      FragmentShader basicFragmentShader =
+        new FragmentShader("FragmentShaderBasic", "Built-In", basicFragmentShaderHandle);
+
+      // Basic Fragment Shader
+      int textFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+      GL.ShaderSource(textFragmentShaderHandle, FragmentShader.Text);
+      GL.CompileShader(textFragmentShaderHandle);
+      FragmentShader textFragmentShader =
+        new FragmentShader("FragmentShaderBasic", "Built-In", textFragmentShaderHandle);
+
+      // Make the default shader program
+      int basicProgramHandle = GL.CreateProgram();
+      GL.AttachShader(basicProgramHandle, basicVertexShader.GpuHandle);
+      GL.AttachShader(basicProgramHandle, basicFragmentShader.GpuHandle);
+      GL.LinkProgram(basicProgramHandle);
+      _defaultShader = new ShaderProgram("ShaderProgramBasic", basicProgramHandle);
+
+      // Make the default shader program
+      int textProgramHandle = GL.CreateProgram();
+      GL.AttachShader(textProgramHandle, basicVertexShader.GpuHandle);
+      GL.AttachShader(textProgramHandle, textFragmentShader.GpuHandle);
+      GL.LinkProgram(textProgramHandle);
+      _textShader = new ShaderProgram("ShaderProgramBasic", textProgramHandle);
     }
   }
 }
