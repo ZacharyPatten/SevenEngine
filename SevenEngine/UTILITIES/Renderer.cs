@@ -131,71 +131,6 @@ namespace SevenEngine
     /// <summary>The current font that will be used when rendering text.</summary>
     public static Font Font { get { return _font; } set { _font = value; } }
 
-    /// <summary>Renders text using screen cartesian coordinates and the current Font property.</summary>
-    /// <param name="message">The message to be rendered.</param>
-    /// <param name="x">The leftmost X value to start rendering the text from.</param>
-    /// <param name="y">The lowermost Y value to start rendering the text from.</param>
-    /// <param name="scale">The size relative to the image provided font file.</param>
-    /// <param name="rotation">The rotation about the Z axis IN RADIANS.</param>
-    /// <param name="color">The color you wish the text to be (NOT YET SUPPORTED, I MESSED UP. IM WORKING ON IT).</param>
-    //public static void RenderText(string message, float x, float y, float scale, float rotation, Color color)
-    //{
-    //  // Apply the 2D orthographic matrix transformation
-    //  SetOrthographicMatrix();
-
-    //  // Apply the model view matrix transformations
-    //  GL.MatrixMode(MatrixMode.Modelview);
-    //  GL.LoadIdentity();
-    //  GL.Translate(x * _screenWidth - _screenWidth / 2, y * _screenHeight - _screenHeight / 2, 0);
-    //  if (rotation != 0)
-    //    GL.Rotate(rotation, 0, 0, 1);
-
-    //  // Set up the verteces (hardware instanced for all character sprites)
-    //  GL.BindBuffer(BufferTarget.ArrayBuffer, CharacterSprite.GpuVertexBufferHandle);
-    //  GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
-    //  GL.EnableClientState(ArrayCap.VertexArray);
-
-    //  for (int i = 0; i < message.Length; i++)
-    //  {
-    //    CharacterSprite sprite = _font.Get(message[i]);
-
-    //    // Apply the character offsets and scaling
-    //    GL.Translate(sprite.XOffset * scale, -sprite.YOffset * scale, 0);
-    //    GL.Scale(sprite.OriginalWidth * scale, sprite.OriginalHeight * scale, 0);
-
-    //    // Bind the texture and set up the texture coordinates
-    //    GL.BindTexture(TextureTarget.Texture2D, sprite.Texture.GpuHandle);
-    //    GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GPUTextureCoordinateBufferHandle);
-    //    GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
-    //    GL.EnableClientState(ArrayCap.TextureCoordArray);
-
-    //    // Perform the render
-    //    GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
-
-    //    // Undo the offsets and scaling effects for this character 
-    //    // and advance to the next character position
-    //    GL.Scale(1 / (sprite.OriginalWidth * scale), 1 / (sprite.OriginalHeight * scale), 0);
-    //    if (i + 1 < message.Length)
-    //      GL.Translate(
-    //        // Remove the xoffset
-    //        -sprite.XOffset * scale +
-    //        // Advance by the letter advancement
-    //        sprite.XAdvance * scale +
-    //        // Advance by the possible kearning value
-    //        sprite.CheckKearning(message[i + 1]) * scale,
-    //        // Remove the yoffset and
-    //        sprite.YOffset * scale, 0);
-    //    else
-    //      GL.Translate(
-    //        // Remove the xoffset
-    //        -sprite.XOffset * scale +
-    //        // Advance by the letter advancement
-    //        sprite.XAdvance * scale,
-    //        // Remove the yoffset and
-    //        sprite.YOffset * scale, 0);
-    //  }
-    //}
-
     public static void RenderText(string message, float x, float y, float scale, float rotation, Color color)
     {
       // Apply the 2D orthographic matrix transformation
@@ -213,19 +148,17 @@ namespace SevenEngine
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       GL.EnableClientState(ArrayCap.VertexArray);
 
-      float yRatio = scale / (float)_font.LineHeight;
+      // this standardizes the size (not depedent on sprite sheet size)
+      float sizeRatio = scale / (float)_font.LineHeight;
 
       for (int i = 0; i < message.Length; i++)
       {
         CharacterSprite sprite = _font.Get(message[i]);
 
         // Calculate the per-character transformational values
-        //float ySize = scale;
-        //float yRatio = scale / (float)_font.LineHeight;//scale / (float)sprite.OriginalHeight;
-        float ySize = yRatio * (float)sprite.OriginalHeight;
-        float yOffset = 0;// yRatio * (float)sprite.YOffset;
-
-        float xSize = yRatio * (float)sprite.OriginalWidth;//(sprite.OriginalWidth / (float)sprite.OriginalHeight) * scale;
+        float ySize = sizeRatio * (float)sprite.OriginalHeight;
+        float yOffset = sizeRatio * (float)sprite.YOffset;
+        float xSize = sizeRatio * (float)sprite.OriginalWidth;
         float xRatio = xSize / (float)(sprite.OriginalWidth);
         float xOffset = xRatio * (float)sprite.XOffset;
         float xAdvance = xRatio * (float)sprite.XAdvance;
@@ -247,8 +180,8 @@ namespace SevenEngine
         GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
 
         // Remove the per character transforms and advance to the next charachers position
-        GL.Scale(1 / xSize, 1 / ySize, 0);
-        GL.Translate(-xOffset + xAdvance, yOffset, 0);
+        GL.Scale(1 / xSize, 1 / ySize, 0f);
+        GL.Translate(-xOffset + xAdvance, yOffset, 0f);
       }
     }
 

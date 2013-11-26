@@ -20,9 +20,12 @@ namespace SevenEngine.Texts
   public class CharacterSprite
   {
     // Every character sprite uses the same vertex positions
+    //private static readonly float[] _verteces = new float[] {
+    //  1f, 1f, 0f,   0f, 1f, 0f,   1f, 0f, 0f,
+    //  0f, 0f, 0f,   1f, 0f, 0f,   0f, 1f, 0f };
     private static readonly float[] _verteces = new float[] {
-      1f, 1f, 0f,   0f, 1f, 0f,   1f, 0f, 0f,
-      0f, 0f, 0f,   1f, 0f, 0f,   0f, 1f, 0f };
+      1f, 0f, 0f,   0f, 0f, 0f,   1f, -1f, 0f,
+      0f, -1f, 0f,   1f, -1f, 0f,   0f, 0f, 0f };
     private static readonly int _vertexCount = 6;
     private Texture _texture;
     private static int _gpuVertexBufferHandle;
