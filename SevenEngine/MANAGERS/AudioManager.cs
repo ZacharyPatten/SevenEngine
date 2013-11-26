@@ -23,7 +23,11 @@ namespace SevenEngine
   /// <summary>SoundManager is used for audio management (loading, storing, hardware instance controling, and disposing).</summary>
   internal static class AudioManager
   {
-    private static AvlTree<Sound> _soundDatabase = new AvlTree<Sound>();
+    private static AvlTree<Sound, string> _soundDatabase = new AvlTree<Sound, string>
+    (
+      (Sound left, Sound right) => { return left.Id.CompareTo(right.Id); },
+      (Sound left, string right) => { return left.Id.CompareTo(right); }
+    );
 
     public static void Initialize()
     {

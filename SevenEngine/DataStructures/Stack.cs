@@ -119,25 +119,29 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Allows a foreach loop using a delegate.</summary>
-    /// <param name="traversalFunction">The function within a foreach loop.</param>
+    /// <summary>Performs a functional paradigm top-to-bottom traversal of the stack.</summary>
+    /// <param name="traversalFunction">The function to perform each iteration.</param>
     /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       StackNode looper = _top;
       while (looper != null)
       {
-        if (!traversalFunction(looper.Value)) break;
+        if (!traversalFunction(looper.Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
         looper = looper.Down;
       }
       ReaderUnlock();
+      return true;
     }
 
     /// <summary>Converts the list into a standard array.</summary>
     /// <returns>A standard array of all the items.</returns>
-    /// /// <remarks>Runtime: Theta(n).</remarks>
+    /// <remarks>Runtime: Theta(n).</remarks>
     public Type[] ToArray()
     {
       if (_count == 0)

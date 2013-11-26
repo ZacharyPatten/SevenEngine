@@ -156,20 +156,108 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    public delegate bool TraversalFunction(Type node);
     /// <summary>Allows a foreach loop using a delegate.</summary>
     /// <param name="traversalFunction">The function within a foreach loop.</param>
     /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       ListNode looper = _head;
       while (looper != null)
       {
-        if (!traversalFunction(looper.Value)) break;
+        if (!traversalFunction(looper.Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
         looper = looper.Next;
       }
       ReaderUnlock();
+      return true;
+    }
+
+    public bool Traversal(Func<Object, Type, bool> traversalFunction, Object left)
+    {
+      ReaderLock();
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        if (!traversalFunction(left, looper.Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
+        looper = looper.Next;
+      }
+      ReaderUnlock();
+      return true;
+    }
+
+    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <param name="traversalFunction">The function within a foreach loop.</param>
+    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
+    //public void Traversal(Func<Object, Type, bool> traversalFunction, Object left)
+    //{
+    //  ReaderLock();
+    //  ListNode looper = _head;
+    //  while (looper != null)
+    //  {
+    //    if (!traversalFunction(left, looper.Value)) break;
+    //    looper = looper.Next;
+    //  }
+    //  ReaderUnlock();
+    //}
+
+    //public void Traversal(Func<Type, Type, bool> traversalFunction)
+    //{
+    //  ReaderLock();
+    //  ListNode looper = _head;
+    //  while (looper != null)
+    //  {
+    //    if (!traversalFunction(looper.Value)) break;
+    //    looper = looper.Next;
+    //  }
+    //  ReaderUnlock();
+    //}
+
+    public bool Traversal(
+      Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool> traversalFunction,
+      InterfaceTraversable<Object> otherDataStructure,
+      Func<Type, Object, bool> otherTraversalFunction)
+    {
+      ReaderLock();
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        if (!traversalFunction(looper.Value, otherDataStructure, otherTraversalFunction))
+        {
+          ReaderUnlock();
+          return false;
+        }
+        looper = looper.Next;
+      }
+      ReaderUnlock();
+      return true;
+    }
+
+    public bool Traversal(
+      Func<Type, InterfaceTraversable<Object>, Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool>, bool> traversalFunction,
+      InterfaceTraversable<Object> otherDataStructure,
+      Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool> otherTraversalFunction)
+    {
+      ReaderLock();
+      ListNode looper = _head;
+      while (looper != null)
+      {
+        if (!traversalFunction(looper.Value, otherDataStructure, otherTraversalFunction))
+        {
+          ReaderUnlock();
+          return false;
+        }
+        looper = looper.Next;
+      }
+      ReaderUnlock();
+      return true;
     }
 
     /// <summary>Converts the list into a standard array.</summary>
@@ -370,16 +458,20 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <summary>Performs a functional paradigm traversal of the list.</summary>
     /// <param name="traversalFunction">The function within a foreach loop.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       for (int i = 0; i < _count; i++)
-        traversalFunction(_list[i]);
+        if (!traversalFunction(_list[i]))
+        {
+          ReaderUnlock();
+          return false;
+        }
       ReaderUnlock();
+      return true;
     }
 
     /// <summary>Converts the list array into a standard array.</summary>

@@ -25,6 +25,6 @@ namespace SevenEngine.DataStructures.Interfaces
     /// but in an optimized manor using delegates.</summary>
     /// <param name="traversalFunction">The function to perform on
     /// each node of the iteration.</param>
-    void Traversal(Func<Type, bool> traversalFunction);
+    bool Traversal(Func<Type, bool> traversalFunction);
   }
 }

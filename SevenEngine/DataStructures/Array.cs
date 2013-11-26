@@ -74,17 +74,47 @@ namespace SevenEngine.DataStructures
       _writers = 0;
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Allows a traversal of an array like "foreach",
-    /// but it is optomized to be faster than "foreach".</summary>
-    /// <param name="traversalFunction">The delegate function to 
-    /// perform each iteration.</param>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    /// <summary>Performs a functional paradigm traversal of the array.</summary>
+    /// <param name="traversalFunction">The function to perform during iteration.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       int index = 0;
-      while (index < _array.Length) { traversalFunction(_array[index++]); }
+      while (index < _array.Length)
+      {
+        if (!traversalFunction(_array[index++]))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
       ReaderUnlock();
+      return true;
+    }
+
+    /// <summary>Performs a functional paradigm traversal of the array and allows for data structure optomization.</summary>
+    /// <param name="traversalFunction">The function to perform during iteration.</param>
+    /// <param name="start">The starting index of the traversal.</param>
+    /// <param name="end">The ending index of the traversal.</param>
+    /// <returns>Determines break functionality. (true = continue; false = break)</returns>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool Traversal(Func<Type, bool> traversalFunction, int start, int end)
+    {
+      ReaderLock();
+      if (start > end || end > _array.Length || start < 0)
+        throw new ArrayException("start/end indeces out of bounds during traversal attempt.");
+      int index = start;
+      while (index < end)
+      {
+        if (!traversalFunction(_array[index++]))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
+      ReaderUnlock();
+      return true;
     }
 
     /// <summary>Thread safe enterance for readers.</summary>
@@ -165,17 +195,47 @@ namespace SevenEngine.DataStructures
       _writers = 0;
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Allows a traversal of an array like "foreach",
-    /// but it is optomized to be faster than "foreach".</summary>
-    /// <param name="traversalFunction">The delegate function to 
-    /// perform each iteration.</param>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    /// <summary>Performs a functional paradigm traversal of the array.</summary>
+    /// <param name="traversalFunction">The function to perform during iteration.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       int index = 0;
-      while (index < _array.Length) { traversalFunction(_array[index++]); }
+      while (index < _array.Length)
+      {
+        if (!traversalFunction(_array[index++]))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
       ReaderUnlock();
+      return true;
+    }
+
+    /// <summary>Performs a functional paradigm traversal of the array and allows for data structure optomization.</summary>
+    /// <param name="traversalFunction">The function to perform during iteration.</param>
+    /// <param name="start">The starting index of the traversal.</param>
+    /// <param name="end">The ending index of the traversal.</param>
+    /// <returns>Determines break functionality. (true = continue; false = break)</returns>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool Traversal(Func<Type, bool> traversalFunction, int start, int end)
+    {
+      ReaderLock();
+      if (start > end || end > _array.Length || start < 0)
+        throw new ArrayCyclicException("start/end indeces out of bounds during traversal attempt.");
+      int index = start;
+      while (index < end)
+      {
+        if (!traversalFunction(_array[index++]))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
+      ReaderUnlock();
+      return true;
     }
 
     /// <summary>Thread safe enterance for readers.</summary>

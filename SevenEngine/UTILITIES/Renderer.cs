@@ -204,7 +204,7 @@ namespace SevenEngine
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);
       GL.LoadIdentity();
-      GL.Translate((x * _screenWidth - _screenWidth / 2f), (y * _screenHeight - _screenHeight / 2f), 0);
+      GL.Translate((x * _screenWidth - _screenWidth / 2f), (y * _screenHeight - _screenHeight / 2f), 0f);
       if (rotation != 0)
         GL.Rotate(rotation, 0, 0, 1);
 
@@ -213,26 +213,29 @@ namespace SevenEngine
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       GL.EnableClientState(ArrayCap.VertexArray);
 
+      float yRatio = scale / (float)_font.LineHeight;
+
       for (int i = 0; i < message.Length; i++)
       {
         CharacterSprite sprite = _font.Get(message[i]);
 
         // Calculate the per-character transformational values
-        float xSize = ((sprite.OriginalWidth + sprite.XOffset) / (float)(sprite.OriginalHeight + sprite.YOffset)) * scale;
+        //float ySize = scale;
+        //float yRatio = scale / (float)_font.LineHeight;//scale / (float)sprite.OriginalHeight;
+        float ySize = yRatio * (float)sprite.OriginalHeight;
+        float yOffset = 0;// yRatio * (float)sprite.YOffset;
+
+        float xSize = yRatio * (float)sprite.OriginalWidth;//(sprite.OriginalWidth / (float)sprite.OriginalHeight) * scale;
         float xRatio = xSize / (float)(sprite.OriginalWidth);
         float xOffset = xRatio * (float)sprite.XOffset;
         float xAdvance = xRatio * (float)sprite.XAdvance;
-        // Kearning
+        // Kearning (extra adjustments between specific charasters)
         if (i + 1 < message.Length)
           xAdvance += xRatio * (float)sprite.CheckKearning(message[i + 1]);
 
-        // float ySize = scale;
-        // float yRatio = scale / sprite.OriginalHeight;
-        float yOffset = (scale / (float)sprite.OriginalHeight) * (float)sprite.YOffset;
-
         // Apply the character offsets and scaling
-        GL.Translate(xOffset, -yOffset, 0);
-        GL.Scale(xSize, scale, 0);
+        GL.Translate(xOffset, -yOffset, 0f);
+        GL.Scale(xSize, ySize, 0f);
 
         // Bind the texture and set up the texture coordinates
         GL.BindTexture(TextureTarget.Texture2D, sprite.Texture.GpuHandle);
@@ -244,7 +247,7 @@ namespace SevenEngine
         GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
 
         // Remove the per character transforms and advance to the next charachers position
-        GL.Scale(1 / xSize, 1 / scale, 0);
+        GL.Scale(1 / xSize, 1 / ySize, 0);
         GL.Translate(-xOffset + xAdvance, yOffset, 0);
       }
     }

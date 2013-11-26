@@ -107,20 +107,24 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Allows a foreach loop using a delegate.</summary>
-    /// <param name="foreachFunction">The function within a foreach loop.</param>
+    /// <summary>Performs a functional paradigm newest-to-oldest traversal of the queue.</summary>
+    /// <param name="traversalFunction">The function to perform each iteration.</param>
     /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public void Traversal(Func<Type, bool> foreachFunction)
+    public bool Traversal(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       QueueNode looper = _head;
       while (looper != null)
       {
-        foreachFunction(looper.Value);
+        if (!traversalFunction(looper.Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
         looper = looper.Next;
       }
       ReaderUnlock();
+      return true;
     }
 
     /// <summary>Converts the list into a standard array.</summary>

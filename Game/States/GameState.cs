@@ -18,7 +18,9 @@ namespace Game.States
 
     #region State Fields
 
-    Octree<StaticModel> _octree = new Octree<StaticModel>(0, 0, 0, 1000000, 10);
+    Octree<StaticModel, string> _octree = new Octree<StaticModel, string>(0, 0, 0, 1000000, 10,
+      (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
+      (StaticModel left, string right) => { return left.Id.CompareTo(right); } );
 
     Camera _camera;
     StaticModel _terrain;
@@ -138,18 +140,11 @@ namespace Game.States
       // Use the static class "Renderer"
       // EXAMPLES:
         // Renderer.CurrentCamera = cameraYouWantToUse;
-        //
-
       Renderer.CurrentCamera = _camera;
 
-      // You will alter the projection matrix here. But I'm not finished with the TransformationManager class yet.
       //Renderer.SetProjectionMatrix();
 
-      //List<StaticModel> items = _octree.GetList(-100000, -100000, -100000, 100000, 100000, 100000);
-
       _octree.Traversal(RenderModel, -100000, -100000, -100000, 100000, 100000, 100000);
-
-      //items.Traversal(RenderModel);
 
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
@@ -198,6 +193,7 @@ namespace Game.States
         model.Orientation.W += 3;
       foreach (StaticModel model in _tuxes)
         model.Orientation.W += 3;
+
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;
       _skybox.Position.Z = _camera.Position.Z;

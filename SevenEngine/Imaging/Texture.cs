@@ -39,7 +39,7 @@ namespace SevenEngine.Imaging
     /// <param name="gpuHandle">The GPU handle or location for the start of memory on VRAM.</param>
     /// <param name="width">The width of the texture.</param>
     /// <param name="height">The height of the texture.</param>
-    internal Texture(string id, int gpuHandle, int width, int height)
+    public Texture(string id, int gpuHandle, int width, int height)
     {
       _id = id;
       _gpuHandle = gpuHandle;

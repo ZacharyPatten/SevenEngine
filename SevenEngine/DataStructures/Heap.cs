@@ -20,6 +20,7 @@
 
 using System;
 using System.Threading;
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
@@ -226,7 +227,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a mutable priority heap with dynamic priorities using an array and a hash table.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class HeapArrayDynamic<Type>
+  public class HeapArrayDynamic<Type> : InterfaceTraversable<Type>
   {
     #region HeapArrayDynamicLink
 
@@ -416,23 +417,27 @@ namespace SevenEngine.DataStructures
       _indexingReference[_heapArray[indexTwo].Value] = indexTwo;
     }
 
-    public delegate bool TraversalFunction(Type node);
-    public void Traversal(TraversalFunction traversalFunction)
-    {
-      throw new NotImplementedException();
-      ReaderLock();
-      for (int i = 0; i < _count; i++) { if (!traversalFunction(_heapArray[i].Value)) break; }
-      ReaderUnlock();
-    }
+    /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
+    /// <param name="traversalFunction">The function to perform per iteration.</param>
+    /// <returns>A determining a break in the traversal. (true = continue, false = break)</returns>
+    public bool Traversal(Func<Type, bool> traversalFunction) { return TraversalPreOrder(traversalFunction); }
 
     /// <summary>Implements a foreach .</summary>
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public void TraversalPreOrder(TraversalFunction traversalFunction)
+    public bool TraversalPreOrder(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
-      for (int i = 0; i < _count; i++) { if (!traversalFunction(_heapArray[i].Value)) break; }
+      for (int i = 0; i < _count; i++)
+      {
+        if (!traversalFunction(_heapArray[i].Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
       ReaderUnlock();
+      return true;
     }
 
     /// <summary>Gets all the items in the heap. WARNING: the return items are NOT ordered.</summary>

@@ -20,15 +20,14 @@
 
 using System;
 using System.Threading;
+using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
   #region Octree
 
-  public class Octree<Type>
-    where Type :
-      SevenEngine.DataStructures.Interfaces.InterfaceStringId,
-      SevenEngine.DataStructures.Interfaces.InterfacePositionVector
+  public class Octree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+    where ValueType : InterfaceStringId, InterfacePositionVector
   {
     #region OctreeBound
 
@@ -132,7 +131,7 @@ namespace SevenEngine.DataStructures
     }
 
     #endregion
-
+    
     #region OctreeLeaf
 
     /// <summary>Represents a single node of the octree. Includes references both upwards and
@@ -140,17 +139,17 @@ namespace SevenEngine.DataStructures
     private class OctreeLeaf : OctreeNode
     {
       //private OctreeEntry[] _contents;
-      private Type[] _contents;
+      private ValueType[] _contents;
       private int _count;
 
       //internal OctreeEntry[] Contents { get { return _contents; } }
-      internal Type[] Contents { get { return _contents; } }
+      internal ValueType[] Contents { get { return _contents; } }
       internal int Count { get { return _count; } set { _count = value; } }
       internal bool IsFull { get { return _count == _contents.Length; } }
 
       internal OctreeLeaf(float x, float y, float z, float scale, OctreeBranch parent, int branchFactor)
         : base(x, y, z, scale, parent)
-      { _contents = new Type[branchFactor]; }
+      { _contents = new ValueType[branchFactor]; }
 
       internal int GetIndex(string id)
       {
@@ -160,7 +159,7 @@ namespace SevenEngine.DataStructures
         throw new OctreeException("There is a glitch in my octree, sorry...");
       }
 
-      internal Type GetEntry(string id)
+      internal ValueType GetEntry(string id)
       {
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
@@ -168,7 +167,7 @@ namespace SevenEngine.DataStructures
         throw new OctreeException("There is a glitch in my octree, sorry...");
       }
 
-      internal OctreeLeaf Add(Type addition)
+      internal OctreeLeaf Add(ValueType addition)
       {
         if (_count == _contents.Length)
           throw new OctreeException("There is a glitch in my octree, sorry...");
@@ -181,7 +180,7 @@ namespace SevenEngine.DataStructures
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
           {
-            Type swapStorage = _contents[_count - 1];
+            ValueType swapStorage = _contents[_count - 1];
             _contents[_count - 1] = _contents[i];
             _contents[i] = swapStorage;
             return;
@@ -225,14 +224,14 @@ namespace SevenEngine.DataStructures
 
     private class OctreeReference : SevenEngine.DataStructures.Interfaces.InterfaceStringId
     {
-      private Type _value;
+      private ValueType _value;
       private OctreeLeaf _leaf;
 
       public string Id { get { return _value.Id; } set { _value.Id = value; } }
-      internal Type Value { get { return _value; } set { _value = value; } }
+      internal ValueType Value { get { return _value; } set { _value = value; } }
       internal OctreeLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
 
-      internal OctreeReference(Type value, OctreeLeaf leaf) { _value = value; _leaf = leaf; }
+      internal OctreeReference(ValueType value, OctreeLeaf leaf) { _value = value; _leaf = leaf; }
     }
 
     #endregion
@@ -241,9 +240,11 @@ namespace SevenEngine.DataStructures
     private int _branchFactor;
     private int _count;
     // A database of objects and their current octree nodes
-    private AvlTree<OctreeReference> _referenceDatabase;
+    private AvlTree<OctreeReference, string> _referenceDatabase;
     // The top node of the tree
     private OctreeNode _top;
+
+    private bool _modified;
 
     private Object _lock;
     private int _readers;
@@ -255,15 +256,22 @@ namespace SevenEngine.DataStructures
     /// <param name="z">The z coordinate of the center of the octree.</param>
     /// <param name="scale">How far the tree expands along each dimension.</param>
     /// <param name="branchFactor">The maximum items per octree node before expansion.</param>
-    public Octree(float x, float y, float z, float scale, int branchFactor)
+    public Octree(float x, float y, float z, float scale, int branchFactor,
+      Func<ValueType, ValueType, int> valueComparisonFunction,
+      Func<ValueType, KeyType, int> keyComparisonFunction)
     {
       _branchFactor = branchFactor;
       _top = new OctreeLeaf(x, y, z, scale, null, _branchFactor);
-      _referenceDatabase = new AvlTree<OctreeReference>();
       _count = 0;
       _lock = new Object();
       _readers = 0;
       _writers = 0;
+
+      _referenceDatabase = new AvlTree<OctreeReference, string>
+      (
+        (OctreeReference left, OctreeReference right) => { return left.Id.CompareTo(right.Id); },
+        (OctreeReference left, string right) => { return left.Id.CompareTo(right); }
+      );
     }
 
     /// <summary>Adds an item to the Octree.</summary>
@@ -272,17 +280,18 @@ namespace SevenEngine.DataStructures
     /// <param name="x">The x coordinate of the addition's location.</param>
     /// <param name="y">The y coordinate of the addition's location.</param>
     /// <param name="z">The z coordinate of the addition's location.</param>
-    public void Add(Type addition)
+    public void Add(ValueType addition)
     {
       WriterLock();
       _referenceDatabase.Add(new OctreeReference(addition, Add(addition, _top)));
       _count++;
+      _modified = true;
       WriterUnlock();
     }
 
     /// <summary>Recursively adds an item to the octree and returns the node where the addition was placed
     /// and adjusts the octree structure as needed.</summary>
-    private OctreeLeaf Add(Type addition, OctreeNode octreeNode)
+    private OctreeLeaf Add(ValueType addition, OctreeNode octreeNode)
     {
       // If the node is a leaf we have reached the bottom of the tree
       if (octreeNode is OctreeLeaf)
@@ -303,7 +312,7 @@ namespace SevenEngine.DataStructures
             growth = (OctreeBranch)(_top = new OctreeBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
           else
             growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
-          foreach (Type entry in leaf.Contents)
+          foreach (ValueType entry in leaf.Contents)
             _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
           return Add(addition, growth);
         }
@@ -348,10 +357,10 @@ namespace SevenEngine.DataStructures
       Remove(id, _referenceDatabase.Get(id).Leaf);
       _referenceDatabase.Remove(id);
       _count--;
+      _modified = false;
       WriterUnlock();
     }
 
-    /// <summary>Recursively removes an item from the octree and adjusts the octree structure as needed.</summary>
     private void Remove(string id, OctreeLeaf leaf)
     {
       if (leaf.Count > 1) leaf.Remove(id);
@@ -386,7 +395,7 @@ namespace SevenEngine.DataStructures
     {
       WriterLock();
       OctreeLeaf leaf = _referenceDatabase.Get(id).Leaf;
-      Type entry = leaf.GetEntry(id);
+      ValueType entry = leaf.GetEntry(id);
       entry.Position.X = x;
       entry.Position.Y = y;
       entry.Position.Z = z;
@@ -402,25 +411,33 @@ namespace SevenEngine.DataStructures
     /// <summary>Iterates through the entire tree and ensures each item is in the proper node.</summary>
     public void Update()
     {
+      WriterLock();
+      WriterUnlock();
       throw new NotImplementedException("Sorry, I'm still working on the update function.");
+      _modified = false;
+      WriterUnlock();
     }
 
-    public delegate bool TraversalFunction(Type node);
-    /// <summary>Implements a "foreach" loop using delegates. "break" is possible by returning false.</summary>
-    /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
-    public void Traversal(Func<Type, bool> traversalFunction)
+    /// <summary>Performs a functional paradigm traversal of the octree.</summary>
+    /// <param name="traversalFunction"></param>
+    public bool Traversal(Func<ValueType, bool> traversalFunction)
     {
       ReaderLock();
-      Traversal(traversalFunction, _top);
+      if (!Traversal(traversalFunction, _top))
+      {
+        ReaderUnlock();
+        return false;
+      }
       ReaderUnlock();
+      return true;
     }
-    private bool Traversal(Func<Type, bool> traversalFunction, OctreeNode octreeNode)
+    private bool Traversal(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode)
     {
       if (octreeNode != null)
       {
         if (octreeNode is OctreeLeaf)
         {
-          foreach (Type item in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType item in ((OctreeLeaf)octreeNode).Contents)
             if (!traversalFunction(item)) return false;
         }
         else
@@ -439,20 +456,28 @@ namespace SevenEngine.DataStructures
       }
       return true;
     }
-    
-    public void Traversal(Func<Type, bool> traversalFunction, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+
+    /// <summary>Performs a functional paradigm traversal of the octree with data structure optimization.</summary>
+    /// <param name="traversalFunction">The function to perform per iteration.</param>
+    /// <param name="xMin">The minimum x of a rectangular prism to query the octree.</param>
+    /// <param name="yMin">The minimum y of a rectangular prism to query the octree.</param>
+    /// <param name="zMin">The minimum z of a rectangular prism to query the octree.</param>
+    /// <param name="xMax">The maximum x of a rectangular prism to query the octree.</param>
+    /// <param name="yMax">The maximum y of a rectangular prism to query the octree.</param>
+    /// <param name="zMax">The maximum z of a rectangular prism to query the octree.</param>
+    public void Traversal(Func<ValueType, bool> traversalFunction, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       ReaderLock();
       Traversal(traversalFunction, _top, xMin, yMin, zMin, xMax, yMax, zMax);
       ReaderUnlock();
     }
-    private bool Traversal(Func<Type, bool> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    private bool Traversal(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       if (octreeNode != null)
       {
         if (octreeNode is OctreeLeaf)
         {
-          foreach (Type entry in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType entry in ((OctreeLeaf)octreeNode).Contents)
             //if (!traversalFunction(item)) return false;
             if (entry != null &&
             entry.Position.X > xMin && entry.Position.X < xMax

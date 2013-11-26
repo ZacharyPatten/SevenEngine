@@ -22,11 +22,35 @@ namespace SevenEngine
   /// <summary>ShaderManager is used for shader management (loading, storing, hardware instance controling, disposing, and GPU compilation).</summary>
   public static class ShaderManager
   {
-    private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTree<VertexShader>();
-    private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTree<FragmentShader>();
-    private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTree<GeometryShader>();
-    private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader>();
-    private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree<ShaderProgram>();
+    private static AvlTree<VertexShader, string> _vertexShaderDatabase = new AvlTree<VertexShader, string>
+    (
+      (VertexShader left, VertexShader right) => { return left.Id.CompareTo(right.Id); },
+      (VertexShader left, string right) => { return left.Id.CompareTo(right); }
+    );
+    
+    private static AvlTree<FragmentShader, string> _fragmentShaderDatabase = new AvlTree<FragmentShader, string>
+    (
+      (FragmentShader left, FragmentShader right) => { return left.Id.CompareTo(right.Id); },
+      (FragmentShader left, string right) => { return left.Id.CompareTo(right); }
+    );
+    
+    private static AvlTree<GeometryShader, string> _geometryShaderDatabase = new AvlTree<GeometryShader, string>
+    (
+      (GeometryShader left, GeometryShader right) => { return left.Id.CompareTo(right.Id); },
+      (GeometryShader left, string right) => { return left.Id.CompareTo(right); }
+    );
+    
+    private static AvlTree<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader, string>
+    (
+      (ExtendedGeometryShader left, ExtendedGeometryShader right) => { return left.Id.CompareTo(right.Id); },
+      (ExtendedGeometryShader left, string right) => { return left.Id.CompareTo(right); }
+    );
+    
+    private static AvlTree<ShaderProgram, string> _shaderProgramDatabase = new AvlTree<ShaderProgram, string>
+    (
+      (ShaderProgram left, ShaderProgram right) => { return left.Id.CompareTo(right.Id); },
+      (ShaderProgram left, string right) => { return left.Id.CompareTo(right); }
+    );
 
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
