@@ -39,26 +39,8 @@ namespace SevenEngine.StaticModels
     public Vector Scale { get { return _scale; } set { _scale = value; } }
     /// <summary>Represents the orientation of a static model by a quaternion rotation.</summary>
     public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
-    
-    public string ShaderOverride
-    {
-      get
-      {
-        // I haven't decided whether to throw an exception here or not, for now I will...
-        if (_shaderOverride == null)
-          //return "None";
-          throw new NullReferenceException("There is no shader override for this model: " + _id);
-        return _shaderOverride.Id;
-      }
-      set
-      {
-        // Decrease the number of hardware instancings of old shader
-        if (_shaderOverride != null)
-          _shaderOverride.ExistingReferences--;
-        // Set the new shader by pulling it out of the ShaderProgram database (hardware instancings handle by the "Get" method)
-        _shaderOverride = ShaderManager.GetShaderProgram(value);
-      }
-    }
+    /// <summary>Overrides the default shader while rendering this specific model.</summary>
+    public ShaderProgram ShaderOverride { get { return _shaderOverride; } set { _shaderOverride = value; } }
 
     /// <summary>Creates a blank template for a static model (you will have to construct the model yourself).</summary>
     public StaticModel()

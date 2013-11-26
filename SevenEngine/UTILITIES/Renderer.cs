@@ -137,6 +137,7 @@ namespace SevenEngine
       // Apply the 2D orthographic matrix transformation
       SetOrthographicMatrix();
 
+      // Set the text shader program and pass in the color as a parameter
       GL.UseProgram(ShaderManager.TextShader.GpuHandle);
       int uniformLocation = GL.GetUniformLocation(ShaderManager.TextShader.GpuHandle, "color");
       GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G/ 255f, color.B / 255f, color.A / 255f));
@@ -290,6 +291,11 @@ namespace SevenEngine
     {
       // Apply the 3D projection matrix transformations
       SetProjectionMatrix();
+
+      if (staticModel.ShaderOverride != null)
+        GL.UseProgram(_defaultShaderProgram.GpuHandle);
+      else
+        GL.UseProgram(ShaderManager.DefaultShader.GpuHandle);
 
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);
