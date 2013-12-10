@@ -189,7 +189,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Implements a foreach .</summary>
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public void PreOrderTraversal(TraversalFunction traversalFunction)
+    public void PreOrderTraverse(TraversalFunction traversalFunction)
     {
       ReaderLock();
       for (int i = 0; i < _count; i++) { if (!traversalFunction(_heapArray[i].Value)) break; }
@@ -420,12 +420,14 @@ namespace SevenEngine.DataStructures
     /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
     /// <param name="traversalFunction">The function to perform per iteration.</param>
     /// <returns>A determining a break in the traversal. (true = continue, false = break)</returns>
-    public bool Traversal(Func<Type, bool> traversalFunction) { return TraversalPreOrder(traversalFunction); }
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction) { return TraversalPreOrderBreakable(traversalFunction); }
 
-    /// <summary>Implements a foreach .</summary>
+    public void Traverse(Action<Type> traversalFunction) { TraversalPreOrder(traversalFunction); }
+
+    /// <summary>Implements an imperative traversal of the structure.</summary>
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool TraversalPreOrder(Func<Type, bool> traversalFunction)
+    public bool TraversalPreOrderBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       for (int i = 0; i < _count; i++)
@@ -438,6 +440,16 @@ namespace SevenEngine.DataStructures
       }
       ReaderUnlock();
       return true;
+    }
+
+    /// <summary>Implements an imperative traversal of the structure.</summary>
+    /// <param name="traversalAction">The action to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void TraversalPreOrder(Action<Type> traversalAction)
+    {
+      ReaderLock();
+      for (int i = 0; i < _count; i++) traversalAction(_heapArray[i].Value);
+      ReaderUnlock();
     }
 
     /// <summary>Gets all the items in the heap. WARNING: the return items are NOT ordered.</summary>

@@ -25,8 +25,8 @@ namespace SevenEngine.Mathematics
     /// <summary>4.71238898038468</summary>
     public static readonly float ThreeHalvesPi = 4.71238898038468f;
 
-    public static float ToRadians(float angle) { return angle * Pi / 180; }
-    public static float ToDegrees(float angle) { return angle * 180 / Pi; }
+    public static float ToRadians(float angle) { return angle * Pi / 180f; }
+    public static float ToDegrees(float angle) { return angle * 180f / Pi; }
 
     public static float Sin(float angle)
     {

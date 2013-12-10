@@ -122,7 +122,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Performs a functional paradigm top-to-bottom traversal of the stack.</summary>
     /// <param name="traversalFunction">The function to perform each iteration.</param>
     /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       StackNode looper = _top;
@@ -137,6 +137,18 @@ namespace SevenEngine.DataStructures
       }
       ReaderUnlock();
       return true;
+    }
+
+    public void Traverse(Action<Type> traversalFunction)
+    {
+      ReaderLock();
+      StackNode looper = _top;
+      while (looper != null)
+      {
+        traversalFunction(looper.Value);
+        looper = looper.Down;
+      }
+      ReaderUnlock();
     }
 
     /// <summary>Converts the list into a standard array.</summary>

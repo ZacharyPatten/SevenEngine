@@ -18,13 +18,13 @@ namespace SevenEngine
   /// <summary>StateManager is used for is used for state management (loading, storing).</summary>
   public static class StateManager
   {
-    private static AvlTree<IGameState, string> _stateDatabase = new AvlTree<IGameState, string>
+    private static AvlTree<InterfaceGameState, string> _stateDatabase = new AvlTree<InterfaceGameState, string>
     (
-      (IGameState left, IGameState right) => { return left.Id.CompareTo(right.Id); },
-      (IGameState left, string right) => { return left.Id.CompareTo(right); }
+      (InterfaceGameState left, InterfaceGameState right) => { return left.Id.CompareTo(right.Id); },
+      (InterfaceGameState left, string right) => { return left.Id.CompareTo(right); }
     );
 
-    private static IGameState _currentState = null;
+    private static InterfaceGameState _currentState = null;
 
     /// <summary>Calls the "Update()" function for the current state relative to the timespan since the last update in SECONDS.</summary>
     /// <param name="elapsedTime">The time since the last update call in SECONDS.</param>
@@ -44,13 +44,13 @@ namespace SevenEngine
     /// <summary>Gets a reference to a state.</summary>
     /// <param name="stateId">The name associated with that desired state.</param>
     /// <returns>The desired state.</returns>
-    public static IGameState GetState(string stateId) { return _stateDatabase.Get(stateId); }
+    public static InterfaceGameState GetState(string stateId) { return _stateDatabase.Get(stateId); }
 
     /// <summary>Tries to get a desired state, but returns a bool rather than crashing.</summary>
     /// <param name="stateId">The name of the state to get.</param>
     /// <param name="state">The reference to the state.</param>
     /// <returns>Whether or not it could get the value.</returns>
-    public static bool TryGet(string stateId, out IGameState state)
+    public static bool TryGet(string stateId, out InterfaceGameState state)
     {
       try { state = _stateDatabase.Get(stateId); return true; }
       catch { state = null; return false; }
@@ -59,7 +59,7 @@ namespace SevenEngine
     /// <summary>Adds a game state to the game</summary>
     /// <param name="stateId">What you want this state to be called so that you can access it.</param>
     /// <param name="state">The reference to the game state object to be added.</param>
-    public static void AddState(IGameState state)
+    public static void AddState(InterfaceGameState state)
     {
       if (StateExists(state.Id))
       {
@@ -82,7 +82,7 @@ namespace SevenEngine
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     public static void ChangeState(string stateId)
     {
-      IGameState state;
+      InterfaceGameState state;
       if (!TryGet(stateId, out state))
       {
         Output.ClearIndent();

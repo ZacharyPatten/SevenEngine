@@ -77,11 +77,10 @@ namespace SevenEngine.DataStructures
     /// <summary>Performs a functional paradigm traversal of the array.</summary>
     /// <param name="traversalFunction">The function to perform during iteration.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
-      int index = 0;
-      while (index < _array.Length)
+      for (int index = 0; index < _array.Length; index++)
       {
         if (!traversalFunction(_array[index++]))
         {
@@ -98,14 +97,13 @@ namespace SevenEngine.DataStructures
     /// <param name="start">The starting index of the traversal.</param>
     /// <param name="end">The ending index of the traversal.</param>
     /// <returns>Determines break functionality. (true = continue; false = break)</returns>
-    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction, int start, int end)
+    /// <remarks>Runtime: O((end - start) * traversalFunction).</remarks>
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction, int start, int end)
     {
       ReaderLock();
       if (start > end || end > _array.Length || start < 0)
         throw new ArrayException("start/end indeces out of bounds during traversal attempt.");
-      int index = start;
-      while (index < end)
+      for (int index = start; index < end; index++)
       {
         if (!traversalFunction(_array[index++]))
         {
@@ -115,6 +113,33 @@ namespace SevenEngine.DataStructures
       }
       ReaderUnlock();
       return true;
+    }
+
+    /// <summary>Performs a functional paradigm traversal of the array.</summary>
+    /// <param name="traversalAction">The action to perform during iteration.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction)
+    {
+      ReaderLock();
+      for (int index = 0; index < _array.Length; index++)
+        traversalAction(_array[index++]);
+      ReaderUnlock();
+    }
+
+    /// <summary>Performs a functional paradigm traversal of the array and allows for data structure optomization.</summary>
+    /// <param name="traversalAction">The action to perform during iteration.</param>
+    /// <param name="start">The starting index of the traversal.</param>
+    /// <param name="end">The ending index of the traversal.</param>
+    /// <returns>Determines break functionality. (true = continue; false = break)</returns>
+    /// <remarks>Runtime: O((end - start) * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction, int start, int end)
+    {
+      ReaderLock();
+      if (start > end || end > _array.Length || start < 0)
+        throw new ArrayException("start/end indeces out of bounds during traversal attempt.");
+      for (int index = start; index < end; index++)
+        traversalAction(_array[index++]);
+      ReaderUnlock();
     }
 
     /// <summary>Thread safe enterance for readers.</summary>
@@ -157,7 +182,7 @@ namespace SevenEngine.DataStructures
       get
       {
         ReaderLock();
-        if (index < 0 || index > _array.Length)
+        if (index < 0 || index > _count)
         {
           ReaderUnlock();
           throw new ArrayCyclicException("index out of bounds.");
@@ -169,7 +194,7 @@ namespace SevenEngine.DataStructures
       set
       {
         WriterLock();
-        if (index < 0 || index > _array.Length ||
+        if (index < 0 || index > _count ||
           (index > _start + _count && index < ((_start + _count)) % _array.Length))
         {
           WriterUnlock();
@@ -195,21 +220,38 @@ namespace SevenEngine.DataStructures
       _writers = 0;
     }
 
+    /// <summary>Adds a value to the current end of the cyclic array, will overwrite the begining of the array if it is full.</summary>
+    /// <param name="addition">The value to be added.</param>
+    public void Add(Type addition)
+    {
+      WriterLock();
+      if (_count == _array.Length)
+      {
+        _array[_start++] = addition;
+        _start %= _array.Length;
+      }
+      else
+        _array[(_start + _count++) % _array.Length] = addition;
+      WriterUnlock();
+    }
+
+    public void Remove(int index)
+    {
+      throw new NotImplementedException();
+    }
+
     /// <summary>Performs a functional paradigm traversal of the array.</summary>
     /// <param name="traversalFunction">The function to perform during iteration.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
-      int index = 0;
-      while (index < _array.Length)
-      {
-        if (!traversalFunction(_array[index++]))
+      for (int i = 0; i < _count; i++)
+        if (!traversalFunction(_array[(i + _start) % _array.Length]))
         {
           ReaderUnlock();
           return false;
         }
-      }
       ReaderUnlock();
       return true;
     }
@@ -220,22 +262,44 @@ namespace SevenEngine.DataStructures
     /// <param name="end">The ending index of the traversal.</param>
     /// <returns>Determines break functionality. (true = continue; false = break)</returns>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction, int start, int end)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction, int start, int end)
     {
       ReaderLock();
       if (start > end || end > _array.Length || start < 0)
         throw new ArrayCyclicException("start/end indeces out of bounds during traversal attempt.");
-      int index = start;
-      while (index < end)
-      {
-        if (!traversalFunction(_array[index++]))
+      for (int i = start; i < end; i++)
+        if (!traversalFunction(_array[(i + _start) % _array.Length]))
         {
           ReaderUnlock();
           return false;
         }
-      }
       ReaderUnlock();
       return true;
+    }
+
+    
+    public void Traverse(Action<Type> traversalAction)
+    {
+      ReaderLock();
+      for (int i = 0; i < _count; i++)
+        traversalAction(_array[(i + _start) % _array.Length]);
+      ReaderUnlock();
+    }
+
+    /// <summary>Performs a functional paradigm traversal of the array and allows for data structure optomization.</summary>
+    /// <param name="traversalAction">The function to perform during iteration.</param>
+    /// <param name="start">The starting index of the traversal.</param>
+    /// <param name="end">The ending index of the traversal.</param>
+    /// <returns>Determines break functionality. (true = continue; false = break)</returns>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction, int start, int end)
+    {
+      ReaderLock();
+      if (start > end || end > _array.Length || start < 0)
+        throw new ArrayCyclicException("start/end indeces out of bounds during traversal attempt.");
+      for (int i = start; i < end; i++)
+        traversalAction(_array[(i + _start) % _array.Length]);
+      ReaderUnlock();
     }
 
     /// <summary>Thread safe enterance for readers.</summary>

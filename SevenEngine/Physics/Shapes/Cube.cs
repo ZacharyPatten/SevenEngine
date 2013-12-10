@@ -10,25 +10,25 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
+using SevenEngine.Mathematics;
+
 namespace SevenEngine.Physics.Primitives
 {
   public class Cube
   {
-    float _x, _y, _z, _scale;
+    Vector _position;
+    float _scale;
+    Quaternion _orientation;
 
-    public float X { get { return _x; } set { _x = value; } }
-    public float Y { get { return _y; } set { _y = value; } }
-    public float Z { get { return _z; } set { _z = value; } }
+    public Vector Position { get { return _position; } set { _position = value; } }
     public float Scale { get { return _scale; } set { _scale = value; } }
+    public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
 
-    public float MinimumX { get { return _x - _scale; } }
-    public float MaximumX { get { return _x + _scale; } }
-    public float MinimumY { get { return _y - _scale; } }
-    public float MaximumY { get { return _y + _scale; } }
-    public float MinimumZ { get { return _z - _scale; } }
-    public float MaximumZ { get { return _z + _scale; } }
-
-    public Cube(float x, float y, float z, float scale)
-    { _x = x; _y = y; _z = z; _scale = scale; }
+    public Cube(Vector position, float scale, Quaternion orientation)
+    {
+      _position = position;
+      _scale = scale;
+      _orientation = orientation;
+    }
   }
 }

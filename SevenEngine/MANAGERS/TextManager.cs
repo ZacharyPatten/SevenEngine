@@ -45,7 +45,7 @@ namespace SevenEngine
     {
       ListArray<CharacterSprite> characters = new ListArray<CharacterSprite>(255);
       ListArray<string> textures = new ListArray<string>(1);
-      int lineHeight = -1, fontBase = int.MinValue, widthScale = int.MinValue, heightScale = int.MinValue;
+      int lineHeight = -1, fontBase = int.MinValue;
       using (StreamReader reader = new StreamReader(filePath))
       {
         int lineNumber = 1;

@@ -106,23 +106,26 @@ namespace Game
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
 
       // Loading the meshes
+      // Meshes are parts of a static model that have the same texture. You cannot render static 
+      //   meshes because they do not have transformations. Put them in a static model to render them.
       StaticModelManager.LoadMesh("terrain", FilePath.FromRelative(@"\..\..\Assets\Models\Terrain.obj"));
       StaticModelManager.LoadMesh("RedRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
       StaticModelManager.LoadMesh("Tux", FilePath.FromRelative(@"\..\..\Assets\Models\tux.obj"));
       StaticModelManager.LoadMesh("mountain", FilePath.FromRelative(@"\..\..\Assets\Models\mountain.obj"));
       StaticModelManager.LoadMesh("MushroomCloud", FilePath.FromRelative(@"\..\..\Assets\Models\MushCloud.obj"));
 
-      // forming the models out of the meshes and textures
+      // Forming the static models out of the meshes and textures
+      // Static models represent a collection of static meshes that all have the same transformational values.
       StaticModelManager.LoadModel("MushroomCloud", new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" }, new string[] { "MushroomCloud" });
-      StaticModelManager.LoadModel("Terrain", new string[] { "grass" }, new string[] { "terrain" }, new string[] { "Terrain" });
-      StaticModelManager.LoadModel("Mountain", new string[] { "rock" }, new string[] { "mountain" }, new string[] { "mountain" });
-      StaticModelManager.LoadModel("Mountain2", new string[] { "rock2" }, new string[] { "mountain" }, new string[] { "mountain" });
-      StaticModelManager.LoadModel("Tux", new string[] { "Tux" }, new string[] { "Tux" }, new string[] { "Body" });
-      StaticModelManager.LoadModel("RedRanger", new string[] { "RedRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
-      StaticModelManager.LoadModel("BlueRanger", new string[] { "BlueRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
-      StaticModelManager.LoadModel("BlackRanger", new string[] { "BlackRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
-      StaticModelManager.LoadModel("PinkRanger", new string[] { "PinkRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
-      StaticModelManager.LoadModel("YellowRanger", new string[] { "YellowRanger" }, new string[] { "RedRanger" }, new string[] { "Body" });
+      StaticModelManager.LoadModel("Terrain", new string[] { "Terrain" }, new string[] { "terrain" }, new string[] { "grass" });
+      StaticModelManager.LoadModel("Mountain", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock" });
+      StaticModelManager.LoadModel("Mountain2", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock2" });
+      StaticModelManager.LoadModel("Tux", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "Tux" });
+      StaticModelManager.LoadModel("RedRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "RedRanger" });
+      StaticModelManager.LoadModel("BlueRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlueRanger" });
+      StaticModelManager.LoadModel("BlackRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlackRanger" });
+      StaticModelManager.LoadModel("PinkRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "PinkRanger" });
+      StaticModelManager.LoadModel("YellowRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "YellowRanger" });
     }
 
     public override void InitializeShaders()

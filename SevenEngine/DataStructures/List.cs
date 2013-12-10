@@ -19,6 +19,7 @@
 
 using System;
 using System.Threading;
+using SevenEngine;
 using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
@@ -157,9 +158,9 @@ namespace SevenEngine.DataStructures
     }
 
     /// <summary>Allows a foreach loop using a delegate.</summary>
-    /// <param name="traversalFunction">The function within a foreach loop.</param>
-    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    /// <param name="traversalFunction">The function to perform on each iteration.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       ListNode looper = _head;
@@ -176,88 +177,19 @@ namespace SevenEngine.DataStructures
       return true;
     }
 
-    public bool Traversal(Func<Object, Type, bool> traversalFunction, Object left)
+    /// <summary>Does an imperative traversal of the structure.</summary>
+    /// <param name="traversalAction">The action to perform on each iteration.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction)
     {
       ReaderLock();
       ListNode looper = _head;
       while (looper != null)
       {
-        if (!traversalFunction(left, looper.Value))
-        {
-          ReaderUnlock();
-          return false;
-        }
+        traversalAction(looper.Value);
         looper = looper.Next;
       }
       ReaderUnlock();
-      return true;
-    }
-
-    /// <summary>Allows a foreach loop using a delegate.</summary>
-    /// <param name="traversalFunction">The function within a foreach loop.</param>
-    /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    //public void Traversal(Func<Object, Type, bool> traversalFunction, Object left)
-    //{
-    //  ReaderLock();
-    //  ListNode looper = _head;
-    //  while (looper != null)
-    //  {
-    //    if (!traversalFunction(left, looper.Value)) break;
-    //    looper = looper.Next;
-    //  }
-    //  ReaderUnlock();
-    //}
-
-    //public void Traversal(Func<Type, Type, bool> traversalFunction)
-    //{
-    //  ReaderLock();
-    //  ListNode looper = _head;
-    //  while (looper != null)
-    //  {
-    //    if (!traversalFunction(looper.Value)) break;
-    //    looper = looper.Next;
-    //  }
-    //  ReaderUnlock();
-    //}
-
-    public bool Traversal(
-      Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool> traversalFunction,
-      InterfaceTraversable<Object> otherDataStructure,
-      Func<Type, Object, bool> otherTraversalFunction)
-    {
-      ReaderLock();
-      ListNode looper = _head;
-      while (looper != null)
-      {
-        if (!traversalFunction(looper.Value, otherDataStructure, otherTraversalFunction))
-        {
-          ReaderUnlock();
-          return false;
-        }
-        looper = looper.Next;
-      }
-      ReaderUnlock();
-      return true;
-    }
-
-    public bool Traversal(
-      Func<Type, InterfaceTraversable<Object>, Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool>, bool> traversalFunction,
-      InterfaceTraversable<Object> otherDataStructure,
-      Func<Type, InterfaceTraversable<Object>, Func<Type, Object, bool>, bool> otherTraversalFunction)
-    {
-      ReaderLock();
-      ListNode looper = _head;
-      while (looper != null)
-      {
-        if (!traversalFunction(looper.Value, otherDataStructure, otherTraversalFunction))
-        {
-          ReaderUnlock();
-          return false;
-        }
-        looper = looper.Next;
-      }
-      ReaderUnlock();
-      return true;
     }
 
     /// <summary>Converts the list into a standard array.</summary>
@@ -309,6 +241,8 @@ namespace SevenEngine.DataStructures
     private int _count;
     private int _minimumCapacity;
 
+    // This value determines the starting data structure size
+    // at which my traversal functions will begin dynamic multithreading
     private Object _lock;
     private int _readers;
     private int _writers;
@@ -404,6 +338,7 @@ namespace SevenEngine.DataStructures
     {
       _list = new Type[minimumCapacity];
       _count = 0;
+      _minimumCapacity = minimumCapacity;
       _lock = new Object();
       _readers = 0;
       _writers = 0;
@@ -449,7 +384,7 @@ namespace SevenEngine.DataStructures
     }
 
     /// <summary>Empties the list back and reduces it back to its original capacity.</summary>
-    /// <remarks>Runtime: O(1). Warning: causes considerable garbage collection.</remarks>
+    /// <remarks>Runtime: O(1).</remarks>
     public void Clear()
     {
       WriterLock();
@@ -458,10 +393,10 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    /// <summary>Performs a functional paradigm traversal of the list.</summary>
+    /// <summary>Traverses the structure and performs a function on each entry.</summary>
     /// <param name="traversalFunction">The function within a foreach loop.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       for (int i = 0; i < _count; i++)
@@ -474,14 +409,57 @@ namespace SevenEngine.DataStructures
       return true;
     }
 
+    /// <summary>Traverses the structure and performs a function on each entry.</summary>
+    /// <param name="traversalFunction">The function within a foreach loop.</param>
+    /// <param name="start">The index to start the traversal from.</param>
+    /// <param name="end">The index to end the traversal at.</param>
+    /// <remarks>Runtime: O((end - start) * traversalFunction).</remarks>
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction, int start, int end)
+    {
+      if (start < 0 || start < end || end > _count)
+        throw new ListArrayException("invalid index parameters on traversal");
+      ReaderLock();
+      for (int i = start; i < end; i++)
+        if (!traversalFunction(_list[i]))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      ReaderUnlock();
+      return true;
+    }
+
+    /// <summary>Traverses the structure and performs an action on each entry.</summary>
+    /// <param name="traversalAction">The action within a foreach loop.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction)
+    {
+      ReaderLock();
+      for (int i = 0; i < _count; i++) traversalAction(_list[i]);
+      ReaderUnlock();
+    }
+
+    /// <summary>Traverses the structure and performs a function on each entry.</summary>
+    /// <param name="traversalAction">The action within a foreach loop.</param>
+    /// <param name="start">The index to start the traversal from.</param>
+    /// <param name="end">The index to end the traversal at.</param>
+    /// <remarks>Runtime: O((end - start) * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction, int start, int end)
+    {
+      if (start < 0 || start < end || end > _count)
+        throw new ListArrayException("invalid index parameters on traversal");
+      ReaderLock();
+      for (int i = start; i < end; i++) traversalAction(_list[i]);
+      ReaderUnlock();
+    }
+
     /// <summary>Converts the list array into a standard array.</summary>
     /// <returns>A standard array of all the elements.</returns>
     public Type[] ToArray()
     {
       ReaderLock();
       Type[] array = new Type[_count];
-      for (int i = 0; i < _count; i++)
-        array[i] = _list[i];
+      for (int i = 0; i < _count; i++) array[i] = _list[i];
       ReaderUnlock();
       return array;
     }

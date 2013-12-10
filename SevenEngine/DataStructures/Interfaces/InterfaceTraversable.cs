@@ -21,10 +21,12 @@ namespace SevenEngine.DataStructures.Interfaces
   /// that is implementing this interface.</typeparam>
   public interface InterfaceTraversable<Type>
   {
-    /// <summary>Implements a traversal function similar to "foreach"
-    /// but in an optimized manor using delegates.</summary>
-    /// <param name="traversalFunction">The function to perform on
-    /// each node of the iteration.</param>
-    bool Traversal(Func<Type, bool> traversalFunction);
+    /// <summary>Traverses a set with an imperative function to perform on each item.</summary>
+    /// <param name="traversalFunction">The function to perform on each node of the iteration.</param>
+    bool TraverseBreakable(Func<Type, bool> traversalFunction);
+
+    /// <summary>Traverses a set with an imperative action to perform on each item.</summary>
+    /// <param name="traversalAction">The action to perform on each node of the iteration.</param>
+    void Traverse(Action<Type> traversalAction);
   }
 }

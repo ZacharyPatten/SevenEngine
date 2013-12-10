@@ -28,7 +28,6 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
   public class AvlTree<ValueType, KeyType> : InterfaceTraversable<ValueType>
-    //where Type : InterfaceStringId
   {
     #region AvlTreeNode
 
@@ -149,7 +148,6 @@ namespace SevenEngine.DataStructures
       AvlTreeNode _current = _avlTree;
       while (_current != null)
       {
-        //int compareResult = id.CompareTo(_current.Value.Id);
         int compareResult = _keyComparisonFunction(_current.Value, get);
         if (compareResult == 0)
         {
@@ -175,7 +173,6 @@ namespace SevenEngine.DataStructures
       AvlTreeNode _current = _avlTree;
       while (_current != null)
       {
-        //int compareResult = id.CompareTo(_current.Value.Id);
         int compareResult = _keyComparisonFunction(_current.Value, getCheck);
         if (compareResult == 0)
         {
@@ -203,7 +200,6 @@ namespace SevenEngine.DataStructures
     private AvlTreeNode Add(ValueType addition, AvlTreeNode avlTree)
     {
       if (avlTree == null) return new AvlTreeNode(addition);
-      //int compResult = addition.Id.CompareTo(avlTree.Value.Id);
       int compareResult = _valueComparisonFunction(avlTree.Value, addition);
       if (compareResult == 0)
         throw new AvlTreeException("Attempting to add an already existing id exists.");
@@ -233,7 +229,6 @@ namespace SevenEngine.DataStructures
       if (avlTree != null)
       {
         int compareResult = _keyComparisonFunction(avlTree.Value, removal);
-        //int compResult = removal.CompareTo(avlTree.Value.Id);
         if (compareResult == 0)
         {
           if (avlTree.RightChild != null)
@@ -403,7 +398,12 @@ namespace SevenEngine.DataStructures
     /// <summary>Performs a functional paradigm in-order traversal of the AVL tree.</summary>
     /// <param name="traversalFunction">The function to perform during iteration.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool Traversal(Func<ValueType, bool> traversalFunction) { return TraversalInOrder(traversalFunction); }
+    public bool TraverseBreakable(Func<ValueType, bool> traversalFunction) { return TraversalInOrder(traversalFunction); }
+
+    /// <summary>Performs a functional paradigm in-order traversal of the AVL tree.</summary>
+    /// <param name="traversalAction">The action to perform during iteration.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public void Traverse(Action<ValueType> traversalAction) { TraversalInOrder(traversalAction); }
 
     /// <summary>Performs a functional paradigm in-order traversal of the AVL tree.</summary>
     /// <param name="traversalFunction">The function to perform during iteration.</param>
@@ -428,6 +428,22 @@ namespace SevenEngine.DataStructures
         if (!TraversalInOrder(traversalFunction, avltreeNode.RightChild)) return false;
       }
       return true;
+    }
+
+    public void TraversalInOrder(Action<ValueType> traversalFunction)
+    {
+      ReaderLock();
+      TraversalInOrder(traversalFunction, _avlTree);
+      ReaderUnlock();
+    }
+    private void TraversalInOrder(Action<ValueType> traversalFunction, AvlTreeNode avltreeNode)
+    {
+      if (avltreeNode != null)
+      {
+        TraversalInOrder(traversalFunction, avltreeNode.LeftChild);
+        traversalFunction(avltreeNode.Value);
+        TraversalInOrder(traversalFunction, avltreeNode.RightChild);
+      }
     }
 
     /// <summary>Performs a functional paradigm post-order traversal of the AVL tree.</summary>

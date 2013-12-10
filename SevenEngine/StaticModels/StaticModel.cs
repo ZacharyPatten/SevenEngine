@@ -27,10 +27,10 @@ namespace SevenEngine.StaticModels
     protected Vector _scale;
     protected Quaternion _orientation;
     protected ShaderProgram _shaderOverride;
-    protected List<StaticMesh> _meshes;
+    protected AvlTree<StaticMesh, string> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public List<StaticMesh> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public AvlTree<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
@@ -43,11 +43,15 @@ namespace SevenEngine.StaticModels
     public ShaderProgram ShaderOverride { get { return _shaderOverride; } set { _shaderOverride = value; } }
 
     /// <summary>Creates a blank template for a static model (you will have to construct the model yourself).</summary>
-    public StaticModel()
+    public StaticModel(string id)
     {
-      _id = "From Scratch";
+      _id = id;
       _shaderOverride = null;
-      _meshes = new List<StaticMesh>();
+      _meshes = new AvlTree<StaticMesh, string>
+      (
+        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
+        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
+      );
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
       _orientation = Quaternion.FactoryIdentity;
@@ -58,14 +62,18 @@ namespace SevenEngine.StaticModels
     /// <param name="textures">An array of the texture ids for each sub-mesh of this model.</param>
     /// <param name="meshes">An array of each mesh id for this model.</param>
     /// <param name="meshNames">An array of mesh names for this specific instanc3e of a static model.</param>
-    internal StaticModel(string staticModelId, string[] textures, string[] meshes, string[] meshNames)
+    internal StaticModel(string staticModelId, string[] meshNames, string[] meshes, string[] textures)
     {
       if (textures.Length != meshes.Length && textures.Length != meshNames.Length)
         throw new Exception("Attempting to create a static model with non-matching number of components.");
 
       _id = staticModelId;
       //_meshes = new ListArray<Link<Texture, StaticMesh>>(10);
-      _meshes = new List<StaticMesh>();
+      _meshes = new AvlTree<StaticMesh, string>
+      (
+        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
+        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
+      );
 
       for (int i = 0; i < textures.Length; i++)
         _meshes.Add(new StaticMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i]).StaticMeshInstance));
@@ -79,7 +87,7 @@ namespace SevenEngine.StaticModels
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, List<StaticMesh> meshes)
+    internal StaticModel(string staticModelId, AvlTree<StaticMesh, string> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;

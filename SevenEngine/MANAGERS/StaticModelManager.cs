@@ -57,16 +57,19 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      List<StaticMesh> meshes = new List<StaticMesh>();
+      AvlTree<StaticMesh, string> meshes = new AvlTree<StaticMesh, string>
+      (
+        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
+        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
+      );
       //modelToGet.Meshes.TraversalFull<List<StaticMesh>>(CopyMeshes, meshes);
-      modelToGet.Meshes.Traversal
+      modelToGet.Meshes.Traverse
       (
         (StaticMesh mesh) =>
         {
           mesh.Texture.ExistingReferences++;
           mesh.StaticMeshInstance.ExistingReferences++;
           meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
-          return true;
         }
       );
 
@@ -110,8 +113,11 @@ namespace SevenEngine
       Output.WriteLine("Model file loaded: \"" + pathSplit[pathSplit.Length - 1] + "\".");
     }
 
-    public static void LoadModel(string staticModelId, string[] textures, string[] meshs, string[] meshNames)
-    { _staticModelDatabase.Add(new StaticModel(staticModelId, textures, meshs, meshNames)); }
+    public static void LoadModel(string staticModelId, string[] meshNames, string[] meshs, string[] textures)
+    { _staticModelDatabase.Add(new StaticModel(staticModelId, meshNames, meshs, textures)); }
+
+    public static void LoadModel(string staticModelId)
+    { _staticModelDatabase.Add(new StaticModel(staticModelId)); }
 
     public static void RemoveModel(string staticMeshId)
     {
@@ -369,7 +375,11 @@ namespace SevenEngine
       Texture texture = null;
       string meshName = "defaultMeshName";
 
-      List<StaticMesh> meshes = new List<StaticMesh>();
+      AvlTree<StaticMesh, string> meshes = new AvlTree<StaticMesh, string>
+      (
+        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
+        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
+      );
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))

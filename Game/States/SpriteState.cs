@@ -8,7 +8,7 @@ using SevenEngine.Mathematics;
 
 namespace Game.States
 {
-  public class SpriteState : IGameState
+  public class SpriteState : InterfaceGameState
   {
     private string _id;
     private bool _isReady;

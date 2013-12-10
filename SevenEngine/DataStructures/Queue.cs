@@ -110,7 +110,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Performs a functional paradigm newest-to-oldest traversal of the queue.</summary>
     /// <param name="traversalFunction">The function to perform each iteration.</param>
     /// <remarks>Runtime: O(n * foreachFunction).</remarks>
-    public bool Traversal(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
       QueueNode looper = _head;
@@ -125,6 +125,18 @@ namespace SevenEngine.DataStructures
       }
       ReaderUnlock();
       return true;
+    }
+
+    public void Traverse(Action<Type> traversalFunction)
+    {
+      ReaderLock();
+      QueueNode looper = _head;
+      while (looper != null)
+      {
+        traversalFunction(looper.Value);
+        looper = looper.Next;
+      }
+      ReaderUnlock();
     }
 
     /// <summary>Converts the list into a standard array.</summary>

@@ -137,6 +137,8 @@ namespace SevenEngine
       // Apply the 2D orthographic matrix transformation
       SetOrthographicMatrix();
 
+      rotation = Trigonometry.ToDegrees(rotation);
+
       // Set the text shader program and pass in the color as a parameter
       GL.UseProgram(ShaderManager.TextShader.GpuHandle);
       int uniformLocation = GL.GetUniformLocation(ShaderManager.TextShader.GpuHandle, "color");
@@ -241,6 +243,11 @@ namespace SevenEngine
       // Apply the 3D projection matrix transformation
       SetProjectionMatrix();
 
+      //if (skybox.ShaderOverride != null)
+      //  GL.UseProgram(_defaultShaderProgram.GpuHandle);
+      //else
+      //  GL.UseProgram(ShaderManager.DefaultShader.GpuHandle);
+
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);
       // Apply the camera transformation
@@ -308,7 +315,7 @@ namespace SevenEngine
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       // Call the drawing functions for each mesh within the model
-      staticModel.Meshes.Traversal(DrawStaticModelPart);
+      staticModel.Meshes.TraverseBreakable(DrawStaticModelPart);
     }
 
     private static bool DrawStaticModelPart(StaticMesh subStaticModel)

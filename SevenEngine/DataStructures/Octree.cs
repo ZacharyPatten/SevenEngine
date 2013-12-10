@@ -420,10 +420,10 @@ namespace SevenEngine.DataStructures
 
     /// <summary>Performs a functional paradigm traversal of the octree.</summary>
     /// <param name="traversalFunction"></param>
-    public bool Traversal(Func<ValueType, bool> traversalFunction)
+    public bool TraverseBreakable(Func<ValueType, bool> traversalFunction)
     {
       ReaderLock();
-      if (!Traversal(traversalFunction, _top))
+      if (!TraverseBreakable(traversalFunction, _top))
       {
         ReaderUnlock();
         return false;
@@ -431,30 +431,61 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool Traversal(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode)
+    private bool TraverseBreakable(Func<ValueType, bool> traversalFunctionBreakable, OctreeNode octreeNode)
     {
       if (octreeNode != null)
       {
         if (octreeNode is OctreeLeaf)
         {
           foreach (ValueType item in ((OctreeLeaf)octreeNode).Contents)
-            if (!traversalFunction(item)) return false;
+            if (!traversalFunctionBreakable(item)) return false;
         }
         else
         {
           // The current node is a branch
           OctreeBranch branch = (OctreeBranch)octreeNode;
-          if (!Traversal(traversalFunction, branch.Children[0])) return false;
-          if (!Traversal(traversalFunction, branch.Children[1])) return false;
-          if (!Traversal(traversalFunction, branch.Children[2])) return false;
-          if (!Traversal(traversalFunction, branch.Children[3])) return false;
-          if (!Traversal(traversalFunction, branch.Children[4])) return false;
-          if (!Traversal(traversalFunction, branch.Children[5])) return false;
-          if (!Traversal(traversalFunction, branch.Children[6])) return false;
-          if (!Traversal(traversalFunction, branch.Children[7])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[0])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[1])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[2])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[3])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[4])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[5])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[6])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[7])) return false;
         }
       }
       return true;
+    }
+
+    public void Traverse(Action<ValueType> traversalFunction)
+    {
+      ReaderLock();
+      Traverse(traversalFunction, _top);
+      ReaderUnlock();
+    }
+    private void Traverse(Action<ValueType> traversalFunction, OctreeNode octreeNode)
+    {
+      if (octreeNode != null)
+      {
+        if (octreeNode is OctreeLeaf)
+        {
+          foreach (ValueType item in ((OctreeLeaf)octreeNode).Contents)
+            traversalFunction(item);
+        }
+        else
+        {
+          // The current node is a branch
+          OctreeBranch branch = (OctreeBranch)octreeNode;
+          Traverse(traversalFunction, branch.Children[0]);
+          Traverse(traversalFunction, branch.Children[1]);
+          Traverse(traversalFunction, branch.Children[2]);
+          Traverse(traversalFunction, branch.Children[3]);
+          Traverse(traversalFunction, branch.Children[4]);
+          Traverse(traversalFunction, branch.Children[5]);
+          Traverse(traversalFunction, branch.Children[6]);
+          Traverse(traversalFunction, branch.Children[7]);
+        }
+      }
     }
 
     /// <summary>Performs a functional paradigm traversal of the octree with data structure optimization.</summary>
@@ -465,13 +496,14 @@ namespace SevenEngine.DataStructures
     /// <param name="xMax">The maximum x of a rectangular prism to query the octree.</param>
     /// <param name="yMax">The maximum y of a rectangular prism to query the octree.</param>
     /// <param name="zMax">The maximum z of a rectangular prism to query the octree.</param>
-    public void Traversal(Func<ValueType, bool> traversalFunction, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    public bool TraverseBreakable(Func<ValueType, bool> traversalFunction, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       ReaderLock();
-      Traversal(traversalFunction, _top, xMin, yMin, zMin, xMax, yMax, zMax);
+      bool returnValue = TraverseBreakable(traversalFunction, _top, xMin, yMin, zMin, xMax, yMax, zMax);
       ReaderUnlock();
+      return returnValue;
     }
-    private bool Traversal(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    private bool TraverseBreakable(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       if (octreeNode != null)
       {
@@ -497,11 +529,49 @@ namespace SevenEngine.DataStructures
             else if (xMin > node.X + node.Scale) continue;
             else if (yMin > node.Y + node.Scale) continue;
             else if (zMin > node.Z + node.Scale) continue;
-            if (!Traversal(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax)) return false;
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax)) return false;
           }
         }
       }
       return true;
+    }
+
+    public void Traverse(Action<ValueType> traversalFunction, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    {
+      ReaderLock();
+      Traverse(traversalFunction, _top, xMin, yMin, zMin, xMax, yMax, zMax);
+      ReaderUnlock();
+    }
+    private void Traverse(Action<ValueType> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    {
+      if (octreeNode != null)
+      {
+        if (octreeNode is OctreeLeaf)
+        {
+          foreach (ValueType entry in ((OctreeLeaf)octreeNode).Contents)
+            //if (!traversalFunction(item)) return false;
+            if (entry != null &&
+            entry.Position.X > xMin && entry.Position.X < xMax
+            && entry.Position.Y > yMin && entry.Position.Y < yMax
+            && entry.Position.Z > zMin && entry.Position.Z < zMax)
+              traversalFunction(entry);
+        }
+        else
+        {
+          // The current node is a branch
+          foreach (OctreeNode node in ((OctreeBranch)octreeNode).Children)
+          {
+            if (node == null) continue;
+            else if (xMax < node.X - node.Scale) continue;
+            else if (yMax < node.Y - node.Scale) continue;
+            else if (zMax < node.Z - node.Scale) continue;
+            else if (xMin > node.X + node.Scale) continue;
+            else if (yMin > node.Y + node.Scale) continue;
+            else if (zMin > node.Z + node.Scale) continue;
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          }
+        }
+      }
     }
 
     /// <summary>Thread safe enterance for readers.</summary>

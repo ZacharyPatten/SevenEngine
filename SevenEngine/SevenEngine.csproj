@@ -37,7 +37,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
@@ -71,7 +71,6 @@
     <Compile Include="DataStructures\Array.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
     <Compile Include="DataStructures\Heap.cs" />
-    <Compile Include="DataStructures\Interfaces\InterfaceLinearlyExpandable.cs" />
     <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
     <Compile Include="DataStructures\Interfaces\InterfaceStringId.cs" />
     <Compile Include="DataStructures\Interfaces\InterfaceTraversable.cs" />
@@ -80,21 +79,20 @@
     <Compile Include="DataStructures\Queue.cs" />
     <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
-    <Compile Include="IGameState.cs" />
+    <Compile Include="InterfaceGameState.cs" />
     <Compile Include="Mathematics\Foundations.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Mathematics\Trigonometry.cs" />
-    <Compile Include="Physics\InterfaceGas.cs" />
-    <Compile Include="Physics\InterfaceLiquid.cs" />
-    <Compile Include="Physics\InterfacePlasma.cs" />
-    <Compile Include="Physics\InterfaceSolid.cs" />
+    <Compile Include="Physics\Matter.cs" />
     <Compile Include="Physics\Shapes\Cone.cs" />
     <Compile Include="Physics\Shapes\Cube.cs" />
     <Compile Include="Physics\Shapes\Cylinder.cs" />
     <Compile Include="Physics\Shapes\RectangularPrism.cs" />
+    <Compile Include="Physics\Shapes\Interfaces\InterfaceShape.cs" />
     <Compile Include="Physics\Shapes\Sphere.cs" />
     <Compile Include="Physics\Shapes\TriangularPrism.cs" />
     <Compile Include="Physics\Shapes\TriangularPyramid.cs" />
+    <Compile Include="Physics\Substance.cs" />
     <Compile Include="StaticModels\StaticMesh.cs" />
     <Compile Include="StaticModels\StaticMeshInstance.cs" />
     <Compile Include="StaticModels\StaticModel.cs" />
@@ -107,6 +105,7 @@
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="Shaders\VertexShader.cs" />
     <Compile Include="UTILITIES\FilePath.cs" />
+    <Compile Include="MANAGERS\HardwareManager.cs" />
     <Compile Include="UTILITIES\Light.cs" />
     <Compile Include="UTILITIES\SkyBox.cs" />
     <Compile Include="UTILITIES\Camera.cs" />

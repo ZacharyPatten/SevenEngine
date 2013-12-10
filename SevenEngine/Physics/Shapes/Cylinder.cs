@@ -20,6 +20,7 @@ namespace SevenEngine.Physics.Primitives
     public float Y { get { return _y; } set { _y = value; } }
     public float Z { get { return _z; } set { _z = value; } }
     public float Radius { get { return _radius; } set { _radius = value; } }
+    public float Scale { get { return _scale; } set { _scale = value; } }
 
     public float MinimumX { get { return _x - _radius; } }
     public float MaximumX { get { return _x + _radius; } }

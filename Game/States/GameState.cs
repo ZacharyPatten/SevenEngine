@@ -8,7 +8,7 @@ using SevenEngine.Mathematics;
 
 namespace Game.States
 {
-  public class GameState : IGameState
+  public class GameState : InterfaceGameState
   {
     private string _id;
     private bool _isReady;
@@ -144,7 +144,10 @@ namespace Game.States
 
       //Renderer.SetProjectionMatrix();
 
-      _octree.Traversal(RenderModel, -100000, -100000, -100000, 100000, 100000, 100000);
+      _octree.Traverse(
+        (StaticModel model) => { 
+          Renderer.DrawStaticModel(model); },
+        -100000, -100000, -100000, 100000, 100000, 100000);
 
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);
@@ -157,21 +160,13 @@ namespace Game.States
 
       // EXAMPLE:
         // Renderer.RenderText("whatToWrite", x, y, size, rotation, color);
-      // NOTE: color doesn't work yet, and the size is relative to the size of the character
-        // on the sprite sheet (I'll fix that as soon as I can)
       Renderer.RenderText("Welcome To", 0f, 1f, 50f, 0, Color.Black);
       Renderer.RenderText("SevenEngine!", .15f, .95f, 50f, 0, Color.Teal);
 
-      Renderer.RenderText("Close: ESC", 0f, .2f, 30f, 0, Color.Brown);
+      Renderer.RenderText("Close: ESC", 0f, .2f, 30f, 0f, Color.White);
       Renderer.RenderText("Fullscreen: F1", 0f, .15f, 30f, 0, Color.SteelBlue);
       Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, 30f, 0, Color.Tomato);
       Renderer.RenderText("Camera Angle: j, k, l, u", 0f, .05f, 30f, 0, Color.Yellow);
-    }
-
-    private bool RenderModel(StaticModel model)
-    {
-      Renderer.DrawStaticModel(model);
-      return true;
     }
 
     #endregion
