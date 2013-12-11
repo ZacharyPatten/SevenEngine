@@ -20,12 +20,12 @@ namespace SevenEngine
   {
     public static string FromRelative(string path)
     {
-      if (path[0] == '\\' && path[path.Length - 1] == '\\')
-        return Directory.GetCurrentDirectory() + @"\" + Path.Combine(path.Split('\\')) + @"\";
-      else if (path[0] == '\\')
-        return Directory.GetCurrentDirectory() + @"\" + Path.Combine(path.Split('\\'));
-      else if (path[path.Length - 1] == '\\')
-        return Directory.GetCurrentDirectory() + Path.Combine(path.Split('\\') + @"\");
+      if ((path[0] == '\\' || path[0] == '/') && (path[path.Length - 1] == '\\' || path[path.Length - 1] == '/'))
+        return Directory.GetCurrentDirectory() + Path.PathSeparator + Path.Combine(path.Split('\\')) + Path.PathSeparator;
+      else if (path[0] == '\\' || path[0] == '/')
+        return Directory.GetCurrentDirectory() + Path.PathSeparator + Path.Combine(path.Split('\\'));
+      else if (path[path.Length - 1] == '\\' || path[path.Length - 1] == '/')
+        return Directory.GetCurrentDirectory() + Path.Combine(path.Split('\\')) + Path.PathSeparator;
       else
         return Directory.GetCurrentDirectory() + Path.Combine(path.Split('\\'));
     }
