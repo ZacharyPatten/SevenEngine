@@ -127,6 +127,43 @@ namespace SevenEngine.DataStructures
       throw new ListException("Attempting to remove a non-existing id value.");
     }
 
+    /// <summary>Removes the first equality by object reference.</summary>
+    /// <param name="removal">The reference to the item to remove.</param>
+    public void RemoveFirst(ValueType removal)
+    {
+      WriterLock();
+      if (_head == null)
+        throw new ListException("Attempting to remove a non-existing id value.");
+      if (_head.Value.Equals(removal))
+      {
+        _head = _head.Next;
+        _count--;
+        WriterUnlock();
+        return;
+      }
+      ListNode listNode = _head;
+      while (listNode != null)
+      {
+        if (listNode.Next == null)
+        {
+          WriterUnlock();
+          throw new ListException("Attempting to remove a non-existing id value.");
+        }
+        else if (_head.Value.Equals(removal))
+        {
+          if (listNode.Next.Equals(_tail))
+            _tail = listNode;
+          listNode.Next = listNode.Next.Next;
+          WriterUnlock();
+          return;
+        }
+        else
+          listNode = listNode.Next;
+      }
+      WriterUnlock();
+      throw new ListException("Attempting to remove a non-existing id value.");
+    }
+
     /*/// <summary>Allows you to rename an entry within this list.</summary>
     /// <param name="oldName">The id of the list entry to rename.</param>
     /// <param name="newName">The new id to apply to the node.</param>
@@ -384,6 +421,31 @@ namespace SevenEngine.DataStructures
         _list[i] = _list[i + 1];
       _count--;
       WriterUnlock();
+    }
+
+    /// <summary>Removes the first equality by object reference.</summary>
+    /// <param name="removal">The reference to the item to remove.</param>
+    public void RemoveFirst(Type removal)
+    {
+      WriterLock();
+      for (int index = 0; index < _count; index++)
+        if (_list[index].Equals(removal))
+        {
+          if (_count < _list.Length / 4 && _list.Length / 2 > _minimumCapacity)
+          {
+            Type[] newList = new Type[_list.Length / 2];
+            for (int i = 0; i < _count; i++)
+              newList[i] = _list[i];
+            _list = newList;
+          }
+          for (int i = index; i < _count; i++)
+            _list[i] = _list[i + 1];
+          _count--;
+          WriterUnlock();
+          return;
+        }
+      WriterUnlock();
+      throw new ListArrayException("attempting to remove a non-existing value.");
     }
 
     /// <summary>Empties the list back and reduces it back to its original capacity.</summary>
