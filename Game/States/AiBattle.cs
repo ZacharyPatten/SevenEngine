@@ -207,8 +207,8 @@ namespace Game.States
       _octree.Traverse(
         (Unit model) =>
         {
-          Renderer.DrawStaticModel(model.StaticModel);
-        model.AI(_octree);
+          if (!model.IsDead)
+            Renderer.DrawStaticModel(model.StaticModel);
         },
         -100000, -100000, -100000, 100000, 100000, 100000);
 
@@ -270,6 +270,25 @@ namespace Game.States
       //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
       //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
       //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
+
+      _octree.Traverse((Unit model) => { model.AI(_octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
+
+      OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10,
+        (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },
+        (Unit left, string right) => { return left.Id.CompareTo(right); });
+      foreach (Unit unit in _zackMelee)
+        octree.Add(unit);
+      foreach (Unit unit in _zackRanged)
+        octree.Add(unit);
+      foreach (Unit unit in _zackKamakazi)
+        octree.Add(unit);
+      foreach (Unit unit in _killemMelee)
+        octree.Add(unit);
+      foreach (Unit unit in _killemRanged)
+        octree.Add(unit);
+      foreach (Unit unit in _killemKamakazi)
+        octree.Add(unit);
+      _octree = octree;
 
       return "Don't Change States";
     }
