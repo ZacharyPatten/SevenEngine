@@ -12,6 +12,7 @@ namespace Game.Units
     protected int _health;
     protected int _damage;
     protected float _viewDistance;
+    protected float _attackRange;
     protected float _moveSpeed;
     protected StaticModel _staticModel;
     protected bool _isDead;
@@ -23,7 +24,7 @@ namespace Game.Units
     public float MoveSpeed { get { return _moveSpeed; } set { _moveSpeed = value; } }
     public StaticModel StaticModel { get { return _staticModel; } set { _staticModel = value; } }
     public Vector Position { get { return _staticModel.Position; } set { _staticModel.Position = value; } }
-    public bool IsDead { get { return _isDead; } }
+    public bool IsDead { get { return _isDead; } set { _isDead = value; } }
     
     public Unit(string id, StaticModel staticModel)
     {
@@ -32,6 +33,6 @@ namespace Game.Units
       _isDead = false;
     }
 
-    public virtual void AI(ListArray<Unit> unitsInView) { }
+    public virtual void AI(Octree<Unit, string> octree) { throw new NotImplementedException(); }
   }
 }

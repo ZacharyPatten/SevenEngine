@@ -1,5 +1,6 @@
 ﻿using System;
 
+using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
 
 namespace Game.Units
@@ -21,7 +22,17 @@ namespace Game.Units
       _health = random.Next(_healthMin, _healthMax);
       _damage = random.Next(_damageMin, _damageMax);
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);
-      _moveSpeed = random.Next(_viewDistanceMin, _viewDistanceMax) / 1000f;
+      _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 1000f;
+    }
+
+    protected void Attack(Octree<Unit, string> octree)
+    {
+      octree.Traverse
+      (
+        (Unit unit) => {  },
+        _attackRange, _attackRange, _attackRange, _attackRange, _attackRange, _attackRange
+      );
+      _isDead = true;
     }
   }
 }

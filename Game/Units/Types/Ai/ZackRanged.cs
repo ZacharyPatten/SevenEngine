@@ -1,23 +1,43 @@
 ﻿using System;
 
+using Game.States;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
 
-namespace Game.Units.Types.Ai
+namespace Game.Units
 {
   public class ZackRanged : Ranged
   {
+    Unit _target;
+
     public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(ListArray<Unit> unitsInView)
+    public override void AI(Octree<Unit, string> octree)
     {
-      for (int i = 0; i < unitsInView.Count; i++)
+      // Targeting
+      if (_target == null || _target.IsDead)
       {
-        if (unitsInView[i] is KillemMelee)
-        {
-          Position += (unitsInView[i].Position - Position) * MoveSpeed;
-        }
+        octree.TraverseBreakable
+        (
+          (Unit current) =>
+          {
+            if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !_target.IsDead)
+              _target = current;
+            return false;
+          }
+        );
+      }
+      // Attacking
+      else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
+      {
+        if (Attack(_target))
+          _target = null;
+      }
+      // Moving
+      else
+      {
+
       }
     }
   }

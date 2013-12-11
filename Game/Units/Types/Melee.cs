@@ -23,5 +23,16 @@ namespace Game.Units
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);
       _moveSpeed = random.Next(_viewDistanceMin, _viewDistanceMax) / 1000f;
     }
+
+    protected bool Attack(Unit defending)
+    {
+      defending.Health -= _damage;
+      if (defending.Health <= 0)
+      {
+        defending.IsDead = true;
+        return true;
+      }
+      return false;
+    }
   }
 }
