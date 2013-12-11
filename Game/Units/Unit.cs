@@ -44,6 +44,6 @@ namespace Game.Units
       _staticModel.Position.Z += (v2.Z / v2.Length) * _moveSpeed;
 
     }
-    public virtual void AI(OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
+    public virtual void AI(float elapsedTime, OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
   }
 }

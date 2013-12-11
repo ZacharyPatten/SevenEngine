@@ -271,7 +271,7 @@ namespace Game.States
       //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
       //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
 
-      _octree.Traverse((Unit model) => { model.AI(_octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
+      _octree.Traverse((Unit model) => { model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
 
       OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10,
         (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },

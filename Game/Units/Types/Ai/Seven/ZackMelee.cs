@@ -12,7 +12,7 @@ namespace Game.Units
 
     public ZackMelee(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(OctreeLinked<Unit, string> octree)
+    public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
       // Targeting
       if (_target == null || _target.IsDead)
