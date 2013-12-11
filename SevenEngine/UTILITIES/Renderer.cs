@@ -15,6 +15,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine;
+using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
 using SevenEngine.Texts;
@@ -311,7 +312,7 @@ namespace SevenEngine
       GL.LoadMatrix(ref cameraTransform);
       // Apply the world transformation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
-      GL.Rotate(staticModel.Orientation.W, staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
+      GL.Rotate(Trigonometry.ToDegrees(staticModel.Orientation.W), staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       // Call the drawing functions for each mesh within the model
