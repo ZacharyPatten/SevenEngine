@@ -37,7 +37,10 @@ namespace Game.Units
       // Moving
       else
       {
-
+        Vector direction = _target.Position - Position;
+        Position.X += (direction.X / direction.Length) * MoveSpeed;
+        Position.Y += (direction.Y / direction.Length) * MoveSpeed;
+        Position.Z += (direction.Z / direction.Length) * MoveSpeed;
       }
     }
   }

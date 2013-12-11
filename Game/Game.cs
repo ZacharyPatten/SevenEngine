@@ -85,7 +85,6 @@ namespace Game
         // TextManager.LoadFontFile("nameOfFont", "filePathToFont", "filePathToFontTextures");
         // Renderer.Font = TextManager.Get("nameOfFont");
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
-
       TextManager.LoadFontFile("Calibri", FilePath.FromRelative(@"\..\..\Assets\Texts\Calibri2.fnt"), FilePath.FromRelative(@"\..\..\Assets\Texts\"));
     }
 

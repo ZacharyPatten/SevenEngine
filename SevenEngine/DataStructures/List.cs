@@ -29,24 +29,26 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class List<Type> : InterfaceTraversable<Type>
-    where Type : InterfaceStringId
+  public class List<ValueType, KeyType> : InterfaceTraversable<ValueType>
+    //where Type : InterfaceStringId
   {
     #region ListNode
 
     /// <summary>This class just holds the data for each individual node of the list.</summary>
     private class ListNode
     {
-      private Type _value;
+      private ValueType _value;
       private ListNode _next;
 
-      internal Type Value { get { return _value; } set { _value = value; } }
+      internal ValueType Value { get { return _value; } set { _value = value; } }
       internal ListNode Next { get { return _next; } set { _next = value; } }
 
-      internal ListNode(Type data) { _value = data; }
+      internal ListNode(ValueType data) { _value = data; }
     }
 
     #endregion
+
+    Func<ValueType, KeyType, bool> _comparisonFunction;
 
     private ListNode _head;
     private ListNode _tail;
@@ -62,8 +64,9 @@ namespace SevenEngine.DataStructures
 
     /// <summary>Creates an instance of a stalistck.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public List()
+    public List(Func<ValueType, KeyType, bool> comparisonFunction)
     {
+      _comparisonFunction = comparisonFunction;
       _head = _tail = null;
       _count = 0;
       _lock = new Object();
@@ -75,7 +78,7 @@ namespace SevenEngine.DataStructures
     /// <param name="id">The string id of the item to add to the list.</param>
     /// <param name="addition">The item to add to the list.</param>
     /// <remarks>Runtime: O(1).</remarks>
-    public void Add(Type addition)
+    public void Add(ValueType addition)
     {
       WriterLock();
       if (_tail == null)
@@ -89,12 +92,12 @@ namespace SevenEngine.DataStructures
     /// <summary>Removes an item from the list with the matching string id.</summary>
     /// <param name="removalId">The string id of the item to remove.</param>
     /// <remarks>Runtime: O(n).</remarks>
-    public void Remove(string removalId)
+    public void Remove(KeyType removalKey)
     {
       WriterLock();
       if (_head == null)
         throw new ListException("Attempting to remove a non-existing id value.");
-      if (_head.Value.Id == removalId)
+      if (_comparisonFunction(_head.Value, removalKey))
       {
         _head = _head.Next;
         _count--;
@@ -109,7 +112,7 @@ namespace SevenEngine.DataStructures
           WriterUnlock();
           throw new ListException("Attempting to remove a non-existing id value.");
         }
-        else if (listNode.Next.Value.Id == removalId)
+        else if (_comparisonFunction(_head.Value, removalKey))
         {
           if (listNode.Next.Equals(_tail))
             _tail = listNode;
@@ -124,18 +127,18 @@ namespace SevenEngine.DataStructures
       throw new ListException("Attempting to remove a non-existing id value.");
     }
 
-    /// <summary>Allows you to rename an entry within this list.</summary>
+    /*/// <summary>Allows you to rename an entry within this list.</summary>
     /// <param name="oldName">The id of the list entry to rename.</param>
     /// <param name="newName">The new id to apply to the node.</param>
     /// <remarks>Runtime: Theta(n).</remarks>
-    public void RenameEntry(string oldName, string newName)
+    public void RenameEntry(KeyType oldName, KeyType newName)
     {
       WriterLock();
       ListNode looper = _head;
       ListNode rename = null;
       while (looper != null)
       {
-        if (looper.Value.Id == newName)
+        if (_comparisonFunction(looper.Value, newName))
         {
           WriterUnlock();
           throw new ListException("Attempting to rename a list entry to an already existing id.");
@@ -146,7 +149,7 @@ namespace SevenEngine.DataStructures
       }
       rename.Value.Id = newName;
       WriterUnlock();
-    }
+    }*/
 
     /// <summary>Resets the list to an empty state. WARNING could cause excessive garbage collection.</summary>
     public void Clear()
@@ -160,7 +163,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Allows a foreach loop using a delegate.</summary>
     /// <param name="traversalFunction">The function to perform on each iteration.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
+    public bool TraverseBreakable(Func<ValueType, bool> traversalFunction)
     {
       ReaderLock();
       ListNode looper = _head;
@@ -180,7 +183,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Does an imperative traversal of the structure.</summary>
     /// <param name="traversalAction">The action to perform on each iteration.</param>
     /// <remarks>Runtime: O(n * traversalAction).</remarks>
-    public void Traverse(Action<Type> traversalAction)
+    public void Traverse(Action<ValueType> traversalAction)
     {
       ReaderLock();
       ListNode looper = _head;
@@ -195,7 +198,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Converts the list into a standard array.</summary>
     /// <returns>A standard array of all the items.</returns>
     /// /// <remarks>Runtime: Theta(n).</remarks>
-    public Type[] ToArray()
+    public ValueType[] ToArray()
     {
       ReaderLock();
       if (_count == 0)
@@ -203,7 +206,7 @@ namespace SevenEngine.DataStructures
         ReaderUnlock();
         return null;
       }
-      Type[] array = new Type[_count];
+      ValueType[] array = new ValueType[_count];
       ListNode looper = _head;
       for (int i = 0; i < _count; i++)
       {

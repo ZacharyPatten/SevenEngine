@@ -46,6 +46,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\AiBattle.cs" />
     <Compile Include="States\StaticModelState.cs" />
     <Compile Include="States\GameState.cs" />
     <Compile Include="States\SpriteState.cs" />

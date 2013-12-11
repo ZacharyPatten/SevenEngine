@@ -14,7 +14,33 @@ namespace Game.Units
 
     public override void AI(Octree<Unit, string> octree)
     {
-
+      // Targeting
+      if (_target == null || _target.IsDead)
+      {
+        octree.TraverseBreakable
+        (
+          (Unit current) =>
+          {
+            if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !_target.IsDead)
+              _target = current;
+            return false;
+          }
+        );
+      }
+      // Attacking
+      else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
+      {
+        if (Attack(_target))
+          _target = null;
+      }
+      // Moving
+      else
+      {
+        Vector direction = _target.Position - Position;
+        Position.X += (direction.X / direction.Length) * MoveSpeed;
+        Position.Y += (direction.Y / direction.Length) * MoveSpeed;
+        Position.Z += (direction.Z / direction.Length) * MoveSpeed;
+      }
     }
   }
 }

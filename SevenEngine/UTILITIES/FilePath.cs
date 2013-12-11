@@ -18,6 +18,16 @@ namespace SevenEngine
   /// <summary>Will generate filepaths in a cross platform manor.</summary>
   public static class FilePath
   {
-    public static string FromRelative(string path) { return Path.Combine(Directory.GetCurrentDirectory() + path); }
+    public static string FromRelative(string path)
+    {
+      if (path[0] == '\\' && path[path.Length - 1] == '\\')
+        return Directory.GetCurrentDirectory() + @"\" + Path.Combine(path.Split('\\')) + @"\";
+      else if (path[0] == '\\')
+        return Directory.GetCurrentDirectory() + @"\" + Path.Combine(path.Split('\\'));
+      else if (path[path.Length - 1] == '\\')
+        return Directory.GetCurrentDirectory() + Path.Combine(path.Split('\\') + @"\");
+      else
+        return Directory.GetCurrentDirectory() + Path.Combine(path.Split('\\'));
+    }
   }
 }
