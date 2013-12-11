@@ -21,7 +21,7 @@ namespace Game.Units
       _health = random.Next(_healthMin, _healthMax);
       _damage = random.Next(_damageMin, _damageMax);
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);
-      _moveSpeed = random.Next(_viewDistanceMin, _viewDistanceMax) / 1000f;
+      _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax);
     }
 
     protected bool Attack(Unit defending)

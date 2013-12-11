@@ -146,7 +146,7 @@ namespace Game.States
         _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemMelee[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemMelee[i].StaticModel.Scale = new Vector(20, 20, 20);
-        _killemMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
+        _killemMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi/2);
         _octree.Add(_killemMelee[i]);
       }
 
@@ -165,7 +165,7 @@ namespace Game.States
         _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemRanged[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemRanged[i].StaticModel.Scale = new Vector(20, 20, 20);
-        _killemRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
+        _killemRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi/2);
         _killemRanged[i].Id = "Ranger" + i;
         _octree.Add(_killemRanged[i]);
       }
@@ -185,7 +185,7 @@ namespace Game.States
         _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemKamakazi[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemKamakazi[i].StaticModel.Scale = new Vector(20, 20, 20);
-        _killemKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
+        _killemKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi/2);
         _octree.Add(_killemKamakazi[i]);
       }
     }
@@ -246,6 +246,16 @@ namespace Game.States
       }
 
       CameraControls();
+
+      /*foreach (Unit unit in _killemMelee)
+      {
+        Vector v1 = new Vector(0, 0, -1);
+        Vector v2 = v1.RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
+        unit.Position.X += (v2.X / v2.Length) * unit.MoveSpeed;
+        unit.Position.Y += (v2.Y / v2.Length) * unit.MoveSpeed;
+        unit.Position.Z += (v2.Z / v2.Length) * unit.MoveSpeed;
+        unit.StaticModel.Orientation.W += .01f;
+      }*/
 
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;
