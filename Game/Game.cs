@@ -51,7 +51,7 @@ namespace Game
       // EXAMPLES:
         // TextureManager.LoadTexture("nameOfTexture", "filePath");
       // NOTE: If you use my static "FilePath" class the directory should be cross platform
-      
+
       // Textures for models
       TextureManager.LoadTexture("grass", FilePath.FromRelative(@"\..\..\Assets\Textures\grass.bmp"));
       TextureManager.LoadTexture("rock", FilePath.FromRelative(@"\..\..\Assets\Textures\rock3.bmp"));

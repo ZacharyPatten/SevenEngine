@@ -82,7 +82,7 @@ namespace SevenEngine
       return new StaticModel(modelToGet.Id, meshes);
     }
 
-    private static void CopyMeshes(StaticMesh mesh, List<StaticMesh, string> meshes)
+    private static void CopyMeshes(StaticMesh mesh, ListLinked<StaticMesh, string> meshes)
     {
       mesh.Texture.ExistingReferences++;
       mesh.StaticMeshInstance.ExistingReferences++;

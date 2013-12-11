@@ -24,12 +24,22 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
+  public interface List<Type>
+  {
+    void Add(Type addition);
+    void RemoveFirst(Type removal);
+    int Count { get; }
+    void Clear();
+    bool TraverseBreakable(Func<Type, bool> traversalFunction);
+    void Traverse(Action<Type> traversalAction);
+  }
+
   #region List
 
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class List<ValueType, KeyType> : InterfaceTraversable<ValueType>
+  public class ListLinked<ValueType, KeyType> : InterfaceTraversable<ValueType>, List<ValueType>
     //where Type : InterfaceStringId
   {
     #region ListNode
@@ -64,7 +74,7 @@ namespace SevenEngine.DataStructures
 
     /// <summary>Creates an instance of a stalistck.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public List(Func<ValueType, KeyType, bool> comparisonFunction)
+    public ListLinked(Func<ValueType, KeyType, bool> comparisonFunction)
     {
       _comparisonFunction = comparisonFunction;
       _head = _tail = null;
@@ -275,7 +285,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class ListArray<Type> : InterfaceTraversable<Type>
+  public class ListArray<Type> : InterfaceTraversable<Type>, List<Type>
   {
     private Type[] _list;
     private int _count;
