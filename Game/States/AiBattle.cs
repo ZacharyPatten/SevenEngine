@@ -208,6 +208,7 @@ namespace Game.States
         (Unit model) =>
         {
           Renderer.DrawStaticModel(model.StaticModel);
+        model.AI(_octree);
         },
         -100000, -100000, -100000, 100000, 100000, 100000);
 
@@ -250,7 +251,8 @@ namespace Game.States
       /*foreach (Unit unit in _killemMelee)
       {
         Vector v1 = new Vector(0, 0, -1);
-        Vector v2 = v1.RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
+        Vector backwards = new Vector(0, 0, -1).RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
+        Vector forwards = -new Vector(0, 0, -1).RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
         unit.Position.X += (v2.X / v2.Length) * unit.MoveSpeed;
         unit.Position.Y += (v2.Y / v2.Length) * unit.MoveSpeed;
         unit.Position.Z += (v2.Z / v2.Length) * unit.MoveSpeed;

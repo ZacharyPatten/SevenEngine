@@ -6,14 +6,15 @@ using SevenEngine.StaticModels;
 
 namespace Game.Units
 {
-  public class KillemRanged : Ranged
+  public class KillemMelee : Melee
   {
     Unit _target;
 
-    public KillemRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
+    public KillemMelee(string id, StaticModel staticModel) : base(id, staticModel) { }
 
     public override void AI(OctreeLinked<Unit, string> octree)
     {
+      MoveTowards(new Vector(0, 0, 10000));
 
     }
   }

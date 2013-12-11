@@ -35,12 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="OpenTK">
+      <HintPath>..\References\OpenTK.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
@@ -50,16 +49,17 @@
     <Compile Include="States\StaticModelState.cs" />
     <Compile Include="States\GameState.cs" />
     <Compile Include="States\SpriteState.cs" />
-    <Compile Include="Units\Types\Ai\KillemKamakazi.cs" />
-    <Compile Include="Units\Types\Ai\KillemMelee.cs" />
-    <Compile Include="Units\Types\Ai\KillemRanged.cs" />
-    <Compile Include="Units\Types\Ai\ZackKamakazi.cs" />
-    <Compile Include="Units\Types\Ai\ZackMelee.cs" />
-    <Compile Include="Units\Types\Ai\ZackRanged.cs" />
     <Compile Include="Units\Types\Kamakazi.cs" />
     <Compile Include="Units\Types\Melee.cs" />
     <Compile Include="Units\Types\Ranged.cs" />
     <Compile Include="Units\Unit.cs" />
+    <Compile Include="Units\Types\Ai\Killem\KillemRanged.cs" />
+    <Compile Include="Units\Types\Ai\Killem\KillemMelee.cs" />
+    <Compile Include="Units\Types\Ai\Killem\KillemKamakazi.cs" />
+    <Compile Include="Units\Types\Ai\Seven\ZackKamakazi.cs" />
+    <Compile Include="Units\Types\Ai\Seven\ZackMelee.cs" />
+    <Compile Include="Units\Types\Ai\Seven\ZackRanged.cs" />
+    <Compile Include="Units\Types\Ai\Killem\State.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -79,4 +79,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Units\Types\Ai\Killem\" />
+    <Folder Include="Units\Types\Ai\Seven\" />
+  </ItemGroup>
 </Project>
