@@ -12,10 +12,12 @@
 // - AVL Trees were originally invented by G. M. Adelson-Velskii and E. M. Landis in 1962
 // Last Edited: 11-16-13
 
-// This file contains the following classes:
+// This file contains the following interfaces:
 // - AvlTree
-//   - AvlTreeNode
-//   - AvlTreeException
+// This file contains the following class:
+// - AvlTreeLinked
+//   - AvlTreeLinkedNode
+//   - AvlTreeLinkedException
 
 using System;
 using System.Threading;
@@ -23,28 +25,40 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  #region AvlTree
+  public interface AvlTree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+  {
+    int Count { get; }
+    bool IsEmpty { get; }
+    ValueType Get(KeyType get);
+    bool TryGet(KeyType get, out ValueType returnValue);
+    bool Contains(KeyType containsCheck);
+    void Add(ValueType addition);
+    void Remove(KeyType removalKey);
+    ValueType[] ToArray();
+  }
+
+  #region AvlTreeRecursive
 
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class AvlTree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+  public class AvlTreeLinked<ValueType, KeyType> : AvlTree<ValueType, KeyType>
   {
-    #region AvlTreeNode
+    #region AvlTreeNodeRecursive
 
     /// <summary>This class just holds the data for each individual node of the tree.</summary>
-    private class AvlTreeNode
+    private class AvlTreeLinkedNode
     {
       private ValueType _value;
-      private AvlTreeNode _leftChild;
-      private AvlTreeNode _rightChild;
+      private AvlTreeLinkedNode _leftChild;
+      private AvlTreeLinkedNode _rightChild;
       private int _height;
 
       internal ValueType Value { get { return _value; } set { _value = value; } }
-      internal AvlTreeNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
-      internal AvlTreeNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
+      internal AvlTreeLinkedNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
+      internal AvlTreeLinkedNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
       internal int Height { get { return _height; } set { _height = value; } }
 
-      internal AvlTreeNode(ValueType value)
+      internal AvlTreeLinkedNode(ValueType value)
       {
         _value = value;
         _leftChild = null;
@@ -55,7 +69,7 @@ namespace SevenEngine.DataStructures
 
     #endregion
 
-    private AvlTreeNode _avlTree;
+    private AvlTreeLinkedNode _avlTree;
     private int _count;
 
     private Func<ValueType, ValueType, int> _valueComparisonFunction;
@@ -78,7 +92,7 @@ namespace SevenEngine.DataStructures
     /// <param name="keyComparisonFunction">A function that returns negative if left is less that right, 
     /// zero if they are equal, or positive if left is greater than right.</param>
     /// <remarks>Runtime: O(1).</remarks>
-    public AvlTree(
+    public AvlTreeLinked(
       Func<ValueType, ValueType, int> valueComparisonFunction,
       Func<ValueType, KeyType, int> keyComparisonFunction)
     {
@@ -89,6 +103,24 @@ namespace SevenEngine.DataStructures
       _writers = 0;
       _valueComparisonFunction = valueComparisonFunction;
       _keyComparisonFunction = keyComparisonFunction;
+    }
+
+    /// <summary>Constructs an AVL Tree. This default constructor requires the generic value type 
+    /// of this class to follow the IComparable and IComparable<!--<-->KeyType<!-->--> interfaces.</summary>
+    public AvlTreeLinked()
+    {
+      ValueType typeCheck = default(ValueType);
+      if (!(typeCheck is IComparable))
+        throw new AvlTreeLinkedException("using the no-parameter AvlTree constructor requires you to use IComparable generic types.");
+      if (!(typeCheck is IComparable<KeyType>))
+        throw new AvlTreeLinkedException("using the no-parameter AvlTree constructor requires you to use IComparable<!--<--!>KeyType<!-->--!> generic types.");
+      _valueComparisonFunction = (ValueType left, ValueType right) => { return ((IComparable)left).CompareTo(right); };
+      _keyComparisonFunction = (ValueType left, KeyType right) => { return ((IComparable<KeyType>)left).CompareTo(right); };
+      _avlTree = null;
+      _count = 0;
+      _lock = new Object();
+      _readers = 0;
+      _writers = 0;
     }
 
     #region Recursive Versions
@@ -145,7 +177,7 @@ namespace SevenEngine.DataStructures
       // THIS THIS THE ITERATIVE VERSION OF THIS FUNCTION. THERE IS A RECURSIVE
       // VERSION IN THE "RECURSIVE" REGION SHOULD YOU WISH TO SEE IT.
       ReaderLock();
-      AvlTreeNode _current = _avlTree;
+      AvlTreeLinkedNode _current = _avlTree;
       while (_current != null)
       {
         int compareResult = _keyComparisonFunction(_current.Value, get);
@@ -158,7 +190,32 @@ namespace SevenEngine.DataStructures
         else _current = _current.RightChild;
       }
       ReaderUnlock();
-      throw new AvlTreeException("Attempting to get a non-existing value: " + get.ToString() + ".");
+      throw new AvlTreeLinkedException("Attempting to get a non-existing value: " + get.ToString() + ".");
+    }
+
+    /// <summary>Does a standard get but returns whether or not the value exists (versus throwing an exception).</summary>
+    /// <param name="get">The key value to get.</param>
+    /// <param name="returnValue">The value cooresponding to the key value if it exists.</param>
+    /// <returns>True if the requested key is found.</returns>
+    public bool TryGet(KeyType get, out ValueType returnValue)
+    {
+      ReaderLock();
+      AvlTreeLinkedNode _current = _avlTree;
+      while (_current != null)
+      {
+        int compareResult = _keyComparisonFunction(_current.Value, get);
+        if (compareResult == 0)
+        {
+          returnValue = _current.Value;
+          ReaderUnlock();
+          return true;
+        }
+        else if (compareResult > 0) _current = _current.LeftChild;
+        else _current = _current.RightChild;
+      }
+      ReaderUnlock();
+      returnValue = default(ValueType);
+      return false;
     }
 
     /// <summary>Checks to see if the tree contains a specific key.</summary>
@@ -170,7 +227,7 @@ namespace SevenEngine.DataStructures
       // THIS THIS THE ITERATIVE VERSION OF THIS FUNCTION. THERE IS A RECURSIVE
       // VERSION IN THE "RECURSIVE" REGION SHOULD YOU WISH TO SEE IT.
       ReaderLock();
-      AvlTreeNode _current = _avlTree;
+      AvlTreeLinkedNode _current = _avlTree;
       while (_current != null)
       {
         int compareResult = _keyComparisonFunction(_current.Value, getCheck);
@@ -197,12 +254,12 @@ namespace SevenEngine.DataStructures
       WriterUnlock();
     }
 
-    private AvlTreeNode Add(ValueType addition, AvlTreeNode avlTree)
+    private AvlTreeLinkedNode Add(ValueType addition, AvlTreeLinkedNode avlTree)
     {
-      if (avlTree == null) return new AvlTreeNode(addition);
+      if (avlTree == null) return new AvlTreeLinkedNode(addition);
       int compareResult = _valueComparisonFunction(avlTree.Value, addition);
       if (compareResult == 0)
-        throw new AvlTreeException("Attempting to add an already existing id exists.");
+        throw new AvlTreeLinkedException("Attempting to add an already existing id exists.");
       else if (compareResult > 0) avlTree.LeftChild = Add(addition, avlTree.LeftChild);
       else avlTree.RightChild = Add(addition, avlTree.RightChild);
       return Balance(avlTree);
@@ -224,7 +281,7 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The binary tree to remove from.</param>
     /// <returns>The resulting tree after the removal.</returns>
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
-    private AvlTreeNode Remove(KeyType removal, AvlTreeNode avlTree)
+    private AvlTreeLinkedNode Remove(KeyType removal, AvlTreeLinkedNode avlTree)
     {
       if (avlTree != null)
       {
@@ -233,7 +290,7 @@ namespace SevenEngine.DataStructures
         {
           if (avlTree.RightChild != null)
           {
-            AvlTreeNode leftMostOfRight;
+            AvlTreeLinkedNode leftMostOfRight;
             avlTree.RightChild = RemoveLeftMost(avlTree.RightChild, out leftMostOfRight);
             leftMostOfRight.RightChild = avlTree.RightChild;
             leftMostOfRight.LeftChild = avlTree.LeftChild;
@@ -241,7 +298,7 @@ namespace SevenEngine.DataStructures
           }
           else if (avlTree.LeftChild != null)
           {
-            AvlTreeNode rightMostOfLeft;
+            AvlTreeLinkedNode rightMostOfLeft;
             avlTree.LeftChild = RemoveRightMost(avlTree.LeftChild, out rightMostOfLeft);
             rightMostOfLeft.RightChild = avlTree.RightChild;
             rightMostOfLeft.LeftChild = avlTree.LeftChild;
@@ -257,7 +314,7 @@ namespace SevenEngine.DataStructures
         return Balance(avlTree);
       }
       WriterUnlock();
-      throw new AvlTreeException("Attempting to remove a non-existing entry.");
+      throw new AvlTreeLinkedException("Attempting to remove a non-existing entry.");
     }
 
     /// <summary>Removes the left-most child of an AVL Tree node and returns it 
@@ -266,7 +323,7 @@ namespace SevenEngine.DataStructures
     /// <param name="leftMost">The left-most child of this AVL tree.</param>
     /// <returns>The updated tree with the removal.</returns>
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
-    private AvlTreeNode RemoveLeftMost(AvlTreeNode avlTree, out AvlTreeNode leftMost)
+    private AvlTreeLinkedNode RemoveLeftMost(AvlTreeLinkedNode avlTree, out AvlTreeLinkedNode leftMost)
     {
       if (avlTree.LeftChild == null) { leftMost = avlTree; return null; }
       avlTree.LeftChild = RemoveLeftMost(avlTree.LeftChild, out leftMost);
@@ -280,7 +337,7 @@ namespace SevenEngine.DataStructures
     /// <param name="leftMost">The right-most child of this AVL tree.</param>
     /// <returns>The updated tree with the removal.</returns>
     /// <remarks>Runtime: Theta(ln(n)).</remarks>
-    private AvlTreeNode RemoveRightMost(AvlTreeNode avlTree, out AvlTreeNode rightMost)
+    private AvlTreeLinkedNode RemoveRightMost(AvlTreeLinkedNode avlTree, out AvlTreeLinkedNode rightMost)
     {
       if (avlTree.RightChild == null) { rightMost = avlTree; return null; }
       avlTree.LeftChild = RemoveLeftMost(avlTree.RightChild, out rightMost);
@@ -293,7 +350,7 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The AVL Tree to find the hight of.</param>
     /// <returns>Returns "-1" if null (leaf) or the height property of the node.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private int Height(AvlTreeNode avlTree)
+    private int Height(AvlTreeLinkedNode avlTree)
     {
       if (avlTree == null) return -1;
       else return avlTree.Height;
@@ -302,7 +359,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Sets the height of a tree based on its children's heights.</summary>
     /// <param name="avlTree">The tree to have its height adjusted.</param>
     /// <remarks>Runtime: O(1).</remarks>
-    private void SetHeight(AvlTreeNode avlTree)
+    private void SetHeight(AvlTreeLinkedNode avlTree)
     {
       if (Height(avlTree.LeftChild) < Height(avlTree.RightChild))
         avlTree.Height = Math.Max(Height(avlTree.LeftChild), Height(avlTree.RightChild)) + 1;
@@ -312,7 +369,7 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The tree to check the balancing of.</param>
     /// <returns>The result of the possible balancing.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode Balance(AvlTreeNode avlTree)
+    private AvlTreeLinkedNode Balance(AvlTreeLinkedNode avlTree)
     {
       if (Height(avlTree.LeftChild) == Height(avlTree.RightChild) + 2)
       {
@@ -334,9 +391,9 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The tree to single rotate right.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode SingleRotateRight(AvlTreeNode avlTree)
+    private AvlTreeLinkedNode SingleRotateRight(AvlTreeLinkedNode avlTree)
     {
-      AvlTreeNode temp = avlTree.LeftChild;
+      AvlTreeLinkedNode temp = avlTree.LeftChild;
       avlTree.LeftChild = temp.RightChild;
       temp.RightChild = avlTree;
       SetHeight(avlTree);
@@ -348,9 +405,9 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The tree to single rotate left.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode SingleRotateLeft(AvlTreeNode avlTree)
+    private AvlTreeLinkedNode SingleRotateLeft(AvlTreeLinkedNode avlTree)
     {
-      AvlTreeNode temp = avlTree.RightChild;
+      AvlTreeLinkedNode temp = avlTree.RightChild;
       avlTree.RightChild = temp.LeftChild;
       temp.LeftChild = avlTree;
       SetHeight(avlTree);
@@ -362,9 +419,9 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The tree to float rotate right.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode DoubleRotateRight(AvlTreeNode avlTree)
+    private AvlTreeLinkedNode DoubleRotateRight(AvlTreeLinkedNode avlTree)
     {
-      AvlTreeNode temp = avlTree.LeftChild.RightChild;
+      AvlTreeLinkedNode temp = avlTree.LeftChild.RightChild;
       avlTree.LeftChild.RightChild = temp.LeftChild;
       temp.LeftChild = avlTree.LeftChild;
       avlTree.LeftChild = temp.RightChild;
@@ -379,9 +436,9 @@ namespace SevenEngine.DataStructures
     /// <param name="avlTree">The tree to float rotate left.</param>
     /// <returns>The resulting tree.</returns>
     /// <remarks>Runtime: O(1).</remarks>
-    private AvlTreeNode DoubleRotateLeft(AvlTreeNode avlTree)
+    private AvlTreeLinkedNode DoubleRotateLeft(AvlTreeLinkedNode avlTree)
     {
-      AvlTreeNode temp = avlTree.RightChild.LeftChild;
+      AvlTreeLinkedNode temp = avlTree.RightChild.LeftChild;
       avlTree.RightChild.LeftChild = temp.RightChild;
       temp.RightChild = avlTree.RightChild;
       avlTree.RightChild = temp.LeftChild;
@@ -419,7 +476,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool TraversalInOrder(Func<ValueType, bool> traversalFunction, AvlTreeNode avltreeNode)
+    private bool TraversalInOrder(Func<ValueType, bool> traversalFunction, AvlTreeLinkedNode avltreeNode)
     {
       if (avltreeNode != null)
       {
@@ -436,7 +493,7 @@ namespace SevenEngine.DataStructures
       TraversalInOrder(traversalFunction, _avlTree);
       ReaderUnlock();
     }
-    private void TraversalInOrder(Action<ValueType> traversalFunction, AvlTreeNode avltreeNode)
+    private void TraversalInOrder(Action<ValueType> traversalFunction, AvlTreeLinkedNode avltreeNode)
     {
       if (avltreeNode != null)
       {
@@ -460,7 +517,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool TraversalPostOrder(Func<ValueType, bool> traversalFunction, AvlTreeNode avltreeNode)
+    private bool TraversalPostOrder(Func<ValueType, bool> traversalFunction, AvlTreeLinkedNode avltreeNode)
     {
       if (avltreeNode != null)
       {
@@ -486,7 +543,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool TraversalPreOrder(Func<ValueType, bool> traversalFunction, AvlTreeNode avltreeNode)
+    private bool TraversalPreOrder(Func<ValueType, bool> traversalFunction, AvlTreeLinkedNode avltreeNode)
     {
       if (avltreeNode != null)
       {
@@ -511,7 +568,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool TraversalInOrder(Func<ValueType, bool> traversalFunction, AvlTreeNode avltreeNode, KeyType minimum, KeyType maximum)
+    private bool TraversalInOrder(Func<ValueType, bool> traversalFunction, AvlTreeLinkedNode avltreeNode, KeyType minimum, KeyType maximum)
     {
       if (avltreeNode != null)
       {
@@ -525,6 +582,11 @@ namespace SevenEngine.DataStructures
       return true;
     }
 
+    /// <summary>Creates an array out of the values in this structure.</summary>
+    /// <returns>An array containing the values in this structure.</returns>
+    /// <remarks>Runtime: Theta(n),</remarks>
+    public ValueType[] ToArray() { return ToArrayInOrder(); }
+
     /// <summary>Puts all the items in the tree into a list by alphabetical order.</summary>
     /// <returns>The alphabetized list of items.</returns>
     /// <remarks>Runtime: Theta(n).</remarks>
@@ -536,7 +598,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return array;
     }
-    private void ToArrayInOrder(ValueType[] array, AvlTreeNode avltreeNode, int position)
+    private void ToArrayInOrder(ValueType[] array, AvlTreeLinkedNode avltreeNode, int position)
     {
       if (avltreeNode != null)
       {
@@ -557,7 +619,7 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return array;
     }
-    private void ToArrayPostOrder(ValueType[] array, AvlTreeNode avltreeNode, int position)
+    private void ToArrayPostOrder(ValueType[] array, AvlTreeLinkedNode avltreeNode, int position)
     {
       if (avltreeNode != null)
       {
@@ -577,7 +639,7 @@ namespace SevenEngine.DataStructures
     private void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
-    private class AvlTreeException : Exception { public AvlTreeException(string message) : base(message) { } }
+    private class AvlTreeLinkedException : Exception { public AvlTreeLinkedException(string message) : base(message) { } }
   }
 
   #endregion

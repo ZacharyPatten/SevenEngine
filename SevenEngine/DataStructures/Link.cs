@@ -13,40 +13,35 @@
 // This file contains the following classes:
 // - Link2
 // - Link3
-
-using System;
+// - Link4
 
 namespace SevenEngine.DataStructures
 {
   #region Link2
 
-  /// <summary>Creates a link between two objects. (you may recognize this as a tuple)</summary>
-  /// <typeparam name="LeftItem">The type of the left item to be linked.</typeparam>
-  /// <typeparam name="RightItem">The type of the right item to be linked.</typeparam>
-  public class Link2<LeftItem, RightItem>
+  /// <summary>Represents a link between two objects.</summary>
+  /// <typeparam name="FirstItem">The type of the left item to be linked.</typeparam>
+  /// <typeparam name="SecondItem">The type of the right item to be linked.</typeparam>
+  public class Link2<FirstItem, SecondItem>
   {
-    private LeftItem _left;
-    private RightItem _right;
-
-    Object _lock;
+    private FirstItem _first;
+    private SecondItem _second;
 
     /// <summary>The left item in the link.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public LeftItem Left { get { lock (_lock) return _left; } set { lock(_lock) _left = value; } }
+    public FirstItem First { get { return _first; } set { _first = value; } }
     /// <summary>The right item in the link.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public RightItem Right { get { lock (_lock) return _right; } set { lock (_lock) _right = value; } }
+    public SecondItem Second { get { return _second; } set { _second = value; } }
 
     /// <summary>Creates a link between two objects.</summary>
-    /// <param name="left">The left item to be linked.</param>
-    /// <param name="right">The right item to be linked.</param>
-    /// <remarks>Runtime: O(1). Space: Theta(2).</remarks>
-    public Link2(LeftItem left, RightItem right)
+    /// <param name="first">The first item to be linked.</param>
+    /// <param name="second">The second item to be linked.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    public Link2(FirstItem first, SecondItem second)
     {
-      _left = left;
-      _right = right;
-
-      _lock = new Object();
+      _first = first;
+      _second = second;
     }
   }
 
@@ -54,39 +49,130 @@ namespace SevenEngine.DataStructures
 
   #region Link3
 
-  /// <summary>Creates a link between two objects. (you may recognize this as a tuple)</summary>
-  /// <typeparam name="LeftItem">The type of the left item to be linked.</typeparam>
-  /// <typeparam name="MiddleItem">The type of the middle item to be linked.</typeparam>
-  /// <typeparam name="RightItem">The type of the right item to be linked.</typeparam>
-  public class Link3<LeftItem, MiddleItem, RightItem>
+  /// <summary>Represents a link between three objects.</summary>
+  /// <typeparam name="FirstType">The type of the first item to be linked.</typeparam>
+  /// <typeparam name="SecondType">The type of the second item to be linked.</typeparam>
+  /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
+  public class Link3<FirstType, SecondType, ThirdType>
   {
-    private LeftItem _left;
-    private MiddleItem _middle;
-    private RightItem _right;
+    private FirstType _first;
+    private SecondType _second;
+    private ThirdType _third;
 
-    Object _lock;
+    /// <summary>The first item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FirstType First { get { return _first; } set { _first = value; } }
+    /// <summary>The second item of the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public SecondType Second { get { return _second; } set { _second = value; } }
+    /// <summary>The third item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public ThirdType Third { get { return _third; } set { _third = value; } }
 
-    /// <summary>The left item in the link.</summary>
+    /// <summary>Creates a link between three objects.</summary>
+    /// <param name="first">The first item to be linked.</param>
+    /// <param name="second">The second item to be linked.</param>
+    /// <param name="third">The third item to be linked.</param>
     /// <remarks>Runtime: O(1).</remarks>
-    public LeftItem Left { get { lock (_lock) return _left; } set { lock (_lock) _left = value; } }
-    /// <summary>The middle item of the link.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public MiddleItem Middle { get { lock (_lock) return _middle; } set { lock(_lock) _middle = value; } }
-    /// <summary>The right item in the link.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public RightItem Right { get { lock (_lock) return _right; } set { lock (_lock) _right = value; } }
-
-    /// <summary>Creates a link between two objects.</summary>
-    /// <param name="left">The left item to be linked.</param>
-    /// <param name="right">The right item to be linked.</param>
-    /// <remarks>Runtime: O(1). Space: Theta(2).</remarks>
-    public Link3(LeftItem left, MiddleItem middle, RightItem right)
+    public Link3(FirstType first, SecondType second, ThirdType third)
     {
-      _left = left;
-      _middle = middle;
-      _right = right;
+      _first = first;
+      _second = second;
+      _third = third;
+    }
+  }
 
-      _lock = new Object();
+  #endregion
+
+  #region Link4
+
+  /// <summary>Represents a link between four objects.</summary>
+  /// <typeparam name="FirstType">The type of the first item to be linked.</typeparam>
+  /// <typeparam name="SecondType">The type of the second item to be linked.</typeparam>
+  /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
+  /// <typeparam name="FourthType">The type of the fourth item to be linked.</typeparam>
+  public class Link4<FirstType, SecondType, ThirdType, FourthType>
+  {
+    private FirstType _first;
+    private SecondType _second;
+    private ThirdType _third;
+    private FourthType _fourth;
+
+    /// <summary>The first item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FirstType First { get { return _first; } set { _first = value; } }
+    /// <summary>The second item of the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public SecondType Second { get { return _second; } set { _second = value; } }
+    /// <summary>The third item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public ThirdType Third { get { return _third; } set { _third = value; } }
+    /// <summary>The fourth item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FourthType Fourth { get { return _fourth; } set { _fourth = value; } }
+
+    /// <summary>Creates a link between four objects.</summary>
+    /// <param name="first">The left item to be linked.</param>
+    /// <param name="second">The second item to be linked.</param>
+    /// <param name="third">The third item to be linked.</param>
+    /// <param name="fourth">The fourth item to be linked.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    public Link4(FirstType first, SecondType second, ThirdType third, FourthType fourth)
+    {
+      _first = first;
+      _second = second;
+      _third = third;
+      _fourth = fourth;
+    }
+  }
+
+  #endregion
+
+  #region Link5
+
+  /// <summary>Represents a link between five objects.</summary>
+  /// <typeparam name="FirstType">The type of the first item to be linked.</typeparam>
+  /// <typeparam name="SecondType">The type of the second item to be linked.</typeparam>
+  /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
+  /// <typeparam name="FourthType">The type of the fourth item to be linked.</typeparam>
+  /// <typeparam name="FifthType">The type of the fifth item to be linked.</typeparam>
+  public class Link5<FirstType, SecondType, ThirdType, FourthType, FifthType>
+  {
+    private FirstType _first;
+    private SecondType _second;
+    private ThirdType _third;
+    private FourthType _fourth;
+    private FifthType _fifth;
+
+    /// <summary>The first item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FirstType First { get { return _first; } set { _first = value; } }
+    /// <summary>The second item of the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public SecondType Second { get { return _second; } set { _second = value; } }
+    /// <summary>The third item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public ThirdType Third { get { return _third; } set { _third = value; } }
+    /// <summary>The fourth item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FourthType Fourth { get { return _fourth; } set { _fourth = value; } }
+    /// <summary>The fifth item in the link.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public FifthType Fifth { get { return _fifth; } set { _fifth = value; } }
+
+    /// <summary>Creates a link between four objects.</summary>
+    /// <param name="first">The left item to be linked.</param>
+    /// <param name="second">The second item to be linked.</param>
+    /// <param name="third">The third item to be linked.</param>
+    /// <param name="fourth">The fourth item to be linked.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    public Link5(FirstType first, SecondType second, ThirdType third, FourthType fourth, FifthType fifth)
+    {
+      _first = first;
+      _second = second;
+      _third = third;
+      _fourth = fourth;
+      _fifth = fifth;
     }
   }
 

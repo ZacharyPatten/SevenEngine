@@ -10,6 +10,8 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
+// This file contains the following interfaces:
+// - Heap
 // This file contains the following classes:
 // - HeapArrayStatic
 //   - HeapArrayStaticLink
@@ -24,12 +26,23 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  #region HeapArray
+  public interface Heap<Type> : InterfaceTraversable<Type>
+  {
+    int Count { get; }
+    void Enqueue(Type addition, int priority);
+    Type Dequeue();
+    Type Peek();
+    void Clear();
+    bool IsEmpty { get; }
+    Type[] ToArray();
+  }
+
+  #region HeapArrayStatic
 
   /// <summary>Implements a mutable priority heap with static priorities using an array.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class HeapArrayStatic<Type>
+  public class HeapArrayStatic<Type> : Heap<Type>
   {
     #region HeapArrayLink
 
@@ -70,6 +83,10 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public bool IsFull { get { return _count == _heapArray.Length - 1; } }
 
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
+
     /// <summary>Generates a priority queue with a capacity of the parameter. Runtime O(1).</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
     /// <remarks>Runtime: Theta(capacity).</remarks>
@@ -80,6 +97,7 @@ namespace SevenEngine.DataStructures
       for (int i = 1; i < capacity; i ++)
         _heapArray[i] = new HeapArrayLink(int.MinValue, default(Type));
       _count = 0;
+      _lock = new Object();
     }
 
     /// <summary>Enqueue an item into the priority queue and let it works its magic.</summary>
@@ -124,13 +142,13 @@ namespace SevenEngine.DataStructures
 
     /// <summary>This lets you peek at the top priority WITHOUT REMOVING it.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public int Peek()
+    public Type Peek()
     {
       ReaderLock();
       if (_count > 0)
       {
         ReaderUnlock();
-        return _heapArray[1].Priority;
+        return _heapArray[1].Value;
       }
       ReaderUnlock();
       throw new HeapArrayStaticException("Attempting to peek at an empty priority queue.");
@@ -181,18 +199,40 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public void Clear() { WriterLock(); _count = 0; WriterUnlock(); }
 
-    /// <summary>A function to be used in a tree traversal.</summary>
-    /// <param name="id">The id of the current node.</param>
-    /// <param name="node">The current node of a traversal.</param>
-    public delegate bool TraversalFunction(Type node);
+    /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
+    /// <param name="traversalFunction">The function to perform per iteration.</param>
+    /// <returns>A determining a break in the traversal. (true = continue, false = break)</returns>
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction) { return TraversalPreOrderBreakable(traversalFunction); }
 
-    /// <summary>Implements a foreach .</summary>
+    /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
+    /// <param name="traversalFunction">The function to perform per iteration.</param>
+    public void Traverse(Action<Type> traversalFunction) { TraversalPreOrder(traversalFunction); }
+
+    /// <summary>Implements an imperative traversal of the structure.</summary>
     /// <param name="traversalFunction">The function to perform per node in the traversal.</param>
     /// <remarks>Runtime: O(n * traversalFunction).</remarks>
-    public void PreOrderTraverse(TraversalFunction traversalFunction)
+    public bool TraversalPreOrderBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
-      for (int i = 0; i < _count; i++) { if (!traversalFunction(_heapArray[i].Value)) break; }
+      for (int i = 0; i < _count; i++)
+      {
+        if (!traversalFunction(_heapArray[i].Value))
+        {
+          ReaderUnlock();
+          return false;
+        }
+      }
+      ReaderUnlock();
+      return true;
+    }
+
+    /// <summary>Implements an imperative traversal of the structure.</summary>
+    /// <param name="traversalAction">The action to perform per node in the traversal.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void TraversalPreOrder(Action<Type> traversalAction)
+    {
+      ReaderLock();
+      for (int i = 0; i < _count; i++) traversalAction(_heapArray[i].Value);
       ReaderUnlock();
     }
 
@@ -227,7 +267,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a mutable priority heap with dynamic priorities using an array and a hash table.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class HeapArrayDynamic<Type> : InterfaceTraversable<Type>
+  public class HeapArrayDynamic<Type> : Heap<Type>
   {
     #region HeapArrayDynamicLink
 
@@ -251,7 +291,7 @@ namespace SevenEngine.DataStructures
 
     private int _count;
     private HeapArrayDynamicLink[] _heapArray;
-    private HashTable<Type, int> _indexingReference;
+    private HashTableStandard<Type, int> _indexingReference;
 
     private Object _lock;
     private int _readers;
@@ -269,12 +309,16 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public bool IsFull { get { ReaderLock(); bool isFull = _count == _heapArray.Length - 1; ReaderUnlock(); return isFull; } }
 
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
+
     /// <summary>Generates a priority queue with a capacity of the parameter.</summary>
     /// <param name="capacity">The capacity you want this priority queue to have.</param>
     /// <remarks>Runtime: Theta(capacity).</remarks>
     public HeapArrayDynamic(int capacity)
     {
-      _indexingReference = new HashTable<Type, int>();
+      _indexingReference = new HashTableStandard<Type, int>();
       _heapArray = new HeapArrayDynamicLink[capacity + 1];
       _heapArray[0] = new HeapArrayDynamicLink(int.MaxValue, default(Type));
       for (int i = 1; i < capacity; i++)
@@ -417,11 +461,17 @@ namespace SevenEngine.DataStructures
       _indexingReference[_heapArray[indexTwo].Value] = indexTwo;
     }
 
+    /// <summary>Returns this queue to an empty state.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public void Clear() { WriterLock(); _indexingReference.Clear(); _count = 0; WriterUnlock(); }
+
     /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
     /// <param name="traversalFunction">The function to perform per iteration.</param>
     /// <returns>A determining a break in the traversal. (true = continue, false = break)</returns>
     public bool TraverseBreakable(Func<Type, bool> traversalFunction) { return TraversalPreOrderBreakable(traversalFunction); }
 
+    /// <summary>Traversal function for a heap. Following a pre-order traversal.</summary>
+    /// <param name="traversalFunction">The function to perform per iteration.</param>
     public void Traverse(Action<Type> traversalFunction) { TraversalPreOrder(traversalFunction); }
 
     /// <summary>Implements an imperative traversal of the structure.</summary>

@@ -33,6 +33,6 @@ namespace Game.Units
       _isDead = false;
     }
 
-    public virtual void AI(Octree<Unit, string> octree) { throw new NotImplementedException(); }
+    public virtual void AI(OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
   }
 }

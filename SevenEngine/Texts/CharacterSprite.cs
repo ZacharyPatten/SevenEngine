@@ -123,8 +123,8 @@ namespace SevenEngine.Texts
     internal int CheckKearning(int followinCharacter)
     {
       for (int i = 0; i < _kearnings.Count; i++)
-        if (_kearnings[i].Left == followinCharacter)
-          return _kearnings[i].Right;
+        if (_kearnings[i].First == followinCharacter)
+          return _kearnings[i].Second;
       return 0;
     }
   }

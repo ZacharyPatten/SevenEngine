@@ -20,7 +20,7 @@ namespace Game.States
 
     public static readonly float MeterLength = 10;
 
-    public Octree<StaticModel, string> _octree = new Octree<StaticModel, string>(0, 0, 0, 1000000, 10,
+    public OctreeLinked<StaticModel, string> _octree = new OctreeLinked<StaticModel, string>(0, 0, 0, 1000000, 10,
       (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
       (StaticModel left, string right) => { return left.Id.CompareTo(right); } );
 

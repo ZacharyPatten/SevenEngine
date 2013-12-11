@@ -28,31 +28,31 @@ namespace SevenEngine
     internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
     internal static ShaderProgram TextShader { get { return _textShader; } }
 
-    private static AvlTree<VertexShader, string> _vertexShaderDatabase = new AvlTree<VertexShader, string>
+    private static AvlTreeLinked<VertexShader, string> _vertexShaderDatabase = new AvlTreeLinked<VertexShader, string>
     (
       (VertexShader left, VertexShader right) => { return left.Id.CompareTo(right.Id); },
       (VertexShader left, string right) => { return left.Id.CompareTo(right); }
     );
     
-    private static AvlTree<FragmentShader, string> _fragmentShaderDatabase = new AvlTree<FragmentShader, string>
+    private static AvlTreeLinked<FragmentShader, string> _fragmentShaderDatabase = new AvlTreeLinked<FragmentShader, string>
     (
       (FragmentShader left, FragmentShader right) => { return left.Id.CompareTo(right.Id); },
       (FragmentShader left, string right) => { return left.Id.CompareTo(right); }
     );
     
-    private static AvlTree<GeometryShader, string> _geometryShaderDatabase = new AvlTree<GeometryShader, string>
+    private static AvlTreeLinked<GeometryShader, string> _geometryShaderDatabase = new AvlTreeLinked<GeometryShader, string>
     (
       (GeometryShader left, GeometryShader right) => { return left.Id.CompareTo(right.Id); },
       (GeometryShader left, string right) => { return left.Id.CompareTo(right); }
     );
     
-    private static AvlTree<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase = new AvlTree<ExtendedGeometryShader, string>
+    private static AvlTreeLinked<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase = new AvlTreeLinked<ExtendedGeometryShader, string>
     (
       (ExtendedGeometryShader left, ExtendedGeometryShader right) => { return left.Id.CompareTo(right.Id); },
       (ExtendedGeometryShader left, string right) => { return left.Id.CompareTo(right); }
     );
     
-    private static AvlTree<ShaderProgram, string> _shaderProgramDatabase = new AvlTree<ShaderProgram, string>
+    private static AvlTreeLinked<ShaderProgram, string> _shaderProgramDatabase = new AvlTreeLinked<ShaderProgram, string>
     (
       (ShaderProgram left, ShaderProgram right) => { return left.Id.CompareTo(right.Id); },
       (ShaderProgram left, string right) => { return left.Id.CompareTo(right); }

@@ -12,7 +12,7 @@ namespace Game.Units
 
     public KillemMelee(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(Octree<Unit, string> octree)
+    public override void AI(OctreeLinked<Unit, string> octree)
     {
 
     }

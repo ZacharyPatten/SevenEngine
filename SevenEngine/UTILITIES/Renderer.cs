@@ -15,7 +15,6 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine;
-using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.Imaging;
 using SevenEngine.Texts;

@@ -18,7 +18,7 @@ namespace SevenEngine
   /// <summary>StateManager is used for is used for state management (loading, storing).</summary>
   public static class StateManager
   {
-    private static AvlTree<InterfaceGameState, string> _stateDatabase = new AvlTree<InterfaceGameState, string>
+    private static AvlTreeLinked<InterfaceGameState, string> _stateDatabase = new AvlTreeLinked<InterfaceGameState, string>
     (
       (InterfaceGameState left, InterfaceGameState right) => { return left.Id.CompareTo(right.Id); },
       (InterfaceGameState left, string right) => { return left.Id.CompareTo(right); }

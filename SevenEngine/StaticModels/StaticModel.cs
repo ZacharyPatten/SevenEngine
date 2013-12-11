@@ -27,10 +27,10 @@ namespace SevenEngine.StaticModels
     protected Vector _scale;
     protected Quaternion _orientation;
     protected ShaderProgram _shaderOverride;
-    protected AvlTree<StaticMesh, string> _meshes;
+    protected AvlTreeLinked<StaticMesh, string> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public AvlTree<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public AvlTreeLinked<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
@@ -47,7 +47,7 @@ namespace SevenEngine.StaticModels
     {
       _id = id;
       _shaderOverride = null;
-      _meshes = new AvlTree<StaticMesh, string>
+      _meshes = new AvlTreeLinked<StaticMesh, string>
       (
         (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
         (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
@@ -69,7 +69,7 @@ namespace SevenEngine.StaticModels
 
       _id = staticModelId;
       //_meshes = new ListArray<Link<Texture, StaticMesh>>(10);
-      _meshes = new AvlTree<StaticMesh, string>
+      _meshes = new AvlTreeLinked<StaticMesh, string>
       (
         (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
         (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
@@ -87,7 +87,7 @@ namespace SevenEngine.StaticModels
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, AvlTree<StaticMesh, string> meshes)
+    internal StaticModel(string staticModelId, AvlTreeLinked<StaticMesh, string> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;

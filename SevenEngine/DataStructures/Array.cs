@@ -10,9 +10,11 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-22-13
 
-// This file contains the following classes:
+// This file contains the following interfaces:
 // - Array
-//   - ArrayException
+// This file contains the following classes:
+// - ArrayStandard
+//   - ArrayStandardException
 // - ArrayCyclic
 //   - ArrayCyclicException
 
@@ -22,11 +24,19 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
+  public interface Array<Type> : InterfaceTraversable<Type>
+  {
+    Type this[int index] { get; set; }
+    int Length { get; }
+    bool TraverseBreakable(Func<Type, bool> traversalFunction, int start, int end);
+    void Traverse(Action<Type> traversalAction, int start, int end);
+  }
+
   #region Array
 
   /// <summary>Implements a standard array that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
-  public class Array<Type> : InterfaceTraversable<Type>
+  public class ArrayStandard<Type> : Array<Type>
   {
     private Type[] _array;
 
@@ -46,7 +56,7 @@ namespace SevenEngine.DataStructures
       {
         ReaderLock();
         if (index < 0 || index > _array.Length)
-          throw new ArrayException("index out of bounds.");
+          throw new ArrayStandardException("index out of bounds.");
         Type returnValue = _array[index];
         ReaderUnlock();
         return returnValue;
@@ -55,7 +65,7 @@ namespace SevenEngine.DataStructures
       {
         WriterLock();
         if (index < 0 || index > _array.Length)
-          throw new ArrayException("index out of bounds.");
+          throw new ArrayStandardException("index out of bounds.");
         _array[index] = value;
         WriterUnlock();
       }
@@ -64,10 +74,10 @@ namespace SevenEngine.DataStructures
     /// <summary>Constructs an array that implements a traversal delegate function 
     /// which is an optimized "foreach" implementation.</summary>
     /// <param name="size">The length of the array in memory.</param>
-    public Array(int size)
+    public ArrayStandard(int size)
     {
       if (size < 0)
-        throw new ArrayException("size of the array must be non-negative.");
+        throw new ArrayStandardException("size of the array must be non-negative.");
       _array = new Type[size];
       _lock = new Object();
       _readers = 0;
@@ -102,7 +112,7 @@ namespace SevenEngine.DataStructures
     {
       ReaderLock();
       if (start > end || end > _array.Length || start < 0)
-        throw new ArrayException("start/end indeces out of bounds during traversal attempt.");
+        throw new ArrayStandardException("start/end indeces out of bounds during traversal attempt.");
       for (int index = start; index < end; index++)
       {
         if (!traversalFunction(_array[index++]))
@@ -136,7 +146,7 @@ namespace SevenEngine.DataStructures
     {
       ReaderLock();
       if (start > end || end > _array.Length || start < 0)
-        throw new ArrayException("start/end indeces out of bounds during traversal attempt.");
+        throw new ArrayStandardException("start/end indeces out of bounds during traversal attempt.");
       for (int index = start; index < end; index++)
         traversalAction(_array[index++]);
       ReaderUnlock();
@@ -152,7 +162,7 @@ namespace SevenEngine.DataStructures
     private void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
-    private class ArrayException : Exception { public ArrayException(string message) : base(message) { } }
+    private class ArrayStandardException : Exception { public ArrayStandardException(string message) : base(message) { } }
   }
 
   #endregion
@@ -161,7 +171,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements a cyclic array (allows overwriting) that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
-  public class ArrayCyclic<Type> : InterfaceTraversable<Type>
+  public class ArrayCyclic<Type> : Array<Type>
   {
     private Type[] _array;
     int _start;

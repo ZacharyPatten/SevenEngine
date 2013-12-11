@@ -11,9 +11,9 @@
 // Last Edited: 11-16-13
 
 // This file contains the following classes:
-// - HashTable
-//   - HashTableListNode
-//   - HashTableException
+// - HashTableStandard
+//   - HashTableStandardListNode
+//   - HashTableStandardException
 
 using System;
 using System.Threading;
@@ -21,9 +21,14 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  #region HashTable
+  public interface HashTable
+  {
 
-  public class HashTable<TypeKey, TypeValue> : InterfaceTraversable<TypeValue>
+  }
+
+  #region HashTableStandard
+
+  public class HashTableStandard<TypeKey, TypeValue> : InterfaceTraversable<TypeValue>
   {
     /// <summary>A set of allowable table sizes, all of which are prime.</summary>
     private static readonly int[] _tableSizes = new int[]
@@ -35,17 +40,17 @@ namespace SevenEngine.DataStructures
 
     #region HashTableListNode
 
-    private class HashTableListNode
+    private class HashTableStandardListNode
     {
       private TypeKey _key;
       private TypeValue _value;
-      private HashTableListNode _next;
+      private HashTableStandardListNode _next;
 
       internal TypeKey Key { get { return _key; } set { _key = value; } }
       internal TypeValue Value { get { return _value; } set { _value = value; } }
-      internal HashTableListNode Next { get { return _next; } set { _next = value; } }
+      internal HashTableStandardListNode Next { get { return _next; } set { _next = value; } }
 
-      internal HashTableListNode(TypeKey key, TypeValue value, HashTableListNode next)
+      internal HashTableStandardListNode(TypeKey key, TypeValue value, HashTableStandardListNode next)
       {
         _key = key;
         _value = value;
@@ -57,7 +62,7 @@ namespace SevenEngine.DataStructures
 
     private const float _maxLoadFactor = 1.0f;
 
-    private HashTableListNode[] _table;
+    private HashTableStandardListNode[] _table;
     private int _count;
     private int _sizeIndex;
     private Object _lock;
@@ -76,7 +81,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Allows indexed look-up of the structure. (Set does not replace the Add() method)</summary>
     /// <param name="key">The "index" to access of the structure.</param>
     /// <returns>The value at the index of the requested key.</returns>
-    /// <remarks></remarks>
+    /// <remarks>Runtime: N/A.</remarks>
     public TypeValue this[TypeKey key]
     {
       get
@@ -91,18 +96,18 @@ namespace SevenEngine.DataStructures
         else
         {
           ReaderUnlock();
-          throw new HashTableException("Attempting to look up a non-existing key.");
+          throw new HashTableStandardException("Attempting to look up a non-existing key.");
         }
       }
       set
       {
         WriterLock();
-        HashTableListNode cell = Find(key, Hash(key));
+        HashTableStandardListNode cell = Find(key, Hash(key));
         if (cell == null)
         {
           value = default(TypeValue);
           WriterUnlock();
-          throw new HashTableException("Index out of range (key not found). This does not replace the add method.");
+          throw new HashTableStandardException("Index out of range (key not found). This does not replace the add method.");
         }
         else
         {
@@ -114,9 +119,9 @@ namespace SevenEngine.DataStructures
 
     /// <summary>Constructs a new hash table instance.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public HashTable()
+    public HashTableStandard()
     {
-      _table = new HashTableListNode[107];
+      _table = new HashTableStandardListNode[107];
       _count = 0;
       _sizeIndex = 0;
       _lock = new Object();
@@ -132,7 +137,7 @@ namespace SevenEngine.DataStructures
     public bool TryGetValue(TypeKey key, out TypeValue value)
     {
       ReaderLock();
-      HashTableListNode cell = Find(key, Hash(key));
+      HashTableStandardListNode cell = Find(key, Hash(key));
       if (cell == null)
       {
         value = default(TypeValue);
@@ -147,9 +152,9 @@ namespace SevenEngine.DataStructures
       }
     }
 
-    private HashTableListNode Find(TypeKey key, int loc)
+    private HashTableStandardListNode Find(TypeKey key, int loc)
     {
-      for (HashTableListNode bucket = _table[loc]; bucket != null; bucket = bucket.Next)
+      for (HashTableStandardListNode bucket = _table[loc]; bucket != null; bucket = bucket.Next)
         if (bucket.Key.Equals(key))
           return bucket;
       return null;
@@ -167,44 +172,44 @@ namespace SevenEngine.DataStructures
       if (key == null)
       {
         WriterUnlock();
-        throw new HashTableException("\nMember: \"Add(TKey key, TValue value)\"\nThe key cannot be null.");
+        throw new HashTableStandardException("\nMember: \"Add(TKey key, TValue value)\"\nThe key cannot be null.");
       }
       int location = Hash(key);
       if (Find(key, location) == null)
       {
         if (++_count > _table.Length * _maxLoadFactor && _sizeIndex < _tableSizes.Length - 1)
         {
-          HashTableListNode[] t = _table;
-          _table = new HashTableListNode[_tableSizes[++_sizeIndex]];
+          HashTableStandardListNode[] t = _table;
+          _table = new HashTableStandardListNode[_tableSizes[++_sizeIndex]];
           for (int i = 0; i < t.Length; i++)
           {
             while (t[i] != null)
             {
-              HashTableListNode cell = RemoveFirst(t, i);
+              HashTableStandardListNode cell = RemoveFirst(t, i);
               Add(cell, Hash(cell.Key));
             }
           }
           location = Hash(key);
         }
-        HashTableListNode p = new HashTableListNode(key, value, null);
+        HashTableStandardListNode p = new HashTableStandardListNode(key, value, null);
         Add(p, location);
         WriterUnlock();
       }
       else
       {
         WriterUnlock();
-        throw new HashTableException("\nMember: \"Add(TKey key, TValue value)\"\nThe key is already in the table.");
+        throw new HashTableStandardException("\nMember: \"Add(TKey key, TValue value)\"\nThe key is already in the table.");
       }
     }
 
-    private HashTableListNode RemoveFirst(HashTableListNode[] t, int i)
+    private HashTableStandardListNode RemoveFirst(HashTableStandardListNode[] t, int i)
     {
-      HashTableListNode first = t[i];
+      HashTableStandardListNode first = t[i];
       t[i] = first.Next;
       return first;
     }
 
-    private void Add(HashTableListNode cell, int location)
+    private void Add(HashTableStandardListNode cell, int location)
     {
       cell.Next = _table[location];
       _table[location] = cell;
@@ -219,22 +224,31 @@ namespace SevenEngine.DataStructures
       if (key == null)
       {
         WriterUnlock();
-        throw new HashTableException("attempting to remove \"null\" from the structure.");
+        throw new HashTableStandardException("attempting to remove \"null\" from the structure.");
       }
       int location = Hash(key);
       if (_table[location].Key.Equals(key))
         _table[location] = _table[location].Next;
-      for (HashTableListNode bucket = _table[location]; bucket != null; bucket = bucket.Next)
+      for (HashTableStandardListNode bucket = _table[location]; bucket != null; bucket = bucket.Next)
       {
         if (bucket.Next == null)
         {
           WriterUnlock();
-          throw new HashTableException("attempting to remove a non-existing value.");
+          throw new HashTableStandardException("attempting to remove a non-existing value.");
         }
         else if (bucket.Next.Key.Equals(key))
           bucket.Next = bucket.Next.Next;
       }
       _count--;
+      WriterUnlock();
+    }
+
+    public void Clear()
+    {
+      WriterLock();
+      _table = new HashTableStandardListNode[107];
+      _count = 0;
+      _sizeIndex = 0;
       WriterUnlock();
     }
     
@@ -248,7 +262,7 @@ namespace SevenEngine.DataStructures
       for (int i = 0; i < _table.Length; i++)
       {
         if (_table[i] == null) continue;
-        HashTableListNode looper = _table[i];
+        HashTableStandardListNode looper = _table[i];
         while (looper != null)
         {
           if (!traversalAction(looper.Value)) { ReaderUnlock(); return false; }
@@ -268,7 +282,7 @@ namespace SevenEngine.DataStructures
       for (int i = 0; i < _table.Length; i++)
       {
         if (_table[i] == null) continue;
-        HashTableListNode looper = _table[i];
+        HashTableStandardListNode looper = _table[i];
         while (looper != null)
         {
           traversalAction(looper.Value);
@@ -288,7 +302,7 @@ namespace SevenEngine.DataStructures
     private void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing hash table exceptions only to make debugging faster.</summary>
-    private class HashTableException : Exception { public HashTableException(string message) : base(message) { } }
+    private class HashTableStandardException : Exception { public HashTableStandardException(string message) : base(message) { } }
   }
 
   #endregion

@@ -10,13 +10,15 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-23-13
 
-// This file contains the following classes:
+// This file contains the following interfaces:
 // - Octree
-//   - OctreeBound
-//   - OctreeNode
-//   - OctreeLeaf
-//   - OctreeBranch
-//   - OctreeException
+// This file contains the following classes:
+// - OctreeLinked
+//   - OctreeLinkedBound
+//   - OctreeLinkedNode
+//   - OctreeLinkedLeaf
+//   - OctreeLinkedBranch
+//   - OctreeLinkedException
 
 using System;
 using System.Threading;
@@ -24,16 +26,29 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  #region Octree
+  public interface Octree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+    where ValueType : InterfacePositionVector
+  {
+    int Count { get; }
+    bool IsEmpty { get; }
+    void Add(ValueType addition);
+    //void Remove(KeyType removal);
+    bool TraverseBreakable(Func<ValueType, bool> traversalFunction, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    void Traverse(Action<ValueType> traversalAction, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    //void Move(KeyType moving);
+    void Update();
+  }
 
-  public class Octree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+  #region OctreeLinked
+
+  public class OctreeLinked<ValueType, KeyType> : Octree<ValueType, KeyType>
     where ValueType : InterfaceStringId, InterfacePositionVector
   {
-    #region OctreeBound
+    #region OctreeLinkedBound
 
     /// <summary>Represents a bounding cube. Includes coordinates of the center 
     /// and a scale of expansion along each axis.</summary>
-    private class OctreeBound
+    private class OctreeLinkedBound
     {
       private float _x, _y, _z, _scale;
 
@@ -42,28 +57,28 @@ namespace SevenEngine.DataStructures
       internal float Z { get { return _z; } }
       internal float Scale { get { return _scale; } }
 
-      internal OctreeBound(float x, float y, float z, float scale)
+      internal OctreeLinkedBound(float x, float y, float z, float scale)
       { _x = x; _y = y; _z = z; _scale = scale; }
     }
 
     #endregion
 
-    #region OctreeNode
+    #region OctreeLinkedNode
 
     /// <summary>Represents a single node of the octree. Includes references both upwards and
     /// downwards the tree.</summary>
-    private abstract class OctreeNode
+    private abstract class OctreeLinkedNode
     {
       private float _x, _y, _z, _scale;
-      private OctreeBranch _parent;
+      private OctreeLinkedBranch _parent;
 
       internal float X { get { return _x; } }
       internal float Y { get { return _y; } }
       internal float Z { get { return _z; } }
       internal float Scale { get { return _scale; } }
-      internal OctreeBranch Parent { get { return _parent; } }
+      internal OctreeLinkedBranch Parent { get { return _parent; } }
 
-      internal OctreeNode(float x, float y, float z, float scale, OctreeBranch parent)
+      internal OctreeLinkedNode(float x, float y, float z, float scale, OctreeLinkedBranch parent)
       {
         _x = x;
         _y = y;
@@ -104,39 +119,39 @@ namespace SevenEngine.DataStructures
       }
 
       /// <summary>Determins the bounds of a child node.</summary>
-      internal OctreeBound DetermineChildBounds(int child)
+      internal OctreeLinkedBound DetermineChildBounds(int child)
       {
         float halfScale = _scale / 2;
         switch (child)
         {
           case 0:
-            return new OctreeBound(_x - halfScale, _y - halfScale, _z - halfScale, halfScale);
+            return new OctreeLinkedBound(_x - halfScale, _y - halfScale, _z - halfScale, halfScale);
           case 1:
-            return new OctreeBound(_x - halfScale, _y - halfScale, _z + halfScale, halfScale);
+            return new OctreeLinkedBound(_x - halfScale, _y - halfScale, _z + halfScale, halfScale);
           case 2:
-            return new OctreeBound(_x - halfScale, _y + halfScale, _z - halfScale, halfScale);
+            return new OctreeLinkedBound(_x - halfScale, _y + halfScale, _z - halfScale, halfScale);
           case 3:
-            return new OctreeBound(_x - halfScale, _y + halfScale, _z + halfScale, halfScale);
+            return new OctreeLinkedBound(_x - halfScale, _y + halfScale, _z + halfScale, halfScale);
           case 4:
-            return new OctreeBound(_x + halfScale, _y - halfScale, _z - halfScale, halfScale);
+            return new OctreeLinkedBound(_x + halfScale, _y - halfScale, _z - halfScale, halfScale);
           case 5:
-            return new OctreeBound(_x + halfScale, _y - halfScale, _z + halfScale, halfScale);
+            return new OctreeLinkedBound(_x + halfScale, _y - halfScale, _z + halfScale, halfScale);
           case 6:
-            return new OctreeBound(_x + halfScale, _y + halfScale, _z - halfScale, halfScale);
+            return new OctreeLinkedBound(_x + halfScale, _y + halfScale, _z - halfScale, halfScale);
           case 7:
-            return new OctreeBound(_x + halfScale, _y + halfScale, _z + halfScale, halfScale);
+            return new OctreeLinkedBound(_x + halfScale, _y + halfScale, _z + halfScale, halfScale);
         }
-        throw new OctreeException("There is a glitch in my octree, sorry...");
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
       }
     }
 
     #endregion
-    
-    #region OctreeLeaf
+
+    #region OctreeLinkedLeaf
 
     /// <summary>Represents a single node of the octree. Includes references both upwards and
     /// downwards the tree.</summary>
-    private class OctreeLeaf : OctreeNode
+    private class OctreeLinkedLeaf : OctreeLinkedNode
     {
       //private OctreeEntry[] _contents;
       private ValueType[] _contents;
@@ -147,7 +162,7 @@ namespace SevenEngine.DataStructures
       internal int Count { get { return _count; } set { _count = value; } }
       internal bool IsFull { get { return _count == _contents.Length; } }
 
-      internal OctreeLeaf(float x, float y, float z, float scale, OctreeBranch parent, int branchFactor)
+      internal OctreeLinkedLeaf(float x, float y, float z, float scale, OctreeLinkedBranch parent, int branchFactor)
         : base(x, y, z, scale, parent)
       { _contents = new ValueType[branchFactor]; }
 
@@ -156,7 +171,7 @@ namespace SevenEngine.DataStructures
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
             return i;
-        throw new OctreeException("There is a glitch in my octree, sorry...");
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
       }
 
       internal ValueType GetEntry(string id)
@@ -164,13 +179,13 @@ namespace SevenEngine.DataStructures
         for (int i = 0; i < _count; i++)
           if (_contents[i].Id == id)
             return _contents[i];
-        throw new OctreeException("There is a glitch in my octree, sorry...");
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
       }
 
-      internal OctreeLeaf Add(ValueType addition)
+      internal OctreeLinkedLeaf Add(ValueType addition)
       {
         if (_count == _contents.Length)
-          throw new OctreeException("There is a glitch in my octree, sorry...");
+          throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
         _contents[_count++] = addition;
         return this;
       }
@@ -185,24 +200,24 @@ namespace SevenEngine.DataStructures
             _contents[i] = swapStorage;
             return;
           }
-        throw new OctreeException("My octree has a glitch, sorry...");
+        throw new OctreeLinkedException("My octree has a glitch, sorry...");
       }
     }
 
     #endregion
 
-    #region OctreeBranch
+    #region OctreelinkedBranch
 
     /// <summary>Represents a single node of the octree. Includes references both upwards and
     /// downwards the tree.</summary>
-    private class OctreeBranch : OctreeNode
+    private class OctreeLinkedBranch : OctreeLinkedNode
     {
       // The children are indexed as follows (relative to this node's center):
       // 0: (-x, -y, -z)   1: (-x, -y, z)   2: (-x, y, -z)   3: (-x, y, z)
       // 4: (x, -y, -z)   5: (x, -y, z)   6: (x, y, -z)   7: (x, y, z)
-      private OctreeNode[] _children;
+      private OctreeLinkedNode[] _children;
 
-      internal OctreeNode[] Children { get { return _children; } }
+      internal OctreeLinkedNode[] Children { get { return _children; } }
       internal bool IsEmpty
       {
         get
@@ -213,25 +228,25 @@ namespace SevenEngine.DataStructures
         }
       }
 
-      internal OctreeBranch(float x, float y, float z, float scale, OctreeBranch parent)
+      internal OctreeLinkedBranch(float x, float y, float z, float scale, OctreeLinkedBranch parent)
         : base(x, y, z, scale, parent)
-      { _children = new OctreeNode[8]; }
+      { _children = new OctreeLinkedNode[8]; }
     }
 
     #endregion
 
-    #region OctreeReference
+    #region OctreeLinkedReference
 
-    private class OctreeReference : SevenEngine.DataStructures.Interfaces.InterfaceStringId
+    private class OctreeLinkedReference : SevenEngine.DataStructures.Interfaces.InterfaceStringId
     {
       private ValueType _value;
-      private OctreeLeaf _leaf;
+      private OctreeLinkedLeaf _leaf;
 
       public string Id { get { return _value.Id; } set { _value.Id = value; } }
       internal ValueType Value { get { return _value; } set { _value = value; } }
-      internal OctreeLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
+      internal OctreeLinkedLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
 
-      internal OctreeReference(ValueType value, OctreeLeaf leaf) { _value = value; _leaf = leaf; }
+      internal OctreeLinkedReference(ValueType value, OctreeLinkedLeaf leaf) { _value = value; _leaf = leaf; }
     }
 
     #endregion
@@ -240,15 +255,16 @@ namespace SevenEngine.DataStructures
     private int _branchFactor;
     private int _count;
     // A database of objects and their current octree nodes
-    private AvlTree<OctreeReference, string> _referenceDatabase;
+    private AvlTreeLinked<OctreeLinkedReference, string> _referenceDatabase;
     // The top node of the tree
-    private OctreeNode _top;
-
-    private bool _modified;
+    private OctreeLinkedNode _top;
 
     private Object _lock;
     private int _readers;
     private int _writers;
+
+    public int Count { get { return _count; } }
+    public bool IsEmpty { get { return _count == 0; } }
 
     /// <summary>Creates an octree for three dimensional space partitioning.</summary>
     /// <param name="x">The x coordinate of the center of the octree.</param>
@@ -256,21 +272,21 @@ namespace SevenEngine.DataStructures
     /// <param name="z">The z coordinate of the center of the octree.</param>
     /// <param name="scale">How far the tree expands along each dimension.</param>
     /// <param name="branchFactor">The maximum items per octree node before expansion.</param>
-    public Octree(float x, float y, float z, float scale, int branchFactor,
+    public OctreeLinked(float x, float y, float z, float scale, int branchFactor,
       Func<ValueType, ValueType, int> valueComparisonFunction,
       Func<ValueType, KeyType, int> keyComparisonFunction)
     {
       _branchFactor = branchFactor;
-      _top = new OctreeLeaf(x, y, z, scale, null, _branchFactor);
+      _top = new OctreeLinkedLeaf(x, y, z, scale, null, _branchFactor);
       _count = 0;
       _lock = new Object();
       _readers = 0;
       _writers = 0;
 
-      _referenceDatabase = new AvlTree<OctreeReference, string>
+      _referenceDatabase = new AvlTreeLinked<OctreeLinkedReference, string>
       (
-        (OctreeReference left, OctreeReference right) => { return left.Id.CompareTo(right.Id); },
-        (OctreeReference left, string right) => { return left.Id.CompareTo(right); }
+        (OctreeLinkedReference left, OctreeLinkedReference right) => { return left.Id.CompareTo(right.Id); },
+        (OctreeLinkedReference left, string right) => { return left.Id.CompareTo(right); }
       );
     }
 
@@ -283,20 +299,19 @@ namespace SevenEngine.DataStructures
     public void Add(ValueType addition)
     {
       WriterLock();
-      _referenceDatabase.Add(new OctreeReference(addition, Add(addition, _top)));
+      _referenceDatabase.Add(new OctreeLinkedReference(addition, Add(addition, _top)));
       _count++;
-      _modified = true;
       WriterUnlock();
     }
 
     /// <summary>Recursively adds an item to the octree and returns the node where the addition was placed
     /// and adjusts the octree structure as needed.</summary>
-    private OctreeLeaf Add(ValueType addition, OctreeNode octreeNode)
+    private OctreeLinkedLeaf Add(ValueType addition, OctreeLinkedNode octreeNode)
     {
       // If the node is a leaf we have reached the bottom of the tree
-      if (octreeNode is OctreeLeaf)
+      if (octreeNode is OctreeLinkedLeaf)
       {
-        OctreeLeaf leaf = (OctreeLeaf)octreeNode;
+        OctreeLinkedLeaf leaf = (OctreeLinkedLeaf)octreeNode;
         if (!leaf.IsFull)
         {
           // We found a proper leaf, and the leaf has room, just add it
@@ -306,10 +321,10 @@ namespace SevenEngine.DataStructures
         else
         {
           // The leaf is full so we need to grow out the tree
-          OctreeBranch parent = octreeNode.Parent;
-          OctreeBranch growth;
+          OctreeLinkedBranch parent = octreeNode.Parent;
+          OctreeLinkedBranch growth;
           if (parent == null)
-            growth = (OctreeBranch)(_top = new OctreeBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
+            growth = (OctreeLinkedBranch)(_top = new OctreeLinkedBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
           else
             growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
           foreach (ValueType entry in leaf.Contents)
@@ -320,7 +335,7 @@ namespace SevenEngine.DataStructures
       // We are still traversing the tree, determine the next move
       else
       {
-        OctreeBranch branch = (OctreeBranch)octreeNode;
+        OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
         int child = branch.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z);
         // If the leaf is null, we must grow one before attempting to add to it
         if (branch.Children[child] == null)
@@ -330,23 +345,23 @@ namespace SevenEngine.DataStructures
     }
 
     // Grows a branch on the tree at the desired location
-    private OctreeBranch GrowBranch(OctreeBranch branch, int child)
+    private OctreeLinkedBranch GrowBranch(OctreeLinkedBranch branch, int child)
     {
-      OctreeBound childBounds = branch.DetermineChildBounds(child);
+      OctreeLinkedBound childBounds = branch.DetermineChildBounds(child);
       branch.Children[child] =
-        new OctreeBranch(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch);
-      return (OctreeBranch)branch.Children[child];
+        new OctreeLinkedBranch(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch);
+      return (OctreeLinkedBranch)branch.Children[child];
     }
 
     // Grows a leaf on the tree at the desired location
-    private OctreeLeaf GrowLeaf(OctreeBranch branch, int child)
+    private OctreeLinkedLeaf GrowLeaf(OctreeLinkedBranch branch, int child)
     {
       if (branch.Children[child] != null)
-        throw new OctreeException("My octree has a glitched, sorry.");
-      OctreeBound childBounds = branch.DetermineChildBounds(child);
+        throw new OctreeLinkedException("My octree has a glitched, sorry.");
+      OctreeLinkedBound childBounds = branch.DetermineChildBounds(child);
       branch.Children[child] =
-        new OctreeLeaf(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch, _branchFactor);
-      return (OctreeLeaf)branch.Children[child];
+        new OctreeLinkedLeaf(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch, _branchFactor);
+      return (OctreeLinkedLeaf)branch.Children[child];
     }
 
     /// <summary>Removes an item from the octree by the id that was assigned to it.</summary>
@@ -357,20 +372,19 @@ namespace SevenEngine.DataStructures
       Remove(id, _referenceDatabase.Get(id).Leaf);
       _referenceDatabase.Remove(id);
       _count--;
-      _modified = false;
       WriterUnlock();
     }
 
-    private void Remove(string id, OctreeLeaf leaf)
+    private void Remove(string id, OctreeLinkedLeaf leaf)
     {
       if (leaf.Count > 1) leaf.Remove(id);
       else PluckLeaf(leaf.Parent, leaf.Parent.DetermineChild(leaf.X, leaf.Y, leaf.Z));
     }
 
-    private void PluckLeaf(OctreeBranch branch, int child)
+    private void PluckLeaf(OctreeLinkedBranch branch, int child)
     {
-      if (!(branch.Children[child] is OctreeLeaf) || ((OctreeLeaf)branch.Children[child]).Count > 1)
-        throw new OctreeException("There is a glitch in my octree, sorry.");
+      if (!(branch.Children[child] is OctreeLinkedLeaf) || ((OctreeLinkedLeaf)branch.Children[child]).Count > 1)
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry.");
       branch.Children[child] = null;
       while (branch.IsEmpty)
       {
@@ -379,10 +393,10 @@ namespace SevenEngine.DataStructures
       }
     }
 
-    private void ChopBranch(OctreeBranch branch, int child)
+    private void ChopBranch(OctreeLinkedBranch branch, int child)
     {
       if (branch.Children[child] == null)
-        throw new OctreeException("There is a glitch in my octree, sorry...");
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
       branch.Children[child] = null;
     }
 
@@ -394,7 +408,7 @@ namespace SevenEngine.DataStructures
     public void Move(string id, float x, float y, float z)
     {
       WriterLock();
-      OctreeLeaf leaf = _referenceDatabase.Get(id).Leaf;
+      OctreeLinkedLeaf leaf = _referenceDatabase.Get(id).Leaf;
       ValueType entry = leaf.GetEntry(id);
       entry.Position.X = x;
       entry.Position.Y = y;
@@ -414,7 +428,6 @@ namespace SevenEngine.DataStructures
       WriterLock();
       WriterUnlock();
       throw new NotImplementedException("Sorry, I'm still working on the update function.");
-      _modified = false;
       WriterUnlock();
     }
 
@@ -431,19 +444,19 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return true;
     }
-    private bool TraverseBreakable(Func<ValueType, bool> traversalFunctionBreakable, OctreeNode octreeNode)
+    private bool TraverseBreakable(Func<ValueType, bool> traversalFunctionBreakable, OctreeLinkedNode octreeNode)
     {
       if (octreeNode != null)
       {
-        if (octreeNode is OctreeLeaf)
+        if (octreeNode is OctreeLinkedLeaf)
         {
-          foreach (ValueType item in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType item in ((OctreeLinkedLeaf)octreeNode).Contents)
             if (!traversalFunctionBreakable(item)) return false;
         }
         else
         {
           // The current node is a branch
-          OctreeBranch branch = (OctreeBranch)octreeNode;
+          OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
           if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[0])) return false;
           if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[1])) return false;
           if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[2])) return false;
@@ -463,19 +476,19 @@ namespace SevenEngine.DataStructures
       Traverse(traversalFunction, _top);
       ReaderUnlock();
     }
-    private void Traverse(Action<ValueType> traversalFunction, OctreeNode octreeNode)
+    private void Traverse(Action<ValueType> traversalFunction, OctreeLinkedNode octreeNode)
     {
       if (octreeNode != null)
       {
-        if (octreeNode is OctreeLeaf)
+        if (octreeNode is OctreeLinkedLeaf)
         {
-          foreach (ValueType item in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType item in ((OctreeLinkedLeaf)octreeNode).Contents)
             traversalFunction(item);
         }
         else
         {
           // The current node is a branch
-          OctreeBranch branch = (OctreeBranch)octreeNode;
+          OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
           Traverse(traversalFunction, branch.Children[0]);
           Traverse(traversalFunction, branch.Children[1]);
           Traverse(traversalFunction, branch.Children[2]);
@@ -503,13 +516,13 @@ namespace SevenEngine.DataStructures
       ReaderUnlock();
       return returnValue;
     }
-    private bool TraverseBreakable(Func<ValueType, bool> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    private bool TraverseBreakable(Func<ValueType, bool> traversalFunction, OctreeLinkedNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       if (octreeNode != null)
       {
-        if (octreeNode is OctreeLeaf)
+        if (octreeNode is OctreeLinkedLeaf)
         {
-          foreach (ValueType entry in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType entry in ((OctreeLinkedLeaf)octreeNode).Contents)
             //if (!traversalFunction(item)) return false;
             if (entry != null &&
             entry.Position.X > xMin && entry.Position.X < xMax
@@ -520,7 +533,7 @@ namespace SevenEngine.DataStructures
         else
         {
           // The current node is a branch
-          foreach (OctreeNode node in ((OctreeBranch)octreeNode).Children)
+          foreach (OctreeLinkedNode node in ((OctreeLinkedBranch)octreeNode).Children)
           {
             if (node == null) continue;
             else if (xMax < node.X - node.Scale) continue;
@@ -542,13 +555,13 @@ namespace SevenEngine.DataStructures
       Traverse(traversalFunction, _top, xMin, yMin, zMin, xMax, yMax, zMax);
       ReaderUnlock();
     }
-    private void Traverse(Action<ValueType> traversalFunction, OctreeNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+    private void Traverse(Action<ValueType> traversalFunction, OctreeLinkedNode octreeNode, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
     {
       if (octreeNode != null)
       {
-        if (octreeNode is OctreeLeaf)
+        if (octreeNode is OctreeLinkedLeaf)
         {
-          foreach (ValueType entry in ((OctreeLeaf)octreeNode).Contents)
+          foreach (ValueType entry in ((OctreeLinkedLeaf)octreeNode).Contents)
             //if (!traversalFunction(item)) return false;
             if (entry != null &&
             entry.Position.X > xMin && entry.Position.X < xMax
@@ -559,7 +572,7 @@ namespace SevenEngine.DataStructures
         else
         {
           // The current node is a branch
-          foreach (OctreeNode node in ((OctreeBranch)octreeNode).Children)
+          foreach (OctreeLinkedNode node in ((OctreeLinkedBranch)octreeNode).Children)
           {
             if (node == null) continue;
             else if (xMax < node.X - node.Scale) continue;
@@ -584,7 +597,7 @@ namespace SevenEngine.DataStructures
     private void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing OcTree exceptions only to make debugging faster.</summary>
-    private class OctreeException : Exception { public OctreeException(string message) : base(message) { } }
+    private class OctreeLinkedException : Exception { public OctreeLinkedException(string message) : base(message) { } }
   }
 
   #endregion

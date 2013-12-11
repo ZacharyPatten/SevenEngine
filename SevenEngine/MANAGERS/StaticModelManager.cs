@@ -24,13 +24,13 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTree<StaticMeshInstance, string> _staticMeshDatabase = new AvlTree<StaticMeshInstance, string>
+    private static AvlTreeLinked<StaticMeshInstance, string> _staticMeshDatabase = new AvlTreeLinked<StaticMeshInstance, string>
     (
       (StaticMeshInstance left, StaticMeshInstance right) => { return left.Id.CompareTo(right.Id); },
       (StaticMeshInstance left, string right) => { return left.Id.CompareTo(right); }
     );
     
-    private static AvlTree<StaticModel, string> _staticModelDatabase = new AvlTree<StaticModel, string>
+    private static AvlTreeLinked<StaticModel, string> _staticModelDatabase = new AvlTreeLinked<StaticModel, string>
     (
       (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
       (StaticModel left, string right) => { return left.Id.CompareTo(right); }
@@ -57,7 +57,7 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      AvlTree<StaticMesh, string> meshes = new AvlTree<StaticMesh, string>
+      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>
       (
         (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
         (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
@@ -375,7 +375,7 @@ namespace SevenEngine
       Texture texture = null;
       string meshName = "defaultMeshName";
 
-      AvlTree<StaticMesh, string> meshes = new AvlTree<StaticMesh, string>
+      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>
       (
         (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
         (StaticMesh left, string right) => { return left.Id.CompareTo(right); }

@@ -10,10 +10,12 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-// This file contains the following classes:
+// This file contains the following interfaces:
 // - List
-//   - ListNode
-//   - ListException
+// This file contains the following classes:
+// - ListLinked
+//   - ListLinkedNode
+//   - ListLinkedException
 // - ListArray
 //   - ListArrayException
 
@@ -24,44 +26,43 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  public interface List<Type>
+  public interface List<Type> : InterfaceTraversable<Type>
   {
     void Add(Type addition);
     void RemoveFirst(Type removal);
     int Count { get; }
     void Clear();
-    bool TraverseBreakable(Func<Type, bool> traversalFunction);
-    void Traverse(Action<Type> traversalAction);
+    bool IsEmpty { get; }
+    Type[] ToArray();
   }
 
-  #region List
+  #region ListLinked
 
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class ListLinked<ValueType, KeyType> : InterfaceTraversable<ValueType>, List<ValueType>
-    //where Type : InterfaceStringId
+  public class ListLinked<ValueType, KeyType> : List<ValueType>
   {
-    #region ListNode
+    #region ListLinkedNode
 
     /// <summary>This class just holds the data for each individual node of the list.</summary>
-    private class ListNode
+    private class ListLinkedNode
     {
       private ValueType _value;
-      private ListNode _next;
+      private ListLinkedNode _next;
 
       internal ValueType Value { get { return _value; } set { _value = value; } }
-      internal ListNode Next { get { return _next; } set { _next = value; } }
+      internal ListLinkedNode Next { get { return _next; } set { _next = value; } }
 
-      internal ListNode(ValueType data) { _value = data; }
+      internal ListLinkedNode(ValueType data) { _value = data; }
     }
 
     #endregion
 
-    Func<ValueType, KeyType, bool> _comparisonFunction;
+    Func<ValueType, KeyType, bool> _equalityFunction;
 
-    private ListNode _head;
-    private ListNode _tail;
+    private ListLinkedNode _head;
+    private ListLinkedNode _tail;
     private int _count;
 
     private Object _lock;
@@ -72,11 +73,15 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public int Count { get { ReaderLock(); int count = _count; ReaderUnlock(); return count; } }
 
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
+
     /// <summary>Creates an instance of a stalistck.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public ListLinked(Func<ValueType, KeyType, bool> comparisonFunction)
+    public ListLinked(Func<ValueType, KeyType, bool> equalityFunction)
     {
-      _comparisonFunction = comparisonFunction;
+      _equalityFunction = equalityFunction;
       _head = _tail = null;
       _count = 0;
       _lock = new Object();
@@ -92,9 +97,9 @@ namespace SevenEngine.DataStructures
     {
       WriterLock();
       if (_tail == null)
-        _head = _tail = new ListNode(addition);
+        _head = _tail = new ListLinkedNode(addition);
       else
-        _tail = _tail.Next = new ListNode(addition);
+        _tail = _tail.Next = new ListLinkedNode(addition);
       _count++;
       WriterUnlock();
     }
@@ -106,23 +111,23 @@ namespace SevenEngine.DataStructures
     {
       WriterLock();
       if (_head == null)
-        throw new ListException("Attempting to remove a non-existing id value.");
-      if (_comparisonFunction(_head.Value, removalKey))
+        throw new ListLinkedException("Attempting to remove a non-existing id value.");
+      if (_equalityFunction(_head.Value, removalKey))
       {
         _head = _head.Next;
         _count--;
         WriterUnlock();
         return;
       }
-      ListNode listNode = _head;
+      ListLinkedNode listNode = _head;
       while (listNode != null)
       {
         if (listNode.Next == null)
         {
           WriterUnlock();
-          throw new ListException("Attempting to remove a non-existing id value.");
+          throw new ListLinkedException("Attempting to remove a non-existing id value.");
         }
-        else if (_comparisonFunction(_head.Value, removalKey))
+        else if (_equalityFunction(_head.Value, removalKey))
         {
           if (listNode.Next.Equals(_tail))
             _tail = listNode;
@@ -134,7 +139,7 @@ namespace SevenEngine.DataStructures
           listNode = listNode.Next;
       }
       WriterUnlock();
-      throw new ListException("Attempting to remove a non-existing id value.");
+      throw new ListLinkedException("Attempting to remove a non-existing id value.");
     }
 
     /// <summary>Removes the first equality by object reference.</summary>
@@ -143,7 +148,7 @@ namespace SevenEngine.DataStructures
     {
       WriterLock();
       if (_head == null)
-        throw new ListException("Attempting to remove a non-existing id value.");
+        throw new ListLinkedException("Attempting to remove a non-existing id value.");
       if (_head.Value.Equals(removal))
       {
         _head = _head.Next;
@@ -151,13 +156,13 @@ namespace SevenEngine.DataStructures
         WriterUnlock();
         return;
       }
-      ListNode listNode = _head;
+      ListLinkedNode listNode = _head;
       while (listNode != null)
       {
         if (listNode.Next == null)
         {
           WriterUnlock();
-          throw new ListException("Attempting to remove a non-existing id value.");
+          throw new ListLinkedException("Attempting to remove a non-existing id value.");
         }
         else if (_head.Value.Equals(removal))
         {
@@ -171,7 +176,7 @@ namespace SevenEngine.DataStructures
           listNode = listNode.Next;
       }
       WriterUnlock();
-      throw new ListException("Attempting to remove a non-existing id value.");
+      throw new ListLinkedException("Attempting to remove a non-existing id value.");
     }
 
     /*/// <summary>Allows you to rename an entry within this list.</summary>
@@ -213,7 +218,7 @@ namespace SevenEngine.DataStructures
     public bool TraverseBreakable(Func<ValueType, bool> traversalFunction)
     {
       ReaderLock();
-      ListNode looper = _head;
+      ListLinkedNode looper = _head;
       while (looper != null)
       {
         if (!traversalFunction(looper.Value))
@@ -233,7 +238,7 @@ namespace SevenEngine.DataStructures
     public void Traverse(Action<ValueType> traversalAction)
     {
       ReaderLock();
-      ListNode looper = _head;
+      ListLinkedNode looper = _head;
       while (looper != null)
       {
         traversalAction(looper.Value);
@@ -254,7 +259,7 @@ namespace SevenEngine.DataStructures
         return null;
       }
       ValueType[] array = new ValueType[_count];
-      ListNode looper = _head;
+      ListLinkedNode looper = _head;
       for (int i = 0; i < _count; i++)
       {
         array[i] = looper.Value;
@@ -274,7 +279,7 @@ namespace SevenEngine.DataStructures
     private void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
-    private class ListException : Exception { public ListException(string message) : base(message) { } }
+    private class ListLinkedException : Exception { public ListLinkedException(string message) : base(message) { } }
   }
 
   #endregion
@@ -285,7 +290,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  public class ListArray<Type> : InterfaceTraversable<Type>, List<Type>
+  public class ListArray<Type> : List<Type>
   {
     private Type[] _list;
     private int _count;
@@ -309,6 +314,10 @@ namespace SevenEngine.DataStructures
         return returnValue;
       }
     }
+
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
 
     /// <summary>Gets the current capacity of the list.</summary>
     /// <remarks>Runtime: O(1).</remarks>

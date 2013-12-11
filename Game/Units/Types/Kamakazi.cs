@@ -25,7 +25,7 @@ namespace Game.Units
       _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 1000f;
     }
 
-    protected void Attack(Octree<Unit, string> octree)
+    protected void Attack(OctreeLinked<Unit, string> octree)
     {
       octree.Traverse
       (
