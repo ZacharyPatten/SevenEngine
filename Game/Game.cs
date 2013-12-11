@@ -58,6 +58,8 @@ namespace Game
       TextureManager.LoadTexture("rock2", FilePath.FromRelative(@"\..\..\Assets\Textures\rock4.bmp"));
       TextureManager.LoadTexture("RedRanger", FilePath.FromRelative(@"\..\..\Assets\Textures\RedRangerBody.bmp"));
       TextureManager.LoadTexture("Tux", FilePath.FromRelative(@"\..\..\Assets\Textures\tux.bmp"));
+      TextureManager.LoadTexture("TuxRed", FilePath.FromRelative(@"\..\..\Assets\Textures\tuxRed.bmp"));
+      TextureManager.LoadTexture("TuxGreen", FilePath.FromRelative(@"\..\..\Assets\Textures\tuxGreen.bmp"));
       TextureManager.LoadTexture("BlueRanger", FilePath.FromRelative(@"\..\..\Assets\Textures\BlueRangerBody.bmp"));
       TextureManager.LoadTexture("PinkRanger", FilePath.FromRelative(@"\..\..\Assets\Textures\PinkRangerBody.bmp"));
       TextureManager.LoadTexture("BlackRanger", FilePath.FromRelative(@"\..\..\Assets\Textures\BlackRangerBody.bmp"));
@@ -120,6 +122,8 @@ namespace Game
       StaticModelManager.LoadModel("Mountain", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock" });
       StaticModelManager.LoadModel("Mountain2", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock2" });
       StaticModelManager.LoadModel("Tux", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "Tux" });
+      StaticModelManager.LoadModel("TuxRed", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "TuxRed" });
+      StaticModelManager.LoadModel("TuxGreen", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "TuxGreen" });
       StaticModelManager.LoadModel("RedRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "RedRanger" });
       StaticModelManager.LoadModel("BlueRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlueRanger" });
       StaticModelManager.LoadModel("BlackRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlackRanger" });
@@ -163,11 +167,12 @@ namespace Game
         // StateManager.StateManager.TriggerStateLoad("nameOfState");
         // StateManager.ChangeState("nameOfState");
 
-      StateManager.AddState(new GameState("gameState"));
+      //StateManager.AddState(new GameState("gameState"));
+      StateManager.AddState(new AiBattle("AiBattle"));
       // The following line calls the "Load" function of your state.
       // The state must be loaded before you make it the current state.
-      StateManager.TriggerStateLoad("gameState");
-      StateManager.ChangeState("gameState");
+      StateManager.TriggerStateLoad("AiBattle");
+      StateManager.ChangeState("AiBattle");
     }
 
     public override void Update(double elapsedTime)
