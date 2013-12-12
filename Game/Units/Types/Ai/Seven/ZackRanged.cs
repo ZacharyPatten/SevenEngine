@@ -10,42 +10,74 @@ namespace Game.Units
   public class ZackRanged : Ranged
   {
     Unit _target;
+    float _time = 0;
+    const float _delay = 4000;
 
     public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
+      if (_time < _delay)
+        _time += elapsedTime;
       if (IsDead == false)
       {
         // Targeting
         if (_target == null || _target.IsDead)
         {
-          octree.TraverseBreakable
+          float shortest = float.MaxValue;
+          octree.Traverse
           (
             (Unit current) =>
             {
               if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
               {
-                _target = current;
-                return false;
+                if (current is KillemKamakazi)
+                {
+                  float length = (current.Position - Position).Length;
+                  if (_target == null || _target.IsDead)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                  else if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                }
+                else if (_target == null || _target.IsDead)
+                {
+                  float length = (current.Position - Position).Length;
+                  if (_target == null || _target.IsDead)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                  else if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                }
               }
-              return true;
             }
           );
         }
         // Attacking
         else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
         {
-          Attack(_target);
+          if (Attack(_target))
+            _target = null;
         }
         // Moving
-        else
+        else if (_time > _delay)
         {
           Vector direction = _target.Position - Position;
           Position.X += (direction.X / direction.Length) * (MoveSpeed + 5);
           Position.Y += (direction.Y / direction.Length) * (MoveSpeed + 5);
           Position.Z += (direction.Z / direction.Length) * (MoveSpeed + 5);
         }
+        this.StaticModel.Orientation.W+=.1f;
       }
     }
   }

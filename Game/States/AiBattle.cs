@@ -32,8 +32,8 @@ namespace Game.States
       (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },
       (Unit left, string right) => { return left.Id.CompareTo(right); });*/
 
-    public static OctreeLinked<Unit, string> _octree =
-      new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
+    public static OctreeLinked<Unit, string> _octree;
+      //= new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
 
     private const int _meleeCount = 30;
     private const int _rangedCount = 30;
@@ -117,6 +117,8 @@ namespace Game.States
 
     private void GenerateUnits()
     {
+      _octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
+
       _zackMelee = new Unit[_meleeCount];
       _zackRanged = new Unit[_rangedCount];
       _zackKamakazi = new Unit[_kamakaziCount];
@@ -143,7 +145,7 @@ namespace Game.States
       {
         _zackMelee[i] = new ZackMelee("ZackMelee" + i, StaticModelManager.GetModel("BlackRanger"));
         _zackMelee[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _zackMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _zackMelee[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackMelee[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -151,7 +153,7 @@ namespace Game.States
 
         _killemMelee[i] = new KillemMelee("KillemMelee" + i, StaticModelManager.GetModel("Tux"));
         _killemMelee[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _killemMelee[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemMelee[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -162,7 +164,7 @@ namespace Game.States
       {
         _zackRanged[i] = new ZackRanged("ZackRanged" + i, StaticModelManager.GetModel("BlueRanger"));
         _zackRanged[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _zackRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _zackRanged[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackRanged[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -170,7 +172,7 @@ namespace Game.States
 
         _killemRanged[i] = new KillemRanged("KillemRanged" + i, StaticModelManager.GetModel("TuxGreen"));
         _killemRanged[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _killemRanged[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemRanged[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -182,7 +184,7 @@ namespace Game.States
       {
         _zackKamakazi[i] = new ZackKamakazi("ZackKamakazi" + i, StaticModelManager.GetModel("RedRanger"));
         _zackKamakazi[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _zackKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _zackKamakazi[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackKamakazi[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -190,7 +192,7 @@ namespace Game.States
 
         _killemKamakazi[i] = new KillemKamakazi("KillemKamakazi" + i, StaticModelManager.GetModel("TuxRed"));
         _killemKamakazi[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
+        _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
         _killemKamakazi[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemKamakazi[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -269,6 +271,12 @@ namespace Game.States
     public string Update(float elapsedTime)
     {
       CameraControls();
+      _skybox.Position.X = _camera.Position.X;
+      _skybox.Position.Y = _camera.Position.Y;
+      _skybox.Position.Z = _camera.Position.Z;
+
+      if (InputManager.Keyboard.Tpressed)
+        GenerateUnits();
 
       if (InputManager.Keyboard.Spacepressed)
         _paused = !_paused;
@@ -294,23 +302,19 @@ namespace Game.States
           unit.StaticModel.Orientation.W += .01f;
         }*/
 
-        _skybox.Position.X = _camera.Position.X;
-        _skybox.Position.Y = _camera.Position.Y;
-        _skybox.Position.Z = _camera.Position.Z;
-
-        _mushroomCloud.Scale.X = _time;
-        _mushroomCloud.Scale.Y = _time;
-        _mushroomCloud.Scale.Z = _time;
+        //_mushroomCloud.Scale.X = _time;
+        //_mushroomCloud.Scale.Y = _time;
+        //_mushroomCloud.Scale.Z = _time;
 
         //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
         //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
         //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
 
         _octree.Traverse((Unit model) => { model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
+        //_octree.Traverse((Unit model) => { if (model is ZackKamakazi || model is ZackMelee || model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
+        //_octree.Traverse((Unit model) => { if (model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
 
-        OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10,
-          (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },
-          (Unit left, string right) => { return left.Id.CompareTo(right); });
+        OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
         foreach (Unit unit in _zackMelee)
           octree.Add(unit);
         foreach (Unit unit in _zackRanged)

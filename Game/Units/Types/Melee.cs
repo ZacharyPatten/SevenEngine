@@ -10,14 +10,14 @@ namespace Game.Units
 {
   public abstract class Melee : Unit
   {
-    private readonly int _healthMin = 1;
-    private readonly int _healthMax = 1000;
-    private readonly int _damageMin = 5;
-    private readonly int _damageMax = 10;
-    private readonly int _viewDistanceMin = 1;
-    private readonly int _viewDistanceMax = 10000;
-    private readonly int _moveSpeedMin = 1;
-    private readonly int _moveSpeedMax = 10;
+    private const int _healthMin = 250;
+    private const int _healthMax = 500;
+    private const int _damageMin = 5;
+    private const int _damageMax = 10;
+    private const int _viewDistanceMin = 1;
+    private const int _viewDistanceMax = 10000;
+    private const int _moveSpeedMin = 5;
+    private const int _moveSpeedMax = 10;
 
     public Melee(string id, StaticModel staticModel) : base(id, staticModel)
     {

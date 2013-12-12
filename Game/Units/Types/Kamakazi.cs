@@ -23,16 +23,16 @@ namespace Game.Units
 
   public abstract class Kamakazi : Unit
   {
-    private readonly int _healthMin = 1;
-    private readonly int _healthMax = 1000;
-    private readonly int _damageMin = 10;
-    private readonly int _damageMax = 100;
-    private readonly int _viewDistanceMin = 1;
-    private readonly int _viewDistanceMax = 10000;
-    private readonly int _moveSpeedMin = 1;
-    private readonly int _moveSpeedMax = 10;
-    private readonly int _attackRangeMin = 20;
-    private readonly int _attackRangeMax = 40;
+    private const int _healthMin = 500;
+    private const int _healthMax = 1000;
+    private const int _damageMin = 100;
+    private const int _damageMax = 200;
+    private const int _viewDistanceMin = 1;
+    private const int _viewDistanceMax = 10000;
+    private const int _moveSpeedMin = 6;
+    private const int _moveSpeedMax = 10;
+    private const int _attackRangeMin = 50;
+    private const int _attackRangeMax = 70;
 
     private bool _exploded = false; 
 
@@ -77,7 +77,7 @@ namespace Game.Units
         },
         -_attackRange + Position.X, -_attackRange + Position.Y, -_attackRange + Position.Z, _attackRange + Position.X, _attackRange + Position.Y, _attackRange + Position.Z
       );
-      _isDead = true;
+      IsDead = true;
     }
   }
 }

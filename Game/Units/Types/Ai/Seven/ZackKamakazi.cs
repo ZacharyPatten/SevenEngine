@@ -19,21 +19,30 @@ namespace Game.Units
         // Targeting
         if (_target == null || _target.IsDead)
         {
-          octree.TraverseBreakable
+          float longest = float.MinValue;
+          octree.Traverse
           (
             (Unit current) =>
             {
               if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
               {
-                _target = current;
-                return false;
+                float length = (current.Position - Position).Length;
+                if (_target == null || _target.IsDead)
+                {
+                  _target = current;
+                  longest = length;
+                }
+                else if (length > longest)
+                {
+                  _target = current;
+                  longest = length;
+                }
               }
-              return true;
             }
           );
         }
         // Attacking
-        else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
+        else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange / 2)
         {
           Attack(octree);
         }
@@ -45,6 +54,7 @@ namespace Game.Units
           Position.Y += (direction.Y / direction.Length) * (MoveSpeed + 5);
           Position.Z += (direction.Z / direction.Length) * (MoveSpeed + 5);
         }
+        StaticModel.Orientation.W += .1f;
       }
     }
   }

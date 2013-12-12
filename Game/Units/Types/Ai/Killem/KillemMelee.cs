@@ -14,7 +14,7 @@ namespace Game.Units
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      MoveTowards(new Vector(0, 0, 10000));
+      MoveTowards(new Vector(-10000, 0, 0));
 
     }
   }
