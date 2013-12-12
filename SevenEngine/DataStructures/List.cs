@@ -32,6 +32,7 @@ namespace SevenEngine.DataStructures
     void RemoveFirst(Type removal);
     int Count { get; }
     void Clear();
+    bool Contains(Type reference);
     bool IsEmpty { get; }
     Type[] ToArray();
   }
@@ -87,6 +88,28 @@ namespace SevenEngine.DataStructures
       _lock = new Object();
       _readers = 0;
       _writers = 0;
+    }
+
+    /// <summary>Checks to see if an object reference exists.</summary>
+    /// <param name="itemReference">The reference to the object.</param>
+    /// <returns>Whether or not the object reference was found.</returns>
+    public bool Contains(ValueType itemReference)
+    {
+      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
+        if (looper.Value.Equals(itemReference))
+          return true;
+      return false;
+    }
+
+    /// <summary>Checks to see if an key item exists.</summary>
+    /// <param name="keyReference">The reference to the object.</param>
+    /// <returns>Whether or not the object reference was found.</returns>
+    public bool Contains(KeyType keyReference)
+    {
+      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
+        if (_equalityFunction(looper.Value, keyReference))
+          return true;
+      return false;
     }
 
     /// <summary>Adds an item to the list.</summary>
@@ -401,6 +424,17 @@ namespace SevenEngine.DataStructures
       _lock = new Object();
       _readers = 0;
       _writers = 0;
+    }
+
+    /// <summary>Determines if an object reference exists in the array.</summary>
+    /// <param name="reference">The reference to the object.</param>
+    /// <returns>Whether or not the object reference exists.</returns>
+    public bool Contains(Type reference)
+    {
+      for (int i = 0; i < _list.Length; i++)
+        if (_list[i].Equals(reference))
+          return true;
+      return false;
     }
 
     /// <summary>Adds an item to the end of the list.</summary>
