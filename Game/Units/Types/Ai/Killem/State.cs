@@ -15,7 +15,8 @@ namespace Game
     Aligned,
     Finding,
     Matched,
-    Moving
+    Moving,
+    Waiting
   }
 }
 

@@ -14,7 +14,7 @@ namespace Game.Units
     public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
-    {
+    {/*
       if (IsDead == false)
       {
         // Targeting
@@ -46,7 +46,7 @@ namespace Game.Units
           Position.Y += (direction.Y / direction.Length) * MoveSpeed;
           Position.Z += (direction.Z / direction.Length) * MoveSpeed;
         }
-      }
+      }*/
     }
   }
 }
