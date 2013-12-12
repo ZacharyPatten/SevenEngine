@@ -82,5 +82,8 @@ namespace SevenEngine.StaticModels
       _vertexCount = vertexCount;
       // _originalTexture = originalTexture;
     }
+
+    public static int CompareTo(StaticMeshInstance left, StaticMeshInstance right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(StaticMeshInstance left, string right) { return left.Id.CompareTo(right); }
   }
 }

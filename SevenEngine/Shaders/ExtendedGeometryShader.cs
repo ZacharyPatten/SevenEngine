@@ -42,5 +42,8 @@ namespace SevenEngine.Shaders
       _gpuHandle = gpuHandle;
       _existingReferences = 0;
     }
+
+    public static int CompareTo(ExtendedGeometryShader left, ExtendedGeometryShader right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(ExtendedGeometryShader left, string right) { return left.Id.CompareTo(right); }
   }
 }

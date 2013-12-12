@@ -28,35 +28,16 @@ namespace SevenEngine
     internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
     internal static ShaderProgram TextShader { get { return _textShader; } }
 
-    private static AvlTreeLinked<VertexShader, string> _vertexShaderDatabase = new AvlTreeLinked<VertexShader, string>
-    (
-      (VertexShader left, VertexShader right) => { return left.Id.CompareTo(right.Id); },
-      (VertexShader left, string right) => { return left.Id.CompareTo(right); }
-    );
-    
-    private static AvlTreeLinked<FragmentShader, string> _fragmentShaderDatabase = new AvlTreeLinked<FragmentShader, string>
-    (
-      (FragmentShader left, FragmentShader right) => { return left.Id.CompareTo(right.Id); },
-      (FragmentShader left, string right) => { return left.Id.CompareTo(right); }
-    );
-    
-    private static AvlTreeLinked<GeometryShader, string> _geometryShaderDatabase = new AvlTreeLinked<GeometryShader, string>
-    (
-      (GeometryShader left, GeometryShader right) => { return left.Id.CompareTo(right.Id); },
-      (GeometryShader left, string right) => { return left.Id.CompareTo(right); }
-    );
-    
-    private static AvlTreeLinked<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase = new AvlTreeLinked<ExtendedGeometryShader, string>
-    (
-      (ExtendedGeometryShader left, ExtendedGeometryShader right) => { return left.Id.CompareTo(right.Id); },
-      (ExtendedGeometryShader left, string right) => { return left.Id.CompareTo(right); }
-    );
-    
-    private static AvlTreeLinked<ShaderProgram, string> _shaderProgramDatabase = new AvlTreeLinked<ShaderProgram, string>
-    (
-      (ShaderProgram left, ShaderProgram right) => { return left.Id.CompareTo(right.Id); },
-      (ShaderProgram left, string right) => { return left.Id.CompareTo(right); }
-    );
+    private static AvlTreeLinked<VertexShader, string> _vertexShaderDatabase =
+      new AvlTreeLinked<VertexShader, string>(VertexShader.CompareTo, VertexShader.CompareTo);
+    private static AvlTreeLinked<FragmentShader, string> _fragmentShaderDatabase =
+      new AvlTreeLinked<FragmentShader, string>(FragmentShader.CompareTo, FragmentShader.CompareTo);
+    private static AvlTreeLinked<GeometryShader, string> _geometryShaderDatabase =
+      new AvlTreeLinked<GeometryShader, string>(GeometryShader.CompareTo, GeometryShader.CompareTo);
+    private static AvlTreeLinked<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase =
+      new AvlTreeLinked<ExtendedGeometryShader, string>(ExtendedGeometryShader.CompareTo, ExtendedGeometryShader.CompareTo);
+    private static AvlTreeLinked<ShaderProgram, string> _shaderProgramDatabase =
+      new AvlTreeLinked<ShaderProgram, string>(ShaderProgram.CompareTo, ShaderProgram.CompareTo);
 
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>

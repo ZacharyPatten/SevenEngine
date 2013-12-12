@@ -123,6 +123,15 @@ namespace SevenEngine
       GL.DrawArrays(BeginMode.Triangles, 0, verteces.Length / 3);
     }
 
+    public static void DrawLine(Vector from, Vector to, Color color)
+    {
+      GL.Begin(BeginMode.Lines);
+      GL.Vertex3(from.X, from.Y, from.Z);
+      GL.Vertex3(to.X, to.Y, to.Z);
+      GL.Color3(color.R, color.G, color.B);
+      GL.End();
+    }
+
     #endregion
 
     #region Text
@@ -315,15 +324,15 @@ namespace SevenEngine
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       // Call the drawing functions for each mesh within the model
-      staticModel.Meshes.TraverseBreakable(DrawStaticModelPart);
+      staticModel.Meshes.Traverse(DrawStaticModelPart);
     }
 
-    private static bool DrawStaticModelPart(StaticMesh subStaticModel)
+    private static void DrawStaticModelPart(StaticMesh subStaticModel)
     {
       // Make sure something will render
       if (subStaticModel.StaticMeshInstance.VertexBufferHandle == 0 ||
         (subStaticModel.StaticMeshInstance.ColorBufferHandle == 0 && subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle == 0))
-        return true;
+        return;
 
       // Push current Array Buffer state so we can restore it later
       GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
@@ -362,7 +371,7 @@ namespace SevenEngine
       }
       else
         // Nothing will render if this branching is reached.
-        return true;
+        return;
 
       // Set up verteces
       GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.VertexBufferHandle);
@@ -384,8 +393,6 @@ namespace SevenEngine
         GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.StaticMeshInstance.VertexCount);
 
       GL.PopClientAttrib();
-
-      return true;
     }
 
     #endregion

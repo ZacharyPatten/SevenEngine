@@ -27,7 +27,8 @@ namespace SevenEngine
 
     public float GetElaspedMilliseconds()
     {
-      float elapsed = _stopwatch.ElapsedMilliseconds;
+      //float elapsed = _stopwatch.ElapsedMilliseconds;
+      float elapsed = _stopwatch.Elapsed.Milliseconds;
       _stopwatch.Restart();
       return elapsed;
     }
