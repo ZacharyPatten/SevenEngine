@@ -16,8 +16,8 @@ namespace Game.Units
     private readonly int _viewDistanceMax = 10000;
     private readonly int _attackRangeMin = 1;
     private readonly int _attackRangeMax = 100;
-    private readonly int _moveSpeedMin = 1;
-    private readonly int _moveSpeedMax = 100;
+    private readonly int _moveSpeedMin = 0;
+    private readonly int _moveSpeedMax = 10;
 
     public Ranged(string id, StaticModel staticModel) : base(id, staticModel)
     {
@@ -26,7 +26,7 @@ namespace Game.Units
       _damage = random.Next(_damageMin, _damageMax);
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax) * GameState.MeterLength;
       _attackRange = random.Next(_attackRangeMin, _attackRangeMax) * GameState.MeterLength;
-      _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 10000f * GameState.MeterLength;
+      _moveSpeed = random.Next(10 + _moveSpeedMin, 10 + _moveSpeedMax) / 20f * GameState.MeterLength;
     }
 
     protected bool Attack(Unit defending)

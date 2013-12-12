@@ -36,12 +36,12 @@ namespace Game.Units
 
     public void MoveTowards(Vector vector) 
     {
-      Vector v1 = new Vector(0, 0, -1);
-      Vector moveV = _staticModel.Position - vector;
-      Vector v2 = moveV.RotateBy(_staticModel.Orientation.W, 0, 1, 0);
-      _staticModel.Position.X += (v2.X/ v2.Length) * _moveSpeed;
-      _staticModel.Position.Y += (v2.Y / v2.Length) * _moveSpeed;
-      _staticModel.Position.Z += (v2.Z / v2.Length) * _moveSpeed;
+      //Vector v1 = new Vector(0, 0, -1);
+      //Vector moveV = _staticModel.Position - vector;
+      //Vector v2 = moveV.RotateBy(_staticModel.Orientation.W, 0, 1, 0);
+      _staticModel.Position.X += (vector.X / vector.Length) * _moveSpeed;
+      _staticModel.Position.Y += (vector.Y / vector.Length) * _moveSpeed;
+      _staticModel.Position.Z += (vector.Z / vector.Length) * _moveSpeed;
 
     }
     public virtual void AI(float elapsedTime, OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
