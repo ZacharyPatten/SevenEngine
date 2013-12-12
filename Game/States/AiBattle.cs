@@ -25,8 +25,10 @@ namespace Game.States
     public static readonly float MeterLength = 10;
     //public static ListArray<Explosion> _explosions = new ListArray(10);
 
-    public static ListArray<Link3<Vector, Vector, Color>> lines = new ListArray<Link3<Vector, Vector, Color>>(1);
-    public static ListArray<Explosion> explosions = new ListArray<Explosion>(1);
+    public static ListArray<Link3<Vector, Vector, Color>> lines;// = new ListArray<Link3<Vector, Vector, Color>>(1);
+    public static ListArray<Explosion> explosions;// = new ListArray<Explosion>(1);
+    public static int _powerRangerCount;
+    public static int _tuxCount;
 
     /*public static OctreeLinked<Unit, string> _octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10,
       (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },
@@ -117,7 +119,12 @@ namespace Game.States
 
     private void GenerateUnits()
     {
+      _powerRangerCount = _rangedCount + _meleeCount + _kamakaziCount;
+      _tuxCount = _rangedCount + _meleeCount + _kamakaziCount;
+
       _octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
+      lines = new ListArray<Link3<Vector, Vector, Color>>(1);
+      explosions = new ListArray<Explosion>(1);
 
       _zackMelee = new Unit[_meleeCount];
       _zackRanged = new Unit[_rangedCount];
@@ -313,6 +320,7 @@ namespace Game.States
         _octree.Traverse((Unit model) => { model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
         //_octree.Traverse((Unit model) => { if (model is ZackKamakazi || model is ZackMelee || model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
         //_octree.Traverse((Unit model) => { if (model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
+        //_octree.Traverse((Unit model) => { if (model is ZackMelee || model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
 
         OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
         foreach (Unit unit in _zackMelee)

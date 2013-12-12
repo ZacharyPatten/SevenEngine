@@ -13,7 +13,7 @@ namespace Game.Units
     float _time = 0;
     const float _delay = 4000;
 
-    public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
+    public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; }
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
@@ -45,18 +45,21 @@ namespace Game.Units
                     shortest = length;
                   }
                 }
-                else if (_target == null || _target.IsDead)
+                else
                 {
-                  float length = (current.Position - Position).Length;
                   if (_target == null || _target.IsDead)
                   {
-                    _target = current;
-                    shortest = length;
-                  }
-                  else if (length < shortest)
-                  {
-                    _target = current;
-                    shortest = length;
+                    float length = (current.Position - Position).Length;
+                    if (_target == null || _target.IsDead)
+                    {
+                      _target = current;
+                      shortest = length;
+                    }
+                    else if (length < shortest)
+                    {
+                      _target = current;
+                      shortest = length;
+                    }
                   }
                 }
               }
@@ -73,9 +76,9 @@ namespace Game.Units
         else if (_time > _delay)
         {
           Vector direction = _target.Position - Position;
-          Position.X += (direction.X / direction.Length) * (MoveSpeed + 5);
-          Position.Y += (direction.Y / direction.Length) * (MoveSpeed + 5);
-          Position.Z += (direction.Z / direction.Length) * (MoveSpeed + 5);
+          Position.X += (direction.X / direction.Length) * MoveSpeed;
+          Position.Y += (direction.Y / direction.Length) * MoveSpeed;
+          Position.Z += (direction.Z / direction.Length) * MoveSpeed;
         }
         this.StaticModel.Orientation.W+=.1f;
       }

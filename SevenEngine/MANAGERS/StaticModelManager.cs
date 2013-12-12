@@ -50,11 +50,7 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>
-      (
-        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
-        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
-      );
+      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
       //modelToGet.Meshes.TraversalFull<List<StaticMesh>>(CopyMeshes, meshes);
       modelToGet.Meshes.Traverse
       (

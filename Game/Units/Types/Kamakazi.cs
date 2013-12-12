@@ -34,7 +34,7 @@ namespace Game.Units
     private const int _attackRangeMin = 50;
     private const int _attackRangeMax = 70;
 
-    private bool _exploded = false; 
+    private bool _exploded; 
 
     public override bool IsDead
     {
@@ -55,6 +55,7 @@ namespace Game.Units
 
     public Kamakazi(string id, StaticModel staticModel) : base(id, staticModel)
     {
+      _exploded = false;
       Random random = new Random();
       _attackRange = random.Next(_attackRangeMin, _attackRangeMax) * GameState.MeterLength;
       _health = random.Next(_healthMin, _healthMax);
@@ -69,10 +70,13 @@ namespace Game.Units
       (
         (Unit unit) =>
         {
-          unit.Health -= _damage;
-          if (unit.Health <= 0)
+          if (!unit.IsDead)
           {
-            unit.IsDead = true;
+            unit.Health -= _damage;
+            if (unit.Health <= 0)
+            {
+              unit.IsDead = true;
+            }
           }
         },
         -_attackRange + Position.X, -_attackRange + Position.Y, -_attackRange + Position.Z, _attackRange + Position.X, _attackRange + Position.Y, _attackRange + Position.Z

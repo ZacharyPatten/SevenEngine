@@ -50,9 +50,9 @@ namespace Game.Units
         else
         {
           Vector direction = _target.Position - Position;
-          Position.X += (direction.X / direction.Length) * (MoveSpeed + 5);
-          Position.Y += (direction.Y / direction.Length) * (MoveSpeed + 5);
-          Position.Z += (direction.Z / direction.Length) * (MoveSpeed + 5);
+          Position.X += (direction.X / direction.Length) * MoveSpeed;
+          Position.Y += (direction.Y / direction.Length) * MoveSpeed;
+          Position.Z += (direction.Z / direction.Length) * MoveSpeed;
         }
         StaticModel.Orientation.W += .1f;
       }
