@@ -47,11 +47,7 @@ namespace SevenEngine.StaticModels
     {
       _id = id;
       _shaderOverride = null;
-      _meshes = new AvlTreeLinked<StaticMesh, string>
-      (
-        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
-        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
-      );
+      _meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
       _orientation = Quaternion.FactoryIdentity;
@@ -66,18 +62,10 @@ namespace SevenEngine.StaticModels
     {
       if (textures.Length != meshes.Length && textures.Length != meshNames.Length)
         throw new Exception("Attempting to create a static model with non-matching number of components.");
-
       _id = staticModelId;
-      //_meshes = new ListArray<Link<Texture, StaticMesh>>(10);
-      _meshes = new AvlTreeLinked<StaticMesh, string>
-      (
-        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
-        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
-      );
-
+      _meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
       for (int i = 0; i < textures.Length; i++)
         _meshes.Add(new StaticMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i]).StaticMeshInstance));
-
       _shaderOverride = null;
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
@@ -96,5 +84,8 @@ namespace SevenEngine.StaticModels
       _scale = new Vector(1, 1, 1);
       _orientation = Quaternion.FactoryIdentity;
     }
+
+    public static int CompareTo(StaticModel left, StaticModel right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(StaticModel left, string right) { return left.Id.CompareTo(right); }
   }
 }

@@ -47,5 +47,8 @@ namespace SevenEngine.Imaging
       _height = height;
       _existingReferences = 0;
     }
+
+    public static int CompareTo(Texture left, Texture right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(Texture left, string right) { return left.Id.CompareTo(right); }
   }
 }

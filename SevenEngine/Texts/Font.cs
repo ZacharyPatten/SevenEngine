@@ -45,5 +45,8 @@ namespace SevenEngine.Texts
           return _characterDatum[i];
       throw new Exception("Character not found");
     }
+
+    public static int CompareTo(Font left, Font right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(Font left, string right) { return left.Id.CompareTo(right); }
   }
 }

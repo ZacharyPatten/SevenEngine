@@ -23,6 +23,7 @@ namespace SevenEngine
   {
     // This timer calculates the time between updates in SECONDS.
     protected PreciseTimer _timer;
+    private bool _paused = false;
 
     public SevenEngineWindow(int width, int height) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, "Game")
     {
@@ -160,7 +161,10 @@ namespace SevenEngine
         if (WindowState == WindowState.Normal) WindowState = WindowState.Fullscreen;
         else if (WindowState == WindowState.Fullscreen) WindowState = WindowState.Normal;
       }
-      Update(_timer.GetElaspedMilliseconds());
+      if (InputManager.Keyboard.F2pressed)
+        _paused = !_paused;
+      if (!_paused)
+        Update(_timer.GetElaspedMilliseconds());
       // DO NOT UPDATE HERE (USE THE UPDATE METHOD WITHIN GAME STATES)
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
@@ -168,14 +172,17 @@ namespace SevenEngine
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {
-      base.OnRenderFrame(e);
-      // Clear the color buffer and depth buffer
-      GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-      // Call the state rendering functions.
-      StateManager.Render();
-      // Swap buffers swaps the frame buffer for OpenGL so that the rendered frame will display.
-      SwapBuffers();
-      // DO NOT RENDER ITEMS HERE. (USE THE RENDER METHODS IN GAME STATES)
+      if (!_paused)
+      {
+        base.OnRenderFrame(e);
+        // Clear the color buffer and depth buffer
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        // Call the state rendering functions.
+        StateManager.Render();
+        // Swap buffers swaps the frame buffer for OpenGL so that the rendered frame will display.
+        SwapBuffers();
+        // DO NOT RENDER ITEMS HERE. (USE THE RENDER METHODS IN GAME STATES)
+      }
     }
   }
 }

@@ -40,6 +40,9 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
+    public static int CompareTo(ShaderProgram left, ShaderProgram right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(ShaderProgram left, string right) { return left.Id.CompareTo(right); }
+
     public void SetShaderParameter(string variable, float value)
     {
       int handle = GL.GetUniformLocation(_gpuHandle, variable);

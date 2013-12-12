@@ -431,7 +431,7 @@ namespace SevenEngine.DataStructures
     /// <returns>Whether or not the object reference exists.</returns>
     public bool Contains(Type reference)
     {
-      for (int i = 0; i < _list.Length; i++)
+      for (int i = 0; i < _count; i++)
         if (_list[i].Equals(reference))
           return true;
       return false;

@@ -43,6 +43,9 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
+    public static int CompareTo(FragmentShader left, FragmentShader right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(FragmentShader left, string right) { return left.Id.CompareTo(right); }
+
     // These are the shaders that my engine uses:
     #region Fragment Shader Library
     internal static readonly string Basic =

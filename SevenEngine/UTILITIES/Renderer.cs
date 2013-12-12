@@ -123,6 +123,15 @@ namespace SevenEngine
       GL.DrawArrays(BeginMode.Triangles, 0, verteces.Length / 3);
     }
 
+    public static void DrawLine(Vector from, Vector to, Color color)
+    {
+      GL.Begin(BeginMode.Lines);
+      GL.Vertex3(from.X, from.Y, from.Z);
+      GL.Vertex3(to.X, to.Y, to.Z);
+      GL.Color3(color.R, color.G, color.B);
+      GL.End();
+    }
+
     #endregion
 
     #region Text

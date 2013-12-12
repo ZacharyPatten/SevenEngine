@@ -24,11 +24,8 @@ namespace SevenEngine
   public static class TextureManager
   {
     //private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
-    public static AvlTreeLinked<Texture, string> _textureDatabase = new AvlTreeLinked<Texture, string>
-    (
-      (Texture left, Texture right) => { return left.Id.CompareTo(right.Id); },
-      (Texture left, string right) => { return left.Id.CompareTo(right); }
-    );
+    public static AvlTreeLinked<Texture, string> _textureDatabase =
+      new AvlTreeLinked<Texture, string>(Texture.CompareTo, Texture.CompareTo);
 
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
     public static int Count { get { return _textureDatabase.Count; } }

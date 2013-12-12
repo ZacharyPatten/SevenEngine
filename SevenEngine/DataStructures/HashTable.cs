@@ -21,14 +21,20 @@ using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.DataStructures
 {
-  public interface HashTable
+  public interface HashTable<TypeValue, TypeKey> : InterfaceTraversable<TypeValue>
   {
-
+    int Count { get; }
+    bool IsEmpty { get; }
+    TypeValue this[TypeKey key] { get; set; }
+    bool TryGetValue(TypeKey key, out TypeValue value);
+    void Add(TypeKey key, TypeValue value);
+    void Remove(TypeKey key);
+    void Clear();
   }
 
   #region HashTableStandard
 
-  public class HashTableStandard<TypeKey, TypeValue> : InterfaceTraversable<TypeValue>
+  public class HashTableStandard<TypeKey, TypeValue> : HashTable<TypeValue, TypeKey>
   {
     /// <summary>A set of allowable table sizes, all of which are prime.</summary>
     private static readonly int[] _tableSizes = new int[]
@@ -72,6 +78,10 @@ namespace SevenEngine.DataStructures
     /// <summary>Returns the current number of items in the structure.</summary>
     /// <remarks>Runetime: O(1).</remarks>
     public int Count { get { return _count; } }
+
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runetime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
 
     /// <summary>Returns the current size of the actual table. You will want this if you 
     /// wish to multithread structure traversals.</summary>

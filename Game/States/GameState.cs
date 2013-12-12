@@ -18,7 +18,7 @@ namespace Game.States
 
     #region State Fields
 
-    public static readonly float MeterLength = 10;
+    public static readonly float MeterLength = 5;
 
     public OctreeLinked<StaticModel, string> _octree = new OctreeLinked<StaticModel, string>(0, 0, 0, 1000000, 10,
       (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
@@ -168,7 +168,7 @@ namespace Game.States
       Renderer.RenderText("Close: ESC", 0f, .2f, 30f, 0f, Color.White);
       Renderer.RenderText("Fullscreen: F1", 0f, .15f, 30f, 0, Color.SteelBlue);
       Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, 30f, 0, Color.Tomato);
-      Renderer.RenderText("Camera Angle: j, k, l, u", 0f, .05f, 30f, 0, Color.Yellow);
+      Renderer.RenderText("Camera Angle: j, k, l, i", 0f, .05f, 30f, 0, Color.Yellow);
     }
 
     #endregion

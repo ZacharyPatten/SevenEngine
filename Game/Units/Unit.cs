@@ -24,7 +24,7 @@ namespace Game.Units
     public float MoveSpeed { get { return _moveSpeed; } set { _moveSpeed = value; } }
     public StaticModel StaticModel { get { return _staticModel; } set { _staticModel = value; } }
     public Vector Position { get { return _staticModel.Position; } set { _staticModel.Position = value; } }
-    public bool IsDead { get { return _isDead; } set { _isDead = value; } }
+    public virtual bool IsDead { get { return _isDead; } set { _isDead = value; } }
     
     public Unit(string id, StaticModel staticModel)
     {
@@ -45,5 +45,8 @@ namespace Game.Units
 
     }
     public virtual void AI(float elapsedTime, OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
+
+    public static int CompareTo(Unit left, Unit right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(Unit left, string right) { return left.Id.CompareTo(right); }
   }
 }
