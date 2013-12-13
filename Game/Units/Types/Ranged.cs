@@ -12,8 +12,8 @@ namespace Game.Units
   {
     private const int _healthMin = 50;
     private const int _healthMax = 100;
-    private const int _damageMin = 4;
-    private const int _damageMax = 8;
+    private const int _damageMin = 3;
+    private const int _damageMax = 7;
     private const int _viewDistanceMin = 1;
     private const int _viewDistanceMax = 10000;
     private const int _attackRangeMin = 400;

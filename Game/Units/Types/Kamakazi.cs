@@ -23,7 +23,7 @@ namespace Game.Units
 
   public abstract class Kamakazi : Unit
   {
-    private const int _healthMin = 500;
+    private const int _healthMin = 700;
     private const int _healthMax = 1000;
     private const int _damageMin = 500;
     private const int _damageMax = 700;
@@ -31,8 +31,8 @@ namespace Game.Units
     private const int _viewDistanceMax = 10000;
     private const int _moveSpeedMin = 60;
     private const int _moveSpeedMax = 90;
-    private const int _attackRangeMin = 50;//50;
-    private const int _attackRangeMax = 70;//70;
+    private const int _attackRangeMin = 150;
+    private const int _attackRangeMax = 200;
 
     private bool _exploded; 
 

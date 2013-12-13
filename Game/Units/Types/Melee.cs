@@ -10,10 +10,10 @@ namespace Game.Units
 {
   public abstract class Melee : Unit
   {
-    private const int _healthMin = 250;
-    private const int _healthMax = 500;
-    private const int _damageMin = 6;
-    private const int _damageMax = 12;
+    private const int _healthMin = 400;
+    private const int _healthMax = 700;
+    private const int _damageMin = 10;
+    private const int _damageMax = 20;
     private const int _viewDistanceMin = 1;
     private const int _viewDistanceMax = 10000;
     private const int _moveSpeedMin = 50;
@@ -26,7 +26,7 @@ namespace Game.Units
       _damage = random.Next(_damageMin, _damageMax);
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);
       _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 20f;
-      _attackRange = 5;
+      _attackRange = 60;
     }
 
     protected bool Attack(Unit defending)

@@ -13,6 +13,7 @@ namespace Game.Units
     Unit _target;
     float _time = 0;
     const float _delay = 4000;
+    int move;
 
     public ZackMelee(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; }
 
@@ -22,54 +23,10 @@ namespace Game.Units
         _time += elapsedTime;
       if (IsDead == false)
       {
-        // Targeting
-        /*if (_target == null || _target.IsDead)
+        if (_target == null || _target.IsDead || move > 20)
         {
           float shortest = float.MaxValue;
-          octree.Traverse
-          (
-            (Unit current) =>
-            {
-              if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
-              {
-                if (!(current is KillemKamakazi))
-                {
-                  float length = (current.Position - Position).Length;
-                  if (_target == null || _target.IsDead)
-                  {
-                    _target = current;
-                    shortest = length;
-                  }
-                  else if (length < shortest)
-                  {
-                    _target = current;
-                    shortest = length;
-                  }
-                }
-                else
-                {
-                  if (_target == null || _target.IsDead)
-                  {
-                    float length = (current.Position - Position).Length;
-                    if (_target == null || _target.IsDead)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
-                    else if (length < shortest)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
-                  }
-                }
-              }
-            }
-          );
-        }*/
-        if (_target == null || _target.IsDead)
-        {
-          float shortest = float.MaxValue;
+          move = 0;
           octree.Traverse
           (
             (Unit current) =>
@@ -120,6 +77,7 @@ namespace Game.Units
             Color.Red));
           if (Attack(_target))
             _target = null;
+          move = 0;
         }
         // Moving
         else if (_time > _delay)
@@ -128,6 +86,7 @@ namespace Game.Units
           Position.X += (direction.X / direction.Length) * MoveSpeed;
           Position.Y += (direction.Y / direction.Length) * MoveSpeed;
           Position.Z += (direction.Z / direction.Length) * MoveSpeed;
+          move++;
         }
         this.StaticModel.Orientation.W+=.1f;
       }
