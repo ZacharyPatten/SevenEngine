@@ -32,7 +32,7 @@ namespace Game.Units
     private const int _moveSpeedMin = 60;
     private const int _moveSpeedMax = 90;
     private const int _attackRangeMin = 200;
-    private const int _attackRangeMax = 300;
+    private const int _attackRangeMax = 250;
 
     private bool _exploded; 
 
