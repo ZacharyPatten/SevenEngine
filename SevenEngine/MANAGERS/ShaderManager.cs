@@ -310,13 +310,14 @@ namespace SevenEngine
       GL.AttachShader(basicProgramHandle, basicFragmentShader.GpuHandle);
       GL.LinkProgram(basicProgramHandle);
       _defaultShader = new ShaderProgram("ShaderProgramBasic", basicProgramHandle);
+      Renderer.DefaultShaderProgram = _defaultShader;
 
       // Make the default shader program
       int textProgramHandle = GL.CreateProgram();
       GL.AttachShader(textProgramHandle, basicVertexShader.GpuHandle);
       GL.AttachShader(textProgramHandle, textFragmentShader.GpuHandle);
       GL.LinkProgram(textProgramHandle);
-      _textShader = new ShaderProgram("ShaderProgramBasic", textProgramHandle);
+      _textShader = new ShaderProgram("ShaderProgramText", textProgramHandle);
     }
   }
 }

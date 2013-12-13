@@ -13,6 +13,7 @@ namespace Game.States
   public class AiBattle : InterfaceGameState
   {
     private bool _paused = false;
+    private bool _showlines = false;
 
     private string _id;
     private bool _isReady;
@@ -133,14 +134,14 @@ namespace Game.States
       _killemRanged = new Unit[_rangedCount];
       _killemKamakazi = new Unit[_kamakaziCount];
 
-      int maxXZack = -1000;
-      int minXZack = -1500;
+      int maxXZack = -1500;
+      int minXZack = -2000;
 
       int maxZZack = 0;
       int minZZack = -1500;
 
-      int maxXKillem = 1500;
-      int minXKillem = 1000;
+      int maxXKillem = 2000;
+      int minXKillem = 1500;
 
       int maxZKillem = 0;
       int minZKillem = -1500;
@@ -229,25 +230,28 @@ namespace Game.States
         },
         -100000, -100000, -100000, 100000, 100000, 100000);
 
-      /*lines.Traverse
-      (
-        (Link3<Vector, Vector, Color> current) =>
-        {
-          Renderer.DrawLine(current.First, current.Second, current.Third);
-        }
-      );
-
-      lines.Clear();*/
+      if (_showlines)
+      {
+        lines.Traverse
+        (
+          (Link3<Vector, Vector, Color> current) =>
+          {
+            Renderer.DrawLine(current.First, current.Second, current.Third);
+          }
+        );
+      }
 
       explosions.Traverse
       (
         (Explosion current) =>
         {
           if (current.Model.Scale.X < 220)
+          {
             Renderer.DrawStaticModel(current.Model);
-          current.Model.Scale.X+=2.5f;
-          current.Model.Scale.Y+=2.5f;
-          current.Model.Scale.Z+=2.5f;
+            current.Model.Scale.X += 2.5f;
+            current.Model.Scale.Y += 2.5f;
+            current.Model.Scale.Z += 2.5f;
+          }
         }
       );
 
@@ -281,6 +285,9 @@ namespace Game.States
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;
       _skybox.Position.Z = _camera.Position.Z;
+
+      if (InputManager.Keyboard.Rpressed)
+        _showlines = !_showlines;
 
       if (InputManager.Keyboard.Tpressed)
         GenerateUnits();

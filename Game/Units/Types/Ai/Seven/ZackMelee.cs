@@ -21,7 +21,7 @@ namespace Game.Units
       if (IsDead == false)
       {
         // Targeting
-        if (_target == null || _target.IsDead)
+        /*if (_target == null || _target.IsDead)
         {
           float shortest = float.MaxValue;
           octree.Traverse
@@ -59,6 +59,50 @@ namespace Game.Units
                       _target = current;
                       shortest = length;
                     }
+                  }
+                }
+              }
+            }
+          );
+        }*/
+        if (_target == null || _target.IsDead)
+        {
+          float shortest = float.MaxValue;
+          octree.Traverse
+          (
+            (Unit current) =>
+            {
+              if ((current is KillemMelee || current is KillemRanged) && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead || _target is KillemKamakazi)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
+                {
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                }
+              }
+              else if (current is KillemKamakazi && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
+                {
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
                   }
                 }
               }

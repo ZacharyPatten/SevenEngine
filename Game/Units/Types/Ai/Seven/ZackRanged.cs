@@ -29,37 +29,37 @@ namespace Game.Units
           (
             (Unit current) =>
             {
-              if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
+              if (current is KillemKamakazi && !current.IsDead)
               {
-                if (current is KillemKamakazi)
+                if (_target == null || _target.IsDead || !(_target is KillemKamakazi))
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
                 {
                   float length = (current.Position - Position).Length;
-                  if (_target == null || _target.IsDead)
-                  {
-                    _target = current;
-                    shortest = length;
-                  }
-                  else if (length < shortest)
+                  if (length < shortest)
                   {
                     _target = current;
                     shortest = length;
                   }
                 }
+              }
+              else if ((current is KillemMelee || current is KillemRanged) && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
                 else
                 {
-                  if (_target == null || _target.IsDead)
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
                   {
-                    float length = (current.Position - Position).Length;
-                    if (_target == null || _target.IsDead)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
-                    else if (length < shortest)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
+                    _target = current;
+                    shortest = length;
                   }
                 }
               }
