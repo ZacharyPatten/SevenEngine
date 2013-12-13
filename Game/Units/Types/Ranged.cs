@@ -34,10 +34,6 @@ namespace Game.Units
     protected bool Attack(Unit defending)
     {
       defending.Health -= _damage;
-      AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
-        new Vector(Position.X, Position.Y, Position.Z),
-        new Vector(defending.Position.X, defending.Position.Y, defending.Position.Z),
-        Color.Yellow));
       if (defending.Health <= 0)
       {
         defending.IsDead = true;

@@ -4,6 +4,7 @@ using Game.States;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
+using SevenEngine.Imaging;
 
 namespace Game.Units
 {
@@ -69,6 +70,10 @@ namespace Game.Units
         // Attacking
         else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
         {
+          AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
+            new Vector(Position.X, Position.Y, Position.Z),
+            new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
+            Color.Yellow));
           if (Attack(_target))
             _target = null;
         }

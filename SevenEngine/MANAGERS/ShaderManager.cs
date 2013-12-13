@@ -23,9 +23,11 @@ namespace SevenEngine
   public static class ShaderManager
   {
     internal static ShaderProgram _defaultShader;
+    internal static ShaderProgram _colorShader;
     internal static ShaderProgram _textShader;
 
     internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
+    internal static ShaderProgram ColorShader { get { return _colorShader; } }
     internal static ShaderProgram TextShader { get { return _textShader; } }
 
     private static AvlTreeLinked<VertexShader, string> _vertexShaderDatabase =
@@ -285,10 +287,17 @@ namespace SevenEngine
     {
       // Basic Vertex Shader
       int basicVertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
-      GL.ShaderSource(basicVertexShaderHandle, VertexShader.Basic);
+      GL.ShaderSource(basicVertexShaderHandle, VertexShader.Texture);
       GL.CompileShader(basicVertexShaderHandle);
       VertexShader basicVertexShader =
         new VertexShader("VertexShaderBasic", "Built-In", basicVertexShaderHandle);
+
+      // Transform Vertex Shader
+      int transformVertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+      GL.ShaderSource(transformVertexShaderHandle, VertexShader.Transform);
+      GL.CompileShader(transformVertexShaderHandle);
+      VertexShader transformVertexShader =
+        new VertexShader("VertexShaderTransform", "Built-In", transformVertexShaderHandle);
 
       // Basic Fragment Shader
       int basicFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
@@ -297,7 +306,14 @@ namespace SevenEngine
       FragmentShader basicFragmentShader =
         new FragmentShader("FragmentShaderBasic", "Built-In", basicFragmentShaderHandle);
 
-      // Basic Fragment Shader
+      // Color Fragment Shader
+      int colorFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+      GL.ShaderSource(colorFragmentShaderHandle, FragmentShader.Color);
+      GL.CompileShader(colorFragmentShaderHandle);
+      FragmentShader colorFragmentShader =
+        new FragmentShader("FragmentShaderBasic", "Built-In", colorFragmentShaderHandle);
+
+      // Text Fragment Shader
       int textFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
       GL.ShaderSource(textFragmentShaderHandle, FragmentShader.Text);
       GL.CompileShader(textFragmentShaderHandle);
@@ -311,6 +327,13 @@ namespace SevenEngine
       GL.LinkProgram(basicProgramHandle);
       _defaultShader = new ShaderProgram("ShaderProgramBasic", basicProgramHandle);
       Renderer.DefaultShaderProgram = _defaultShader;
+
+      // Make the color shader program
+      int colorProgramHandle = GL.CreateProgram();
+      GL.AttachShader(colorProgramHandle, transformVertexShader.GpuHandle);
+      GL.AttachShader(colorProgramHandle, colorFragmentShader.GpuHandle);
+      GL.LinkProgram(colorProgramHandle);
+      _colorShader = new ShaderProgram("ShaderProgramColor", colorProgramHandle);
 
       // Make the default shader program
       int textProgramHandle = GL.CreateProgram();

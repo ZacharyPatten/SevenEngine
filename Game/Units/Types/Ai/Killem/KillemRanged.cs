@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Game.States;
+using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
@@ -16,7 +18,6 @@ namespace Game.Units
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      //MoveTowards(new Vector(-10000, 0, 0));
       if (_time < _delay)
         _time += elapsedTime;
       if (IsDead == false)
@@ -29,37 +30,37 @@ namespace Game.Units
           (
             (Unit current) =>
             {
-              if ((current is ZackKamakazi || current is ZackMelee || current is ZackRanged) && !current.IsDead)
+              if (current is ZackKamakazi && !current.IsDead)
               {
-                if (current is ZackKamakazi)
+                if (_target == null || _target.IsDead || !(_target is ZackKamakazi))
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
                 {
                   float length = (current.Position - Position).Length;
-                  if (_target == null || _target.IsDead)
-                  {
-                    _target = current;
-                    shortest = length;
-                  }
-                  else if (length < shortest)
+                  if (length < shortest)
                   {
                     _target = current;
                     shortest = length;
                   }
                 }
+              }
+              else if ((current is ZackMelee || current is ZackRanged) && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
                 else
                 {
-                  if (_target == null || _target.IsDead)
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
                   {
-                    float length = (current.Position - Position).Length;
-                    if (_target == null || _target.IsDead)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
-                    else if (length < shortest)
-                    {
-                      _target = current;
-                      shortest = length;
-                    }
+                    _target = current;
+                    shortest = length;
                   }
                 }
               }
@@ -69,6 +70,10 @@ namespace Game.Units
         // Attacking
         else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
         {
+          AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
+            new Vector(Position.X, Position.Y, Position.Z),
+            new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
+            Color.Violet));
           if (Attack(_target))
             _target = null;
         }

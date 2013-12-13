@@ -127,9 +127,13 @@ namespace SevenEngine
     {
       SetProjectionMatrix();
       GL.MatrixMode(MatrixMode.Modelview);
-      GL.UseProgram(0);
       Matrix4 camera = _currentCamera.GetMatrix();
       GL.LoadMatrix(ref camera);
+
+      GL.UseProgram(ShaderManager.ColorShader.GpuHandle);
+      int uniformLocation = GL.GetUniformLocation(ShaderManager.ColorShader.GpuHandle, "color");
+      GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1));//color.A / 255f));
+
       GL.Begin(BeginMode.Lines);
       GL.Vertex3(from.X, from.Y, from.Z);
       GL.Vertex3(to.X, to.Y, to.Z);
