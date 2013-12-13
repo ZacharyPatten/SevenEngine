@@ -74,7 +74,7 @@ namespace Game.Units
           AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
             new Vector(Position.X, Position.Y, Position.Z),
             new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
-            Color.Red));
+            Color.Blue));
           if (Attack(_target))
             _target = null;
           move = 0;

@@ -15,7 +15,6 @@ namespace Game.Units
     float _delay = 0;
     int move;
 
-
     public KillemRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000;}
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
@@ -76,7 +75,7 @@ namespace Game.Units
           AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
             new Vector(Position.X, Position.Y, Position.Z),
             new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
-            Color.Yellow));
+            Color.Violet));
           if (Attack(_target))
             _target = null;
           move = 0;

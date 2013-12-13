@@ -25,7 +25,7 @@ namespace Game.States
 
     #region State Fields
 
-    public static readonly float MeterLength = 10;
+    //public static readonly float MeterLength = 10;
     //public static ListArray<Explosion> _explosions = new ListArray(10);
 
     public static ListArray<Link3<Vector, Vector, Color>> lines;// = new ListArray<Link3<Vector, Vector, Color>>(1);
@@ -40,9 +40,9 @@ namespace Game.States
     public static OctreeLinked<Unit, string> _octree;
       //= new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
 
-    private const int _meleeCount = 30;
-    private const int _rangedCount = 30;
-    private const int _kamakaziCount = 30;
+    private int _meleeCount = 30;
+    private int _rangedCount = 30;
+    private int _kamakaziCount = 30;
 
     Camera _camera;
     StaticModel _terrain;
@@ -54,9 +54,6 @@ namespace Game.States
     Unit[] _killemMelee;
     Unit[] _killemRanged;
     Unit[] _killemKamakazi;
-    StaticModel _mushroomCloud;
-    float _time;
-    bool _bool;
     SkyBox _skybox;
 
     #endregion
@@ -91,15 +88,6 @@ namespace Game.States
       _terrain.Scale = new Vector(500, 20, 500);
       _terrain.Orientation = new Quaternion(0, 0, 0, 0);
       _terrain.Position = new Vector(0, 0, 0);
-
-      _mushroomCloud = StaticModelManager.GetModel("MushroomCloud");
-      _mushroomCloud.Scale = new Vector(500, 20, 500);
-      _mushroomCloud.Orientation = new Quaternion(0, 0, 0, 0);
-      _mushroomCloud.Position.X = 0;
-      _mushroomCloud.Position.Y = _terrain.Position.Y + 30;
-      _mushroomCloud.Position.Z = 0;
-      _time = 0;
-      _bool = false;
 
       _mountain = StaticModelManager.GetModel("Mountain");
       _mountain.Scale = new Vector(5000, 5000, 5000);
@@ -508,17 +496,17 @@ namespace Game.States
       #region Map 3
       if (_map == 3)
       {
-        int maxXZack = 1000;
-        int minXZack = -1000;
+        int maxXZack = 2000;
+        int minXZack = -2000;
 
-        int maxZZack = 1000;
-        int minZZack = -1000;
+        int maxZZack = 2000;
+        int minZZack = -2000;
 
-        int maxXKillem = 1000;
-        int minXKillem = -1000;
+        int maxXKillem = 2000;
+        int minXKillem = -2000;
 
-        int maxZKillem = 1000;
-        int minZKillem = -1000;
+        int maxZKillem = 2000;
+        int minZKillem = -2000;
 
         for (int i = 0; i < _meleeCount; i++)
         {
@@ -651,21 +639,21 @@ namespace Game.States
       Renderer.DrawStaticModel(_mountain);
       Renderer.DrawStaticModel(_mountain2);
 
-      
-      //if (_mushroomCloud.Scale.X > 0 && _bool)
-      //  Renderer.DrawStaticModel(_mushroomCloud);
-
       // EXAMPLE:
       // Renderer.RenderText("whatToWrite", x, y, size, rotation, color);
       Renderer.RenderText("Welcome To", 0f, 1f, 50f, 0, Color.Black);
       Renderer.RenderText("SevenEngine!", .15f, .95f, 50f, 0, Color.Teal);
 
-      Renderer.RenderText("Map: " + _map, .85f, .95f, 30f, 0, Color.Blue);
-      if (_3d)
-        Renderer.RenderText("Space: Yes", .85f, .9f, 30f, 0, Color.Red);
-      else
-        Renderer.RenderText("Space: No", .85f, .9f, 30f, 0, Color.Red);
+      Renderer.RenderText("Battle Controls: Space, R, T, G, Y", .55f, .95f, 30f, 0, Color.Black);
 
+      Renderer.RenderText("Map: " + _map, .85f, .85f, 30f, 0, Color.Black);
+      if (_3d)
+        Renderer.RenderText("Space: Yes", .85f, .9f, 30f, 0, Color.Black);
+      else
+        Renderer.RenderText("Space: No", .85f, .9f, 30f, 0, Color.Black);
+
+      Renderer.RenderText("Unit Controls: z, x, c, v, b, n", .6f, .07f, 30f, 0, Color.Black);
+      Renderer.RenderText("Unit Counts (M-R-K): " + _meleeCount + " " + _rangedCount + " " + _kamakaziCount, .6f, .12f, 30f, 0, Color.Black);
 
       Renderer.RenderText("Close: ESC", 0f, .2f, 30f, 0f, Color.White);
       Renderer.RenderText("Fullscreen: F1", 0f, .15f, 30f, 0, Color.SteelBlue);
@@ -684,6 +672,19 @@ namespace Game.States
       _skybox.Position.Y = _camera.Position.Y;
       _skybox.Position.Z = _camera.Position.Z;
 
+      if (InputManager.Keyboard.Zpressed)
+        _meleeCount = (_meleeCount + 1) % 100;
+      if (InputManager.Keyboard.Xpressed)
+        if (_meleeCount > 0) _meleeCount--;
+      if (InputManager.Keyboard.Cpressed)
+        _rangedCount = (_rangedCount + 1) % 100;
+      if (InputManager.Keyboard.Vpressed)
+        if (_rangedCount > 0) _rangedCount--;
+      if (InputManager.Keyboard.Bpressed)
+        _kamakaziCount = (_kamakaziCount + 1) % 100;
+      if (InputManager.Keyboard.Npressed)
+        if (_kamakaziCount > 0) _kamakaziCount--;
+
       if (InputManager.Keyboard.Gpressed)
         _map = (_map + 1) % 4;
 
@@ -701,37 +702,7 @@ namespace Game.States
 
       if (!_paused)
       {
-        _time += elapsedTime / 4f;
-
-        if (_time > 200)
-        {
-          _time = 0;
-          _bool = !_bool;
-        }
-
-        /*foreach (Unit unit in _killemMelee)
-        {
-          Vector v1 = new Vector(0, 0, -1);
-          Vector backwards = new Vector(0, 0, -1).RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
-          Vector forwards = -new Vector(0, 0, -1).RotateBy(unit.StaticModel.Orientation.W, 0, 1, 0);
-          unit.Position.X += (v2.X / v2.Length) * unit.MoveSpeed;
-          unit.Position.Y += (v2.Y / v2.Length) * unit.MoveSpeed;
-          unit.Position.Z += (v2.Z / v2.Length) * unit.MoveSpeed;
-          unit.StaticModel.Orientation.W += .01f;
-        }*/
-
-        //_mushroomCloud.Scale.X = _time;
-        //_mushroomCloud.Scale.Y = _time;
-        //_mushroomCloud.Scale.Z = _time;
-
-        //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
-        //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
-        //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
-
         _octree.Traverse((Unit model) => { model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
-        //_octree.Traverse((Unit model) => { if (model is ZackKamakazi || model is ZackMelee || model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
-        //_octree.Traverse((Unit model) => { if (model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
-        //_octree.Traverse((Unit model) => { if (model is ZackMelee || model is ZackRanged) model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
 
         OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
         foreach (Unit unit in _zackMelee)

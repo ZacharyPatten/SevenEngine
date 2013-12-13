@@ -29,8 +29,8 @@ namespace Game.Units
     private const int _damageMax = 700;
     private const int _viewDistanceMin = 1;
     private const int _viewDistanceMax = 10000;
-    private const int _moveSpeedMin = 60;
-    private const int _moveSpeedMax = 90;
+    private const int _moveSpeedMin = 70;
+    private const int _moveSpeedMax = 80;
     private const int _attackRangeMin = 200;
     private const int _attackRangeMax = 250;
 
