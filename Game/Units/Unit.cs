@@ -25,6 +25,7 @@ namespace Game.Units
     public StaticModel StaticModel { get { return _staticModel; } set { _staticModel = value; } }
     public Vector Position { get { return _staticModel.Position; } set { _staticModel.Position = value; } }
     public virtual bool IsDead { get { return _isDead; } set { _isDead = value; } }
+    public float Attack { get { return _attackRange; } }
     
     public Unit(string id, StaticModel staticModel)
     {
@@ -46,5 +47,11 @@ namespace Game.Units
 
     public static int CompareTo(Unit left, Unit right) { return left.Id.CompareTo(right.Id); }
     public static int CompareTo(Unit left, string right) { return left.Id.CompareTo(right); }
+
+    public float DistanceTo(Unit other)
+    {
+      return (Position - other.Position).Length;
+    }
+
   }
 }

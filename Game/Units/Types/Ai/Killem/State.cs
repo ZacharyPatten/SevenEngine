@@ -16,7 +16,8 @@ namespace Game
     Finding,
     Matched,
     Moving,
-    Waiting
+    Waiting,
+    MovingToSquad
   }
 }
 

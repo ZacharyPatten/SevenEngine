@@ -10,6 +10,7 @@ namespace Game.Units
   {
     Unit _target;
     AllyState _allyState = AllyState.Waiting;
+    EnemyState _enemyState = EnemyState.Normal;
     VectorV _towards;
     KillemMelee _leader;
     public AllyState State { get { return _allyState; } set { _allyState = value; } }
@@ -20,11 +21,57 @@ namespace Game.Units
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-    MoveTowards(new Vector(0, 0, -10000));
-      if (_allyState == AllyState.Matched)
+      if (_allyState == AllyState.MovingToSquad  && _enemyState != EnemyState.Attacking)
       {
-      //  MoveTowards(_leader.Position);
+        MoveTowards(_leader.Position);
       }
+      else if (_enemyState == EnemyState.Attacking)
+      {
+        MoveTowards(_target.Position);
+        if ((Position - _target.Position).Length < _attackRange)
+        {
+          Attack(_target);
+        }
+
+        if (_target.IsDead)
+        {
+          _target = null;
+          _enemyState = EnemyState.Normal;
+        }
+      }
+      if(_leader != null)
+      {
+        FindCloseUnits(octree);
+      }
+    }
+
+
+
+    public void FindCloseUnits(OctreeLinked<Unit, string> octree)
+    {
+      Unit closeBomb = null;
+      Unit closeRange = null;
+      Unit closeMelee = null;
+      octree.Traverse((Unit unit) =>
+      {
+        if (unit != null)
+        {
+          if (closeBomb == null || (!unit.IsDead && unit is ZackKamakazi && this.DistanceTo(unit) < this.DistanceTo(closeBomb)))
+          {
+            closeBomb = unit;
+          }
+          else if (closeRange == null || (!unit.IsDead && unit is ZackRanged && this.DistanceTo(unit) < this.DistanceTo(closeRange)))
+          {
+            closeRange = unit;
+          }
+          else if (closeMelee == null || (!unit.IsDead && unit is ZackMelee && this.DistanceTo(unit) < this.DistanceTo(closeMelee)))
+          {
+            closeMelee = unit;
+          }
+        }
+      });
+
+      _leader.RegisterClosest(closeBomb, closeRange, closeBomb);
     }
 
 
@@ -34,5 +81,16 @@ namespace Game.Units
       _leader = leader;
     }
 
+    public void SetTarget(Unit target)
+    {
+      _enemyState = EnemyState.Attacking;
+      _target = target;
+    }
+
+    public void UnregisterLeader()
+    {
+      _allyState = AllyState.Waiting;
+      _leader = null;
+    }
   }
 }
