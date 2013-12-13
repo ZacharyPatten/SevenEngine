@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Game.States;
+using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
@@ -14,7 +16,9 @@ namespace Game.Units
     AllyState _bombAllyState;
     KillemKamakazi _bombAlly;
     KillemRanged _rangeAlly;
-    private int _minAllyRange;
+    private int _minAllyRange = 5000;
+    static List<Unit> _targeted = new ListArray<Unit>(90);
+    public Unit Target { get { return _target; } }
     public KillemMelee(string id, StaticModel staticModel)
       : base(id, staticModel)
     {
@@ -23,7 +27,6 @@ namespace Game.Units
     }
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      MoveTowards(new Vector(0, 0, 10000));
       octree.Traverse((Unit unit) =>
       {
         if (unit is KillemRanged)
@@ -37,9 +40,26 @@ namespace Game.Units
         _rangeAlly.State = AllyState.MovingToSquad;
       
       closeUnits.Traverse((Unit unit) => {
-        if (_rangeAlly != null && unit.Attack < _rangeAlly.Attack)
+        if(!_targeted.Contains(unit))
         {
-          _rangeAlly.SetTarget(unit);
+          if (_rangeAlly != null && _rangeAlly.Target == null)
+          {
+            _rangeAlly.SetTarget(unit);
+          }
+          else if (_rangeAlly != null && _rangeAlly.Target != null && 
+            unit.DistanceTo(_rangeAlly) < _rangeAlly.DistanceTo(_rangeAlly.Target))
+          {
+            _rangeAlly.SetTarget(unit);
+          }
+          else if (_rangeAlly != null && _rangeAlly.Target == null)
+          {
+            _rangeAlly.SetTarget(unit);
+          }
+          else if (_rangeAlly != null)
+          {
+
+          }
+
         }
       });
     }
@@ -47,21 +67,16 @@ namespace Game.Units
     List<Unit> closeUnits = new ListArray<Unit>(10);
     public void RegisterClosest(Unit unit1, Unit unit2, Unit unit3)
     {
-      closeUnits.Add(unit1);
-      closeUnits.Add(unit2);
-      closeUnits.Add(unit3);
+      if(!closeUnits.Contains(unit1))
+        closeUnits.Add(unit1);
+      if(!closeUnits.Contains(unit2))
+        closeUnits.Add(unit2);
+      if(!closeUnits.Contains(unit3))
+        closeUnits.Add(unit3);
     }
+
 
     public void FindRanged(KillemRanged unit)
-    {
-      if (unit.State == AllyState.Waiting)
-      {
-        _rangeAllyState = AllyState.Matched;
-        unit.RegisterLeader(this);
-      }
-    }
-
-    public void FindBombed(KillemRanged unit)
     {
       if (_rangeAlly == null && unit.State == AllyState.Waiting)
       {
@@ -69,7 +84,7 @@ namespace Game.Units
         _rangeAlly = unit;
         unit.RegisterLeader(this);
       }
-      else if (CloserMoveSpeed((Unit)unit, (Unit)_rangeAlly) && unit.State == AllyState.Waiting)
+      else if (unit.State == AllyState.Waiting && CloserMoveSpeed((Unit)unit, (Unit)_rangeAlly))
       {
         _rangeAlly.UnregisterLeader();
         unit.RegisterLeader(this);
@@ -96,6 +111,11 @@ namespace Game.Units
       }
     }
 
+    public void ReportDeath(Unit unit)
+    {
+      if(closeUnits.Contains(unit))
+        closeUnits.RemoveFirst(unit);
+    }
     private bool CloserMoveSpeed(Unit newUnit, Unit currentUnit)
     {
       return Math.Abs(newUnit.MoveSpeed - _moveSpeed) < Math.Abs(currentUnit.MoveSpeed - _moveSpeed);
@@ -106,5 +126,6 @@ namespace Game.Units
     {
       return DistanceTo(unit) < _minAllyRange;
     }
+
   }
 }

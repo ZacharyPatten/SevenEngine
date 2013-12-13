@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Game.States;
+using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
@@ -14,6 +16,7 @@ namespace Game.Units
     VectorV _towards;
     KillemMelee _leader;
     public AllyState State { get { return _allyState; } set { _allyState = value; } }
+    public Unit Target { get { return _target; } }
     public KillemRanged(string id, StaticModel staticModel) : base(id, staticModel) 
     {
       _allyState = AllyState.Waiting;
@@ -21,7 +24,7 @@ namespace Game.Units
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      if (_allyState == AllyState.MovingToSquad  && _enemyState != EnemyState.Attacking)
+      if (_allyState == AllyState.MovingToSquad  /*&& _enemyState != EnemyState.Attacking*/)
       {
         MoveTowards(_leader.Position);
       }
@@ -35,8 +38,10 @@ namespace Game.Units
 
         if (_target.IsDead)
         {
-          _target = null;
           _enemyState = EnemyState.Normal;
+          if (_leader != null)
+            _leader.ReportDeath(_target);
+          _target = null;
         }
       }
       if(_leader != null)

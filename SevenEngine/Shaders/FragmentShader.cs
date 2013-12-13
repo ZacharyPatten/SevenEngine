@@ -49,17 +49,23 @@ namespace SevenEngine.Shaders
     // These are the shaders that my engine uses:
     #region Fragment Shader Library
     internal static readonly string Basic =
-@"uniform sampler2D tex;
-  void main() {
-    gl_FragColor = texture2D(tex, gl_TexCoord[0].st); }";
+    @"uniform sampler2D tex;
+    void main() {
+      gl_FragColor = texture2D(tex, gl_TexCoord[0].st);
+    }";
+
+    internal static readonly string Color =
+    @"uniform vec4 color;
+    void main() {
+      gl_FragColor = vec4(color.x, color.y, color.z, color.w);
+    }";
 
     internal static readonly string Text =
-@"uniform sampler2D texture;
-  uniform vec4 color;
-  void main() {
-	// gl_FragColor = texture2D(texture, gl_TexCoord[0].st) + color;
-    // gl_FragColor = vec4(color.w, color.x, color.y, texture2D(texture, gl_TexCoord[0].st).z + color.z);
-    gl_FragColor = vec4(color.x, color.y, color.z, texture2D(texture, gl_TexCoord[0].st).w + color.w); }";
+    @"uniform sampler2D texture;
+    uniform vec4 color;
+    void main() {
+      gl_FragColor = vec4(color.x, color.y, color.z, texture2D(texture, gl_TexCoord[0].st).w + color.w);
+    }";
     #endregion
   }
 }

@@ -18,8 +18,6 @@ namespace Game.States
 
     #region State Fields
 
-    public static readonly float MeterLength = 5;
-
     public OctreeLinked<StaticModel, string> _octree = new OctreeLinked<StaticModel, string>(0, 0, 0, 1000000, 10,
       (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
       (StaticModel left, string right) => { return left.Id.CompareTo(right); } );

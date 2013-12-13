@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Game.States;
+using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
@@ -15,12 +17,7 @@ namespace Game.Units
     public ZackMelee(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; }
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
-    {/*
-=======
     {
-      if (_time < _delay)
-        _time += elapsedTime;
->>>>>>> origin/master
       if (IsDead == false)
       {
         // Targeting
@@ -68,9 +65,57 @@ namespace Game.Units
             }
           );
         }
+        if (_target == null || _target.IsDead)
+        {
+          float shortest = float.MaxValue;
+          octree.Traverse
+          (
+            (Unit current) =>
+            {
+              if ((current is KillemMelee || current is KillemRanged) && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead || _target is KillemKamakazi)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
+                {
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                }
+              }
+              else if (current is KillemKamakazi && !current.IsDead)
+              {
+                if (_target == null || _target.IsDead)
+                {
+                  _target = current;
+                  shortest = (current.Position - Position).Length;
+                }
+                else
+                {
+                  float length = (current.Position - Position).Length;
+                  if (length < shortest)
+                  {
+                    _target = current;
+                    shortest = length;
+                  }
+                }
+              }
+            }
+          );
+        }
         // Attacking
         else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
         {
+          AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
+            new Vector(Position.X, Position.Y, Position.Z),
+            new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
+            Color.Red));
           if (Attack(_target))
             _target = null;
         }
@@ -82,8 +127,7 @@ namespace Game.Units
           Position.Y += (direction.Y / direction.Length) * MoveSpeed;
           Position.Z += (direction.Z / direction.Length) * MoveSpeed;
         }
-<<<<<<< HEAD
-      }*/
+      }
     }
   }
 }

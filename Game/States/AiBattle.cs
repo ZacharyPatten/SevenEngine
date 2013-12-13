@@ -12,7 +12,9 @@ namespace Game.States
 {
   public class AiBattle : InterfaceGameState
   {
+    private bool _3d = false;
     private bool _paused = false;
+    private bool _showlines = false;
 
     private string _id;
     private bool _isReady;
@@ -133,14 +135,14 @@ namespace Game.States
       _killemRanged = new Unit[_rangedCount];
       _killemKamakazi = new Unit[_kamakaziCount];
 
-      int maxXZack = -1000;
-      int minXZack = -1500;
+      int maxXZack = -1500;
+      int minXZack = -2000;
 
       int maxZZack = 0;
       int minZZack = -1500;
 
-      int maxXKillem = 1500;
-      int minXKillem = 1000;
+      int maxXKillem = 2000;
+      int minXKillem = 1500;
 
       int maxZKillem = 0;
       int minZKillem = -1500;
@@ -152,7 +154,10 @@ namespace Game.States
       {
         _zackMelee[i] = new ZackMelee("ZackMelee" + i, StaticModelManager.GetModel("BlackRanger"));
         _zackMelee[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _zackMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10 + random.Next(0, 1000);
+        else
+          _zackMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _zackMelee[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackMelee[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -160,7 +165,10 @@ namespace Game.States
 
         _killemMelee[i] = new KillemMelee("KillemMelee" + i, StaticModelManager.GetModel("Tux"));
         _killemMelee[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10 + random.Next(0, 1000);
+        else
+          _killemMelee[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemMelee[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemMelee[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemMelee[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -171,7 +179,10 @@ namespace Game.States
       {
         _zackRanged[i] = new ZackRanged("ZackRanged" + i, StaticModelManager.GetModel("BlueRanger"));
         _zackRanged[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _zackRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10 + random.Next(0, 1000);
+        else
+          _zackRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _zackRanged[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackRanged[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -179,7 +190,10 @@ namespace Game.States
 
         _killemRanged[i] = new KillemRanged("KillemRanged" + i, StaticModelManager.GetModel("TuxGreen"));
         _killemRanged[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10 + random.Next(0, 1000);
+        else
+          _killemRanged[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemRanged[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemRanged[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemRanged[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -191,7 +205,10 @@ namespace Game.States
       {
         _zackKamakazi[i] = new ZackKamakazi("ZackKamakazi" + i, StaticModelManager.GetModel("RedRanger"));
         _zackKamakazi[i].StaticModel.Position.X = random.Next(minXZack, maxXZack);
-        _zackKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _zackKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10 + random.Next(0, 1000);
+        else
+          _zackKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _zackKamakazi[i].StaticModel.Position.Z = random.Next(minZZack, maxZZack);
         _zackKamakazi[i].StaticModel.Scale = new Vector(5, 5, 5);
         _zackKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, 0);
@@ -199,7 +216,10 @@ namespace Game.States
 
         _killemKamakazi[i] = new KillemKamakazi("KillemKamakazi" + i, StaticModelManager.GetModel("TuxRed"));
         _killemKamakazi[i].StaticModel.Position.X = random.Next(minXKillem, maxXKillem);
-        _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;// +random.Next(0, 1000);
+        if (_3d)
+          _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10 +random.Next(0, 1000);
+        else
+          _killemKamakazi[i].StaticModel.Position.Y = _terrain.Position.Y + 10;
         _killemKamakazi[i].StaticModel.Position.Z = random.Next(minZKillem, maxZKillem);
         _killemKamakazi[i].StaticModel.Scale = new Vector(20, 20, 20);
         _killemKamakazi[i].StaticModel.Orientation = new Quaternion(0, 1, 0, -Trigonometry.HalfPi);
@@ -229,25 +249,28 @@ namespace Game.States
         },
         -100000, -100000, -100000, 100000, 100000, 100000);
 
-      /*lines.Traverse
-      (
-        (Link3<Vector, Vector, Color> current) =>
-        {
-          Renderer.DrawLine(current.First, current.Second, current.Third);
-        }
-      );
-
-      lines.Clear();*/
+      if (_showlines)
+      {
+        lines.Traverse
+        (
+          (Link3<Vector, Vector, Color> current) =>
+          {
+            Renderer.DrawLine(current.First, current.Second, current.Third);
+          }
+        );
+      }
 
       explosions.Traverse
       (
         (Explosion current) =>
         {
           if (current.Model.Scale.X < 220)
+          {
             Renderer.DrawStaticModel(current.Model);
-          current.Model.Scale.X+=2.5f;
-          current.Model.Scale.Y+=2.5f;
-          current.Model.Scale.Z+=2.5f;
+            current.Model.Scale.X += 2.5f;
+            current.Model.Scale.Y += 2.5f;
+            current.Model.Scale.Z += 2.5f;
+          }
         }
       );
 
@@ -281,6 +304,12 @@ namespace Game.States
       _skybox.Position.X = _camera.Position.X;
       _skybox.Position.Y = _camera.Position.Y;
       _skybox.Position.Z = _camera.Position.Z;
+
+      if (InputManager.Keyboard.Rpressed)
+        _showlines = !_showlines;
+
+      if (InputManager.Keyboard.Ypressed)
+        _3d = !_3d;
 
       if (InputManager.Keyboard.Tpressed)
         GenerateUnits();

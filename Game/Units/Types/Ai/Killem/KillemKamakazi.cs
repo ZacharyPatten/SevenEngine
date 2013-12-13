@@ -14,6 +14,8 @@ namespace Game.Units
 
     KillemMelee _leader;
     public AllyState State { get { return _allyState; } set { _allyState = value; } }
+    public Unit Target { get { return _target; } }
+
     public KillemKamakazi(string id, StaticModel staticModel) : base(id, staticModel) 
     {
       _allyState = AllyState.Waiting;

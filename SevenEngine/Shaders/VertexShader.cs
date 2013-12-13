@@ -47,7 +47,12 @@ namespace SevenEngine.Shaders
     public static int CompareTo(VertexShader left, string right) { return left.Id.CompareTo(right); }
 
     #region Vertex Shader Library
-    internal static readonly string Basic =
+    internal static readonly string Transform =
+      @"void main() {
+          gl_Position = ftransform();
+      }";
+
+    internal static readonly string Texture =
       @"void main() {
 	      gl_Position = ftransform();
 	      gl_TexCoord[0] = gl_MultiTexCoord0;

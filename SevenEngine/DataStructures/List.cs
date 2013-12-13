@@ -491,7 +491,7 @@ namespace SevenEngine.DataStructures
               newList[i] = _list[i];
             _list = newList;
           }
-          for (int i = index; i < _count; i++)
+          for (int i = index; i < _count-1; i++)
             _list[i] = _list[i + 1];
           _count--;
           WriterUnlock();

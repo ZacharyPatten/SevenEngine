@@ -125,10 +125,19 @@ namespace SevenEngine
 
     public static void DrawLine(Vector from, Vector to, Color color)
     {
+      SetProjectionMatrix();
+      GL.MatrixMode(MatrixMode.Modelview);
+      Matrix4 camera = _currentCamera.GetMatrix();
+      GL.LoadMatrix(ref camera);
+
+      GL.UseProgram(ShaderManager.ColorShader.GpuHandle);
+      int uniformLocation = GL.GetUniformLocation(ShaderManager.ColorShader.GpuHandle, "color");
+      GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1));//color.A / 255f));
+
       GL.Begin(BeginMode.Lines);
       GL.Vertex3(from.X, from.Y, from.Z);
       GL.Vertex3(to.X, to.Y, to.Z);
-      GL.Color3(color.R, color.G, color.B);
+      GL.Color3(color.R / 255f, color.G / 255f, color.B / 255f);
       GL.End();
     }
 
@@ -256,6 +265,7 @@ namespace SevenEngine
       //  GL.UseProgram(_defaultShaderProgram.GpuHandle);
       //else
       //  GL.UseProgram(ShaderManager.DefaultShader.GpuHandle);
+      GL.UseProgram(_defaultShaderProgram.GpuHandle);
 
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);
