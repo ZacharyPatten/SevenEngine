@@ -12,19 +12,22 @@ namespace Game.Units
   {
     Unit _target;
     float _time = 0;
-    const float _delay = 4000;
+    float _delay = 0;
+    int move;
 
-    public KillemRanged(string id, StaticModel staticModel) : base(id, staticModel) { }
+
+    public KillemRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000;}
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      if (_time < _delay)
+      if (_time <= _delay)
         _time += elapsedTime;
       if (IsDead == false)
       {
         // Targeting
-        if (_target == null || _target.IsDead)
+        if (_target == null || _target.IsDead || move > 20)
         {
+          move = 0;
           float shortest = float.MaxValue;
           octree.Traverse
           (
@@ -32,7 +35,7 @@ namespace Game.Units
             {
               if (current is ZackKamakazi && !current.IsDead)
               {
-                if (_target == null || _target.IsDead || !(_target is ZackKamakazi))
+                if (_target == null || _target.IsDead || !(_target is KillemKamakazi))
                 {
                   _target = current;
                   shortest = (current.Position - Position).Length;
@@ -73,9 +76,10 @@ namespace Game.Units
           AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
             new Vector(Position.X, Position.Y, Position.Z),
             new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
-            Color.Violet));
+            Color.Yellow));
           if (Attack(_target))
             _target = null;
+          move = 0;
         }
         // Moving
         else if (_time > _delay)
@@ -84,7 +88,9 @@ namespace Game.Units
           Position.X += (direction.X / direction.Length) * MoveSpeed;
           Position.Y += (direction.Y / direction.Length) * MoveSpeed;
           Position.Z += (direction.Z / direction.Length) * MoveSpeed;
+          move++;
         }
+        this.StaticModel.Orientation.W+=.1f;
       }
     }
   }
