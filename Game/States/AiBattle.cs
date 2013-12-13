@@ -12,10 +12,10 @@ namespace Game.States
 {
   public class AiBattle : InterfaceGameState
   {
-    private bool _3d = false;
-    private int _map = 0;
-    private bool _paused = false;
-    private bool _showlines = false;
+    public static bool _3d = false;
+    public static int _map = 0;
+    public static bool _paused = false;
+    public static bool _showlines = false;
 
     private string _id;
     private bool _isReady;

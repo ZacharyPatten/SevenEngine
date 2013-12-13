@@ -31,8 +31,8 @@ namespace Game.Units
     private const int _viewDistanceMax = 10000;
     private const int _moveSpeedMin = 60;
     private const int _moveSpeedMax = 90;
-    private const int _attackRangeMin = 150;
-    private const int _attackRangeMax = 200;
+    private const int _attackRangeMin = 200;
+    private const int _attackRangeMax = 300;
 
     private bool _exploded; 
 

@@ -12,14 +12,14 @@ namespace Game.Units
   {
     Unit _target;
     float _time = 0;
-    const float _delay = 4000;
+    float _delay = 0;
     int move;
 
-    public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; }
+    public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000;}
 
     public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
     {
-      if (_time < _delay)
+      if (_time <= _delay)
         _time += elapsedTime;
       if (IsDead == false)
       {
