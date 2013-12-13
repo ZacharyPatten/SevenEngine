@@ -43,6 +43,9 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
+    public int CompareTo(VertexShader right) { return _id.CompareTo(right.Id); }
+    public int CompareTo(string right) { return _id.CompareTo(right); }
+
     public static int CompareTo(VertexShader left, VertexShader right) { return left.Id.CompareTo(right.Id); }
     public static int CompareTo(VertexShader left, string right) { return left.Id.CompareTo(right); }
 

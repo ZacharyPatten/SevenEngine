@@ -19,6 +19,19 @@ namespace Game
 
     public override void InitializeDisplay()
     {
+      /*Console.WriteLine("Setup!!!");
+      int wtf = 0;
+      Action third = null;
+      Action second = null;
+      Action first = () => { Console.WriteLine("One: " + (++wtf)); if (wtf < 10 && wtf % 2 == 0) third(); else if (wtf < 12) second(); };
+      second = () => { Console.WriteLine("Two: " + (++wtf)); if (wtf < 10 && wtf % 3 == 0) first(); else if (wtf < 12) third(); };
+      third = () => { Console.WriteLine("Three: " + (++wtf)); if (wtf < 10 && wtf % 4 == 0) second(); else if (wtf < 12) first(); };
+      Console.WriteLine("Start!!!");
+      first();
+      Console.WriteLine("End!!!");
+      Console.ReadLine();*/
+
+
       // SET INITIAL DISPLAY SETTINGS HERE.
       // Use the static class "GraphicsSettingsManager"
       // EXAMPLES:

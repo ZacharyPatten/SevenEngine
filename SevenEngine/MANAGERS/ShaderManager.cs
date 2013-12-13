@@ -41,6 +41,11 @@ namespace SevenEngine
     private static AvlTreeLinked<ShaderProgram, string> _shaderProgramDatabase =
       new AvlTreeLinked<ShaderProgram, string>(ShaderProgram.CompareTo, ShaderProgram.CompareTo);
 
+    public static int Comparison(Func<FragmentShader, int> function, FragmentShader right)
+    {
+      return function(right);
+    }
+
     /// <summary>Get a vertex shader that has been loaded and compiled on the GPU.</summary>
     /// <param name="shaderId">The name associated with the shader when you loaded it.</param>
     /// <returns>The shader if it exists.</returns>
