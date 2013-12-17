@@ -20,12 +20,12 @@ namespace SevenEngine.Texts
   /// <summary>Represents a message to be rendered, along with its font, color, and transformational attributes.</summary>
   public class Text
   {
-    Font _font;
-    string _message;
-    int _scale;
-    Vector _position;
-    Quaternion _orientation;
-    Color _color;
+    //Font _font;
+    //string _message;
+    //int _scale;
+    //Vector _position;
+    //Quaternion _orientation;
+    //Color _color;
 
     
 

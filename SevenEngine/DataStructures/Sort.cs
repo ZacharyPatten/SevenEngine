@@ -19,31 +19,16 @@
 
 using System;
 
-namespace SevenEngine.DataStructures.Algotithms
+namespace SevenEngine.DataStructures
 {
-  public static class Sorting
+  public static class Sort
   {
-    #region BubbleSort
-
-    /*/// <summary>Sorts an entire array of type int in non-decreasing order using the bubble sort algorithm.</summary>
-    /// <param name="array">the array to be sorted</param>
-    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stability: yes.</remarks>
-    public static void BubbleSort(int[] array)
-    {
-      for (int i = 0; i < array.Length; i++)
-        for (int j = 0; j < array.Length - 1; j++)
-          if (array[j] > array[j + 1])
-          {
-            int temp = array[j + 1];
-            array[j + 1] = array[j];
-            array[j] = temp;
-          }
-    }*/
+    #region Bubble
 
     /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the bubble sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
     /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stability: yes.</remarks>
-    public static void BubbleSort(IComparable[] array)
+    public static void Bubble(IComparable[] array)
     {
       for (int i = 0; i < array.Length; i++)
         for (int j = 0; j < array.Length - 1; j++)
@@ -59,7 +44,7 @@ namespace SevenEngine.DataStructures.Algotithms
     /// <param name="array">the array to be sorted</param>
     /// <param name="comparisonFunction">The compare function (returns a positive value if left is greater than right).</param>
     /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stability: yes.</remarks>
-    public static void BubbleSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
+    public static void Bubble<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
     {
       for (int i = 0; i < array.Length; i++)
         for (int j = 0; j < array.Length - 1; j++)
@@ -73,36 +58,12 @@ namespace SevenEngine.DataStructures.Algotithms
 
     #endregion
 
-    #region SelectionSort
+    #region Selection
 
-    /*/// <summary>Sorts an entire array of type int in non-decreasing order using the selection sort algoritm.</summary>
-    /// <param name="array">The array to be sorted</param>
-    /// <remarks>Runtime: Omega(n^2), average(n^2), O(n^2). Memory: in place. Stablity: no.</remarks>
-    public static void SelectionSort(int[] array)
-    {
-      for (int i = 0; i < array.Length; i++)
-      {
-        int min = i;
-        for (int j = i + 1; j < array.Length; j++)
-          if (array[j] < array[min])
-          {
-            min = j;
-            int temp = array[i];
-            array[i] = array[min];
-            array[min] = temp;
-          }
-      }
-    }*/
-
-    /// <summary>Sorts an entire array of type IComparable in non-decreasing order 
-    /// using the selection sort algoritm.
-    /// Runtime: Omega(n^2), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stablity: no.
-    /// - Seven 03.06.2013
-    /// </summary>
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the selection sort algoritm.</summary>
     /// <param name="array">the array to be sorted</param>
-    public static void SelectionSort(IComparable[] array)
+    /// <remarks>Runtime: Omega(n^2), average(n^2), O(n^2). Memory: in place. Stablity: no.</remarks>
+    public static void Selection(IComparable[] array)
     {
       for (int i = 0; i < array.Length; i++)
       {
@@ -118,16 +79,11 @@ namespace SevenEngine.DataStructures.Algotithms
       }
     }
 
-    /// <summary>
-    /// Sorts an entire array of type IComparable in non-decreasing order using the selection sort algoritm.
-    /// Runtime: Omega(n^2), average(n^2), O(n^2).
-    /// Memory: in place.
-    /// Stablity: no.
-    /// - Seven 03.06.2013
-    /// </summary>
+    /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the selection sort algoritm.</summary>
     /// <param name="array">the array to be sorted</param>
     /// <param name="comparisonFunction">Returns negative if the left is less than the right.</param>
-    public static void SelectionSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
+    /// <remarks>Runtime: Omega(n^2), average(n^2), O(n^2). Memory: in place. Stablity: no.</remarks>
+    public static void Selection<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
     {
       for (int i = 0; i < array.Length; i++)
       {
@@ -145,27 +101,12 @@ namespace SevenEngine.DataStructures.Algotithms
 
     #endregion
 
-    #region InsertionSort
-
-    /*/// <summary>Sorts an entire array of type int in non-decreasing order using the insertion sort algorithm.</summary>
-    /// <param name="array">the array to be sorted</param>
-    /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stablity: yes.</remarks>
-    public static void InsertionSort(int[] array)
-    {
-      for (int i = 1; i < array.Length; i++)
-      {
-        int temp = array[i];
-        int j;
-        for (j = i; j > 0 && array[j - 1] > temp; j--)
-          array[j] = array[j - 1];
-        array[j] = temp;
-      }
-    }*/
+    #region Insertion
 
     /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the insertion sort algorithm.</summary>
     /// <param name="array">the array to be sorted</param>
     /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stablity: yes.</remarks>
-    public static void InsertionSort(IComparable[] array)
+    public static void Insertion(IComparable[] array)
     {
       for (int i = 1; i < array.Length; i++)
       {
@@ -181,7 +122,7 @@ namespace SevenEngine.DataStructures.Algotithms
     /// <param name="array">the array to be sorted</param>
     /// <param name="comparisonFunction">Returns positive if left greater than right.</param>
     /// <remarks>Runtime: Omega(n), average(n^2), O(n^2). Memory: in place. Stablity: yes.</remarks>
-    public static void InsertionSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
+    public static void Insertion<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
     {
       for (int i = 1; i < array.Length; i++)
       {
@@ -195,49 +136,14 @@ namespace SevenEngine.DataStructures.Algotithms
 
     #endregion
 
-    #region QuickSort
-
-    /*/// <summary>Sorts an entire array of type int in non-decreasing order using the quick sort algorithm.</summary>
-    /// <param name="array">The array to be sorted.</param>
-    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory Space: ln(n). Stablity: no.</remarks>
-    public static void QuickSort(int[] array) { QuickSort(array, 0, array.Length); }
-
-    private static void QuickSort(int[] array, int start, int len)
-    {
-      if (len > 1)
-      {
-        int pivot = array[start];
-        int i = start;
-        int j = start + len - 1;
-        int k = j;
-        while (i <= j)
-        {
-          if (array[j] < pivot)
-          {
-            int temp = array[i];
-            array[i++] = array[j];
-            array[j] = temp;
-          }
-          else if (array[j] == pivot)
-            j--;
-          else
-          {
-            int temp = array[k];
-            array[k--] = array[j];
-            array[j--] = temp;
-          }
-        }
-        QuickSort(array, start, i - start);
-        QuickSort(array, k + 1, start + len - (k + 1));
-      }
-    }*/
+    #region Quick
 
     /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the quick sort algorithm.</summary>
     /// <param name="array">The array to be sorted</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: ln(n). Stablity: no.</remarks>
-    public static void QuickSort(IComparable[] array) { QuickSort(array, 0, array.Length); }
+    public static void Quick(IComparable[] array) { Quick(array, 0, array.Length); }
 
-    private static void QuickSort(IComparable[] array, int start, int len)
+    private static void Quick(IComparable[] array, int start, int len)
     {
       if (len > 1)
       {
@@ -262,8 +168,8 @@ namespace SevenEngine.DataStructures.Algotithms
             array[j--] = temp;
           }
         }
-        QuickSort(array, start, i - start);
-        QuickSort(array, k + 1, start + len - (k + 1));
+        Quick(array, start, i - start);
+        Quick(array, k + 1, start + len - (k + 1));
       }
     }
 
@@ -271,9 +177,9 @@ namespace SevenEngine.DataStructures.Algotithms
     /// <param name="array">The array to be sorted</param>
     /// <param name="comparisonFunction">Returns negative if left is less than right, and zero if left equals right.</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: ln(n). Stablity: no.</remarks>
-    public static void QuickSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction) { QuickSort<Type>(array, comparisonFunction, 0, array.Length); }
+    public static void Quick<Type>(Type[] array, Func<Type, Type, int> comparisonFunction) { Quick<Type>(array, comparisonFunction, 0, array.Length); }
 
-    private static void QuickSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction, int start, int len)
+    private static void Quick<Type>(Type[] array, Func<Type, Type, int> comparisonFunction, int start, int len)
     {
       if (len > 1)
       {
@@ -298,63 +204,29 @@ namespace SevenEngine.DataStructures.Algotithms
             array[j--] = temp;
           }
         }
-        QuickSort(array, comparisonFunction, start, i - start);
-        QuickSort(array, comparisonFunction, k + 1, start + len - (k + 1));
+        Quick(array, comparisonFunction, start, i - start);
+        Quick(array, comparisonFunction, k + 1, start + len - (k + 1));
       }
     }
 
     #endregion
 
-    #region MergeSort
-
-    /*/// <summary>Sorts up to an array of type int in non-decreasing order using the merge sort algorithm.</summary>
-    /// <param name="array">The array to be sorted</param>
-    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)). Memory: n. Stablity: yes.</remarks>
-    public static void MergeSort(int[] array)
-    {
-      MergeSort(array, 0, array.Length);
-    }
-    private static void MergeSort(int[] array, int start, int len)
-    {
-      if (len > 1)
-      {
-        int half = len / 2;
-        MergeSort(array, start, half);
-        MergeSort(array, start + half, len - half);
-        int[] sorted = new int[len];
-        int i = start;
-        int j = start + half;
-        int k = 0;
-        while (i < start + half && j < start + len)
-        {
-          if (array[i] <= array[j])
-            sorted[k++] = array[i++];
-          else
-            sorted[k++] = array[j++];
-        }
-        for (int h = 0; h < start + half - i; h++)
-          sorted[k + h] = array[i + h];
-        for (int h = 0; h < start + len - j; h++)
-          sorted[k + h] = array[j + h];
-        for (int h = 0; h < len; h++)
-          array[start + h] = sorted[0 + h];
-      }
-    }*/
+    #region Merge
 
     /// <summary>Sorts up to an array of type IComparable in non-decreasing order using the merge sort algorithm.</summary>
     /// <param name="array">The array to be sorted</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)). Memory: n. Stablity: yes.</remarks>
-    public static void MergeSort(IComparable[] array)
+    public static void Merge(IComparable[] array)
     {
-      MergeSort(array, 0, array.Length);
+      Merge(array, 0, array.Length);
     }
-    private static void MergeSort(IComparable[] array, int start, int len)
+    private static void Merge(IComparable[] array, int start, int len)
     {
       if (len > 1)
       {
         int half = len / 2;
-        MergeSort(array, start, half);
-        MergeSort(array, start + half, len - half);
+        Merge(array, start, half);
+        Merge(array, start + half, len - half);
         IComparable[] sorted = new IComparable[len];
         int i = start;
         int j = start + half;
@@ -379,17 +251,17 @@ namespace SevenEngine.DataStructures.Algotithms
     /// <param name="array">The array to be sorted</param>
     /// <param name="comparisonFunction">Returns zero or negative if the left is less than or equal to the right.</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n*ln(n)). Memory: n. Stablity: yes.</remarks>
-    public static void MergeSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
+    public static void Merge<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
     {
-      MergeSort<Type>(array, comparisonFunction, 0, array.Length);
+      Merge<Type>(array, comparisonFunction, 0, array.Length);
     }
-    private static void MergeSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction, int start, int len)
+    private static void Merge<Type>(Type[] array, Func<Type, Type, int> comparisonFunction, int start, int len)
     {
       if (len > 1)
       {
         int half = len / 2;
-        MergeSort<Type>(array,comparisonFunction, start, half);
-        MergeSort<Type>(array, comparisonFunction, start + half, len - half);
+        Merge<Type>(array,comparisonFunction, start, half);
+        Merge<Type>(array, comparisonFunction, start + half, len - half);
         Type[] sorted = new Type[len];
         int i = start;
         int j = start + half;
@@ -412,50 +284,12 @@ namespace SevenEngine.DataStructures.Algotithms
 
     #endregion
 
-    #region HeapSort
-
-    /*/// <summary>Sorts an entire array of type int in non-decreasing order using the heap sort algorithm.</summary>
-    /// <param name="array">The array to be sorted</param>
-    /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: in place. Stablity: no.</remarks>
-    public static void HeapSort(int[] array)
-    {
-      int heapSize = array.Length;
-      for (int i = (heapSize - 1) / 2; i >= 0; i--)
-        MaxHeapify(array, heapSize, i);
-      for (int i = array.Length - 1; i > 0; i--)
-      {
-        int temp = array[0];
-        array[0] = array[i];
-        array[i] = temp;
-        heapSize--;
-        MaxHeapify(array, heapSize, 0);
-      }
-    }
-
-    private static void MaxHeapify(int[] array, int heapSize, int index)
-    {
-      int left = (index + 1) * 2 - 1;
-      int right = (index + 1) * 2;
-      int largest = 0;
-      if (left < heapSize && array[left] > array[index])
-        largest = left;
-      else
-        largest = index;
-      if (right < heapSize && array[right] > array[largest])
-        largest = right;
-      if (largest != index)
-      {
-        int temp = array[index];
-        array[index] = array[largest];
-        array[largest] = temp;
-        MaxHeapify(array, heapSize, largest);
-      }
-    }*/
+    #region Heap
 
     /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the heap sort algorithm.</summary>
     /// <param name="array">The array to be sorted</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: in place. Stablity: no.</remarks>
-    public static void HeapSort(IComparable[] array)
+    public static void Heap(IComparable[] array)
     {
       int heapSize = array.Length;
       for (int i = (heapSize - 1) / 2; i >= 0; i--)
@@ -493,7 +327,7 @@ namespace SevenEngine.DataStructures.Algotithms
     /// <summary>Sorts an entire array of type IComparable in non-decreasing order using the heap sort algorithm.</summary>
     /// <param name="array">The array to be sorted</param>
     /// <remarks>Runtime: Omega(n*ln(n)), average(n*ln(n)), O(n^2). Memory: in place. Stablity: no.</remarks>
-    public static void HeapSort<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
+    public static void Heap<Type>(Type[] array, Func<Type, Type, int> comparisonFunction)
     {
       int heapSize = array.Length;
       for (int i = (heapSize - 1) / 2; i >= 0; i--)

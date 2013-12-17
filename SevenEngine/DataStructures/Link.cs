@@ -10,11 +10,6 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-// This file contains the following classes:
-// - Link2
-// - Link3
-// - Link4
-
 namespace SevenEngine.DataStructures
 {
   #region Link2

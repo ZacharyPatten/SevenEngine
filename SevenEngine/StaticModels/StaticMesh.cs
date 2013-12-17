@@ -11,13 +11,13 @@
 // Last Edited: 12-11-13
 
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.StaticModels
 {
   /// <summary>Represents a small wrapper for static meshes that adds a texture reference, and string id.
   /// The reason for this wrapper is for possible dismemberment from its StaticModel.</summary>
-  public class StaticMesh : InterfaceStringId
+  public class StaticMesh
   {
     private string _id;
     private Texture _texture;

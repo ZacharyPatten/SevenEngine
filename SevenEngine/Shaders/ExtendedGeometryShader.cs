@@ -10,12 +10,12 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.Shaders
 {
   /// <summary>Represents a single extended geometry shader that has been loaded on the GPU.</summary>
-  public class ExtendedGeometryShader : InterfaceStringId
+  public class ExtendedGeometryShader
   {
     protected string _id;
     protected string _filePath;

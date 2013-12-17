@@ -10,12 +10,12 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.Imaging
 {
   /// <summary>Represents a single image that has been loaded on the GPU.</summary>
-  public class Texture : InterfaceStringId
+  public class Texture
   {
     protected int _existingReferences;
     protected string _id;

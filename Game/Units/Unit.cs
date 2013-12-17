@@ -2,11 +2,10 @@
 using SevenEngine.DataStructures;
 using SevenEngine.StaticModels;
 using SevenEngine.Mathematics;
-using SevenEngine.DataStructures.Interfaces;
 
 namespace Game.Units
 {
-  public abstract class Unit : InterfacePositionVector, InterfaceStringId
+  public abstract class Unit : InterfacePositionVector
   {
     protected string _id;
     protected int _health;

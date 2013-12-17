@@ -12,7 +12,6 @@
 
 using System;
 using SevenEngine.DataStructures;
-using SevenEngine.DataStructures.Interfaces;
 using SevenEngine.Imaging;
 using SevenEngine.Mathematics;
 using SevenEngine.Shaders;
@@ -20,17 +19,17 @@ using SevenEngine.Shaders;
 namespace SevenEngine.StaticModels
 {
   /// <summary>Represents a collection of static meshes that all use the same model-view matrix.</summary>
-  public class StaticModel : InterfaceStringId, InterfacePositionVector
+  public class StaticModel : InterfacePositionVector
   {
     protected string _id;
     protected Vector _position;
     protected Vector _scale;
     protected Quaternion _orientation;
     protected ShaderProgram _shaderOverride;
-    protected AvlTreeLinked<StaticMesh, string> _meshes;
+    protected AvlTree<StaticMesh, string> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public AvlTreeLinked<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public AvlTree<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
@@ -75,7 +74,7 @@ namespace SevenEngine.StaticModels
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, AvlTreeLinked<StaticMesh, string> meshes)
+    internal StaticModel(string staticModelId, AvlTree<StaticMesh, string> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;

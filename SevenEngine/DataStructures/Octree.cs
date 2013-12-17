@@ -10,23 +10,13 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-23-13
 
-// This file contains the following interfaces:
-// - Octree
-// This file contains the following classes:
-// - OctreeLinked
-//   - OctreeLinkedBound
-//   - OctreeLinkedNode
-//   - OctreeLinkedLeaf
-//   - OctreeLinkedBranch
-//   - OctreeLinkedException
-
 using System;
 using System.Threading;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.DataStructures
 {
-  public interface Octree<ValueType, KeyType> : InterfaceTraversable<ValueType>
+  public interface Octree<ValueType, KeyType> : DataStructure<ValueType>
     where ValueType : InterfacePositionVector
   {
     int Count { get; }
@@ -42,8 +32,11 @@ namespace SevenEngine.DataStructures
   #region OctreeLinked
 
   public class OctreeLinked<ValueType, KeyType> : Octree<ValueType, KeyType>
-    where ValueType : InterfaceStringId, InterfacePositionVector
+    where ValueType : InterfacePositionVector
   {
+    private Func<ValueType, ValueType, int> _valueComparisonFunction;
+    private Func<ValueType, KeyType, int> _keyComparisonFunction;
+
     #region OctreeLinkedBound
 
     /// <summary>Represents a bounding cube. Includes coordinates of the center 
@@ -166,41 +159,12 @@ namespace SevenEngine.DataStructures
         : base(x, y, z, scale, parent)
       { _contents = new ValueType[branchFactor]; }
 
-      internal int GetIndex(string id)
-      {
-        for (int i = 0; i < _count; i++)
-          if (_contents[i].Id == id)
-            return i;
-        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
-      }
-
-      internal ValueType GetEntry(string id)
-      {
-        for (int i = 0; i < _count; i++)
-          if (_contents[i].Id == id)
-            return _contents[i];
-        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
-      }
-
       internal OctreeLinkedLeaf Add(ValueType addition)
       {
         if (_count == _contents.Length)
           throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
         _contents[_count++] = addition;
         return this;
-      }
-
-      internal void Remove(string id)
-      {
-        for (int i = 0; i < _count; i++)
-          if (_contents[i].Id == id)
-          {
-            ValueType swapStorage = _contents[_count - 1];
-            _contents[_count - 1] = _contents[i];
-            _contents[i] = swapStorage;
-            return;
-          }
-        throw new OctreeLinkedException("My octree has a glitch, sorry...");
       }
     }
 
@@ -237,12 +201,11 @@ namespace SevenEngine.DataStructures
 
     #region OctreeLinkedReference
 
-    private class OctreeLinkedReference : SevenEngine.DataStructures.Interfaces.InterfaceStringId
+    private class OctreeLinkedReference
     {
       private ValueType _value;
       private OctreeLinkedLeaf _leaf;
 
-      public string Id { get { return _value.Id; } set { _value.Id = value; } }
       internal ValueType Value { get { return _value; } set { _value = value; } }
       internal OctreeLinkedLeaf Leaf { get { return _leaf; } set { _leaf = value; } }
 
@@ -251,12 +214,9 @@ namespace SevenEngine.DataStructures
 
     #endregion
 
-    // The maximum number of objects per leaf (branch factor)
     private int _branchFactor;
     private int _count;
-    // A database of objects and their current octree nodes
-    private AvlTreeLinked<OctreeLinkedReference, string> _referenceDatabase;
-    // The top node of the tree
+    private AvlTree<OctreeLinkedReference, KeyType, ValueType> _referenceDatabase;
     private OctreeLinkedNode _top;
 
     private Object _lock;
@@ -283,10 +243,14 @@ namespace SevenEngine.DataStructures
       _readers = 0;
       _writers = 0;
 
-      _referenceDatabase = new AvlTreeLinked<OctreeLinkedReference, string>
+      _valueComparisonFunction = valueComparisonFunction;
+      _keyComparisonFunction = keyComparisonFunction;
+
+      _referenceDatabase = new AvlTreeLinked<OctreeLinkedReference, KeyType, ValueType>
       (
-        (OctreeLinkedReference left, OctreeLinkedReference right) => { return left.Id.CompareTo(right.Id); },
-        (OctreeLinkedReference left, string right) => { return left.Id.CompareTo(right); }
+        (OctreeLinkedReference left, OctreeLinkedReference right) => { return _valueComparisonFunction(left.Value, right.Value); },
+        (OctreeLinkedReference left, KeyType right) => { return _keyComparisonFunction(left.Value, right); },
+        (OctreeLinkedReference left, ValueType right) => { return _valueComparisonFunction(left.Value, right); }
       );
     }
 
@@ -328,7 +292,7 @@ namespace SevenEngine.DataStructures
           else
             growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
           foreach (ValueType entry in leaf.Contents)
-            _referenceDatabase.Get(entry.Id).Leaf = Add(entry, growth);
+            _referenceDatabase.GetSecondGeneric(entry).Leaf = Add(entry, growth);
           return Add(addition, growth);
         }
       }
@@ -366,18 +330,29 @@ namespace SevenEngine.DataStructures
 
     /// <summary>Removes an item from the octree by the id that was assigned to it.</summary>
     /// <param name="id">The string id of the removal that was given to the item when it was added.</param>
-    public void Remove(string id)
+    public void Remove(KeyType key)
     {
       WriterLock();
-      Remove(id, _referenceDatabase.Get(id).Leaf);
-      _referenceDatabase.Remove(id);
+      Remove(key, _referenceDatabase.Get(key).Leaf);
+      _referenceDatabase.Remove(key);
       _count--;
       WriterUnlock();
     }
 
-    private void Remove(string id, OctreeLinkedLeaf leaf)
+    private void Remove(KeyType key, OctreeLinkedLeaf leaf)
     {
-      if (leaf.Count > 1) leaf.Remove(id);
+      if (leaf.Count > 1)
+      {
+        ValueType[] contents = leaf.Contents;
+        for (int i = 0; i < leaf.Count; i++)
+          if (_keyComparisonFunction(contents[i], key) == 0)
+          {
+            ValueType temp = contents[_count - 1];
+            contents[_count - 1] = contents[i];
+            contents[i] = temp;
+            break;
+          }
+      }
       else PluckLeaf(leaf.Parent, leaf.Parent.DetermineChild(leaf.X, leaf.Y, leaf.Z));
     }
 
@@ -401,15 +376,25 @@ namespace SevenEngine.DataStructures
     }
 
     /// <summary>Moves an existing item from one position to another.</summary>
-    /// <param name="id">The string id of the item to be moved.</param>
+    /// <param name="key">The key of the item to be moved.</param>
     /// <param name="x">The x coordinate of the new position of the item.</param>
     /// <param name="y">The y coordinate of the new position of the item.</param>
     /// <param name="z">The z coordinate of the new position of the item.</param>
-    public void Move(string id, float x, float y, float z)
+    public void Move(KeyType key, float x, float y, float z)
     {
       WriterLock();
-      OctreeLinkedLeaf leaf = _referenceDatabase.Get(id).Leaf;
-      ValueType entry = leaf.GetEntry(id);
+      OctreeLinkedLeaf leaf = _referenceDatabase.Get(key).Leaf;
+      ValueType entry = default(ValueType);
+      bool found = false;
+      foreach (ValueType value in leaf.Contents)
+        if (_keyComparisonFunction(value, key) == 0)
+        {
+          entry = value;
+          found = true;
+          break;
+        }
+      if (found == false)
+        throw new OctreeLinkedException("attempting to move a non-existing value.");
       entry.Position.X = x;
       entry.Position.Y = y;
       entry.Position.Z = z;
@@ -417,8 +402,11 @@ namespace SevenEngine.DataStructures
         && (y > leaf.Y - leaf.Scale && y < leaf.Y + leaf.Scale)
         && (z > leaf.Z - leaf.Scale && z < leaf.Z + leaf.Scale))
         return;
-      Remove(id, leaf);
-      Add(entry, _top);
+      else
+      {
+        Remove(key, leaf);
+        Add(entry, _top);
+      }
       WriterLock();
     }
 
@@ -585,6 +573,46 @@ namespace SevenEngine.DataStructures
           }
         }
       }
+    }
+
+    public ValueType[] ToArray()
+    {
+      ReaderLock();
+      int finalIndex;
+      ValueType[] array = new ValueType[_count];
+      ToArray(_top, array, 0, out finalIndex);
+      if (array.Length != finalIndex)
+        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
+      ReaderUnlock();
+      return array;
+    }
+    private void ToArray(OctreeLinkedNode octreeNode, ValueType[] array, int entryIndex, out int returnIndex)
+    {
+      if (octreeNode != null)
+      {
+        if (octreeNode is OctreeLinkedLeaf)
+        {
+          returnIndex = entryIndex;
+          foreach (ValueType item in ((OctreeLinkedLeaf)octreeNode).Contents)
+            array[returnIndex++] = item;
+        }
+        else
+        {
+          // The current node is a branch
+          OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
+          ToArray(branch.Children[0], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[1], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[2], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[3], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[4], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[5], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[6], array, entryIndex, out entryIndex);
+          ToArray(branch.Children[7], array, entryIndex, out entryIndex);
+          returnIndex = entryIndex;
+        }
+      }
+      else
+        returnIndex = entryIndex;
     }
 
     /// <summary>Thread safe enterance for readers.</summary>

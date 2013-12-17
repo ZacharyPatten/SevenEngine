@@ -13,11 +13,10 @@
 using System;
 using SevenEngine.Imaging;
 using SevenEngine.DataStructures;
-using SevenEngine.DataStructures.Interfaces;
 
 namespace SevenEngine.Texts
 {
-  public class Font : InterfaceStringId
+  public class Font
   {
     private string _id;
     private int _lineHeight;

@@ -11,12 +11,12 @@
 // Last Edited: 11-16-13
 
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.StaticModels
 {
   /// <summary>Represents a single mesh that has been loaded on the GPU.</summary>
-  public class StaticMeshInstance : InterfaceStringId
+  public class StaticMeshInstance
   {
     private int _existingReferences;
     protected string _filePath;

@@ -10,12 +10,12 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.Shaders
 {
   /// <summary>Represents a single vertex shader that has been loaded on the GPU.</summary>
-  public class VertexShader : InterfaceStringId
+  public class VertexShader
   {
     protected string _filePath;
     protected string _id;

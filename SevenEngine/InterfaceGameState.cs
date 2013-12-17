@@ -10,14 +10,14 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine
 {
   /// <summary>INHERIT ME!</summary>
-  public interface InterfaceGameState : InterfaceStringId
+  public interface InterfaceGameState
   {
-    new string Id { get; set; }
+    string Id { get; set; }
     bool IsReady { get; }
     void Load();
     string Update(float elapsedTime);

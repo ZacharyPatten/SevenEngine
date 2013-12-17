@@ -11,12 +11,12 @@
 // Last Edited: 11-16-13
 
 using System;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.Audio
 {
   // THE SOUND CLASSES ARE NOT YET FUNCTINAL, PLEASE WAIT FOR ME TO FINISH THEM...
-  public class Sound : InterfaceStringId
+  public class Sound
   {
     private string _id;
 
@@ -30,5 +30,8 @@ namespace SevenEngine.Audio
     public bool FailedToPlay { get { return (Channel == -1); } }
 
     public Sound(int channel) { Channel = channel; }
+
+    public static int CompareTo(Sound left, Sound right) { return left.Id.CompareTo(right.Id); }
+    public static int CompareTo(Sound left, string right) { return left.Id.CompareTo(right); }
   }
 }

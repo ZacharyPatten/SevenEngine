@@ -12,12 +12,12 @@
 
 using System;
 using OpenTK.Graphics.OpenGL;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.Shaders
 {
   /// <summary>Represents a single shader program that has been loaded on the GPU.</summary>
-  public class ShaderProgram : InterfaceStringId
+  public class ShaderProgram
   {
     protected string _id;
     protected int _gpuHandle;

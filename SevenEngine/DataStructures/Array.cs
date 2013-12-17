@@ -10,33 +10,23 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-22-13
 
-// This file contains the following interfaces:
-// - Array
-// This file contains the following classes:
-// - ArrayStandard
-//   - ArrayStandardException
-// - ArrayCyclic
-//   - ArrayCyclicException
-
 using System;
 using System.Threading;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.DataStructures
 {
-  public interface Array<Type> : InterfaceTraversable<Type>
+  public interface Array<Type> : DataStructure<Type>
   {
     Type this[int index] { get; set; }
     int Length { get; }
-    bool TraverseBreakable(Func<Type, bool> traversalFunction, int start, int end);
-    void Traverse(Action<Type> traversalAction, int start, int end);
   }
 
-  #region Array
+  #region ArrayBase
 
   /// <summary>Implements a standard array that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
-  public class ArrayStandard<Type> : Array<Type>
+  public class ArrayBase<Type> : Array<Type>
   {
     private Type[] _array;
 
@@ -74,7 +64,7 @@ namespace SevenEngine.DataStructures
     /// <summary>Constructs an array that implements a traversal delegate function 
     /// which is an optimized "foreach" implementation.</summary>
     /// <param name="size">The length of the array in memory.</param>
-    public ArrayStandard(int size)
+    public ArrayBase(int size)
     {
       if (size < 0)
         throw new ArrayStandardException("size of the array must be non-negative.");
@@ -150,6 +140,16 @@ namespace SevenEngine.DataStructures
       for (int index = start; index < end; index++)
         traversalAction(_array[index++]);
       ReaderUnlock();
+    }
+
+    public Type[] ToArray()
+    {
+      ReaderLock();
+      Type[] array = new Type[_array.Length];
+      for (int i = 0; i < _array.Length; i++)
+        array[i] = _array[i];
+      ReaderUnlock();
+      return array;
     }
 
     /// <summary>Thread safe enterance for readers.</summary>
@@ -310,6 +310,16 @@ namespace SevenEngine.DataStructures
       for (int i = start; i < end; i++)
         traversalAction(_array[(i + _start) % _array.Length]);
       ReaderUnlock();
+    }
+
+    public Type[] ToArray()
+    {
+      ReaderLock();
+      Type[] array = new Type[_count];
+      for (int i = 0; i < _count; i++)
+        array[i] = _array[(i + _start) % _array.Length];
+      ReaderUnlock();
+      return array;
     }
 
     /// <summary>Thread safe enterance for readers.</summary>

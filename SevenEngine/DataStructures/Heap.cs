@@ -10,31 +10,20 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-// This file contains the following interfaces:
-// - Heap
-// This file contains the following classes:
-// - HeapArrayStatic
-//   - HeapArrayStaticLink
-//   - HeapArrayStaticException
-// - HeapArrayDynamic
-//   - HeapArrayDynamicLink
-//   - HeapArrayDynamicException
-
 using System;
 using System.Threading;
-using SevenEngine.DataStructures.Interfaces;
+using SevenEngine.DataStructures;
 
 namespace SevenEngine.DataStructures
 {
-  public interface Heap<Type> : InterfaceTraversable<Type>
+  public interface Heap<Type> : DataStructure<Type>
   {
-    int Count { get; }
     void Enqueue(Type addition, int priority);
     Type Dequeue();
     Type Peek();
-    void Clear();
+    int Count { get; }
     bool IsEmpty { get; }
-    Type[] ToArray();
+    void Clear();
   }
 
   #region HeapArrayStatic
@@ -291,7 +280,7 @@ namespace SevenEngine.DataStructures
 
     private int _count;
     private HeapArrayDynamicLink[] _heapArray;
-    private HashTableStandard<Type, int> _indexingReference;
+    private HashTableLinked<int, Type> _indexingReference;
 
     private Object _lock;
     private int _readers;
@@ -318,7 +307,7 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: Theta(capacity).</remarks>
     public HeapArrayDynamic(int capacity)
     {
-      _indexingReference = new HashTableStandard<Type, int>();
+      _indexingReference = new HashTableLinked<int, Type>();
       _heapArray = new HeapArrayDynamicLink[capacity + 1];
       _heapArray[0] = new HeapArrayDynamicLink(int.MaxValue, default(Type));
       for (int i = 1; i < capacity; i++)

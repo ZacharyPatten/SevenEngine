@@ -30,15 +30,15 @@ namespace SevenEngine
     internal static ShaderProgram ColorShader { get { return _colorShader; } }
     internal static ShaderProgram TextShader { get { return _textShader; } }
 
-    private static AvlTreeLinked<VertexShader, string> _vertexShaderDatabase =
+    private static AvlTree<VertexShader, string> _vertexShaderDatabase =
       new AvlTreeLinked<VertexShader, string>(VertexShader.CompareTo, VertexShader.CompareTo);
-    private static AvlTreeLinked<FragmentShader, string> _fragmentShaderDatabase =
+    private static AvlTree<FragmentShader, string> _fragmentShaderDatabase =
       new AvlTreeLinked<FragmentShader, string>(FragmentShader.CompareTo, FragmentShader.CompareTo);
-    private static AvlTreeLinked<GeometryShader, string> _geometryShaderDatabase =
+    private static AvlTree<GeometryShader, string> _geometryShaderDatabase =
       new AvlTreeLinked<GeometryShader, string>(GeometryShader.CompareTo, GeometryShader.CompareTo);
-    private static AvlTreeLinked<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase =
+    private static AvlTree<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase =
       new AvlTreeLinked<ExtendedGeometryShader, string>(ExtendedGeometryShader.CompareTo, ExtendedGeometryShader.CompareTo);
-    private static AvlTreeLinked<ShaderProgram, string> _shaderProgramDatabase =
+    private static AvlTree<ShaderProgram, string> _shaderProgramDatabase =
       new AvlTreeLinked<ShaderProgram, string>(ShaderProgram.CompareTo, ShaderProgram.CompareTo);
 
     public static int Comparison(Func<FragmentShader, int> function, FragmentShader right)

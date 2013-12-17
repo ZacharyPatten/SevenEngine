@@ -24,9 +24,9 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTreeLinked<StaticMeshInstance, string> _staticMeshDatabase =
+    private static AvlTree<StaticMeshInstance, string> _staticMeshDatabase =
       new AvlTreeLinked<StaticMeshInstance, string>(StaticMeshInstance.CompareTo, StaticMeshInstance.CompareTo);
-    private static AvlTreeLinked<StaticModel, string> _staticModelDatabase =
+    private static AvlTree<StaticModel, string> _staticModelDatabase =
       new AvlTreeLinked<StaticModel, string>(StaticModel.CompareTo, StaticModel.CompareTo);
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
@@ -50,7 +50,7 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
+      AvlTree<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
       //modelToGet.Meshes.TraversalFull<List<StaticMesh>>(CopyMeshes, meshes);
       modelToGet.Meshes.Traverse
       (

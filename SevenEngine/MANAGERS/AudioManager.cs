@@ -23,16 +23,13 @@ namespace SevenEngine
   /// <summary>SoundManager is used for audio management (loading, storing, hardware instance controling, and disposing).</summary>
   internal static class AudioManager
   {
-    private static AvlTreeLinked<Sound, string> _soundDatabase = new AvlTreeLinked<Sound, string>
-    (
-      (Sound left, Sound right) => { return left.Id.CompareTo(right.Id); },
-      (Sound left, string right) => { return left.Id.CompareTo(right); }
-    );
+    private static AvlTree<Sound, string> _soundDatabase =
+      new AvlTreeLinked<Sound, string>(Sound.CompareTo, Sound.CompareTo);
 
     public static void Initialize()
     {
       try { AudioContext AC = new AudioContext(); }
-      catch (AudioException e) { throw new AudioManagerException("Could not create an Audio Context (is there something wrong with your audio hardware or settings)."); }
+      catch (AudioException e) { throw new AudioManagerException(e.Message + "Could not create an Audio Context (is there something wrong with your audio hardware or settings)."); }
     }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>

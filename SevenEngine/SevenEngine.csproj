@@ -47,13 +47,16 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\..\Temporary\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Seven.ico</ApplicationIcon>
@@ -66,16 +69,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataStructures\Algorithms\Sorting.cs" />
+    <Compile Include="DataStructures\Sort.cs" />
     <Compile Include="DataStructures\Array.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
     <Compile Include="DataStructures\Heap.cs" />
-    <Compile Include="DataStructures\Interfaces\InterfacePositionVector.cs" />
-    <Compile Include="DataStructures\Interfaces\InterfaceStringId.cs" />
-    <Compile Include="DataStructures\Interfaces\InterfaceTraversable.cs" />
+    <Compile Include="DataStructures\Interfaces.cs" />
     <Compile Include="DataStructures\List.cs" />
     <Compile Include="DataStructures\Octree.cs" />
     <Compile Include="DataStructures\Queue.cs" />
+    <Compile Include="DataStructures\RedBlackTree.cs" />
     <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
     <Compile Include="InterfaceGameState.cs" />
@@ -142,6 +144,7 @@
   <ItemGroup>
     <Content Include="Seven.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
