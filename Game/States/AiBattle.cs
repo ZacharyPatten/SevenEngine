@@ -28,7 +28,7 @@ namespace Game.States
     //public static readonly float MeterLength = 10;
     //public static ListArray<Explosion> _explosions = new ListArray(10);
 
-    public static ListArray<Link3<Vector, Vector, Color>> lines;// = new ListArray<Link3<Vector, Vector, Color>>(1);
+    public static AvlTree<Link3<Vector, Vector, Color>> lines;// = new ListArray<Link3<Vector, Vector, Color>>(1);
     public static ListArray<Explosion> explosions;// = new ListArray<Explosion>(1);
     public static int _powerRangerCount;
     public static int _tuxCount;
@@ -114,7 +114,9 @@ namespace Game.States
       _tuxCount = _rangedCount + _meleeCount + _kamakaziCount;
 
       _octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
-      lines = new ListArray<Link3<Vector, Vector, Color>>(1);
+      lines = new AvlTreeLinked<Link3<Vector, Vector, Color>>(
+        (Link3<Vector, Vector, Color> link, Link3<Vector, Vector, Color> link2) => { if (link.First == link2.First && link.Second == link2.Second) return 0; else return 1; }
+        );
       explosions = new ListArray<Explosion>(1);
 
       _zackMelee = new Unit[_meleeCount];

@@ -10,6 +10,7 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
+using System;
 using SevenEngine.DataStructures;
 
 namespace SevenEngine.Shaders
@@ -43,23 +44,20 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
-    public int CompareTo(VertexShader right) { return _id.CompareTo(right.Id); }
-    public int CompareTo(string right) { return _id.CompareTo(right); }
-
     public static int CompareTo(VertexShader left, VertexShader right) { return left.Id.CompareTo(right.Id); }
     public static int CompareTo(VertexShader left, string right) { return left.Id.CompareTo(right); }
 
     #region Vertex Shader Library
     internal static readonly string Transform =
-      @"void main() {
-          gl_Position = ftransform();
-      }";
+    @"void main() {
+        gl_Position = ftransform();
+    }";
 
     internal static readonly string Texture =
-      @"void main() {
-	      gl_Position = ftransform();
-	      gl_TexCoord[0] = gl_MultiTexCoord0;
-      }";
+    @"void main() {
+	    gl_Position = ftransform();
+	    gl_TexCoord[0] = gl_MultiTexCoord0;
+    }";
     #endregion
   }
 }

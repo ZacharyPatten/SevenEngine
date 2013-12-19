@@ -8,7 +8,7 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-22-13
+// Last Edited: 12-17-13
 
 using System;
 using System.Threading;
@@ -20,6 +20,7 @@ namespace SevenEngine.DataStructures
   {
     Type this[int index] { get; set; }
     int Length { get; }
+    bool Contains(Type check);
   }
 
   #region ArrayBase
@@ -30,7 +31,7 @@ namespace SevenEngine.DataStructures
   {
     private Type[] _array;
 
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -66,12 +67,23 @@ namespace SevenEngine.DataStructures
     /// <param name="size">The length of the array in memory.</param>
     public ArrayBase(int size)
     {
-      if (size < 0)
-        throw new ArrayStandardException("size of the array must be non-negative.");
+      if (size < 1)
+        throw new ArrayStandardException("size of the array must be at least 1.");
       _array = new Type[size];
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
+    }
+
+    /// <summary>Determines if an object reference exists in the array.</summary>
+    /// <param name="check"></param>
+    /// <returns></returns>
+    public bool Contains(Type check)
+    {
+      for (int i = 0; i < _array.Length; i++)
+        if (_array[i].Equals(check))
+          return true;
+      return false;
     }
 
     /// <summary>Performs a functional paradigm traversal of the array.</summary>
@@ -168,7 +180,7 @@ namespace SevenEngine.DataStructures
   #endregion
 
   #region ArrayCyclic
-
+  /*
   /// <summary>Implements a cyclic array (allows overwriting) that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
   public class ArrayCyclic<Type> : Array<Type>
@@ -177,7 +189,7 @@ namespace SevenEngine.DataStructures
     int _start;
     int _count;
 
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -225,7 +237,7 @@ namespace SevenEngine.DataStructures
       _array = new Type[size];
       _start = 0;
       _count = 0;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }
@@ -334,6 +346,7 @@ namespace SevenEngine.DataStructures
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     private class ArrayCyclicException : Exception { public ArrayCyclicException(string message) : base(message) { } }
   }
-
+  */
+  
   #endregion
 }

@@ -8,230 +8,245 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
 
 using System;
 
 namespace SevenEngine.Mathematics
 {
-  /// <summary>Implements a 4-component (x, y, z, and w) quaternion for 3D rotatoins.</summary>
+  /// <summary>Implements a 4-component (x, y, z, and w) quaternion.</summary>
   public class Quaternion
   {
-    float _x, _y, _z, _w;
+    protected float _x, _y, _z, _w;
 
     public float X { get { return _x; } set { _x = value; } }
     public float Y { get { return _y; } set { _y = value; } }
     public float Z { get { return _z; } set { _z = value; } }
     public float W { get { return _w; } set { _w = value; } }
 
-    public static readonly Quaternion FactoryIdentity = new Quaternion(0, 0, 0, 1);
-
     public Quaternion(float x, float y, float z, float w) { _x = x; _y = y; _z = z; _w = w; }
 
-    public static Quaternion operator +(Quaternion left, Quaternion right) { return left.Add(right); }
-    public static Quaternion operator -(Quaternion left, Quaternion right) { return left.Subtract(right); }
-    public static Quaternion operator *(Quaternion left, Quaternion right) { return left.Multiply(right); }
-    public static Quaternion operator *(Quaternion quaternion, Vector vector) { return quaternion.Multiply(vector); }
-    public static Quaternion operator *(Quaternion quaternion, float scalor) { return quaternion.Multiply(scalor); }
-    public static Quaternion operator *(float scalor, Quaternion quaternion) { return quaternion.Multiply(scalor); }
-    
-    public static bool operator ==(Quaternion left, Quaternion right)
-    {
-      if (Object.ReferenceEquals(left, right))
-        return true;
-      if (left == null || right == null)
-        return false;
-      return left.Equals(right);
-    }
+    public static readonly Quaternion FactoryIdentity = new Quaternion(0, 0, 0, 1);
 
-    public static bool operator !=(Quaternion left, Quaternion right)
+    public static Quaternion FactoryFromAxisAngle(Vector axis, float angle)
     {
-      if (Object.ReferenceEquals(left, right))
-        return true;
-      if (left == null || right == null)
-        return false;
-      return !left.Equals(right);
-    }
-
-    public float Length
-    {
-      get { return
-        (float)Math.Sqrt(
-        _x * _x +
-        _y * _y +
-        _z * _z +
-        _w * _w); }
-    }
-    
-    public float LengthSquared
-    {
-      get { return
-        _x * _x +
-        _y * _y +
-        _z * _z + 
-        _w * _w; }
-    }
-    
-    public Quaternion Conjugate()
-    {
-      return new Quaternion(
-        -_x,
-        -_y,
-        -_z,
-        _w);
-    }
-    
-    public Quaternion Add(Quaternion right)
-    {
-      return new Quaternion(
-        _x + right.X,
-        _y + right.Y,
-        _z + right.Z,
-        _w + right.W);
-    }
-    
-    public Quaternion Subtract(Quaternion right)
-    {
-      return new Quaternion(
-        _x - right.X,
-        _y - right.Y,
-        _z - right.Z,
-        _w - right.W);
-    }
-
-    public Quaternion Multiply(Quaternion right)
-    {
-      return new Quaternion(
-        _x * right.W + _w * right.X + _y * right.Z - _z * right.Y,
-        _y * right.W + _w * right.Y + _z * right.X - _x * right.Z,
-        _z * right.W + _w * right.Z + _x * right.Y - _y * right.X,
-        _w * right.W - _x * right.X - _y * right.Y - _z * right.Z);
-    }
-
-    public Quaternion Multiply(float scalor)
-    {
-      return new Quaternion(
-        _x * scalor,
-        _y * scalor,
-        _z * scalor,
-        _w * scalor);
-    }
-
-    public Quaternion Multiply(Vector vector)
-    {
-      return new Quaternion(
-        _w * vector.X + _y * vector.Z - _z * vector.Y,
-        _w * vector.Y + _z * vector.X - _x * vector.Z,
-        _w * vector.Z + _x * vector.Y - _y * vector.X,
-        -_x * vector.X - _y * vector.Y - _z * vector.Z);
-    }
-
-
-    public Quaternion Normalize()
-    {
-      float length = Length;
-      return new Quaternion(
-        _x / length,
-        _y / length,
-        _z / length,
-        _w / length);
-    }
-
-    public Quaternion Invert()
-    {
-      float lengthSq = LengthSquared;
-      if (lengthSq == 0.0)
-        return new Quaternion(_x, _y, _z, _w);
-      return new Quaternion(
-        -_x / lengthSq,
-        -_y / lengthSq,
-        -_z / lengthSq,
-        _w / lengthSq);
-    }
-
-    public static Quaternion FromAxisAngle(Vector axis, float angle)
-    {
-      if (axis.LengthSquared == 0.0f)
+      if (axis.LengthSquared() == 0.0f)
         return FactoryIdentity;
-      float sinAngleOverAxisLength = Trigonometry.Sin(angle / 2) / axis.Length;
-      return new Quaternion(
+      float sinAngleOverAxisLength = Trigonometry.Sin(angle / 2) / axis.Length();
+      return Quaternion.Normalize(new Quaternion(
         axis.X * sinAngleOverAxisLength,
         axis.Y * sinAngleOverAxisLength,
         axis.Z * sinAngleOverAxisLength,
-        Trigonometry.Cos(angle / 2)).Normalize();
+        Trigonometry.Cos(angle / 2)));
     }
 
-    public Quaternion Lerp(Quaternion right, float blend)
+    public static Quaternion operator +(Quaternion left, Quaternion right) { return Quaternion.Add(left, right); }
+    public static Quaternion operator -(Quaternion left, Quaternion right) { return Quaternion.Subtract(left, right); }
+    public static Quaternion operator *(Quaternion left, Quaternion right) { return Quaternion.Multiply(left, right); }
+    public static Quaternion operator *(Quaternion left, Vector right) { return Quaternion.Multiply(left, right); }
+    public static Quaternion operator *(Quaternion left, float right) { return Quaternion.Multiply(left, right); }
+    public static Quaternion operator *(float scalor, Quaternion quaternion) { return Quaternion.Multiply(quaternion, scalor); }
+    public static bool operator ==(Quaternion left, Quaternion right) { return Quaternion.Equals(left, right); }
+    public static bool operator !=(Quaternion left, Quaternion right) { return !Quaternion.Equals(left, right); }
+
+    public float Length() { return Quaternion.Length(this); }
+    public float LengthSquared() { return Quaternion.LengthSquared(this); }
+    public Quaternion Conjugate() { return Quaternion.Conjugate(this); }
+    public Quaternion Add(Quaternion right) { return Quaternion.Add(this, right); }
+    public Quaternion Subtract(Quaternion right) { return Quaternion.Subtract(this, right); }
+    public Quaternion Multiply(Quaternion right) { return Quaternion.Multiply(this, right); }
+    public Quaternion Multiply(float right) { return Quaternion.Multiply(this, right); }
+    public Quaternion Multiply(Vector vector) { return Quaternion.Multiply(this, vector); }
+    public Quaternion Normalize() { return Quaternion.Normalize(this); }
+    public Quaternion Invert() { return Quaternion.Invert(this); }
+    public Quaternion Lerp(Quaternion right, float blend) { return Quaternion.Lerp(this, right, blend); }
+    public Quaternion Slerp(Quaternion right, float blend) { return Quaternion.Slerp(this, right, blend); }
+    public Vector Rotate(Vector vector) { return Quaternion.Rotate(vector, this); }
+
+    public static float Length(Quaternion quaternion)
+    {
+      return
+        Foundations.SquareRoot(
+          quaternion.X * quaternion.X +
+          quaternion.Y * quaternion.Y +
+          quaternion.Z * quaternion.Z +
+          quaternion.W * quaternion.W);
+    }
+    
+    public static float LengthSquared(Quaternion quaternion)
+    {
+      return
+        quaternion.X * quaternion.X +
+        quaternion.Y * quaternion.Y +
+        quaternion.Z * quaternion.Z +
+        quaternion.W * quaternion.W;
+    }
+    
+    public static Quaternion Conjugate(Quaternion quaternion)
+    {
+      return new Quaternion(
+        -quaternion.X,
+        -quaternion.Y,
+        -quaternion.Z,
+        quaternion.W);
+    }
+    
+    public static Quaternion Add(Quaternion left, Quaternion right)
+    {
+      return new Quaternion(
+        left.X + right.X,
+        left.Y + right.Y,
+        left.Z + right.Z,
+        left.W + right.W);
+    }
+    
+    public static Quaternion Subtract(Quaternion left, Quaternion right)
+    {
+      return new Quaternion(
+        left.X - right.X,
+        left.Y - right.Y,
+        left.Z - right.Z,
+        left.W - right.W);
+    }
+
+    public static Quaternion Multiply(Quaternion left, Quaternion right)
+    {
+      return new Quaternion(
+        left.X * right.W + left.W * right.X + left.Y * right.Z - left.Z * right.Y,
+        left.Y * right.W + left.W * right.Y + left.Z * right.X - left.X * right.Z,
+        left.Z * right.W + left.W * right.Z + left.X * right.Y - left.Y * right.X,
+        left.W * right.W - left.X * right.X - left.Y * right.Y - left.Z * right.Z);
+    }
+
+    public static Quaternion Multiply(Quaternion left, float right)
+    {
+      return new Quaternion(
+        left.X * right,
+        left.Y * right,
+        left.Z * right,
+        left.W * right);
+    }
+
+    public static Quaternion Multiply(Quaternion left, Vector vector)
+    {
+      return new Quaternion(
+        left.W * vector.X + left.Y * vector.Z - left.Z * vector.Y,
+        left.W * vector.Y + left.Z * vector.X - left.X * vector.Z,
+        left.W * vector.Z + left.X * vector.Y - left.Y * vector.X,
+        -left.X * vector.X - left.Y * vector.Y - left.Z * vector.Z);
+    }
+
+
+    public static Quaternion Normalize(Quaternion quaternion)
+    {
+      float length = Quaternion.Length(quaternion);
+      return new Quaternion(
+        quaternion.X / length,
+        quaternion.Y / length,
+        quaternion.Z / length,
+        quaternion.W / length);
+    }
+
+    public static Quaternion Invert(Quaternion quaternion)
+    {
+      float lengthSq = Quaternion.LengthSquared(quaternion);
+      if (lengthSq == 0.0)
+        return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+      return new Quaternion(
+        -quaternion.X / lengthSq,
+        -quaternion.Y / lengthSq,
+        -quaternion.Z / lengthSq,
+        quaternion.W / lengthSq);
+    }
+
+    public static Quaternion Lerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
         throw new QuaternionException("Attempting linear interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
-
-      if (LengthSquared == 0.0f)
-      { if (right.LengthSquared == 0.0f)
+      if (Quaternion.LengthSquared(left) == 0.0f)
+      {
+        if (Quaternion.LengthSquared(right) == 0.0f)
           return FactoryIdentity;
         else
           return new Quaternion(right.X, right.Y, right.Z, right.W); }
-      else if (right.LengthSquared == 0.0f)
-        return new Quaternion(_x, _y, _z, _w);
-
+      else if (Quaternion.LengthSquared(right) == 0.0f)
+        return new Quaternion(left.X, left.Y, left.Z, left.W);
       Quaternion result = new Quaternion(
-        (1.0f - blend) * _x + blend * right.X,
-        (1.0f - blend) * _y + blend * right.Y,
-        (1.0f - blend) * _z + blend * right.Z,
-        (1.0f - blend) * _w + blend * right.W);
-
-      if (result.LengthSquared > 0.0f)
-        return result.Normalize();
+        (1.0f - blend) * left.X + blend * right.X,
+        (1.0f - blend) * left.Y + blend * right.Y,
+        (1.0f - blend) * left.Z + blend * right.Z,
+        (1.0f - blend) * left.W + blend * right.W);
+      if (Quaternion.LengthSquared(result) > 0.0f)
+        return Quaternion.Normalize(result);
       else
         return FactoryIdentity;
     }
 
-    public Quaternion Slerp(Quaternion right, float blend)
+    public static Quaternion Slerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
         throw new QuaternionException("Attempting sphereical interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
-
-      if (LengthSquared == 0.0f)
-      { if (right.LengthSquared == 0.0f)
+      if (Quaternion.LengthSquared(left) == 0.0f)
+      {
+        if (Quaternion.LengthSquared(right) == 0.0f)
           return FactoryIdentity;
         else
           return new Quaternion(right.X, right.Y, right.Z, right.W); }
-      else if (right.LengthSquared == 0.0f)
-        return new Quaternion(_x, _y, _z, _w);
-
-      float cosHalfAngle = _x * right.X + _y * right.Y + _z * right.Z + _w * right.W;
-
+      else if (Quaternion.LengthSquared(right) == 0.0f)
+        return new Quaternion(left.X, left.Y, left.Z, left.W);
+      float cosHalfAngle = left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
       if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
-        return new Quaternion(_x, _y, _z, _w);
+        return new Quaternion(left.X, left.Y, left.Z, left.W);
       else if (cosHalfAngle < 0.0f)
       {
-        right = new Quaternion(-_x, -_y, -_z, -_w);
+        right = new Quaternion(-left.X, -left.Y, -left.Z, -left.W);
         cosHalfAngle = -cosHalfAngle;
       }
-
       float halfAngle = (float)Math.Acos(cosHalfAngle);
       float sinHalfAngle = Trigonometry.Sin(halfAngle);
       float blendA = Trigonometry.Sin(halfAngle * (1.0f - blend)) / sinHalfAngle;
       float blendB = Trigonometry.Sin(halfAngle * blend) / sinHalfAngle;
-      
       Quaternion result = new Quaternion(
-        blendA * _x + blendB * right.X,
-        blendA * _y + blendB * right.Y,
-        blendA * _z + blendB * right.Z,
-        blendA * _w + blendB * right.W);
-
-      if (result.LengthSquared > 0.0f)
-        return result.Normalize();
+        blendA * left.X + blendB * right.X,
+        blendA * left.Y + blendB * right.Y,
+        blendA * left.Z + blendB * right.Z,
+        blendA * left.W + blendB * right.W);
+      if (Quaternion.LengthSquared(result) > 0.0f)
+        return Quaternion.Normalize(result);
       else
         return FactoryIdentity;
     }
 
-    public Matrix ToMatrix()
+    public static Vector Rotate(Vector vector, Quaternion rotation)
     {
-      return new Matrix(
-        _w*_w + _x*_x - _y*_y - _z*_z, 2*_x*_y-2*_w*_z, 2*_x*_z + 2*_w*_y,
-        2*_x*_y + 2*_w*_z, _w*_w - _x*_x + _y*_y - _z*_z, 2*_y*_z + 2*_w*_x,
-        2*_x*_z - 2*_w*_y, 2*_y*_z - 2*_w*_x, _w*_w - _x*_x - _y*_y + _z*_z);
+      Quaternion answer = (rotation * vector) * Quaternion.Conjugate(rotation);
+      return new Vector(answer.X, answer.Y, answer.Z);
+    }
+
+    public static bool Equals(Quaternion left, Quaternion right)
+    {
+      if (object.ReferenceEquals(left, right))
+        return true;
+      else if (left == null || right == null)
+        return false;
+      else return
+        left.X == right.X &&
+        left.Y == right.Y &&
+        left.Z == right.Z &&
+        left.W == right.W;
+    }
+
+    public static Matrix3x3 ToMatrix(Quaternion q)
+    {
+      return new Matrix3x3(
+        q.W * q.W + q.X * q.X - q.Y * q.Y - q.Z * q.Z,
+        2 * q.X * q.Y - 2 * q.W * q.Z,
+        2 *q.X * q.Z + 2 * q.W * q.Y,
+        2 * q.X * q.Y + 2 * q.W * q.Z,
+        q.W * q.W - q.X * q.X + q.Y * q.Y - q.Z * q.Z,
+        2 * q.Y * q.Z + 2 * q.W * q.X,
+        2 * q.X * q.Z - 2 * q.W * q.Y,
+        2 * q.Y * q.Z - 2 * q.W * q.X,
+        q.W * q.W - q.X * q.X - q.Y * q.Y + q.Z * q.Z);
     }
 
     public override string ToString()
@@ -266,7 +281,9 @@ namespace SevenEngine.Mathematics
         W == right.W;
     }
 
-    /// <summary>This is used for throwing quaternion exceptions only to make debugging faster.</summary>
-    private class QuaternionException : Exception { public QuaternionException(string message) : base(message) { } }
+    private class QuaternionException : Exception
+    {
+      public QuaternionException(string message) : base(message) { }
+    }
   }
 }

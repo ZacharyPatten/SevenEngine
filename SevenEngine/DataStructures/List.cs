@@ -70,7 +70,7 @@ namespace SevenEngine.DataStructures
     protected ListLinkedNode _tail;
     protected int _count;
 
-    protected Object _lock;
+    protected object _lock;
     protected int _readers;
     protected int _writers;
 
@@ -88,7 +88,7 @@ namespace SevenEngine.DataStructures
     {
       _head = _tail = null;
       _count = 0;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }
@@ -453,7 +453,7 @@ namespace SevenEngine.DataStructures
 
     // This value determines the starting data structure size
     // at which my traversal functions will begin dynamic multithreading
-    protected Object _lock;
+    protected object _lock;
     protected int _readers;
     protected int _writers;
 
@@ -553,7 +553,7 @@ namespace SevenEngine.DataStructures
       _list = new Type[minimumCapacity];
       _count = 0;
       _minimumCapacity = minimumCapacity;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }

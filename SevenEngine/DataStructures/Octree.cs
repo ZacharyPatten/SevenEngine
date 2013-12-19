@@ -12,12 +12,41 @@
 
 using System;
 using System.Threading;
+using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 
 namespace SevenEngine.DataStructures
 {
-  public interface Octree<ValueType, KeyType> : DataStructure<ValueType>
-    where ValueType : InterfacePositionVector
+  /// <summary>Implementing classes contain a vector indicating X, Y, and Z position coordinates.</summary>
+  public interface IOctreeEntry
+  {
+    /// <summary>Indicates an object's X, Y, and Z position coordinates.</summary>
+    Vector Position { get; set; }
+  }
+
+  public interface Octree<ValueType> : DataStructure<ValueType>
+    where ValueType : IOctreeEntry
+  {
+    int Count { get; }
+    bool IsEmpty { get; }
+    void Add(ValueType addition);
+    //void Remove(ValueType removal);
+    //void TryAdd(ValueType addition);
+    //void TryRemove(ValueType removal);
+    void Update();
+    bool TraverseBreakable(Func<ValueType, bool> traversalFunction, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    void Traverse(Action<ValueType> traversalAction, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+  }
+
+  public interface Octree<ValueType, KeyType> : Octree<ValueType>
+    where ValueType : IOctreeEntry
+  {
+    //void Remove(KeyType removal);
+    //void Move(KeyType moving);
+  }
+
+  /*public interface Octree<ValueType, FirstKeyType, SecondKeyType> : DataStructure<ValueType>
+   // where ValueType : IOctreeEntry
   {
     int Count { get; }
     bool IsEmpty { get; }
@@ -27,12 +56,12 @@ namespace SevenEngine.DataStructures
     void Traverse(Action<ValueType> traversalAction, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     //void Move(KeyType moving);
     void Update();
-  }
+  }*/
 
   #region OctreeLinked
 
   public class OctreeLinked<ValueType, KeyType> : Octree<ValueType, KeyType>
-    where ValueType : InterfacePositionVector
+    where ValueType : IOctreeEntry
   {
     private Func<ValueType, ValueType, int> _valueComparisonFunction;
     private Func<ValueType, KeyType, int> _keyComparisonFunction;
@@ -219,7 +248,7 @@ namespace SevenEngine.DataStructures
     private AvlTree<OctreeLinkedReference, KeyType, ValueType> _referenceDatabase;
     private OctreeLinkedNode _top;
 
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -239,7 +268,7 @@ namespace SevenEngine.DataStructures
       _branchFactor = branchFactor;
       _top = new OctreeLinkedLeaf(x, y, z, scale, null, _branchFactor);
       _count = 0;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
 

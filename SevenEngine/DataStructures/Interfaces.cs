@@ -31,11 +31,4 @@ namespace SevenEngine.DataStructures
     /// <returns>An array containing all the item in the structure.</returns>
     Type[] ToArray();
   }
-
-  /// <summary>Implementing classes contain a vector indicating X, Y, and Z position coordinates.</summary>
-  public interface InterfacePositionVector
-  {
-    /// <summary>Indicates an object's X, Y, and Z position coordinates.</summary>
-    Vector Position { get; set; }
-  }
 }

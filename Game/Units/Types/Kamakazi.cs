@@ -58,6 +58,7 @@ namespace Game.Units
       _exploded = false;
       Random random = new Random();
       _attackRange = random.Next(_attackRangeMin, _attackRangeMax);
+      _attackRangedSquared = _attackRange * _attackRange;
       _health = random.Next(_healthMin, _healthMax);
       _damage = random.Next(_damageMin, _damageMax);
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);

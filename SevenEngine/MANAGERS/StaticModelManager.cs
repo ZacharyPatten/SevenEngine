@@ -51,7 +51,6 @@ namespace SevenEngine
     {
       StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
       AvlTree<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
-      //modelToGet.Meshes.TraversalFull<List<StaticMesh>>(CopyMeshes, meshes);
       modelToGet.Meshes.Traverse
       (
         (StaticMesh mesh) =>
@@ -61,13 +60,6 @@ namespace SevenEngine
           meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
         }
       );
-
-      /*foreach (StaticMesh mesh in modelToGet.Meshes)
-      {
-        mesh.Texture.ExistingReferences++;
-        mesh.StaticMeshInstance.ExistingReferences++;
-        meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
-      }*/
       return new StaticModel(modelToGet.Id, meshes);
     }
 

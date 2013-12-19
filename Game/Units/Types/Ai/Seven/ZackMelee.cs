@@ -14,6 +14,7 @@ namespace Game.Units
     float _time = 0;
     float _delay = 0;
     int move;
+    bool attack;
 
     public ZackMelee(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000; }
 
@@ -25,6 +26,7 @@ namespace Game.Units
       {
         if (_target == null || _target.IsDead || move > 20)
         {
+          attack = false;
           float shortest = float.MaxValue;
           move = 0;
           octree.Traverse
@@ -36,11 +38,11 @@ namespace Game.Units
                 if (_target == null || _target.IsDead || _target is KillemKamakazi)
                 {
                   _target = current;
-                  shortest = (current.Position - Position).Length;
+                  shortest = (current.Position - Position).LengthSquared();
                 }
                 else
                 {
-                  float length = (current.Position - Position).Length;
+                  float length = (current.Position - Position).LengthSquared();
                   if (length < shortest)
                   {
                     _target = current;
@@ -53,11 +55,11 @@ namespace Game.Units
                 if (_target == null || _target.IsDead)
                 {
                   _target = current;
-                  shortest = (current.Position - Position).Length;
+                  shortest = (current.Position - Position).LengthSquared();
                 }
                 else
                 {
-                  float length = (current.Position - Position).Length;
+                  float length = (current.Position - Position).LengthSquared();
                   if (length < shortest)
                   {
                     _target = current;
@@ -69,24 +71,24 @@ namespace Game.Units
           );
         }
         // Attacking
-        else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange)
+        else if (Foundations.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared)
         {
-          AiBattle.lines.Add(new Link3<Vector, Vector, Color>(
-            new Vector(Position.X, Position.Y, Position.Z),
-            new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
-            Color.Red));
+          if (!attack)
+            AiBattle.lines.TryAdd(new Link3<Vector, Vector, Color>(
+              new Vector(Position.X, Position.Y, Position.Z),
+              new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
+              Color.Red));
           if (Attack(_target))
             _target = null;
           move = 0;
+          attack = !attack;
         }
         // Moving
         else if (_time > _delay)
         {
-          Vector direction = _target.Position - Position;
-          Position.X += (direction.X / direction.Length) * MoveSpeed;
-          Position.Y += (direction.Y / direction.Length) * MoveSpeed;
-          Position.Z += (direction.Z / direction.Length) * MoveSpeed;
+          Position = Vector.MoveTowardsPosition(Position, _target.Position, MoveSpeed);
           move++;
+          attack = false;
         }
         this.StaticModel.Orientation.W+=.1f;
       }

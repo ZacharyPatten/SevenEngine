@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using SevenEngine.Shaders;
 
-namespace SevenEngine.UTILITIES
+namespace SevenEngine
 {
   public class Light
   {

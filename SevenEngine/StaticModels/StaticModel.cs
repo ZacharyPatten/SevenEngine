@@ -19,7 +19,7 @@ using SevenEngine.Shaders;
 namespace SevenEngine.StaticModels
 {
   /// <summary>Represents a collection of static meshes that all use the same model-view matrix.</summary>
-  public class StaticModel : InterfacePositionVector
+  public class StaticModel : IOctreeEntry
   {
     protected string _id;
     protected Vector _position;

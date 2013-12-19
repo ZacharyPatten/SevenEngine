@@ -29,6 +29,7 @@ namespace Game.Units
       _viewDistance = random.Next(_viewDistanceMin, _viewDistanceMax);
       _attackRange = random.Next(_attackRangeMin, _attackRangeMax);
       _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 20f;
+      _attackRangedSquared = _attackRange * _attackRange;
     }
 
     protected bool Attack(Unit defending)

@@ -68,7 +68,7 @@ namespace SevenEngine.DataStructures
     private HashTableLinkedNode[] _table;
     private int _count;
     private int _sizeIndex;
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -131,7 +131,7 @@ namespace SevenEngine.DataStructures
       _table = new HashTableLinkedNode[107];
       _count = 0;
       _sizeIndex = 0;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }

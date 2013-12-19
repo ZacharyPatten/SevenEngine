@@ -40,6 +40,9 @@ Global
 		{7FEC005B-B67A-4543-8D29-E85C782B70C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{7FEC005B-B67A-4543-8D29-E85C782B70C3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Game\Game.csproj
 		Policies = $0
@@ -74,8 +77,5 @@ Global
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -19,35 +19,7 @@ namespace Game.Units
       if (IsDead == false)
       {
         // Targeting
-        #region Farthest
-        if (!near && (_target == null || _target.IsDead || _move > 20))
-        {
-          float longest = float.MinValue;
-          _move = 0;
-          octree.Traverse
-          (
-            (Unit current) =>
-            {
-              if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
-              {
-                float length = (current.Position - Position).Length;
-                if (_target == null || _target.IsDead)
-                {
-                  _target = current;
-                  longest = length;
-                }
-                else if (length > longest)
-                {
-                  _target = current;
-                  longest = length;
-                }
-              }
-            }
-          );
-        }
-        #endregion
-        #region Nearest
-        else if (near && (_target == null || _target.IsDead || _move > 20))
+        if (near && (_target == null || _target.IsDead || _move > 20))
         {
           _move = 0;
           float nearest = float.MinValue;
@@ -57,7 +29,7 @@ namespace Game.Units
             {
               if ((current is KillemKamakazi || current is KillemMelee || current is KillemRanged) && !current.IsDead)
               {
-                float length = (current.Position - Position).Length;
+                float length = (current.Position - Position).LengthSquared();
                 if (_target == null || _target.IsDead)
                 {
                   _target = current;
@@ -72,9 +44,8 @@ namespace Game.Units
             }
           );
         }
-        #endregion
         // Attacking
-        else if (Foundations.Abs((Position - _target.Position).Length) < _attackRange / 2)
+        else if (Foundations.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared / 2)
         {
           Attack(octree);
           _move = 0;
@@ -82,10 +53,7 @@ namespace Game.Units
         // Moving
         else
         {
-          Vector direction = _target.Position - Position;
-          Position.X += (direction.X / direction.Length) * MoveSpeed;
-          Position.Y += (direction.Y / direction.Length) * MoveSpeed;
-          Position.Z += (direction.Z / direction.Length) * MoveSpeed;
+          Position = Vector.MoveTowardsPosition(Position, _target.Position, MoveSpeed);
           _move++;
         }
         StaticModel.Orientation.W += .1f;

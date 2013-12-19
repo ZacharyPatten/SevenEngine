@@ -8,16 +8,15 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
 
 using System;
 
 namespace SevenEngine.Mathematics
 {
-  /// <summary>Implements a 3-component (x, y, z) vector.</summary>
+  /// <summary>Implements a 3-component (x, y, z) vector matrix.</summary>
   public class Vector
   {
-    private float _x, _y, _z;
+    protected float _x, _y, _z;
 
     public float X { get { return _x; } set { _x = value; } }
     public float Y { get { return _y; } set { _y = value; } }
@@ -33,186 +32,236 @@ namespace SevenEngine.Mathematics
     public static Vector operator *(Vector vector, float scalar) { return vector.Multiply(scalar); }
     public static Vector operator *(float scalar, Vector vector) { return vector.Multiply(scalar); }
     public static Vector operator /(Vector vector, float scalar) { return vector.Divide(scalar); }
+    public static bool operator ==(Vector left, Vector right) { return Vector.Equals(left, right); }
+    public static bool operator !=(Vector left, Vector right) { return !Vector.Equals(left, right); }
+    public static implicit operator float[,](Vector vector) { return new float[,] { { vector.X }, { vector.Y }, { vector.Z } }; }
+    public static implicit operator Matrix(Vector vector) { return new Matrix(vector); }
 
-    public static bool operator ==(Vector left, Vector right)
-    {
-      if (Object.ReferenceEquals(left, right))
-        return true;
-      if (left == null || right == null)
-        return false;
-      return left.Equals(right);
-    }
+    public Vector Add(Vector right) { return Vector.Add(this, right); }
+    public Vector Negate() { return Vector.Negate(this); }
+    public Vector Subtract(Vector right) { return Vector.Subtract(this, right); }
+    public Vector Multiply(float right) { return Vector.Multiply(this, right); }
+    public Vector Divide(float right) { return Vector.Divide(this, right); }
+    public float DotProduct(Vector right) { return Vector.DotProduct(this, right); }
+    public Vector CrossProduct(Vector right) { return Vector.CrossProduct(this, right); }
+    public Vector Normalize() { return Vector.Normalize(this); }
+    public float Length() { return Vector.Length(this); }
+    public float LengthSquared() { return Vector.LengthSquared(this); }
+    public bool Equals(Vector right) { return Vector.Equals(this, right); }
+    public bool Equals(Vector right, float leniency) { return Vector.Equals(this, right, leniency); }
+    public Vector RotateBy(float angle, float x, float y, float z) { return Vector.RotateBy(this, angle, x, y, z); }
+    public Vector Lerp(Vector right, float blend) { return Vector.InterpolateLinear(this, right, blend); }
+    public Vector Slerp(Vector right, float blend) { return Vector.InterpolateSphereical(this, right, blend); }
+    public Vector RotateBy(Quaternion rotation) { return Vector.RotateBy(this, rotation); }
 
-    public static bool operator !=(Vector left, Vector right)
-    {
-      if (Object.ReferenceEquals(left, right))
-        return true;
-      if (left == null || right == null)
-        return false;
-      return !left.Equals(right);
-    }
-
-    public float Length
-    { 
-      get { return
-      (float)Math.Sqrt(
-      _x * _x +
-      _y * _y +
-      _z * _z); } 
-    }
-    
-    public float LengthSquared
-    {
-      get { return
-        _x * _x +
-        _y * _y +
-        _z * _z; }
-    }
-
-    public Vector Add(Vector right)
+    public static Vector Add(Vector left, Vector right)
     {
       return new Vector(
-        _x + right.X, 
-        _y + right.Y, 
-        _z + right.Z);
+        left.X + right.X,
+        left.Y + right.Y,
+        left.Z + right.Z);
     }
 
-    public Vector Subtract(Vector right)
+    public static Vector Negate(Vector vector)
     {
       return new Vector(
-        _x - right.X,
-        _y - right.Y,
-        _z - right.Z);
+        -vector.X,
+        -vector.Y,
+        -vector.Z);
     }
 
-    public Vector Multiply(float scalar)
+    public static Vector Subtract(Vector left, Vector right)
     {
       return new Vector(
-        _x * scalar,
-        _y * scalar,
-        _z * scalar);
+        left.X - right.X,
+        left.Y - right.Y,
+        left.Z - right.Z);
     }
 
-    public Vector Divide(float scalar)
+    public static Vector Multiply(Vector left, float right)
     {
       return new Vector(
-        _x / scalar,
-        _y / scalar,
-        _z / scalar);
+        left.X * right,
+        left.Y * right,
+        left.Z * right);
     }
 
-    public float DotProduct(Vector vector)
+    public static Vector Divide(Vector left, float right)
+    {
+      return new Vector(
+        left.X / right,
+        left.Y / right,
+        left.Z / right);
+    }
+
+    public static float DotProduct(Vector left, Vector right)
     {
       return
-        _x * vector.X +
-        _y * vector.Y +
-        _z * vector.Z;
+        left.X * right.X +
+        left.Y * right.Y +
+        left.Z * right.Z;
     }
 
-    public Vector CrossProduct(Vector vector)
+    public static Vector CrossProduct(Vector left, Vector right)
     {
       return new Vector(
-        _y * vector.Z - _z * vector.Y,
-        _z * vector.X - _x * vector.Z,
-        _x * vector.Y - _y * vector.X);
+        left.Y * right.Z - left.Z * right.Y,
+        left.Z * right.X - left.X * right.Z,
+        left.X * right.Y - left.Y * right.X);
     }
 
-    public Vector Normalize()
+    public static Vector Normalize(Vector vector)
     {
-      float length = Length;
+      float length = vector.Length();
       if (length != 0.0)
-        return new Vector(_x / length, _y / length, _z / length);
+        return new Vector(
+          vector.X / length,
+          vector.Y / length,
+          vector.Z / length);
       else
-        return new Vector(0, 0, 0);
+        return Vector.FactoryZero;
     }
 
-    /// <summary>Rotates this vector by quaternion values.</summary>
-    /// <param name="angle">The angle of rotation in radians.</param>
-    /// <param name="x">The "x" value of the axis of rotation.</param>
-    /// <param name="y">The "y" value of the axis of rotation.</param>
-    /// <param name="z">The "z" value of the axis of rotation.</param>
-    public Vector RotateBy(float angle, float x, float y, float z)
+    public static float Length(Vector vector)
     {
+      return Foundations.SquareRoot(
+        vector.X * vector.X +
+        vector.Y * vector.Y +
+        vector.Z * vector.Z);
+    }
+
+    public static float LengthSquared(Vector vector)
+    {
+      return
+        vector.X * vector.X +
+        vector.Y * vector.Y +
+        vector.Z * vector.Z;
+    }
+
+    public static bool Equals(Vector left, Vector right)
+    {
+      if (object.ReferenceEquals(left, right))
+        return true;
+      else if (object.ReferenceEquals(left, null) || object.ReferenceEquals(null, right))
+        return false;
+      else return
+        left.X == right.X && 
+        left.Y == right.Y &&
+        left.Z == right.Z;
+    }
+
+    public static bool Equals(Vector left, Vector right, float leniency)
+    {
+      if (object.ReferenceEquals(left, right))
+        return true;
+      else if (object.ReferenceEquals(left, null) || object.ReferenceEquals(null, right))
+        return false;
+      else return
+        Foundations.Abs(left.X - right.X) < leniency &&
+        Foundations.Abs(left.Y - right.Y) < leniency &&
+        Foundations.Abs(left.Z - right.Z) < leniency;
+    }
+
+    public static Vector DirectionTowardsPosition(Vector from, Vector to)
+    {
+      return (to - from).Normalize();
+    }
+
+    public static Vector MoveTowardsPosition(Vector position, Vector goal, float distance)
+    {
+      Vector direction = DirectionTowardsPosition(position, goal);
+      return new Vector(
+        position.X + direction.X * distance,
+        position.Y + direction.Y * distance,
+        position.Z + direction.Z * distance);
+    }
+
+    public static Vector MoveTowardsDirection(Vector position, Vector direction, float distance)
+    {
+      direction = direction.Normalize();
+      return new Vector(
+        position.X + direction.X * distance,
+        position.Y + direction.Y * distance,
+        position.Z + direction.Z * distance);
+    }
+
+    public static float AngleBetween(Vector first, Vector second)
+    {
+      return Trigonometry.ArcCos(Vector.DotProduct(first, second) / (first.Length() * second.Length()));
+    }
+
+    public static Vector RotateBy(Vector vector, float angle, float x, float y, float z)
+    {
+      // Note: the angle is in radians
       float sinHalfAngle = Trigonometry.Sin(angle / 2);
       float cosHalfAngle = Trigonometry.Cos(angle / 2);
-      //Quaternion rotation = new Quaternion(
-      //  x * sinHalfAngle,
-      //  y * sinHalfAngle,
-      //  z * sinHalfAngle,
-      //  cosHalfAngle);
       x *= sinHalfAngle;
       y *= sinHalfAngle;
       z *= sinHalfAngle;
-      //Quaternion conjugate = rotation.Conjugate();
-      //Quaternion w = rotation.Multiply(this).Multiply(conjugate);
-      float x2 = cosHalfAngle * _x + y * _z - z * _y;
-      float y2 = cosHalfAngle * _y + z * _x - x * _z;
-      float z2 = cosHalfAngle * _z + x * _y - y * _x;
-      float w2 = -x * _x - y * _y - z * _z;
-      //return new Vector(w.X, w.Y, w.Z);
+      float x2 = cosHalfAngle * vector.X + y * vector.Z - z * vector.Y;
+      float y2 = cosHalfAngle * vector.Y + z * vector.X - x * vector.Z;
+      float z2 = cosHalfAngle * vector.Z + x * vector.Y - y * vector.X;
+      float w2 = -x * vector.X - y * vector.Y - z * vector.Z;
       return new Vector(
         x * w2 + cosHalfAngle * x2 + y * z2 - z * y2,
         y * w2 + cosHalfAngle * y2 + z * x2 - x * z2,
         z * w2 + cosHalfAngle * z2 + x * y2 - y * x2);
     }
 
-    public Vector RotateBy(Quaternion rotation)
+    public static Vector RotateBy(Vector vector, Quaternion rotation)
     {
-      Quaternion answer = rotation.Multiply(this).Multiply(rotation.Conjugate());
+      Quaternion answer = (rotation * vector) * Quaternion.Conjugate(rotation);
       return new Vector(answer.X, answer.Y, answer.Z);
     }
 
-    public Vector Lerp(Vector right, float blend)
+    public static Vector InterpolateLinear(Vector a, Vector b, float blend)
     {
       if (blend < 0 || blend > 1.0f)
-        throw new VectorException("Attempting linear interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
+        throw new VectorException("invalid lerp blend value: (blend < 0.0f || blend > 1.0f).");
       return new Vector(
-        _x + blend * (right.X - _x),
-        _y + blend * (right.Y - _y),
-        _z + blend * (right.Z - _z));
+        a.X + blend * (b.X - a.X),
+        a.Y + blend * (b.Y - a.Y),
+        a.Z + blend * (b.Z - a.Z));
     }
 
-    public Vector Slerp(Vector right, float blend)
+    public static Vector InterpolateSphereical(Vector a, Vector b, float blend)
     {
       if (blend < 0 || blend > 1.0f)
-        throw new VectorException("Attempting sphereical interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
-      float clampedDot = Foundations.Clamp(DotProduct(right), -1.0f, 1.0f);
-      float theta = Trigonometry.ArcCos(clampedDot) * blend;
-      return
-        this * Trigonometry.Cos(theta) +
-        (right - this * clampedDot).Normalize() * Trigonometry.Sin(theta);
+        throw new VectorException("invalid slerp blend value: (blend < 0.0f || blend > 1.0f).");
+      float dot = Foundations.Clamp(Vector.DotProduct(a, b), -1.0f, 1.0f);
+      float theta = Trigonometry.ArcCos(dot) * blend;
+      return a * Trigonometry.Cos(theta) + (b - a * dot).Normalize() * Trigonometry.Sin(theta);
+    }
+
+    public static Vector InterpolateBarycentric(Vector a, Vector b, Vector c, float u, float v)
+    {
+      return a + u * (b - a) + v * (c - a);
     }
 
     public override string ToString()
     {
-      return string.Format("X: |{0}|\nY: |{1}|\nZ: |{2}|",
-        _x, _y, _z);
+      return
+        X.ToString() + "\n" + 
+        Y.ToString() + "\n" +
+        Z.ToString() + "\n";
     }
 
     public override int GetHashCode()
     {
       return
-        _x.GetHashCode() ^
-        _y.GetHashCode() ^
-        _z.GetHashCode();
+        X.GetHashCode() ^
+        Y.GetHashCode() ^
+        Z.GetHashCode();
     }
 
     public override bool Equals(object obj)
     {
-      if (obj is Vector)
-        return Equals((Vector)obj);
       return base.Equals(obj);
     }
 
-    public bool Equals(Vector right)
+    private class VectorException : Exception
     {
-      return
-        _x == right.X &&
-        _y == right.Y &&
-        _z == right.Z;
+      public VectorException(string message) : base(message) { }
     }
-
-    /// <summary>This is used for throwing vector exceptions only to make debugging faster.</summary>
-    private class VectorException : Exception { public VectorException(string message) : base(message) { } }
   }
 }

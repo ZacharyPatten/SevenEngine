@@ -11,378 +11,457 @@
 // Last Edited: 11-16-13
 
 using System;
+using System.Text;
 
 namespace SevenEngine.Mathematics
 {
-  /// <summary>Implements a 3x3 rotational matrix.</summary>
-  public struct Matrix
+  public class Matrix
   {
-    private float
-      _r0c0, _r0c1, _r0c2,
-      _r1c0, _r1c1, _r1c2,
-      _r2c0, _r2c1, _r2c2;
+    protected float[,] _matrix;
+    
+    public float[,] Values { get { return (float[,])_matrix.Clone(); } }
+    public int Rows { get { return _matrix.GetLength(0); } }
+    public int Columns { get { return _matrix.GetLength(1); } }
+    public bool IsSquare { get { return Rows == Columns; } }
 
     public float this[int row, int column]
     {
       get
       {
-        switch (row)
-        { case 0:
-            switch (column)
-            { case 0: return _r0c0;
-              case 1: return _r0c1;
-              case 2: return _r0c2; }
-            break;
-          case 1:
-            switch (column)
-            { case 0: return _r1c0;
-              case 1: return _r1c1;
-              case 2: return _r1c2; }
-            break;
-          case 2:
-            switch (column)
-            { case 0: return _r2c0;
-              case 1: return _r2c1;
-              case 2: return _r2c2; }
-            break; }
-        throw new MatrixException("Index out of range during indexed look up.");
+        try { return _matrix[row, column]; }
+        catch { throw new MatrixException("index out of bounds."); }
       }
       set
       {
-        switch (row)
-        { case 0:
-            switch (column)
-            { case 0: _r0c0 = value; return;
-              case 1: _r0c1 = value; return;
-              case 2: _r0c2 = value; return; }
-            break;
-          case 1:
-            switch (column)
-            { case 0: _r1c0 = value; return;
-              case 1: _r1c1 = value; return;
-              case 2: _r1c2 = value; return; }
-            break;
-          case 2:
-            switch (column)
-            { case 0: _r2c0 = value; return;
-              case 1: _r2c1 = value; return;
-              case 2: _r2c2 = value; return; }
-            break; }
-        throw new MatrixException("Index out of range during indexed look up.");
+        try { _matrix[row, column] = value; }
+        catch { throw new MatrixException("index out of bounds."); }
       }
     }
 
-    public Matrix(
-      float r0c0, float r0c1, float r0c2,
-      float r1c0, float r1c1, float r1c2,
-      float r2c0, float r2c1, float r2c2)
+    public Matrix(float[,] matrix)
     {
-      _r0c0 = r0c0; _r0c1 = r0c1; _r0c2 = r0c2;
-      _r1c0 = r1c0; _r1c1 = r1c1; _r1c2 = r1c2;
-      _r2c0 = r2c0; _r2c1 = r2c1; _r2c2 = r2c2;
+      // _matrix = matrix; // To make is fool proof or not? Speed increase here!
+      _matrix = (float[,])matrix.Clone();
     }
 
-    public Matrix(float[,] floatArray)
+    public static Matrix FactoryZero(int rows, int columns)
     {
-      if (floatArray == null)
-        throw new MatrixException("Attempting to create a matrix with an null float[,].");
-      else if (floatArray.GetLength(0) != 3)
-        throw new MatrixException("Attempting to create a matrix with an invalid sized float[,].");
-      else if (floatArray.GetLength(1) != 3)
-        throw new MatrixException("Attempting to create a matrix with an invalid sized float[,].");
-      _r0c0 = floatArray[0, 0]; _r0c1 = floatArray[0, 1]; _r0c2 = floatArray[0, 2];
-      _r1c0 = floatArray[1, 0]; _r1c1 = floatArray[1, 1]; _r1c2 = floatArray[1, 2];
-      _r2c0 = floatArray[2, 0]; _r2c1 = floatArray[2, 1]; _r2c2 = floatArray[2, 2];
+      try { return new Matrix(new float[rows, columns]); }
+      catch { throw new MatrixException("invalid dimensions."); }
     }
 
-    public static Matrix FactoryZero = new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0);
-    public static Matrix FactoryIdentity = new Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
-
-    /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationX(float angle)
+    public static Matrix FactoryIdentity(int rows, int columns)
     {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
-      return new Matrix(
-        1, 0, 0,
-        0, cos, sin,
-        0, -sin, cos);
-    }
-
-    /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationY(float angle)
-    {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
-      return new Matrix(
-        cos, 0, -sin,
-        0, 1, 0,
-        sin, 0, cos);
-    }
-
-    /// <param name="angle">Angle of rotation in radians.</param>
-    public static Matrix FactoryRotationZ(float angle)
-    {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
-      return new Matrix(
-        cos, -sin, 0,
-        sin, cos, 0,
-        0, 0, 1);
-    }
-
-    /// <param name="angleX">Angle about the X-axis in radians.</param>
-    /// <param name="angleY">Angle about the Y-axis in radians.</param>
-    /// <param name="angleZ">Angle about the Z-axis in radians.</param>
-    public static Matrix FactoryRotationXthenYthenZ(float angleX, float angleY, float angleZ)
-    {
-      float
-        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
-        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
-        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
-      return new Matrix(
-        yCos * zCos, -yCos * zSin, ySin,
-        xCos * zSin + xSin * ySin * zCos, xCos * zCos + xSin * ySin * zSin, -xSin * yCos,
-        xSin * zSin - xCos * ySin * zCos, xSin * zCos + xCos * ySin * zSin, xCos * yCos);
-    }
-
-    /// <param name="angleX">Angle about the X-axis in radians.</param>
-    /// <param name="angleY">Angle about the Y-axis in radians.</param>
-    /// <param name="angleZ">Angle about the Z-axis in radians.</param>
-    public static Matrix FactoryRotationZthenYthenX(float angleX, float angleY, float angleZ)
-    {
-      float
-        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
-        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
-        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
-      return new Matrix(
-        yCos * zCos, zCos * xSin * ySin - xCos * zSin, xCos * zCos * ySin + xSin * zSin,
-        yCos * zSin, xCos * zCos + xSin * ySin * zSin, -zCos * xSin + xCos * ySin * zSin,
-        -ySin, yCos * xSin, xCos * yCos);
-    }
-
-    /// <param name="shearXbyY">The shear along the X-axis in the Y-direction.</param>
-    /// <param name="shearXbyZ">The shear along the X-axis in the Z-direction.</param>
-    /// <param name="shearYbyX">The shear along the Y-axis in the X-direction.</param>
-    /// <param name="shearYbyZ">The shear along the Y-axis in the Z-direction.</param>
-    /// <param name="shearZbyX">The shear along the Z-axis in the X-direction.</param>
-    /// <param name="shearZbyY">The shear along the Z-axis in the Y-direction.</param>
-    public static Matrix FactoryShear(
-      float shearXbyY, float shearXbyZ, float shearYbyX,
-      float shearYbyZ, float shearZbyX, float shearZbyY)
-    {
-      return new Matrix(
-        1, shearYbyX, shearZbyX,
-        shearXbyY, 1, shearYbyZ,
-        shearXbyZ, shearYbyZ, 1);
-    }
-
-    public static Matrix operator +(Matrix left, Matrix right) { return left.Add(right); }
-    public static Matrix operator -(Matrix left, Matrix right) { return left.Add(-right); }
-    public static Matrix operator -(Matrix matrix) { return matrix.Negate(); }
-    public static Matrix operator *(Matrix left, Matrix right) { return left.Multiply(right); }
-    public static Vector operator *(Matrix matrix, Vector vector) { return matrix.Multiply(vector); }
-    public static Matrix operator *(Matrix matrix, float scalar) { return matrix.Multiply(scalar); }
-    public static Matrix operator /(Matrix matrix, float scalar) { return matrix.Divide(scalar); }
-    public static Matrix operator ^(Matrix matrix, int power) { return matrix.Power(power); }
-
-    public float Determinant
-    {
-      get
-      { return
-          _r0c0 * _r1c1 * _r2c2 -
-          _r0c0 * _r1c2 * _r2c1 -
-          _r0c1 * _r1c0 * _r2c2 +
-          _r0c2 * _r1c0 * _r2c1 +
-          _r0c1 * _r1c2 * _r2c0 -
-          _r0c2 * _r1c1 * _r2c0; }
-    }
-
-    public bool EqualsApproximation(Matrix matrix, float tolerance)
-    {
-      return
-        Foundations.Abs(_r0c0 - matrix._r0c0) <= tolerance &&
-        Foundations.Abs(_r0c1 - matrix._r0c1) <= tolerance &&
-        Foundations.Abs(_r0c2 - matrix._r0c2) <= tolerance &&
-        Foundations.Abs(_r1c0 - matrix._r1c0) <= tolerance &&
-        Foundations.Abs(_r1c1 - matrix._r1c1) <= tolerance &&
-        Foundations.Abs(_r1c2 - matrix._r1c2) <= tolerance &&
-        Foundations.Abs(_r2c0 - matrix._r2c0) <= tolerance &&
-        Foundations.Abs(_r2c1 - matrix._r2c1) <= tolerance &&
-        Foundations.Abs(_r2c2 - matrix._r2c2) <= tolerance;
-    }
-
-    public Matrix Negate()
-    {
-      return new Matrix(
-        -_r0c0, -_r0c1, -_r0c2,
-        -_r1c0, -_r1c1, -_r1c2,
-        -_r2c0, -_r2c1, -_r2c2);
-    }
-
-    public Matrix Add(Matrix matrix)
-    {
-      return new Matrix(
-        _r0c0 + matrix._r0c0, _r0c1 + matrix._r0c1, _r0c2 + matrix._r0c2,
-        _r1c0 + matrix._r1c0, _r1c1 + matrix._r1c1, _r1c2 + matrix._r1c2,
-        _r2c0 + matrix._r2c0, _r2c1 + matrix._r2c1, _r2c2 + matrix._r2c2);
-    }
-
-    public Matrix Multiply(Matrix matrix)
-    {
-      return new Matrix(
-        matrix._r0c0 * _r0c0 + matrix._r0c1 * _r1c0 + matrix._r0c2 * _r2c0,
-        matrix._r0c0 * _r0c1 + matrix._r0c1 * _r1c1 + matrix._r0c2 * _r2c1,
-        matrix._r0c0 * _r0c2 + matrix._r0c1 * _r1c2 + matrix._r0c2 * _r2c2,
-        matrix._r1c0 * _r0c0 + matrix._r1c1 * _r1c0 + matrix._r1c2 * _r2c0,
-        matrix._r1c0 * _r0c1 + matrix._r1c1 * _r1c1 + matrix._r1c2 * _r2c1,
-        matrix._r1c0 * _r0c2 + matrix._r1c1 * _r1c2 + matrix._r1c2 * _r2c2,
-        matrix._r2c0 * _r0c0 + matrix._r2c1 * _r1c0 + matrix._r2c2 * _r2c0,
-        matrix._r2c0 * _r0c1 + matrix._r2c1 * _r1c1 + matrix._r2c2 * _r2c1,
-        matrix._r2c0 * _r0c2 + matrix._r2c1 * _r1c2 + matrix._r2c2 * _r2c2);
-    }
-
-    public Vector Multiply(Vector vector)
-    {
-      return new Vector(
-        _r0c0 * vector.X + _r0c1 * vector.Y + _r0c2 * vector.Z,
-        _r1c0 * vector.X + _r1c1 * vector.Y + _r1c2 * vector.Z,
-        _r2c0 * vector.X + _r2c1 * vector.Y + _r2c2 * vector.Z);
-    }
-
-    public Matrix Multiply(float scalar)
-    {
-      return new Matrix(
-        scalar * _r0c0, scalar * _r0c1, scalar * _r0c2,
-        scalar * _r1c0, scalar * _r1c1, scalar * _r1c2,
-        scalar * _r2c0, scalar * _r2c1, scalar * _r2c2);
-    }
-
-    public Matrix Divide(float scalar)
-    {
-      return new Matrix(
-        _r0c0 / scalar, _r0c1 / scalar, _r0c2 / scalar,
-        _r1c0 / scalar, _r1c1 / scalar, _r1c2 / scalar,
-        _r2c0 / scalar, _r2c1 / scalar, _r2c2 / scalar);
-    }
-
-    public Matrix Power(int power)
-    {
-      if (power < 0)
-        throw new MatrixException("Attempting to raise a matrix by a power less than zero. (can't do dat)");
-      else if (power == 0)
-        return FactoryIdentity;
+      float[,] matrix;
+      try { matrix = new float[rows, columns]; }
+      catch { throw new MatrixException("invalid dimensions."); }
+      if (rows <= columns)
+        for (int i = 0; i < rows; i++)
+          matrix[i, i] = 1;
       else
+        for (int i = 0; i < columns; i++)
+          matrix[i, i] = 1;
+      return new Matrix(matrix);
+    }
+
+    public static Matrix FactoryOne(int rows, int columns)
+    {
+      float[,] matrix;
+      try { matrix = new float[rows, columns]; }
+      catch { throw new MatrixException("invalid dimensions."); }
+      for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+          matrix[i, j] = 1;
+      return new Matrix(matrix);
+    }
+
+    public static Matrix FactoryUniform(int rows, int columns, float uniform)
+    {
+      float[,] matrix;
+      try { matrix = new float[rows, columns]; }
+      catch { throw new MatrixException("invalid dimensions."); }
+      for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+          matrix[i, j] = uniform;
+      return new Matrix(matrix);
+    }
+
+    public static Matrix operator -(Matrix matrix) { return Matrix.Negate(matrix); }
+    public static Matrix operator +(Matrix left, Matrix right) { return Matrix.Add(left, right); }
+    public static Matrix operator -(Matrix left, Matrix right) { return Matrix.Subtract(left, right); }
+    public static Matrix operator *(Matrix left, Matrix right) { return Matrix.Multiply(left, right); }
+    public static Matrix operator *(Matrix left, float right) { return Matrix.Multiply(left, right); }
+    public static Matrix operator *(float left, Matrix right) { return Matrix.Multiply(right, left); }
+    public static Matrix operator /(Matrix left, float right) { return Matrix.Divide(left, right); }
+    public static Matrix operator ^(Matrix left, int right) { return Matrix.Power(left, right); }
+    public static bool operator ==(Matrix left, Matrix right) { return Matrix.Equals(left, right); }
+    public static bool operator !=(Matrix left, Matrix right) { return !Matrix.Equals(left, right); }
+    public static implicit operator float[,](Matrix matrix) { return matrix.Values; }
+
+    private Matrix Negate() { return Matrix.Negate(this); }
+    private Matrix Add(Matrix right) { return Matrix.Add(this, right); }
+    private Matrix Multiply(Matrix right) { return Matrix.Multiply(this, right); }
+    private Matrix Multiply(float right) { return Matrix.Multiply(this, right); }
+    private Matrix Divide(float right) { return Matrix.Divide(this, right); }
+    public Matrix Minor(int row, int column) { return Matrix.Minor(this, row, column); }
+    public Matrix ConcatenateByRows(Matrix right) { return Matrix.ConcatenateRowWise(this, right); }
+    public float Determinent() { return Matrix.Determinent(this); }
+    public Matrix Echelon() { return Matrix.Echelon(this); }
+    public Matrix ReducedEchelon() { return Matrix.ReducedEchelon(this); }
+    public Matrix Inverse() { return Matrix.Inverse(this); }
+    public Matrix Adjoint() { return Matrix.Adjoint(this); }
+    public Matrix Transpose() { return Matrix.Transpose(this); }
+    public Matrix Clone() { return Matrix.Clone(this); }
+
+    public static Matrix Negate(Matrix matrix)
+    {
+      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      for (int i = 0; i < matrix.Rows; i++)
+        for (int j = 0; j < matrix.Columns; j++)
+          result[i, j] = -matrix[i, j];
+      return result;
+    }
+
+    public static Matrix Add(Matrix left, Matrix right)
+    {
+      if (left.Rows != right.Rows || left.Columns != right.Columns)
+        throw new MatrixException("invalid addition (size miss-match).");
+      Matrix result = Matrix.FactoryZero(left.Rows, left.Columns);
+      for (int i = 0; i < result.Rows; i++)
+        for (int j = 0; j < result.Columns; j++)
+          result[i, j] = left[i, j] + right[i, j];
+      return result;
+    }
+
+    public static Matrix Subtract(Matrix left, Matrix right)
+    {
+      if (left.Rows != right.Rows || left.Columns != right.Columns)
+        throw new MatrixException("invalid subtraction (size miss-match).");
+      Matrix result = Matrix.FactoryZero(left.Rows, left.Columns);
+      for (int i = 0; i < result.Rows; i++)
+        for (int j = 0; j < result.Columns; j++)
+          result[i, j] = left[i, j] - right[i, j];
+      return result;
+    }
+
+    public static Matrix Multiply(Matrix left, Matrix right)
+    {
+      if (left.Columns != right.Rows)
+        throw new MatrixException("invalid multiplication (size miss-match).");
+      Matrix result = Matrix.FactoryZero(left.Rows, right.Columns);
+      for (int i = 0; i < result.Rows; i++)
+        for (int j = 0; j < result.Columns; j++)
+          for (int k = 0; k < left.Columns; k++)
+            result[i, j] += left[i, k] * right[k, j];
+      return result;
+    }
+
+    public static Matrix Multiply(Matrix matrix, float right)
+    {
+      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      for (int i = 0; i < matrix.Rows; i++)
+        for (int j = 0; j < matrix.Columns; j++)
+          result[i, j] = matrix[i, j] * right;
+      return result;
+    }
+
+    public static Matrix Power(Matrix matrix, int power)
+    {
+      if (!matrix.IsSquare)
+        throw new MatrixException("invalid power (!matrix.IsSquare).");
+      Matrix result = matrix.Clone();
+      for (int i = 0; i < power; i++)
+        result *= result;
+      return result;
+    }
+
+    public static Matrix Divide(Matrix matrix, float right)
+    {
+      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      for (int i = 0; i < matrix.Rows; i++)
+        for (int j = 0; j < matrix.Columns; j++)
+          result[i, j] = matrix[i, j] / right;
+      return result;
+    }
+
+    public static Matrix Minor(Matrix matrix, int row, int column)
+    {
+      Matrix minor = Matrix.FactoryZero(matrix.Rows - 1, matrix.Columns - 1);
+      int m = 0, n = 0;
+      for (int i = 0; i < matrix.Rows; i++)
       {
-        Matrix result = Clone();
-        for (int i = 1; i < power; i++)
-          result = result * result;
+        if (i == row) continue;
+        n = 0;
+        for (int j = 0; j < matrix.Columns; j++)
+        {
+          if (j == column) continue;
+          minor[m, n] = matrix[i, j];
+          n++;
+        }
+        m++;
+      }
+      return minor;
+    }
+
+    private static void RowMultiplication(Matrix matrix, int row, float scalar)
+    {
+      for (int j = 0; j < matrix.Columns; j++)
+        matrix[row, j] *= scalar;
+    }
+
+    private static void RowAddition(Matrix matrix, int target, int second, float multiple)
+    {
+      for (int j = 0; j < matrix.Columns; j++)
+        matrix[target, j] += (matrix[second, j] * multiple);
+    }
+
+    private static void SwapRows(Matrix matrix, int row1, int row2)
+    {
+      for (int j = 0; j < matrix.Columns; j++)
+      {
+        float temp = matrix[row1, j];
+        matrix[row1, j] = matrix[row2, j];
+        matrix[row2, j] = temp;
+      }
+    }
+
+    public static Matrix ConcatenateRowWise(Matrix left, Matrix right)
+    {
+      if (left.Rows != right.Rows)
+        throw new MatrixException("invalid row-wise concatenation !(left.Rows == right.Rows).");
+      float[,] result = new float[left.Rows, left.Columns + right.Columns];
+      for (int i = 0; i < result.GetLength(0); i++)
+        for (int j = 0; j < result.GetLength(1); j++)
+        {
+          if (j < left.Columns) result[i, j] = left[i, j];
+          else result[i, j] = right[i, j - left.Columns];
+        }
+      return new Matrix(result);
+    }
+
+    public static float Determinent(Matrix matrix)
+    {
+      if (!matrix.IsSquare)
+        throw new MatrixException("invalid determinent !(matrix.IsSquare).");
+      float det = 1.0f;
+      try
+      {
+        Matrix rref = Matrix.Clone(matrix);
+        for (int i = 0; i < matrix.Rows; i++)
+        {
+          if (rref[i, i] == 0)
+            for (int j = i + 1; j < rref.Rows; j++)
+              if (rref[j, i] != 0)
+              {
+                Matrix.SwapRows(rref, i, j);
+                det *= -1;
+              }
+          det *= rref[i, i];
+          Matrix.RowMultiplication(rref, i, 1 / rref[i, i]);
+          for (int j = i + 1; j < rref.Rows; j++)
+            Matrix.RowAddition(rref, j, i, -rref[j, i]);
+          for (int j = i - 1; j >= 0; j--)
+            Matrix.RowAddition(rref, j, i, -rref[j, i]);
+        }
+        return det;
+      }
+      catch (Exception)
+      {
+        throw new MatrixException("determinent computation failed.");
+      }
+    }
+
+    public static Matrix Echelon(Matrix matrix)
+    {
+      try
+      {
+        Matrix result = Matrix.Clone(matrix);
+        for (int i = 0; i < matrix.Rows; i++)
+        {
+          if (result[i, i] == 0)
+            for (int j = i + 1; j < result.Rows; j++)
+              if (result[j, i] != 0)
+                Matrix.SwapRows(result, i, j);
+          if (result[i, i] == 0) continue;
+          if (result[i, i] != 1)	
+            for (int j = i + 1; j < result.Rows; j++)
+              if (result[j, i] == 1)
+                Matrix.SwapRows(result, i, j);
+          Matrix.RowMultiplication(result, i, 1 / result[i, i]);
+          for (int j = i + 1; j < result.Rows; j++)
+            Matrix.RowAddition(result, j, i, (int)-result[j, i]);
+        }
         return result;
       }
+      catch { throw new MatrixException("echelon computation failed."); }
     }
 
-    public Matrix Transpose()
+    public static Matrix ReducedEchelon(Matrix matrix)
     {
-      return new Matrix(
-        _r0c0, _r1c0, _r2c0,
-        _r0c1, _r1c1, _r2c1,
-        _r0c2, _r1c1, _r2c2);
-    }
-
-    public Quaternion ToQuaternion()
-    {
-      float qX = ( _r0c0 + _r1c1 + _r2c2 + 1.0f) / 4.0f;
-      float qY = ( _r0c0 - _r1c1 - _r2c2 + 1.0f) / 4.0f;
-      float qZ = (-_r0c0 + _r1c1 - _r2c2 + 1.0f) / 4.0f;
-      float qW = (-_r0c0 - _r1c1 + _r2c2 + 1.0f) / 4.0f;
-
-      if (qX < 0.0f) qX = 0.0f;
-      if (qY < 0.0f) qY = 0.0f;
-      if (qZ < 0.0f) qZ = 0.0f;
-      if (qW < 0.0f) qW = 0.0f;
-      
-      qX = Foundations.SquareRoot(qX);
-      qY = Foundations.SquareRoot(qY);
-      qZ = Foundations.SquareRoot(qZ);
-      qW = Foundations.SquareRoot(qW);
-
-      if (qX >= qY && qX >= qZ && qX >= qW)
+      try
       {
-        qX *= +1.0f;
-        qY *= Trigonometry.Sin(_r2c1 - _r1c2);
-        qZ *= Trigonometry.Sin(_r0c2 - _r2c0);
-        qW *= Trigonometry.Sin(_r1c0 - _r0c1);
+        Matrix result = Matrix.Clone(matrix);
+        for (int i = 0; i < matrix.Rows; i++)
+        {
+          if (result[i, i] == 0)
+            for (int j = i + 1; j < result.Rows; j++)
+              if (result[j, i] != 0)
+                Matrix.SwapRows(result, i, j);
+          if (result[i, i] == 0) continue;
+          if (result[i, i] != 1)
+            for (int j = i + 1; j < result.Rows; j++)
+              if (result[j, i] == 1)
+                Matrix.SwapRows(result, i, j);
+          Matrix.RowMultiplication(result, i, result[i, i]);
+          for (int j = i + 1; j < result.Rows; j++)
+            Matrix.RowAddition(result, j, i, -result[j, i]);
+          for (int j = i - 1; j >= 0; j--)
+            Matrix.RowAddition(result, j, i, -result[j, i]);
+        }
+        return result;
       }
-      else if (qY >= qX && qY >= qZ && qY >= qW)
-      {
-        qX *= Trigonometry.Sin(_r2c1 - _r1c2);
-        qY *= +1.0f;
-        qZ *= Trigonometry.Sin(_r1c0 + _r0c1);
-        qW *= Trigonometry.Sin(_r0c2 + _r2c0);
-      }
-      else if (qZ >= qX && qZ >= qY && qZ >= qW)
-      {
-        qX *= Trigonometry.Sin(_r0c2 - _r2c0);
-        qY *= Trigonometry.Sin(_r1c0 + _r0c1);
-        qZ *= +1.0f;
-        qW *= Trigonometry.Sin(_r2c1 + _r1c2);
-      }
-      else if (qW >= qX && qW >= qY && qW >= qZ)
-      {
-        qX *= Trigonometry.Sin(_r1c0 - _r0c1);
-        qY *= Trigonometry.Sin(_r2c0 + _r0c2);
-        qZ *= Trigonometry.Sin(_r2c1 + _r1c2);
-        qW *= +1.0f;
-      }
-      else
-        throw new MatrixException("There is a glitch in my my matrix to quaternion function. Sorry..");
-
-      float length = Foundations.SquareRoot(qX * qX + qY * qY + qZ * qZ + qW * qW);
-
-      return new Quaternion(
-        qX /= length,
-        qY /= length,
-        qZ /= length,
-        qW /= length);
-
+      catch { throw new MatrixException("reduced echelon calculation failed."); }
     }
 
-    public Matrix Clone()
+    public static Matrix Inverse(Matrix matrix)
     {
-      return new Matrix(
-        _r0c0, _r0c1, _r0c2,
-        _r1c0, _r1c1, _r1c2,
-        _r2c0, _r2c1, _r2c2);
+      if (Matrix.Determinent(matrix) == 0)
+        throw new MatrixException("inverse calculation failed.");
+      try
+      {
+        Matrix identity = Matrix.FactoryIdentity(matrix.Rows, matrix.Columns);
+        Matrix rref = Matrix.Clone(matrix);
+        for (int i = 0; i < matrix.Rows; i++)
+        {
+          if (rref[i, i] == 0)
+            for (int j = i + 1; j < rref.Rows; j++)
+              if (rref[j, i] != 0)
+              {
+                Matrix.SwapRows(rref, i, j);
+                Matrix.SwapRows(identity, i, j);
+              }
+          Matrix.RowMultiplication(identity, i, 1 / rref[i, i]);
+          Matrix.RowMultiplication(rref, i, 1 / rref[i, i]);
+          for (int j = i + 1; j < rref.Rows; j++)
+          {
+            Matrix.RowAddition(identity, j, i, -rref[j, i]);
+            Matrix.RowAddition(rref, j, i, -rref[j, i]);
+          }
+          for (int j = i - 1; j >= 0; j--)
+          {
+            Matrix.RowAddition(identity, j, i, -rref[j, i]);
+            Matrix.RowAddition(rref, j, i, -rref[j, i]);
+          }
+        }
+        return identity;
+      }
+      catch { throw new MatrixException("inverse calculation failed."); }
     }
 
-    public bool Equals(Matrix matrix)
+    public static Matrix Adjoint(Matrix matrix)
     {
-      return
-        _r0c0 == matrix._r0c0 && _r0c1 == matrix._r0c1 && _r0c2 == matrix._r0c2 &&
-        _r1c0 == matrix._r1c0 && _r1c1 == matrix._r1c1 && _r1c2 == matrix._r1c2 &&
-        _r2c0 == matrix._r2c0 && _r2c1 == matrix._r2c1 && _r2c2 == matrix._r2c2;
+      if (!matrix.IsSquare)
+        throw new MatrixException("Adjoint of a non-square matrix does not exists");
+      Matrix AdjointMatrix = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      for (int i = 0; i < matrix.Rows; i++)
+        for (int j = 0; j < matrix.Columns; j++)
+          if ((i + j) % 2 == 0)
+            AdjointMatrix[i, j] = Matrix.Determinent(Matrix.Minor(matrix, i, j));
+          else
+            AdjointMatrix[i, j] = -Matrix.Determinent(Matrix.Minor(matrix, i, j));
+      return Matrix.Transpose(AdjointMatrix); ;
     }
 
-    public override int GetHashCode()
+    public static Matrix Transpose(Matrix matrix)
     {
-      return
-        _r0c0.GetHashCode() ^ _r0c1.GetHashCode() ^ _r0c2.GetHashCode() ^
-        _r1c0.GetHashCode() ^ _r1c1.GetHashCode() ^ _r1c2.GetHashCode() ^
-        _r2c0.GetHashCode() ^ _r2c1.GetHashCode() ^ _r2c2.GetHashCode();
+      Matrix transpose = Matrix.FactoryZero(matrix.Columns, matrix.Rows);
+      for (int i = 0; i < transpose.Rows; i++)
+        for (int j = 0; j < transpose.Columns; j++)
+          transpose[i, j] = matrix[j, i];
+      return transpose;
+    }
+
+    public static Matrix Clone(Matrix matrix)
+    {
+      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      for (int i = 0; i < matrix.Rows; i++)
+        for (int j = 0; j < matrix.Columns; j++)
+          result[i, j] = matrix[i, j];
+      return result;
+    }
+
+    public static bool Equals(Matrix left, Matrix right)
+    {
+      if (left.Rows != right.Rows || left.Columns != right.Columns)
+        return false;
+      for (int i = 0; i < left.Rows; i++)
+        for (int j = 0; j < left.Columns; j++)
+          if (left[i, j] != right[i, j])
+            return false;
+      return true;
     }
 
     public override string ToString()
     {
-      return String.Format(
-        "Row0: |{0}, {1}, {2}|\n" +
-        "Row1: |{3}, {4}, {5}|\n" +
-        "Row2: |{6}, {7}, {8}|\n" +
-        _r0c0, _r0c1, _r0c2,
-        _r1c0, _r1c1, _r1c2,
-        _r2c0, _r2c1, _r2c2);
+      // return base.ToString();
+      StringBuilder matrix = new StringBuilder();
+      for (int i = 0; i < Rows; i++)
+      {
+        for (int j = 0; j < Columns; j++)
+          matrix.Append(_matrix[i, j] + " ");
+        matrix.Append("\n");
+      }
+      return matrix.ToString();
     }
 
-    /// <summary>This is used for throwing matrix exceptions only to make debugging faster.</summary>
-    private class MatrixException : Exception { public MatrixException(string message) : base(message) { } }
+    public override int GetHashCode()
+    {
+      // return base.GetHashCode();
+      int hash = _matrix[0, 0].GetHashCode();
+      for (int j = 1; j < Columns; j++)
+        hash = hash ^ _matrix[0, j].GetHashCode();
+      for (int i = 0; i < Rows; i++)
+        for (int j = 0; j < Columns; j++)
+          hash = hash ^ _matrix[i, j].GetHashCode();
+      return hash;
+    }
+
+    public override bool Equals(object obj)
+    {
+      return base.Equals(obj);
+    }
+
+    private class MatrixException : Exception
+    {
+      public MatrixException(string Message) : base(Message) { }
+    }
+
+    #region Alternate Methods
+
+    //public static float Determinent(Matrix matrix)
+    //{
+    //  if (!matrix.IsSquare)
+    //    throw new MatrixException("invalid determinent !(matrix.IsSquare).");
+    //  return DeterminentRecursive(matrix);
+    //}
+    //private static float DeterminentRecursive(Matrix matrix)
+    //{
+    //  if (matrix.Rows == 1)
+    //    return matrix[0, 0];
+    //  float det = 0.0f;
+    //  for (int j = 0; j < matrix.Columns; j++)
+    //    det += (matrix[0, j] * DeterminentRecursive(Matrix.Minor(matrix, 0, j)) * (int)System.Math.Pow(-1, 0 + j));
+    //  return det;
+    //}
+
+    //public static Matrix Inverse(Matrix matrix)
+    //{
+    //  float determinent = Matrix.Determinent(matrix);
+    //  if (determinent == 0)
+    //    throw new MatrixException("Inverse of a singular matrix is not possible");
+    //  return Matrix.Adjoint(matrix) / determinent;
+    //}
+
+    #endregion
   }
 }

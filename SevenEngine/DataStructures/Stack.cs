@@ -54,7 +54,7 @@ namespace SevenEngine.DataStructures
     private StackLinkedNode _top;
     private int _count;
 
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -68,7 +68,7 @@ namespace SevenEngine.DataStructures
     {
       _top = null;
       _count = 0;
-      _lock = new Object();
+      _lock = new object();
     }
 
     /// <summary>Adds an item to the top of the stack.</summary>
@@ -199,7 +199,7 @@ namespace SevenEngine.DataStructures
 
     // This value determines the starting data structure size
     // at which my traversal functions will begin dynamic multithreading
-    private Object _lock;
+    private object _lock;
     private int _readers;
     private int _writers;
 
@@ -269,7 +269,7 @@ namespace SevenEngine.DataStructures
       _stack = new Type[minimumCapacity];
       _count = 0;
       _minimumCapacity = minimumCapacity;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }

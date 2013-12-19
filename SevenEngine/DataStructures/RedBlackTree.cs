@@ -85,7 +85,7 @@ namespace SevenEngine.DataStructures
     protected RedBlackLinkedNode _redBlackTree;
     protected static RedBlackLinkedNode _sentinelNode;
 
-    protected Object _lock;
+    protected object _lock;
     protected int _readers;
     protected int _writers;
 
@@ -100,7 +100,7 @@ namespace SevenEngine.DataStructures
       _sentinelNode.Color = Black;
       _redBlackTree = _sentinelNode;
       _valueComparisonFunction = valueComparisonFunction;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
     }
@@ -280,8 +280,8 @@ namespace SevenEngine.DataStructures
     public void Remove(ValueType value)
     {
       WriterLock();
-      if (value is Object)
-        if (((Object)value) == null)
+      if (value is object)
+        if (((object)value) == null)
           throw new RedBlackLinkedException("Attempting to remove a null value from the tree.");
       int result;
       RedBlackLinkedNode node;

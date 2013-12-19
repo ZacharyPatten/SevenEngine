@@ -21,7 +21,9 @@ namespace SevenEngine.DataStructures
   public interface AvlTree<Type> : DataStructure<Type>
   {
     void Add(Type addition);
+    bool TryAdd(Type addition);
     void Remove(Type removal);
+    //bool TryRemove(Type removal);
     int Count { get; }
     bool IsEmpty { get; }
     void Clear();
@@ -34,6 +36,7 @@ namespace SevenEngine.DataStructures
     bool TryGet(KeyType get, out ValueType returnValue);
     bool Contains(KeyType containsCheck);
     void Remove(KeyType removalKey);
+    //bool TryRemove(KeyType removalKey);
     bool TraversalInOrderBreakable(Func<ValueType, bool> traversalFunction, KeyType minimum, KeyType maximum);
     void TraversalInOrder(Action<ValueType> traversalFunction, KeyType minimum, KeyType maximum);
   }
@@ -87,7 +90,7 @@ namespace SevenEngine.DataStructures
 
     protected Func<ValueType, ValueType, int> _valueComparisonFunction;
 
-    protected Object _lock;
+    protected object _lock;
     protected int _readers;
     protected int _writers;
 
@@ -109,7 +112,7 @@ namespace SevenEngine.DataStructures
     {
       _avlTree = null;
       _count = 0;
-      _lock = new Object();
+      _lock = new object();
       _readers = 0;
       _writers = 0;
       _valueComparisonFunction = valueComparisonFunction;
@@ -179,6 +182,37 @@ namespace SevenEngine.DataStructures
         throw new AvlTreeLinkedException("Attempting to add an already existing id exists.");
       else if (compareResult > 0) avlTree.LeftChild = Add(addition, avlTree.LeftChild);
       else avlTree.RightChild = Add(addition, avlTree.RightChild);
+      return Balance(avlTree);
+    }
+
+    /// <summary>Adds an object to the AVL Tree.</summary>
+    /// <param name="addition">The object to add.</param>
+    /// <remarks>Runtime: Theta(ln(n)).</remarks>
+    public bool TryAdd(ValueType addition)
+    {
+      WriterLock();
+      bool added;
+      _avlTree = TryAdd(addition, _avlTree, out added);
+      _count++;
+      WriterUnlock();
+      return added;
+    }
+
+    protected AvlTreeLinkedNode TryAdd(ValueType addition, AvlTreeLinkedNode avlTree, out bool added)
+    {
+      if (avlTree == null)
+      {
+        added = true;
+        return new AvlTreeLinkedNode(addition);
+      }
+      int compareResult = _valueComparisonFunction(avlTree.Value, addition);
+      if (compareResult == 0)
+      {
+        added = false;
+        return avlTree;
+      }
+      else if (compareResult > 0) avlTree.LeftChild = TryAdd(addition, avlTree.LeftChild, out added);
+      else avlTree.RightChild = TryAdd(addition, avlTree.RightChild, out added);
       return Balance(avlTree);
     }
 

@@ -69,6 +69,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataStructures\Graph.cs" />
+    <Compile Include="DataStructures\Quadtree.cs" />
     <Compile Include="DataStructures\Sort.cs" />
     <Compile Include="DataStructures\Array.cs" />
     <Compile Include="DataStructures\AvlTree.cs" />
@@ -79,9 +81,13 @@
     <Compile Include="DataStructures\Queue.cs" />
     <Compile Include="DataStructures\RedBlackTree.cs" />
     <Compile Include="DataStructures\Stack.cs" />
+    <Compile Include="DynamicModels\DynamicModel.cs" />
+    <Compile Include="INTERFACES\InterfaceComparable.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
     <Compile Include="InterfaceGameState.cs" />
     <Compile Include="Mathematics\Foundations.cs" />
+    <Compile Include="Mathematics\Logic.cs" />
+    <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Mathematics\Trigonometry.cs" />
     <Compile Include="Physics\Matter.cs" />
@@ -112,7 +118,7 @@
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\Link.cs" />
-    <Compile Include="Mathematics\Matrix.cs" />
+    <Compile Include="Mathematics\Matrix3x3.cs" />
     <Compile Include="MANAGERS\SpriteManager.cs" />
     <Compile Include="MANAGERS\StaticModelManager.cs" />
     <Compile Include="Mathematics\Vertex.cs" />
