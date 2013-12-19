@@ -161,7 +161,7 @@ namespace SevenEngine.Mathematics
     public static Quaternion Lerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
-        throw new QuaternionException("Attempting linear interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
+        throw new QuaternionException("invalid blending value during lerp !(blend < 0.0f || blend > 1.0f).");
       if (Quaternion.LengthSquared(left) == 0.0f)
       {
         if (Quaternion.LengthSquared(right) == 0.0f)
@@ -184,7 +184,7 @@ namespace SevenEngine.Mathematics
     public static Quaternion Slerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
-        throw new QuaternionException("Attempting sphereical interpolation with invalid blend (blend < 0.0f || blend > 1.0f).");
+        throw new QuaternionException("invalid blending value during slerp !(blend < 0.0f || blend > 1.0f).");
       if (Quaternion.LengthSquared(left) == 0.0f)
       {
         if (Quaternion.LengthSquared(right) == 0.0f)

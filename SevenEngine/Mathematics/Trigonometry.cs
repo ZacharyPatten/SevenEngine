@@ -8,7 +8,7 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
+// Last Edited: 12-19-13
 
 using System;
 
@@ -16,15 +16,14 @@ namespace SevenEngine.Mathematics
 {
   public static class Trigonometry
   {
-    /// <summary>3.14159265358979</summary>
-    public static readonly float Pi = 3.14159265358979f;
-    /// <summary>6.28318530717958</summary>
-    public static readonly float TwoPi = 6.28318530717958f;
-    /// <summary>1.57079632679489</summary>
-    public static readonly float HalfPi = 1.57079632679489f;
-    /// <summary>4.71238898038468</summary>
-    public static readonly float ThreeHalvesPi = 4.71238898038468f;
-
+    public const float Pi = 3.1415926535897932384626433832795028841971693993751f;
+    public const float PiOverTwo = Pi / 2;
+    public const float PiOverThree = Pi / 3;
+    public const float PiOverFour = Pi / 4;
+    public const float PiOverSix = Pi / 6;
+    public const float TwoPi = 2 * Pi;
+    public const float ThreePiOverTwo = 3 * Pi / 2;
+    
     public static float ToRadians(float angle) { return angle * Pi / 180f; }
     public static float ToDegrees(float angle) { return angle * 180f / Pi; }
 

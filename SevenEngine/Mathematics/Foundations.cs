@@ -69,5 +69,23 @@ namespace SevenEngine.Mathematics
       return (float)Math.Pow(number, power);
       // I have not written my own version of this function yet, just use the System for now...
     }
+
+    private static long GCD(int first, int second)
+    {
+      if (first < 0) first = -first;
+      if (second < 0) second = -second;
+      int temp = first;
+      do
+      {
+        if (first < second)
+        {
+          temp = first;
+          first = second;
+          second = temp;
+        }
+        first = first % second;
+      } while (first != 0);
+      return second;
+    }
   }
 }

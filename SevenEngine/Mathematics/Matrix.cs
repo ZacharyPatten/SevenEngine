@@ -8,10 +8,9 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
+// Last Edited: 12-19-13
 
 using System;
-using System.Text;
 
 namespace SevenEngine.Mathematics
 {
@@ -19,7 +18,7 @@ namespace SevenEngine.Mathematics
   {
     protected float[,] _matrix;
     
-    public float[,] Values { get { return (float[,])_matrix.Clone(); } }
+    public float[,] Values { get { return _matrix; } }
     public int Rows { get { return _matrix.GetLength(0); } }
     public int Columns { get { return _matrix.GetLength(1); } }
     public bool IsSquare { get { return Rows == Columns; } }
@@ -38,22 +37,39 @@ namespace SevenEngine.Mathematics
       }
     }
 
+    public Matrix(int rows, int columns)
+    {
+      try { _matrix = new float[rows, columns]; }
+      catch { throw new MatrixException("invalid dimensions."); }
+    }
+
+    public Matrix(int rows, int columns, params float[] values)
+    {
+      if (values.Length != rows * columns)
+        throw new MatrixException("invalid construction (number of values does not match dimensions.)");
+      float[,] matrix = new float[rows, columns];
+      int k = 0;
+      for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+          matrix[i, j] = values[k++];
+      _matrix = matrix;
+    }
+
     public Matrix(float[,] matrix)
     {
-      // _matrix = matrix; // To make is fool proof or not? Speed increase here!
-      _matrix = (float[,])matrix.Clone();
+      _matrix = matrix;
     }
 
     public static Matrix FactoryZero(int rows, int columns)
     {
-      try { return new Matrix(new float[rows, columns]); }
+      try { return new Matrix(rows, columns); }
       catch { throw new MatrixException("invalid dimensions."); }
     }
 
     public static Matrix FactoryIdentity(int rows, int columns)
     {
-      float[,] matrix;
-      try { matrix = new float[rows, columns]; }
+      Matrix matrix;
+      try { matrix = new Matrix(rows, columns); }
       catch { throw new MatrixException("invalid dimensions."); }
       if (rows <= columns)
         for (int i = 0; i < rows; i++)
@@ -61,29 +77,29 @@ namespace SevenEngine.Mathematics
       else
         for (int i = 0; i < columns; i++)
           matrix[i, i] = 1;
-      return new Matrix(matrix);
+      return matrix;
     }
 
     public static Matrix FactoryOne(int rows, int columns)
     {
-      float[,] matrix;
-      try { matrix = new float[rows, columns]; }
+      Matrix matrix;
+      try { matrix = new Matrix(rows, columns); }
       catch { throw new MatrixException("invalid dimensions."); }
       for (int i = 0; i < rows; i++)
         for (int j = 0; j < columns; j++)
           matrix[i, j] = 1;
-      return new Matrix(matrix);
+      return matrix;
     }
 
     public static Matrix FactoryUniform(int rows, int columns, float uniform)
     {
-      float[,] matrix;
-      try { matrix = new float[rows, columns]; }
+      Matrix matrix;
+      try { matrix = new Matrix(rows, columns); }
       catch { throw new MatrixException("invalid dimensions."); }
       for (int i = 0; i < rows; i++)
         for (int j = 0; j < columns; j++)
           matrix[i, j] = uniform;
-      return new Matrix(matrix);
+      return matrix;
     }
 
     public static Matrix operator -(Matrix matrix) { return Matrix.Negate(matrix); }
@@ -115,7 +131,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Negate(Matrix matrix)
     {
-      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
       for (int i = 0; i < matrix.Rows; i++)
         for (int j = 0; j < matrix.Columns; j++)
           result[i, j] = -matrix[i, j];
@@ -126,7 +142,7 @@ namespace SevenEngine.Mathematics
     {
       if (left.Rows != right.Rows || left.Columns != right.Columns)
         throw new MatrixException("invalid addition (size miss-match).");
-      Matrix result = Matrix.FactoryZero(left.Rows, left.Columns);
+      Matrix result = new Matrix(left.Rows, left.Columns);
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
           result[i, j] = left[i, j] + right[i, j];
@@ -137,7 +153,7 @@ namespace SevenEngine.Mathematics
     {
       if (left.Rows != right.Rows || left.Columns != right.Columns)
         throw new MatrixException("invalid subtraction (size miss-match).");
-      Matrix result = Matrix.FactoryZero(left.Rows, left.Columns);
+      Matrix result = new Matrix(left.Rows, left.Columns);
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
           result[i, j] = left[i, j] - right[i, j];
@@ -148,7 +164,7 @@ namespace SevenEngine.Mathematics
     {
       if (left.Columns != right.Rows)
         throw new MatrixException("invalid multiplication (size miss-match).");
-      Matrix result = Matrix.FactoryZero(left.Rows, right.Columns);
+      Matrix result = new Matrix(left.Rows, right.Columns);
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
           for (int k = 0; k < left.Columns; k++)
@@ -158,7 +174,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Multiply(Matrix matrix, float right)
     {
-      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
       for (int i = 0; i < matrix.Rows; i++)
         for (int j = 0; j < matrix.Columns; j++)
           result[i, j] = matrix[i, j] * right;
@@ -177,7 +193,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Divide(Matrix matrix, float right)
     {
-      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
       for (int i = 0; i < matrix.Rows; i++)
         for (int j = 0; j < matrix.Columns; j++)
           result[i, j] = matrix[i, j] / right;
@@ -186,7 +202,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Minor(Matrix matrix, int row, int column)
     {
-      Matrix minor = Matrix.FactoryZero(matrix.Rows - 1, matrix.Columns - 1);
+      Matrix minor = new Matrix(matrix.Rows - 1, matrix.Columns - 1);
       int m = 0, n = 0;
       for (int i = 0; i < matrix.Rows; i++)
       {
@@ -229,14 +245,14 @@ namespace SevenEngine.Mathematics
     {
       if (left.Rows != right.Rows)
         throw new MatrixException("invalid row-wise concatenation !(left.Rows == right.Rows).");
-      float[,] result = new float[left.Rows, left.Columns + right.Columns];
-      for (int i = 0; i < result.GetLength(0); i++)
-        for (int j = 0; j < result.GetLength(1); j++)
+      Matrix result = new Matrix(left.Rows, left.Columns + right.Columns);
+      for (int i = 0; i < result.Rows; i++)
+        for (int j = 0; j < result.Columns; j++)
         {
           if (j < left.Columns) result[i, j] = left[i, j];
           else result[i, j] = right[i, j - left.Columns];
         }
-      return new Matrix(result);
+      return result;
     }
 
     public static float Determinent(Matrix matrix)
@@ -362,7 +378,7 @@ namespace SevenEngine.Mathematics
     {
       if (!matrix.IsSquare)
         throw new MatrixException("Adjoint of a non-square matrix does not exists");
-      Matrix AdjointMatrix = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      Matrix AdjointMatrix = new Matrix(matrix.Rows, matrix.Columns);
       for (int i = 0; i < matrix.Rows; i++)
         for (int j = 0; j < matrix.Columns; j++)
           if ((i + j) % 2 == 0)
@@ -374,7 +390,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Transpose(Matrix matrix)
     {
-      Matrix transpose = Matrix.FactoryZero(matrix.Columns, matrix.Rows);
+      Matrix transpose = new Matrix(matrix.Columns, matrix.Rows);
       for (int i = 0; i < transpose.Rows; i++)
         for (int j = 0; j < transpose.Columns; j++)
           transpose[i, j] = matrix[j, i];
@@ -383,7 +399,7 @@ namespace SevenEngine.Mathematics
 
     public static Matrix Clone(Matrix matrix)
     {
-      Matrix result = Matrix.FactoryZero(matrix.Rows, matrix.Columns);
+      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
       for (int i = 0; i < matrix.Rows; i++)
         for (int j = 0; j < matrix.Columns; j++)
           result[i, j] = matrix[i, j];
@@ -403,15 +419,15 @@ namespace SevenEngine.Mathematics
 
     public override string ToString()
     {
-      // return base.ToString();
-      StringBuilder matrix = new StringBuilder();
-      for (int i = 0; i < Rows; i++)
-      {
-        for (int j = 0; j < Columns; j++)
-          matrix.Append(_matrix[i, j] + " ");
-        matrix.Append("\n");
-      }
-      return matrix.ToString();
+      return base.ToString();
+      //StringBuilder matrix = new StringBuilder();
+      //for (int i = 0; i < Rows; i++)
+      //{
+      //  for (int j = 0; j < Columns; j++)
+      //    matrix.Append(_matrix[i, j] + " ");
+      //  matrix.Append("\n");
+      //}
+      //return matrix.ToString();
     }
 
     public override int GetHashCode()
@@ -458,7 +474,7 @@ namespace SevenEngine.Mathematics
     //{
     //  float determinent = Matrix.Determinent(matrix);
     //  if (determinent == 0)
-    //    throw new MatrixException("Inverse of a singular matrix is not possible");
+    //    throw new MatrixException("inverse calculation failed.");
     //  return Matrix.Adjoint(matrix) / determinent;
     //}
 

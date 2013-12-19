@@ -178,17 +178,21 @@ namespace SevenEngine.Mathematics
     public static Matrix3x3 operator *(Matrix3x3 matrix, float scalar) { return matrix.Multiply(scalar); }
     public static Matrix3x3 operator /(Matrix3x3 matrix, float scalar) { return matrix.Divide(scalar); }
     public static Matrix3x3 operator ^(Matrix3x3 matrix, int power) { return matrix.Power(power); }
+    public static implicit operator Matrix(Matrix3x3 matrix) { return Matrix3x3.ToMatrix(matrix); }
+    public static implicit operator float[,](Matrix3x3 matrix) { return Matrix3x3.ToFloats(matrix); }
 
     public float Determinant
     {
       get
-      { return
+      {
+        return
           _r0c0 * _r1c1 * _r2c2 -
           _r0c0 * _r1c2 * _r2c1 -
           _r0c1 * _r1c0 * _r2c2 +
           _r0c2 * _r1c0 * _r2c1 +
           _r0c1 * _r1c2 * _r2c0 -
-          _r0c2 * _r1c1 * _r2c0; }
+          _r0c2 * _r1c1 * _r2c0;
+      }
     }
 
     public bool EqualsApproximation(Matrix3x3 matrix, float tolerance)
@@ -337,7 +341,6 @@ namespace SevenEngine.Mathematics
         qY /= length,
         qZ /= length,
         qW /= length);
-
     }
 
     public Matrix3x3 Clone()
@@ -356,6 +359,23 @@ namespace SevenEngine.Mathematics
         _r2c0 == matrix._r2c0 && _r2c1 == matrix._r2c1 && _r2c2 == matrix._r2c2;
     }
 
+    public static Matrix ToMatrix(Matrix3x3 matrix)
+    {
+      Matrix result = new Matrix(3, 3);
+      result[0, 0] = matrix._r0c0; result[0, 1] = matrix._r0c1; result[0, 2] = matrix._r0c2;
+      result[1, 0] = matrix._r1c0; result[1, 1] = matrix._r1c1; result[1, 2] = matrix._r1c2;
+      result[1, 0] = matrix._r2c0; result[2, 1] = matrix._r2c1; result[2, 2] = matrix._r2c2;
+      return result;
+    }
+
+    public static float[,] ToFloats(Matrix3x3 matrix)
+    {
+      return new float[,]
+        { { matrix[0, 0], matrix[0, 1], matrix[0, 2] },
+        { matrix[1, 0], matrix[1, 1], matrix[1, 2] },
+        { matrix[2, 0], matrix[2, 1], matrix[2, 2] } };
+    }
+
     public override int GetHashCode()
     {
       return
@@ -366,13 +386,11 @@ namespace SevenEngine.Mathematics
 
     public override string ToString()
     {
-      return String.Format(
-        "Row0: |{0}, {1}, {2}|\n" +
-        "Row1: |{3}, {4}, {5}|\n" +
-        "Row2: |{6}, {7}, {8}|\n" +
-        _r0c0, _r0c1, _r0c2,
-        _r1c0, _r1c1, _r1c2,
-        _r2c0, _r2c1, _r2c2);
+      return base.ToString();
+      //return
+      //  _r0c0 + " " + _r0c1 + " " + _r0c2 + "\n" +
+      //  _r1c0 + " " + _r1c1 + " " + _r1c2 + "\n" +
+      //  _r2c0 + " " + _r2c1 + " " + _r2c2 + "\n";
     }
 
     private class MatrixException : Exception

@@ -26,16 +26,16 @@ namespace SevenEngine.Mathematics
 
     public static readonly Vector FactoryZero = new Vector(0, 0, 0);
 
-    public static Vector operator +(Vector left, Vector right) { return left.Add(right); }
-    public static Vector operator -(Vector left, Vector right) { return left.Subtract(right); }
-    public static Vector operator -(Vector vector) { return new Vector(-vector.X, -vector.Y, -vector.Z); }
-    public static Vector operator *(Vector vector, float scalar) { return vector.Multiply(scalar); }
-    public static Vector operator *(float scalar, Vector vector) { return vector.Multiply(scalar); }
-    public static Vector operator /(Vector vector, float scalar) { return vector.Divide(scalar); }
+    public static Vector operator +(Vector left, Vector right) { return Vector.Add(left, right); }
+    public static Vector operator -(Vector left, Vector right) { return Vector.Subtract(left, right); }
+    public static Vector operator -(Vector vector) { return Vector.Negate(vector); }
+    public static Vector operator *(Vector left, float right) { return Vector.Multiply(left, right); }
+    public static Vector operator *(float left, Vector right) { return Vector.Multiply(right, left); }
+    public static Vector operator /(Vector left, float right) { return Vector.Divide(left, right); }
     public static bool operator ==(Vector left, Vector right) { return Vector.Equals(left, right); }
     public static bool operator !=(Vector left, Vector right) { return !Vector.Equals(left, right); }
-    public static implicit operator float[,](Vector vector) { return new float[,] { { vector.X }, { vector.Y }, { vector.Z } }; }
-    public static implicit operator Matrix(Vector vector) { return new Matrix(vector); }
+    public static implicit operator float[,](Vector vector) { return Vector.ToFloats(vector); }
+    public static implicit operator Matrix(Vector vector) { return Vector.ToMatrix(vector); }
 
     public Vector Add(Vector right) { return Vector.Add(this, right); }
     public Vector Negate() { return Vector.Negate(this); }
@@ -238,12 +238,28 @@ namespace SevenEngine.Mathematics
       return a + u * (b - a) + v * (c - a);
     }
 
+    public static float[,] ToFloats(Vector vector)
+    {
+      return new float[,] { { vector.X }, { vector.Y }, { vector.Z } };
+    }
+
+    public static Matrix ToMatrix(Vector vector)
+    {
+      return new Matrix(new float[,] { { vector.X }, { vector.Y }, { vector.Z } });
+      //Matrix matrix = new Matrix(vector.X, vector.Y, vector.Z);
+      //matrix[0, 0] = vector.X;
+      //matrix[1, 0] = vector.Y;
+      //matrix[2, 0] = vector.Z;
+      //return matrix;
+    }
+
     public override string ToString()
     {
-      return
-        X.ToString() + "\n" + 
-        Y.ToString() + "\n" +
-        Z.ToString() + "\n";
+      return base.ToString();
+      //return
+      //  X.ToString() + "\n" + 
+      //  Y.ToString() + "\n" +
+      //  Z.ToString() + "\n";
     }
 
     public override int GetHashCode()
