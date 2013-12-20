@@ -28,16 +28,6 @@ namespace SevenEngine
 
     public SevenEngineWindow(int width, int height) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, "Game")
     {
-      Matrix matrix = new Matrix(new float[,] { { 5.5f, 6.5f, 7.5f }, { 4.0f, 6.0f, 8.0f }, { 1.0f, 2.0f, 3.0f } });
-      Output.WriteLine("Original:\n" + matrix.ToString());
-      Output.WriteLine();
-      Output.WriteLine("Determinent:\n" + matrix.Determinent());
-      Output.WriteLine();
-      Output.WriteLine("Determinent2:\n" + Matrix.Determinent2(matrix));
-      Output.WriteLine();
-      Output.WaitForEnter();
-
-
       Output.WriteLine("GAME INITIALIZATION {");
       Output.IncreaseIndent();
 
