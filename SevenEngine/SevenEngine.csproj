@@ -131,7 +131,7 @@
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Mathematics\Point.cs" />
-    <Compile Include="UTILITIES\PreciseTimer.cs" />
+    <Compile Include="UTILITIES\Timer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UTILITIES\Renderer.cs" />
     <Compile Include="Audio\Sound.cs" />

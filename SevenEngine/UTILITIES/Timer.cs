@@ -15,11 +15,11 @@ using System.Diagnostics;
 namespace SevenEngine
 {
   /// <summary>Utility for the engine. Gets the alapsed time to be passed to the "Update()" functions of state or game objects.</summary>
-  public class PreciseTimer
+  public class Timer
   {
     private Stopwatch _stopwatch;
 
-    public PreciseTimer()
+    public Timer()
     {
       _stopwatch = new Stopwatch();
       _stopwatch.Reset();

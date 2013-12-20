@@ -37,12 +37,26 @@ namespace SevenEngine
     }
 
     /// <summary>Writes a message to the console. Places spaces before the output equal to the current indention level.</summary>
+    public static void WriteLine()
+    {
+      for (int i = 0; i < _indent; i++)
+        Console.Write(" ");
+      Console.WriteLine();
+    }
+
+    /// <summary>Writes a message to the console. Places spaces before the output equal to the current indention level.</summary>
     /// <param name="output">The string desired to write.</param>
     public static void Write(string output)
     {
       for (int i = 0; i < _indent; i++)
         Console.Write(" ");
       Console.Write(output);
+    }
+
+    /// <summary>Does a console readline to wait for user to press enter.</summary>
+    public static void WaitForEnter()
+    {
+      Console.ReadLine();
     }
   }
 }

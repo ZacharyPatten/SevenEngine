@@ -11,12 +11,13 @@
 // Last Edited: 12-19-13
 
 using System;
+using System.Text;
 
 namespace SevenEngine.Mathematics
 {
   public class Matrix
   {
-    protected float[,] _matrix;
+    private float[,] _matrix;
     
     public float[,] Values { get { return _matrix; } }
     public int Rows { get { return _matrix.GetLength(0); } }
@@ -129,86 +130,88 @@ namespace SevenEngine.Mathematics
     public Matrix Transpose() { return Matrix.Transpose(this); }
     public Matrix Clone() { return Matrix.Clone(this); }
 
-    public static Matrix Negate(Matrix matrix)
+    public static Matrix Negate(float[,] matrix)
     {
-      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
-      for (int i = 0; i < matrix.Rows; i++)
-        for (int j = 0; j < matrix.Columns; j++)
+      Matrix result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+      for (int i = 0; i < matrix.GetLength(0); i++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
           result[i, j] = -matrix[i, j];
       return result;
     }
 
-    public static Matrix Add(Matrix left, Matrix right)
+    public static Matrix Add(float[,] left, float[,] right)
     {
-      if (left.Rows != right.Rows || left.Columns != right.Columns)
+      if (left.GetLength(0) != right.GetLength(0) || left.GetLength(1) != right.GetLength(1))
         throw new MatrixException("invalid addition (size miss-match).");
-      Matrix result = new Matrix(left.Rows, left.Columns);
+      Matrix result = new Matrix(left.GetLength(0), left.GetLength(1));
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
           result[i, j] = left[i, j] + right[i, j];
       return result;
     }
 
-    public static Matrix Subtract(Matrix left, Matrix right)
+    public static Matrix Subtract(float[,] left, float[,] right)
     {
-      if (left.Rows != right.Rows || left.Columns != right.Columns)
+      if (left.GetLength(0) != right.GetLength(0) || left.GetLength(1) != right.GetLength(1))
         throw new MatrixException("invalid subtraction (size miss-match).");
-      Matrix result = new Matrix(left.Rows, left.Columns);
+      Matrix result = new Matrix(left.GetLength(0), left.GetLength(1));
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
           result[i, j] = left[i, j] - right[i, j];
       return result;
     }
 
-    public static Matrix Multiply(Matrix left, Matrix right)
+    public static Matrix Multiply(float[,] left, float[,] right)
     {
-      if (left.Columns != right.Rows)
+      if (left.GetLength(1) != right.GetLength(0))
         throw new MatrixException("invalid multiplication (size miss-match).");
-      Matrix result = new Matrix(left.Rows, right.Columns);
+      Matrix result = new Matrix(left.GetLength(0), right.GetLength(1));
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
-          for (int k = 0; k < left.Columns; k++)
+          for (int k = 0; k < left.GetLength(1); k++)
             result[i, j] += left[i, k] * right[k, j];
       return result;
     }
 
-    public static Matrix Multiply(Matrix matrix, float right)
+    public static Matrix Multiply(float[,] matrix, float right)
     {
-      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
-      for (int i = 0; i < matrix.Rows; i++)
-        for (int j = 0; j < matrix.Columns; j++)
+      Matrix result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+      for (int i = 0; i < matrix.GetLength(0); i++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
           result[i, j] = matrix[i, j] * right;
       return result;
     }
 
-    public static Matrix Power(Matrix matrix, int power)
+    public static Matrix Power(float[,] matrix, int power)
     {
-      if (!matrix.IsSquare)
+      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
         throw new MatrixException("invalid power (!matrix.IsSquare).");
-      Matrix result = matrix.Clone();
+      if (!(power > 0))
+        throw new MatrixException("invalid power !(power > 0)");
+      Matrix result = Matrix.Clone(matrix);
       for (int i = 0; i < power; i++)
         result *= result;
       return result;
     }
 
-    public static Matrix Divide(Matrix matrix, float right)
+    public static Matrix Divide(float[,] matrix, float right)
     {
-      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
-      for (int i = 0; i < matrix.Rows; i++)
-        for (int j = 0; j < matrix.Columns; j++)
+      Matrix result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+      for (int i = 0; i < matrix.GetLength(0); i++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
           result[i, j] = matrix[i, j] / right;
       return result;
     }
 
-    public static Matrix Minor(Matrix matrix, int row, int column)
+    public static Matrix Minor(float[,] matrix, int row, int column)
     {
-      Matrix minor = new Matrix(matrix.Rows - 1, matrix.Columns - 1);
+      Matrix minor = new Matrix(matrix.GetLength(0) - 1, matrix.GetLength(1) - 1);
       int m = 0, n = 0;
-      for (int i = 0; i < matrix.Rows; i++)
+      for (int i = 0; i < matrix.GetLength(0); i++)
       {
         if (i == row) continue;
         n = 0;
-        for (int j = 0; j < matrix.Columns; j++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
         {
           if (j == column) continue;
           minor[m, n] = matrix[i, j];
@@ -219,21 +222,21 @@ namespace SevenEngine.Mathematics
       return minor;
     }
 
-    private static void RowMultiplication(Matrix matrix, int row, float scalar)
+    private static void RowMultiplication(float[,] matrix, int row, float scalar)
     {
-      for (int j = 0; j < matrix.Columns; j++)
+      for (int j = 0; j < matrix.GetLength(1); j++)
         matrix[row, j] *= scalar;
     }
 
-    private static void RowAddition(Matrix matrix, int target, int second, float multiple)
+    private static void RowAddition(float[,] matrix, int target, int second, float multiple)
     {
-      for (int j = 0; j < matrix.Columns; j++)
+      for (int j = 0; j < matrix.GetLength(1); j++)
         matrix[target, j] += (matrix[second, j] * multiple);
     }
 
-    private static void SwapRows(Matrix matrix, int row1, int row2)
+    private static void SwapRows(float[,] matrix, int row1, int row2)
     {
-      for (int j = 0; j < matrix.Columns; j++)
+      for (int j = 0; j < matrix.GetLength(1); j++)
       {
         float temp = matrix[row1, j];
         matrix[row1, j] = matrix[row2, j];
@@ -241,29 +244,29 @@ namespace SevenEngine.Mathematics
       }
     }
 
-    public static Matrix ConcatenateRowWise(Matrix left, Matrix right)
+    public static Matrix ConcatenateRowWise(float[,] left, float[,] right)
     {
-      if (left.Rows != right.Rows)
+      if (left.GetLength(0) != right.GetLength(0))
         throw new MatrixException("invalid row-wise concatenation !(left.Rows == right.Rows).");
-      Matrix result = new Matrix(left.Rows, left.Columns + right.Columns);
+      Matrix result = new Matrix(left.GetLength(0), left.GetLength(1) + right.GetLength(1));
       for (int i = 0; i < result.Rows; i++)
         for (int j = 0; j < result.Columns; j++)
         {
-          if (j < left.Columns) result[i, j] = left[i, j];
-          else result[i, j] = right[i, j - left.Columns];
+          if (j < left.GetLength(1)) result[i, j] = left[i, j];
+          else result[i, j] = right[i, j - left.GetLength(1)];
         }
       return result;
     }
 
-    public static float Determinent(Matrix matrix)
+    public static float Determinent(float[,] matrix)
     {
-      if (!matrix.IsSquare)
+      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
         throw new MatrixException("invalid determinent !(matrix.IsSquare).");
       float det = 1.0f;
       try
       {
         Matrix rref = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.Rows; i++)
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
           if (rref[i, i] == 0)
             for (int j = i + 1; j < rref.Rows; j++)
@@ -287,37 +290,38 @@ namespace SevenEngine.Mathematics
       }
     }
 
-    public static Matrix Echelon(Matrix matrix)
+    public static Matrix Echelon(float[,] matrix)
     {
       try
       {
         Matrix result = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.Rows; i++)
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
           if (result[i, i] == 0)
             for (int j = i + 1; j < result.Rows; j++)
               if (result[j, i] != 0)
                 Matrix.SwapRows(result, i, j);
-          if (result[i, i] == 0) continue;
-          if (result[i, i] != 1)	
+          if (result[i, i] == 0)
+            continue;
+          if (result[i, i] != 1)
             for (int j = i + 1; j < result.Rows; j++)
               if (result[j, i] == 1)
                 Matrix.SwapRows(result, i, j);
           Matrix.RowMultiplication(result, i, 1 / result[i, i]);
           for (int j = i + 1; j < result.Rows; j++)
-            Matrix.RowAddition(result, j, i, (int)-result[j, i]);
+            Matrix.RowAddition(result, j, i, -result[j, i]);
         }
         return result;
       }
       catch { throw new MatrixException("echelon computation failed."); }
     }
 
-    public static Matrix ReducedEchelon(Matrix matrix)
+    public static Matrix ReducedEchelon(float[,] matrix)
     {
       try
       {
         Matrix result = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.Rows; i++)
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
           if (result[i, i] == 0)
             for (int j = i + 1; j < result.Rows; j++)
@@ -328,7 +332,7 @@ namespace SevenEngine.Mathematics
             for (int j = i + 1; j < result.Rows; j++)
               if (result[j, i] == 1)
                 Matrix.SwapRows(result, i, j);
-          Matrix.RowMultiplication(result, i, result[i, i]);
+          Matrix.RowMultiplication(result, i, 1 / result[i, i]);
           for (int j = i + 1; j < result.Rows; j++)
             Matrix.RowAddition(result, j, i, -result[j, i]);
           for (int j = i - 1; j >= 0; j--)
@@ -339,15 +343,15 @@ namespace SevenEngine.Mathematics
       catch { throw new MatrixException("reduced echelon calculation failed."); }
     }
 
-    public static Matrix Inverse(Matrix matrix)
+    public static Matrix Inverse(float[,] matrix)
     {
       if (Matrix.Determinent(matrix) == 0)
         throw new MatrixException("inverse calculation failed.");
       try
       {
-        Matrix identity = Matrix.FactoryIdentity(matrix.Rows, matrix.Columns);
+        Matrix identity = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
         Matrix rref = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.Rows; i++)
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
           if (rref[i, i] == 0)
             for (int j = i + 1; j < rref.Rows; j++)
@@ -374,44 +378,48 @@ namespace SevenEngine.Mathematics
       catch { throw new MatrixException("inverse calculation failed."); }
     }
 
-    public static Matrix Adjoint(Matrix matrix)
+    public static Matrix Adjoint(float[,] matrix)
     {
-      if (!matrix.IsSquare)
+      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
         throw new MatrixException("Adjoint of a non-square matrix does not exists");
-      Matrix AdjointMatrix = new Matrix(matrix.Rows, matrix.Columns);
-      for (int i = 0; i < matrix.Rows; i++)
-        for (int j = 0; j < matrix.Columns; j++)
+      Matrix AdjointMatrix = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+      for (int i = 0; i < matrix.GetLength(0); i++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
           if ((i + j) % 2 == 0)
             AdjointMatrix[i, j] = Matrix.Determinent(Matrix.Minor(matrix, i, j));
           else
             AdjointMatrix[i, j] = -Matrix.Determinent(Matrix.Minor(matrix, i, j));
-      return Matrix.Transpose(AdjointMatrix); ;
+      return Matrix.Transpose(AdjointMatrix);
     }
 
-    public static Matrix Transpose(Matrix matrix)
+    /// <summary>Returns the transpose of a matrix.</summary>
+    /// <param name="matrix">The matrix to transpose.</param>
+    /// <returns>The transpose of the matrix.</returns>
+    public static Matrix Transpose(float[,] matrix)
     {
-      Matrix transpose = new Matrix(matrix.Columns, matrix.Rows);
+      Matrix transpose = new Matrix(matrix.GetLength(1), matrix.GetLength(0));
       for (int i = 0; i < transpose.Rows; i++)
         for (int j = 0; j < transpose.Columns; j++)
           transpose[i, j] = matrix[j, i];
       return transpose;
     }
 
-    public static Matrix Clone(Matrix matrix)
+    //
+    public static Matrix Clone(float[,] matrix)
     {
-      Matrix result = new Matrix(matrix.Rows, matrix.Columns);
-      for (int i = 0; i < matrix.Rows; i++)
-        for (int j = 0; j < matrix.Columns; j++)
+      Matrix result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+      for (int i = 0; i < matrix.GetLength(0); i++)
+        for (int j = 0; j < matrix.GetLength(1); j++)
           result[i, j] = matrix[i, j];
       return result;
     }
 
-    public static bool Equals(Matrix left, Matrix right)
+    public static bool Equals(float[,] left, float[,] right)
     {
-      if (left.Rows != right.Rows || left.Columns != right.Columns)
+      if (left.GetLength(0) != right.GetLength(0) || left.GetLength(1) != right.GetLength(1))
         return false;
-      for (int i = 0; i < left.Rows; i++)
-        for (int j = 0; j < left.Columns; j++)
+      for (int i = 0; i < left.GetLength(0); i++)
+        for (int j = 0; j < left.GetLength(1); j++)
           if (left[i, j] != right[i, j])
             return false;
       return true;
@@ -419,15 +427,16 @@ namespace SevenEngine.Mathematics
 
     public override string ToString()
     {
-      return base.ToString();
-      //StringBuilder matrix = new StringBuilder();
-      //for (int i = 0; i < Rows; i++)
-      //{
-      //  for (int j = 0; j < Columns; j++)
-      //    matrix.Append(_matrix[i, j] + " ");
-      //  matrix.Append("\n");
-      //}
-      //return matrix.ToString();
+      //return base.ToString();
+      StringBuilder matrix = new StringBuilder();
+      for (int i = 0; i < Rows; i++)
+      {
+        for (int j = 0; j < Columns; j++)
+          matrix.Append(String.Format("{0:0.##}\t", _matrix[i, j]));
+          //matrix.Append(_matrix[i, j] + "\t");
+        matrix.Append("\n");
+      }
+      return matrix.ToString();
     }
 
     public override int GetHashCode()

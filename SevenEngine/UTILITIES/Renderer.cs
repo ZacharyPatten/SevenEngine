@@ -38,6 +38,13 @@ namespace SevenEngine
 
     #region Transformations
 
+    //private Matrix _viewMatrix;
+    //private Matrix _projectionMatrix;
+    //private Matrix _cameraMatrix;
+    //private Matrix _modelMatrix;
+
+    //private Matrix Projection { get { return _projectionMatrix; } set { _projectionMatrix = value; } }
+
     private static Camera _currentCamera;
 
     // I will change this class in general is a short term fix. will probably use the renderer to store the transformations.
