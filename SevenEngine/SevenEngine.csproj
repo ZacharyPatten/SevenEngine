@@ -85,11 +85,9 @@
     <Compile Include="INTERFACES\InterfaceComparable.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
     <Compile Include="InterfaceGameState.cs" />
-    <Compile Include="Mathematics\Foundations.cs" />
-    <Compile Include="Mathematics\Logic.cs" />
+    <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
-    <Compile Include="Mathematics\Trigonometry.cs" />
     <Compile Include="Physics\Matter.cs" />
     <Compile Include="Physics\Shapes\Cone.cs" />
     <Compile Include="Physics\Shapes\Cube.cs" />

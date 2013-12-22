@@ -445,7 +445,7 @@ namespace SevenEngine.DataStructures
       WriterLock();
       WriterUnlock();
       throw new NotImplementedException("Sorry, I'm still working on the update function.");
-      WriterUnlock();
+      //WriterUnlock();
     }
 
     /// <summary>Performs a functional paradigm traversal of the octree.</summary>

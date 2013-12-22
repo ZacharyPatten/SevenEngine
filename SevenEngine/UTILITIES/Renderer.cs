@@ -162,7 +162,7 @@ namespace SevenEngine
       // Apply the 2D orthographic matrix transformation
       SetOrthographicMatrix();
 
-      rotation = Trigonometry.ToDegrees(rotation);
+      rotation = Calc.ToDegrees(rotation);
 
       // Set the text shader program and pass in the color as a parameter
       GL.UseProgram(ShaderManager.TextShader.GpuHandle);
@@ -325,10 +325,12 @@ namespace SevenEngine
       // Apply the 3D projection matrix transformations
       SetProjectionMatrix();
 
-      if (staticModel.ShaderOverride != null)
-        GL.UseProgram(_defaultShaderProgram.GpuHandle);
-      else
-        GL.UseProgram(ShaderManager.DefaultShader.GpuHandle);
+      //if (staticModel.ShaderOverride != null)
+      //  GL.UseProgram(_defaultShaderProgram.GpuHandle);
+      //else
+      //  GL.UseProgram(ShaderManager.LightShader.GpuHandle);
+
+      GL.UseProgram(ShaderManager.LightShader.GpuHandle);
 
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);
@@ -337,7 +339,7 @@ namespace SevenEngine
       GL.LoadMatrix(ref cameraTransform);
       // Apply the world transformation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
-      GL.Rotate(Trigonometry.ToDegrees(staticModel.Orientation.W), staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
+      GL.Rotate(Calc.ToDegrees(staticModel.Orientation.W), staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       // Call the drawing functions for each mesh within the model
@@ -403,7 +405,8 @@ namespace SevenEngine
         GL.EnableClientState(ArrayCap.IndexArray);
         
         // Ready to render using an index buffer
-        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMeshInstance.VertexCount, DrawElementsType.UnsignedInt, 0);
+        int elements = 0;
+        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMeshInstance.VertexCount, DrawElementsType.UnsignedInt, ref elements);
       }
       else
         // Ready to render

@@ -10,11 +10,10 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 
 using System;
-using System.Text;
 
 namespace SevenEngine.Mathematics
 {
-  /// <summary>A matrix wrapper for float[,] to perform matrix theory. Enjoy :)</summary>
+  /// <summary>A matrix wrapper for float[,] to perform matrix theory in row major order. Enjoy :)</summary>
   public class Matrix
   {
     private float[,] _matrix;
@@ -27,6 +26,20 @@ namespace SevenEngine.Mathematics
     public int Columns { get { return _matrix.GetLength(1); } }
     /// <summary>Determines if the matrix is square.</summary>
     public bool IsSquare { get { return Rows == Columns; } }
+    /// <summary>Determines if the matrix is a vector.</summary>
+    public bool IsVector { get { return Columns == 1; } }
+    /// <summary>Determines if the matrix is a 2 component vector.</summary>
+    public bool Is2x1 { get { return Rows == 2 && Columns == 1; } }
+    /// <summary>Determines if the matrix is a 3 component vector.</summary>
+    public bool Is3x1 { get { return Rows == 3 && Columns == 1; } }
+    /// <summary>Determines if the matrix is a 4 component vector.</summary>
+    public bool Is4x1 { get { return Rows == 4 && Columns == 1; } }
+    /// <summary>Determines if the matrix is a 2 square matrix.</summary>
+    public bool Is2x2 { get { return Rows == 2 && Columns == 2; } }
+    /// <summary>Determines if the matrix is a 3 square matrix.</summary>
+    public bool Is3x3 { get { return Rows == 3 && Columns == 3; } }
+    /// <summary>Determines if the matrix is a 4 square matrix.</summary>
+    public bool Is4x4 { get { return Rows == 4 && Columns == 4; } }
 
     /// <summary>Standard row-major matrix indexing.</summary>
     /// <param name="row">The row index.</param>
@@ -63,7 +76,9 @@ namespace SevenEngine.Mathematics
     {
       if (values.Length != rows * columns)
         throw new MatrixException("invalid construction (number of values does not match dimensions.)");
-      float[,] matrix = new float[rows, columns];
+      float[,] matrix;
+      try { matrix = new float[rows, columns]; }
+      catch { throw new MatrixException("invalid dimensions."); }
       int k = 0;
       for (int i = 0; i < rows; i++)
         for (int j = 0; j < columns; j++)
@@ -135,6 +150,107 @@ namespace SevenEngine.Mathematics
         for (int j = 0; j < columns; j++)
           matrix[i, j] = uniform;
       return matrix;
+    }
+
+    /// <summary>Constructs a 2-component vector matrix with all values being 0.</summary>
+    /// <returns>The constructed 2-component vector matrix.</returns>
+    public static Matrix Factory2x1() { return new Matrix(2, 1); }
+    /// <summary>Constructs a 3-component vector matrix with all values being 0.</summary>
+    /// <returns>The constructed 3-component vector matrix.</returns>
+    public static Matrix Factory3x1() { return new Matrix(3, 1); }
+    /// <summary>Constructs a 4-component vector matrix with all values being 0.</summary>
+    /// <returns>The constructed 4-component vector matrix.</returns>
+    public static Matrix Factory4x1() { return new Matrix(4, 1); }
+
+    /// <summary>Constructs a 2x2 matrix with all values being 0.</summary>
+    /// <returns>The constructed 2x2 matrix.</returns>
+    public static Matrix Factory2x2() { return new Matrix(2, 2); }
+    /// <summary>Constructs a 3x3 matrix with all values being 0.</summary>
+    /// <returns>The constructed 3x3 matrix.</returns>
+    public static Matrix Factory3x3() { return new Matrix(3, 3); }
+    /// <summary>Constructs a 4x4 matrix with all values being 0.</summary>
+    /// <returns>The constructed 4x4 matrix.</returns>
+    public static Matrix Factory4x4() { return new Matrix(4, 4); }
+
+    /// <param name="angle">Angle of rotation in radians.</param>
+    public static Matrix Factory3x3RotationX(float angle)
+    {
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
+      return new Matrix(new float[,] {
+        { 1, 0, 0 },
+        { 0, cos, sin },
+        { 0, -sin, cos }});
+    }
+
+    /// <param name="angle">Angle of rotation in radians.</param>
+    public static Matrix Factory3x3RotationY(float angle)
+    {
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
+      return new Matrix(new float[,] {
+        { cos, 0, -sin },
+        { 0, 1, 0 },
+        { sin, 0, cos }});
+    }
+
+    /// <param name="angle">Angle of rotation in radians.</param>
+    public static Matrix Factory3x3RotationZ(float angle)
+    {
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
+      return new Matrix(new float[,] {
+        { cos, -sin, 0 },
+        { sin, cos, 0 },
+        { 0, 0, 1 }});
+    }
+
+    /// <param name="angleX">Angle about the X-axis in radians.</param>
+    /// <param name="angleY">Angle about the Y-axis in radians.</param>
+    /// <param name="angleZ">Angle about the Z-axis in radians.</param>
+    public static Matrix Factory3x3RotationXthenYthenZ(float angleX, float angleY, float angleZ)
+    {
+      float
+        xCos = Calc.Cos(angleX), xSin = Calc.Sin(angleX),
+        yCos = Calc.Cos(angleY), ySin = Calc.Sin(angleY),
+        zCos = Calc.Cos(angleZ), zSin = Calc.Sin(angleZ);
+      return new Matrix(new float[,] {
+        { yCos * zCos, -yCos * zSin, ySin },
+        { xCos * zSin + xSin * ySin * zCos, xCos * zCos + xSin * ySin * zSin, -xSin * yCos },
+        { xSin * zSin - xCos * ySin * zCos, xSin * zCos + xCos * ySin * zSin, xCos * yCos }});
+    }
+
+    /// <param name="angleX">Angle about the X-axis in radians.</param>
+    /// <param name="angleY">Angle about the Y-axis in radians.</param>
+    /// <param name="angleZ">Angle about the Z-axis in radians.</param>
+    public static Matrix Factory3x3RotationZthenYthenX(float angleX, float angleY, float angleZ)
+    {
+      float
+        xCos = Calc.Cos(angleX), xSin = Calc.Sin(angleX),
+        yCos = Calc.Cos(angleY), ySin = Calc.Sin(angleY),
+        zCos = Calc.Cos(angleZ), zSin = Calc.Sin(angleZ);
+      return new Matrix(new float[,] {
+        { yCos * zCos, zCos * xSin * ySin - xCos * zSin, xCos * zCos * ySin + xSin * zSin },
+        { yCos * zSin, xCos * zCos + xSin * ySin * zSin, -zCos * xSin + xCos * ySin * zSin },
+        { -ySin, yCos * xSin, xCos * yCos }});
+    }
+
+    /// <summary>Creates a 3x3 matrix initialized with a shearing transformation.</summary>
+    /// <param name="shearXbyY">The shear along the X-axis in the Y-direction.</param>
+    /// <param name="shearXbyZ">The shear along the X-axis in the Z-direction.</param>
+    /// <param name="shearYbyX">The shear along the Y-axis in the X-direction.</param>
+    /// <param name="shearYbyZ">The shear along the Y-axis in the Z-direction.</param>
+    /// <param name="shearZbyX">The shear along the Z-axis in the X-direction.</param>
+    /// <param name="shearZbyY">The shear along the Z-axis in the Y-direction.</param>
+    /// <returns>The constructed shearing matrix.</returns>
+    public static Matrix Factory3x3Shear(
+      float shearXbyY, float shearXbyZ, float shearYbyX,
+      float shearYbyZ, float shearZbyX, float shearZbyY)
+    {
+      return new Matrix(new float[,] {
+        { 1, shearYbyX, shearZbyX },
+        { shearXbyY, 1, shearYbyZ },
+        { shearXbyZ, shearYbyZ, 1 }});
     }
 
     /// <summary>Negates all the values in a matrix.</summary>
@@ -374,10 +490,10 @@ namespace SevenEngine.Mathematics
         matrix[row, j] *= scalar;
     }
 
-    private static void RowAddition(float[,] matrix, int target, int second, float multiple)
+    private static void RowAddition(float[,] matrix, int target, int second, float scalar)
     {
       for (int j = 0; j < matrix.GetLength(1); j++)
-        matrix[target, j] += (matrix[second, j] * multiple);
+        matrix[target, j] += (matrix[second, j] * scalar);
     }
 
     private static void SwapRows(float[,] matrix, int row1, int row2)
@@ -570,62 +686,57 @@ namespace SevenEngine.Mathematics
       return transpose;
     }
 
-    #region Work-In-Progress-functions
-
-    //public static void DecomposeLU(float[,] matrix, out Matrix Lower, out Matrix Upper)
-    //{
-    //  if (!(matrix.GetLength(0) == matrix.GetLength(1)))
-    //    throw new MatrixException("The matrix is not square!");
-
-    //  Lower = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
-    //  Upper = Matrix.Clone(matrix);
-    //  int[] pi = new int[matrix.GetLength(0)];
-    //  for (int i = 0; i < matrix.GetLength(0); i++) pi[i] = i;
-    //  float p = 0;
-    //  float pom2;
-    //  int k0 = 0;
-    //  int pom1 = 0;
-    //  float detOfP = 1;
-
-    //  for (int k = 0; k < matrix.GetLength(1) - 1; k++)
-    //  {
-    //    p = 0;
-    //    for (int i = k; i < matrix.GetLength(0); i++)      // find the row with the biggest pivot
-    //    {
-    //      if (Math.Abs(Upper[i, k]) > p)
-    //      {
-    //        p = Math.Abs(Upper[i, k]);
-    //        k0 = i;
-    //      }
-    //    }
-    //    if (p == 0) // samé nuly ve sloupci
-    //      throw new MatrixException("The matrix is singular!");
-
-    //    pom1 = pi[k]; pi[k] = pi[k0]; pi[k0] = pom1;    // switch two rows in permutation matrix
-
-    //    for (int i = 0; i < k; i++)
-    //    {
-    //      pom2 = Lower[k, i]; Lower[k, i] = Lower[k0, i]; Lower[k0, i] = pom2;
-    //    }
-
-    //    if (k != k0) detOfP *= -1;
-
-    //    for (int i = 0; i < matrix.GetLength(1); i++)                  // Switch rows in U
-    //    {
-    //      pom2 = Upper[k, i]; Upper[k, i] = Upper[k0, i]; Upper[k0, i] = pom2;
-    //    }
-
-    //    for (int i = k + 1; i < matrix.GetLength(0); i++)
-    //    {
-    //      Lower[i, k] = Upper[i, k] / Upper[k, k];
-    //      for (int j = k; j < matrix.GetLength(1); j++)
-    //        Upper[i, j] = Upper[i, j] - Lower[i, k] * Upper[k, j];
-    //    }
-    //  }
-    //}
-
-    #endregion
-
+    /// <summary>Decomposes a matrix into lower-upper reptresentation.</summary>
+    /// <param name="matrix">The matrix to decompose.</param>
+    /// <param name="Lower">The computed lower triangular matrix.</param>
+    /// <param name="Upper">The computed upper triangular matrix.</param>
+    public static void DecomposeLU(float[,] matrix, out Matrix Lower, out Matrix Upper)
+    {
+      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
+        throw new MatrixException("The matrix is not square!");
+      Lower = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
+      Upper = Matrix.Clone(matrix);
+      int[] permutation = new int[matrix.GetLength(0)];
+      for (int i = 0; i < matrix.GetLength(0); i++) permutation[i] = i;
+      float p = 0, pom2, detOfP = 1;
+      int k0 = 0, pom1 = 0;
+      for (int k = 0; k < matrix.GetLength(1) - 1; k++)
+      {
+        p = 0;
+        for (int i = k; i < matrix.GetLength(0); i++)
+          if (Calc.Abs(Upper[i, k]) > p)
+          {
+            p = Calc.Abs(Upper[i, k]);
+            k0 = i;
+          }
+        if (p == 0)
+          throw new MatrixException("The matrix is singular!");
+        pom1 = permutation[k];
+        permutation[k] = permutation[k0];
+        permutation[k0] = pom1;
+        for (int i = 0; i < k; i++)
+        {
+          pom2 = Lower[k, i];
+          Lower[k, i] = Lower[k0, i];
+          Lower[k0, i] = pom2;
+        }
+        if (k != k0)
+          detOfP *= -1;
+        for (int i = 0; i < matrix.GetLength(1); i++)
+        {
+          pom2 = Upper[k, i];
+          Upper[k, i] = Upper[k0, i];
+          Upper[k0, i] = pom2;
+        }
+        for (int i = k + 1; i < matrix.GetLength(0); i++)
+        {
+          Lower[i, k] = Upper[i, k] / Upper[k, k];
+          for (int j = k; j < matrix.GetLength(1); j++)
+            Upper[i, j] = Upper[i, j] - Lower[i, k] * Upper[k, j];
+        }
+      }
+    }
+    
     /// <summary>Creates a copy of a matrix.</summary>
     /// <param name="matrix">The matrix to copy.</param>
     /// <returns>A copy of the matrix.</returns>
@@ -653,6 +764,22 @@ namespace SevenEngine.Mathematics
       return true;
     }
 
+    /// <summary>Does a value equality check with leniency.</summary>
+    /// <param name="left">The first matrix to check for equality.</param>
+    /// <param name="right">The second matrix to check for equality.</param>
+    /// <param name="leniency">How much the values can vary but still be considered equal.</param>
+    /// <returns>True if values are equal, false if not.</returns>
+    public static bool EqualsByValue(float[,] left, float[,] right, float leniency)
+    {
+      if (left.GetLength(0) != right.GetLength(0) || left.GetLength(1) != right.GetLength(1))
+        return false;
+      for (int i = 0; i < left.GetLength(0); i++)
+        for (int j = 0; j < left.GetLength(1); j++)
+          if (Calc.Abs(left[i, j] - right[i, j]) > leniency)
+            return false;
+      return true;
+    }
+
     /// <summary>Checks if two matrices are equal by reverences.</summary>
     /// <param name="left">The left matric of the equality check.</param>
     /// <param name="right">The right matrix of the equality check.</param>
@@ -662,8 +789,8 @@ namespace SevenEngine.Mathematics
       return left.Equals(right);
     }
 
-    /// <summary>CHANGE THIS FUNCTION TO YOUR SPECIFIC NEEDS.</summary>
-    /// <returns>THE BASE OBJECT STRING REPRESENTATION.</returns>
+    /// <summary>Prints out a string representation of this matrix.</summary>
+    /// <returns>A string representing this matrix.</returns>
     public override string ToString()
     {
       return base.ToString();
@@ -677,30 +804,24 @@ namespace SevenEngine.Mathematics
       //return matrix.ToString();
     }
 
-    /// <summary>WARNING: THIS METHOD IS VERY COMPUTATIONALLY EXPENSIVE (YOU MAY WANT TO CHANGE IT).</summary>
+    /// <summary>Computes a hash code from the values of this matrix.</summary>
     /// <returns>A hash code for the matrix.</returns>
     public override int GetHashCode()
     {
       // return base.GetHashCode();
       int hash = _matrix[0, 0].GetHashCode();
-      for (int j = 1; j < Columns; j++)
-        hash = hash ^ _matrix[0, j].GetHashCode();
       for (int i = 0; i < Rows; i++)
         for (int j = 0; j < Columns; j++)
           hash = hash ^ _matrix[i, j].GetHashCode();
       return hash;
     }
 
-    /// <summary>Does a value equality check by reference.</summary>
+    /// <summary>Does an equality check by reference.</summary>
     /// <param name="obj">The object to compare to.</param>
     /// <returns>True if the references are equal, false if not.</returns>
     public override bool Equals(object obj)
     {
       return base.Equals(obj) || _matrix.Equals(obj);
-      //if (obj is Matrix || obj is float[,])
-      //  return Matrix.Equals(this, (float[,])obj);
-      //else
-      //  return false;
     }
 
     private class MatrixException : Exception

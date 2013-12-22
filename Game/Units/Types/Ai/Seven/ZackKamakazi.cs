@@ -45,7 +45,7 @@ namespace Game.Units
           );
         }
         // Attacking
-        else if (Foundations.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared / 2)
+        else if (Calc.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared / 2)
         {
           Attack(octree);
           _move = 0;

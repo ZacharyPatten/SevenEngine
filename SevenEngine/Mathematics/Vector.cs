@@ -124,7 +124,7 @@ namespace SevenEngine.Mathematics
 
     public static float Length(Vector vector)
     {
-      return Foundations.SquareRoot(
+      return Calc.SquareRoot(
         vector.X * vector.X +
         vector.Y * vector.Y +
         vector.Z * vector.Z);
@@ -157,9 +157,9 @@ namespace SevenEngine.Mathematics
       else if (object.ReferenceEquals(left, null) || object.ReferenceEquals(null, right))
         return false;
       else return
-        Foundations.Abs(left.X - right.X) < leniency &&
-        Foundations.Abs(left.Y - right.Y) < leniency &&
-        Foundations.Abs(left.Z - right.Z) < leniency;
+        Calc.Abs(left.X - right.X) < leniency &&
+        Calc.Abs(left.Y - right.Y) < leniency &&
+        Calc.Abs(left.Z - right.Z) < leniency;
     }
 
     public static Vector DirectionTowardsPosition(Vector from, Vector to)
@@ -187,14 +187,14 @@ namespace SevenEngine.Mathematics
 
     public static float AngleBetween(Vector first, Vector second)
     {
-      return Trigonometry.ArcCos(Vector.DotProduct(first, second) / (first.Length() * second.Length()));
+      return Calc.ArcCos(Vector.DotProduct(first, second) / (first.Length() * second.Length()));
     }
 
     public static Vector RotateBy(Vector vector, float angle, float x, float y, float z)
     {
       // Note: the angle is in radians
-      float sinHalfAngle = Trigonometry.Sin(angle / 2);
-      float cosHalfAngle = Trigonometry.Cos(angle / 2);
+      float sinHalfAngle = Calc.Sin(angle / 2);
+      float cosHalfAngle = Calc.Cos(angle / 2);
       x *= sinHalfAngle;
       y *= sinHalfAngle;
       z *= sinHalfAngle;
@@ -228,9 +228,9 @@ namespace SevenEngine.Mathematics
     {
       if (blend < 0 || blend > 1.0f)
         throw new VectorException("invalid slerp blend value: (blend < 0.0f || blend > 1.0f).");
-      float dot = Foundations.Clamp(Vector.DotProduct(a, b), -1.0f, 1.0f);
-      float theta = Trigonometry.ArcCos(dot) * blend;
-      return a * Trigonometry.Cos(theta) + (b - a * dot).Normalize() * Trigonometry.Sin(theta);
+      float dot = Calc.Clamp(Vector.DotProduct(a, b), -1.0f, 1.0f);
+      float theta = Calc.ArcCos(dot) * blend;
+      return a * Calc.Cos(theta) + (b - a * dot).Normalize() * Calc.Sin(theta);
     }
 
     public static Vector InterpolateBarycentric(Vector a, Vector b, Vector c, float u, float v)

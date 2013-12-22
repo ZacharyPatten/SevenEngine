@@ -103,24 +103,24 @@ namespace SevenEngine.Mathematics
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix3x3 FactoryRotationX(float angle)
     {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
       return new Matrix3x3(1, 0, 0, 0, cos, sin, 0, -sin, cos);
     }
 
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix3x3 FactoryRotationY(float angle)
     {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
       return new Matrix3x3(cos, 0, -sin, 0, 1, 0, sin, 0, cos);
     }
 
     /// <param name="angle">Angle of rotation in radians.</param>
     public static Matrix3x3 FactoryRotationZ(float angle)
     {
-      float cos = Trigonometry.Cos(angle);
-      float sin = Trigonometry.Sin(angle);
+      float cos = Calc.Cos(angle);
+      float sin = Calc.Sin(angle);
       return new Matrix3x3(cos, -sin, 0, sin, cos, 0, 0, 0, 1);
     }
 
@@ -130,9 +130,9 @@ namespace SevenEngine.Mathematics
     public static Matrix3x3 FactoryRotationXthenYthenZ(float angleX, float angleY, float angleZ)
     {
       float
-        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
-        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
-        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
+        xCos = Calc.Cos(angleX), xSin = Calc.Sin(angleX),
+        yCos = Calc.Cos(angleY), ySin = Calc.Sin(angleY),
+        zCos = Calc.Cos(angleZ), zSin = Calc.Sin(angleZ);
       return new Matrix3x3(
         yCos * zCos, -yCos * zSin, ySin,
         xCos * zSin + xSin * ySin * zCos, xCos * zCos + xSin * ySin * zSin, -xSin * yCos,
@@ -145,9 +145,9 @@ namespace SevenEngine.Mathematics
     public static Matrix3x3 FactoryRotationZthenYthenX(float angleX, float angleY, float angleZ)
     {
       float
-        xCos = Trigonometry.Cos(angleX), xSin = Trigonometry.Sin(angleX),
-        yCos = Trigonometry.Cos(angleY), ySin = Trigonometry.Sin(angleY),
-        zCos = Trigonometry.Cos(angleZ), zSin = Trigonometry.Sin(angleZ);
+        xCos = Calc.Cos(angleX), xSin = Calc.Sin(angleX),
+        yCos = Calc.Cos(angleY), ySin = Calc.Sin(angleY),
+        zCos = Calc.Cos(angleZ), zSin = Calc.Sin(angleZ);
       return new Matrix3x3(
         yCos * zCos, zCos * xSin * ySin - xCos * zSin, xCos * zCos * ySin + xSin * zSin,
         yCos * zSin, xCos * zCos + xSin * ySin * zSin, -zCos * xSin + xCos * ySin * zSin,
@@ -198,15 +198,15 @@ namespace SevenEngine.Mathematics
     public bool EqualsApproximation(Matrix3x3 matrix, float tolerance)
     {
       return
-        Foundations.Abs(_r0c0 - matrix._r0c0) <= tolerance &&
-        Foundations.Abs(_r0c1 - matrix._r0c1) <= tolerance &&
-        Foundations.Abs(_r0c2 - matrix._r0c2) <= tolerance &&
-        Foundations.Abs(_r1c0 - matrix._r1c0) <= tolerance &&
-        Foundations.Abs(_r1c1 - matrix._r1c1) <= tolerance &&
-        Foundations.Abs(_r1c2 - matrix._r1c2) <= tolerance &&
-        Foundations.Abs(_r2c0 - matrix._r2c0) <= tolerance &&
-        Foundations.Abs(_r2c1 - matrix._r2c1) <= tolerance &&
-        Foundations.Abs(_r2c2 - matrix._r2c2) <= tolerance;
+        Calc.Abs(_r0c0 - matrix._r0c0) <= tolerance &&
+        Calc.Abs(_r0c1 - matrix._r0c1) <= tolerance &&
+        Calc.Abs(_r0c2 - matrix._r0c2) <= tolerance &&
+        Calc.Abs(_r1c0 - matrix._r1c0) <= tolerance &&
+        Calc.Abs(_r1c1 - matrix._r1c1) <= tolerance &&
+        Calc.Abs(_r1c2 - matrix._r1c2) <= tolerance &&
+        Calc.Abs(_r2c0 - matrix._r2c0) <= tolerance &&
+        Calc.Abs(_r2c1 - matrix._r2c1) <= tolerance &&
+        Calc.Abs(_r2c2 - matrix._r2c2) <= tolerance;
     }
 
     public Matrix3x3 Negate()
@@ -298,43 +298,43 @@ namespace SevenEngine.Mathematics
       if (qZ < 0.0f) qZ = 0.0f;
       if (qW < 0.0f) qW = 0.0f;
       
-      qX = Foundations.SquareRoot(qX);
-      qY = Foundations.SquareRoot(qY);
-      qZ = Foundations.SquareRoot(qZ);
-      qW = Foundations.SquareRoot(qW);
+      qX = Calc.SquareRoot(qX);
+      qY = Calc.SquareRoot(qY);
+      qZ = Calc.SquareRoot(qZ);
+      qW = Calc.SquareRoot(qW);
 
       if (qX >= qY && qX >= qZ && qX >= qW)
       {
         qX *= +1.0f;
-        qY *= Trigonometry.Sin(_r2c1 - _r1c2);
-        qZ *= Trigonometry.Sin(_r0c2 - _r2c0);
-        qW *= Trigonometry.Sin(_r1c0 - _r0c1);
+        qY *= Calc.Sin(_r2c1 - _r1c2);
+        qZ *= Calc.Sin(_r0c2 - _r2c0);
+        qW *= Calc.Sin(_r1c0 - _r0c1);
       }
       else if (qY >= qX && qY >= qZ && qY >= qW)
       {
-        qX *= Trigonometry.Sin(_r2c1 - _r1c2);
+        qX *= Calc.Sin(_r2c1 - _r1c2);
         qY *= +1.0f;
-        qZ *= Trigonometry.Sin(_r1c0 + _r0c1);
-        qW *= Trigonometry.Sin(_r0c2 + _r2c0);
+        qZ *= Calc.Sin(_r1c0 + _r0c1);
+        qW *= Calc.Sin(_r0c2 + _r2c0);
       }
       else if (qZ >= qX && qZ >= qY && qZ >= qW)
       {
-        qX *= Trigonometry.Sin(_r0c2 - _r2c0);
-        qY *= Trigonometry.Sin(_r1c0 + _r0c1);
+        qX *= Calc.Sin(_r0c2 - _r2c0);
+        qY *= Calc.Sin(_r1c0 + _r0c1);
         qZ *= +1.0f;
-        qW *= Trigonometry.Sin(_r2c1 + _r1c2);
+        qW *= Calc.Sin(_r2c1 + _r1c2);
       }
       else if (qW >= qX && qW >= qY && qW >= qZ)
       {
-        qX *= Trigonometry.Sin(_r1c0 - _r0c1);
-        qY *= Trigonometry.Sin(_r2c0 + _r0c2);
-        qZ *= Trigonometry.Sin(_r2c1 + _r1c2);
+        qX *= Calc.Sin(_r1c0 - _r0c1);
+        qY *= Calc.Sin(_r2c0 + _r0c2);
+        qZ *= Calc.Sin(_r2c1 + _r1c2);
         qW *= +1.0f;
       }
       else
         throw new MatrixException("There is a glitch in my my matrix to quaternion function. Sorry..");
 
-      float length = Foundations.SquareRoot(qX * qX + qY * qY + qZ * qZ + qW * qW);
+      float length = Calc.SquareRoot(qX * qX + qY * qY + qZ * qZ + qW * qW);
 
       return new Quaternion(
         qX /= length,

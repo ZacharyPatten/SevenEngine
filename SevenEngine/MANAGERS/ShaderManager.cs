@@ -25,10 +25,12 @@ namespace SevenEngine
     internal static ShaderProgram _defaultShader;
     internal static ShaderProgram _colorShader;
     internal static ShaderProgram _textShader;
+    internal static ShaderProgram _lightShader;
 
     internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
     internal static ShaderProgram ColorShader { get { return _colorShader; } }
     internal static ShaderProgram TextShader { get { return _textShader; } }
+    internal static ShaderProgram LightShader { get { return _lightShader; } }
 
     private static AvlTree<VertexShader, string> _vertexShaderDatabase =
       new AvlTreeLinked<VertexShader, string>(VertexShader.CompareTo, VertexShader.CompareTo);
@@ -306,7 +308,7 @@ namespace SevenEngine
 
       // Basic Fragment Shader
       int basicFragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
-      GL.ShaderSource(basicFragmentShaderHandle, FragmentShader.Basic);
+      GL.ShaderSource(basicFragmentShaderHandle, FragmentShader.Texture);
       GL.CompileShader(basicFragmentShaderHandle);
       FragmentShader basicFragmentShader =
         new FragmentShader("FragmentShaderBasic", "Built-In", basicFragmentShaderHandle);
@@ -346,6 +348,28 @@ namespace SevenEngine
       GL.AttachShader(textProgramHandle, textFragmentShader.GpuHandle);
       GL.LinkProgram(textProgramHandle);
       _textShader = new ShaderProgram("ShaderProgramText", textProgramHandle);
+
+      // Vertex Shader Light
+      int vertexShaderLightHandle = GL.CreateShader(ShaderType.VertexShader);
+      GL.ShaderSource(vertexShaderLightHandle, VertexShader.Light);
+      GL.CompileShader(vertexShaderLightHandle);
+      VertexShader vertexShaderLight =
+        new VertexShader("VertexShaderLight", "Built-In", vertexShaderLightHandle);
+
+      // Fragment Shader Light
+      int fragmentShaderLightHandle = GL.CreateShader(ShaderType.FragmentShader);
+      GL.ShaderSource(fragmentShaderLightHandle, FragmentShader.Light);
+      GL.CompileShader(fragmentShaderLightHandle);
+      FragmentShader fragmentShaderLight =
+        new FragmentShader("FragmentShaderBasic", "Built-In", fragmentShaderLightHandle);
+
+
+      // Shader Program Light
+      int shaderProgramLightHandle = GL.CreateProgram();
+      GL.AttachShader(shaderProgramLightHandle, vertexShaderLight.GpuHandle);
+      GL.AttachShader(shaderProgramLightHandle, fragmentShaderLight.GpuHandle);
+      GL.LinkProgram(shaderProgramLightHandle);
+      _lightShader = new ShaderProgram("ShaderProgramLight", shaderProgramLightHandle);
     }
   }
 }

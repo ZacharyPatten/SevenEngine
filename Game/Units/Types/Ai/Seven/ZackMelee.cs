@@ -71,7 +71,7 @@ namespace Game.Units
           );
         }
         // Attacking
-        else if (Foundations.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared)
+        else if (Calc.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared)
         {
           if (!attack)
             AiBattle.lines.TryAdd(new Link3<Vector, Vector, Color>(

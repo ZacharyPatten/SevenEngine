@@ -135,6 +135,20 @@ namespace SevenEngine
       InitializeShaders();
       Output.DecreaseIndent();
       Output.WriteLine("} Shaders Initialized;");
+
+      //GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+      //GLfloat mat_shininess[] = { 50.0 };
+      //GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+      //glShadeModel (GL_SMOOTH);
+      //glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+      //glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+      //glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+      GL.ShadeModel(ShadingModel.Smooth);
+      GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+      GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 800.0f);
+      GL.Material(MaterialFace.Front, MaterialParameter.Ambient, new float[] { 0.4f, 0.4f, 0.4f, 1.0f });
+      GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, new float[] { .8f, .8f, 0.8f, 1.0f });
+      GL.Light(LightName.Light0, LightParameter.Position, new float[] { 0.0f, 1000.0f, 0.0f, 1.0f });
     }
     /// <summary>OVERRIDE THIS FUNCTION!</summary>
     public virtual void InitializeShaders() { Output.WriteLine("ERROR: you are not overriding the \"InitializeShaders()\" during game initilization."); }

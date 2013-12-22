@@ -75,14 +75,14 @@ namespace Game.States
       CameraControls();
 
       spriteTimer += .05f;
-      _sprites.Position.X = (Trigonometry.Sin(spriteTimer) * 100) + 100;
-      _sprites.Position.Y = (Trigonometry.Cos(spriteTimer) * 100) + 100;
+      _sprites.Position.X = (Calc.Sin(spriteTimer) * 100) + 100;
+      _sprites.Position.Y = (Calc.Cos(spriteTimer) * 100) + 100;
 
       _sprites2.Position.X = (float)(Math.Sin(spriteTimer) * 100) - 100;
       _sprites2.Position.Y = (float)(Math.Cos(spriteTimer) * 100) - 100;
 
-      _sprites3.Position.X = (Trigonometry.Sin(spriteTimer) * 100);
-      _sprites3.Position.Y = (Trigonometry.Cos(spriteTimer) * 100);
+      _sprites3.Position.X = (Calc.Sin(spriteTimer) * 100);
+      _sprites3.Position.Y = (Calc.Cos(spriteTimer) * 100);
 
       // You can return whatever you like, but you should use the return value to determine state changes
       return "Don't Change States";

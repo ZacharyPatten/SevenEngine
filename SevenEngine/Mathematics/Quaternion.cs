@@ -31,12 +31,12 @@ namespace SevenEngine.Mathematics
     {
       if (axis.LengthSquared() == 0.0f)
         return FactoryIdentity;
-      float sinAngleOverAxisLength = Trigonometry.Sin(angle / 2) / axis.Length();
+      float sinAngleOverAxisLength = Calc.Sin(angle / 2) / axis.Length();
       return Quaternion.Normalize(new Quaternion(
         axis.X * sinAngleOverAxisLength,
         axis.Y * sinAngleOverAxisLength,
         axis.Z * sinAngleOverAxisLength,
-        Trigonometry.Cos(angle / 2)));
+        Calc.Cos(angle / 2)));
     }
 
     public static Quaternion operator +(Quaternion left, Quaternion right) { return Quaternion.Add(left, right); }
@@ -65,7 +65,7 @@ namespace SevenEngine.Mathematics
     public static float Length(Quaternion quaternion)
     {
       return
-        Foundations.SquareRoot(
+        Calc.SquareRoot(
           quaternion.X * quaternion.X +
           quaternion.Y * quaternion.Y +
           quaternion.Z * quaternion.Z +
@@ -148,14 +148,14 @@ namespace SevenEngine.Mathematics
 
     public static Quaternion Invert(Quaternion quaternion)
     {
-      float lengthSq = Quaternion.LengthSquared(quaternion);
-      if (lengthSq == 0.0)
+      float lengthSquared = Quaternion.LengthSquared(quaternion);
+      if (lengthSquared == 0.0)
         return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
       return new Quaternion(
-        -quaternion.X / lengthSq,
-        -quaternion.Y / lengthSq,
-        -quaternion.Z / lengthSq,
-        quaternion.W / lengthSq);
+        -quaternion.X / lengthSquared,
+        -quaternion.Y / lengthSquared,
+        -quaternion.Z / lengthSquared,
+        quaternion.W / lengthSquared);
     }
 
     public static Quaternion Lerp(Quaternion left, Quaternion right, float blend)
@@ -202,9 +202,9 @@ namespace SevenEngine.Mathematics
         cosHalfAngle = -cosHalfAngle;
       }
       float halfAngle = (float)Math.Acos(cosHalfAngle);
-      float sinHalfAngle = Trigonometry.Sin(halfAngle);
-      float blendA = Trigonometry.Sin(halfAngle * (1.0f - blend)) / sinHalfAngle;
-      float blendB = Trigonometry.Sin(halfAngle * blend) / sinHalfAngle;
+      float sinHalfAngle = Calc.Sin(halfAngle);
+      float blendA = Calc.Sin(halfAngle * (1.0f - blend)) / sinHalfAngle;
+      float blendB = Calc.Sin(halfAngle * blend) / sinHalfAngle;
       Quaternion result = new Quaternion(
         blendA * left.X + blendB * right.X,
         blendA * left.Y + blendB * right.Y,
