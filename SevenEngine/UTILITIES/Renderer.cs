@@ -325,12 +325,12 @@ namespace SevenEngine
       // Apply the 3D projection matrix transformations
       SetProjectionMatrix();
 
-      //if (staticModel.ShaderOverride != null)
-      //  GL.UseProgram(_defaultShaderProgram.GpuHandle);
-      //else
-      //  GL.UseProgram(ShaderManager.LightShader.GpuHandle);
+      if (staticModel.ShaderOverride != null)
+        GL.UseProgram(staticModel.ShaderOverride.GpuHandle);
+      else
+        GL.UseProgram(DefaultShaderProgram.GpuHandle);
 
-      GL.UseProgram(ShaderManager.LightShader.GpuHandle);
+      //GL.UseProgram(ShaderManager.LightShader.GpuHandle);
 
       // Apply the model view matrix transformations
       GL.MatrixMode(MatrixMode.Modelview);

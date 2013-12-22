@@ -27,10 +27,10 @@ namespace SevenEngine
     internal static ShaderProgram _textShader;
     internal static ShaderProgram _lightShader;
 
-    internal static ShaderProgram DefaultShader { get { return _defaultShader; } }
-    internal static ShaderProgram ColorShader { get { return _colorShader; } }
-    internal static ShaderProgram TextShader { get { return _textShader; } }
-    internal static ShaderProgram LightShader { get { return _lightShader; } }
+    public static ShaderProgram DefaultShader { get { return _defaultShader; } }
+    public static ShaderProgram ColorShader { get { return _colorShader; } }
+    public static ShaderProgram TextShader { get { return _textShader; } }
+    public static ShaderProgram LightShader { get { return _lightShader; } }
 
     private static AvlTree<VertexShader, string> _vertexShaderDatabase =
       new AvlTreeLinked<VertexShader, string>(VertexShader.CompareTo, VertexShader.CompareTo);
@@ -284,7 +284,7 @@ namespace SevenEngine
         //Output.WriteLine("ERROR activating shader program: \"" + shaderProgramId + "\";");
         //return false;
       //}
-
+      Renderer.DefaultShaderProgram = ShaderManager.GetShaderProgram(shaderProgramId);
       GL.UseProgram(GetShaderProgram(shaderProgramId).GpuHandle);
       Output.WriteLine("Shader program set to default: \"" + shaderProgramId + "\";");
       return true;

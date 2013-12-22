@@ -155,7 +155,17 @@ namespace Game
       ShaderManager.LoadFragmentShader("FragmentShaderLight", FilePath.FromRelative(@"\..\..\Assets\Shaders\Fragment\FragmentShaderLight2.glsl"));
       ShaderManager.MakeShaderProgram("ShaderProgramLight", "VertexShaderLight", "FragmentShaderLight", null, null);
 
-      ShaderManager.SetActiveShader("ShaderProgramBasic");
+      //ShaderManager.SetActiveShader("ShaderProgramBasic");
+
+      // This is really hack-y, I will be editing this soon.
+      GL.ShadeModel(ShadingModel.Smooth);
+      GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+      GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 800.0f);
+      GL.Material(MaterialFace.Front, MaterialParameter.Ambient, new float[] { 0.4f, 0.4f, 0.4f, 1.0f });
+      GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, new float[] { .8f, .8f, 0.8f, 1.0f });
+      GL.Light(LightName.Light0, LightParameter.Position, new float[] { 0.0f, 1000.0f, 0.0f, 1.0f });
+
+      Renderer.DefaultShaderProgram = ShaderManager.LightShader;
     }
 
     public override void InitializeStates()
