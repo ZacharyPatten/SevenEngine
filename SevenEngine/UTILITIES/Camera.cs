@@ -8,7 +8,6 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
 
 using System;
 using OpenTK;
@@ -17,6 +16,7 @@ using SevenEngine.Mathematics;
 
 namespace SevenEngine
 {
+  /// <summary>Represents a camera to assist a game by generating a view matrix transformation.</summary>
   public class Camera
   {
     private static Vector yAxis = new Vector(0, 1, 0);
@@ -90,10 +90,11 @@ namespace SevenEngine
 
     public Matrix4 GetMatrix()
     {
-      return Matrix4.LookAt(
+      Matrix4 camera = Matrix4.LookAt(
         _position.X, _position.Y, _position.Z,
         _position.X + _forward.X, _position.Y + _forward.Y, _position.Z + _forward.Z,
         _up.X, _up.Y, _up.Z);
+      return camera;
     }
   }
 }

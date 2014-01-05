@@ -732,26 +732,31 @@ namespace Game.States
           _camera.Move(_camera.Down, _camera.PositionSpeed * 100);
         else
           _camera.Move(_camera.Down, _camera.PositionSpeed);
+
       if (InputManager.Keyboard.Edown)
         if (InputManager.Keyboard.ShiftLeftdown)
           _camera.Move(_camera.Up, _camera.PositionSpeed * 100);
         else
           _camera.Move(_camera.Up, _camera.PositionSpeed);
+
       if (InputManager.Keyboard.Adown)
         if (InputManager.Keyboard.ShiftLeftdown)
           _camera.Move(_camera.Left, _camera.PositionSpeed * 100);
         else
           _camera.Move(_camera.Left, _camera.PositionSpeed);
+
       if (InputManager.Keyboard.Wdown)
         if (InputManager.Keyboard.ShiftLeftdown)
           _camera.Move(_camera.Forward, _camera.PositionSpeed * 100);
         else
           _camera.Move(_camera.Forward, _camera.PositionSpeed);
+
       if (InputManager.Keyboard.Sdown)
         if (InputManager.Keyboard.ShiftLeftdown)
           _camera.Move(_camera.Backward, _camera.PositionSpeed * 100);
         else
           _camera.Move(_camera.Backward, _camera.PositionSpeed);
+
       if (InputManager.Keyboard.Ddown)
         if (InputManager.Keyboard.ShiftLeftdown)
           _camera.Move(_camera.Right, _camera.PositionSpeed * 100);

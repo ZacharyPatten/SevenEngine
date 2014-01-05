@@ -8,7 +8,6 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
 
 using System;
 
@@ -93,22 +92,6 @@ namespace SevenEngine.Mathematics
         first = first % second;
       } while (first != 0);
       return second;
-    }
-
-    // create a small reference table for this function
-    public static int Factorial(int integer)
-    {
-      try
-      {
-        checked
-        {
-          int result = 1;
-          for (; integer > 1; integer--)
-            result *= integer;
-          return result;
-        }
-      }
-      catch { throw new Exception("overflow occured in factorial."); }
     }
 
     #endregion
@@ -348,7 +331,7 @@ namespace SevenEngine.Mathematics
 
     #endregion
 
-    #region Matrix Theory
+    #region Linear Algebra
 
     /// <summary>Negates all the values in a matrix.</summary>
     /// <param name="matrix">The matrix to have its values negated.</param>
@@ -421,23 +404,23 @@ namespace SevenEngine.Mathematics
       return result;
     }
 
-    /// <summary>Applies a power to a square matrix.</summary>
-    /// <param name="matrix">The matrix to be powered by.</param>
-    /// <param name="power">The power to apply to the matrix.</param>
-    /// <returns>The resulting matrix of the power operation.</returns>
-    public static float[,] Power(float[,] matrix, int power)
-    {
-      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
-        throw new CalcException("invalid power (!matrix.IsSquare).");
-      if (!(power > -1))
-        throw new CalcException("invalid power !(power > -1)");
-      if (power == 0)
-        return Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
-      float[,] result = Matrix.Clone(matrix);
-      for (int i = 0; i < power; i++)
-        result = Multiply(result, result);
-      return result;
-    }
+    ///// <summary>Applies a power to a square matrix.</summary>
+    ///// <param name="matrix">The matrix to be powered by.</param>
+    ///// <param name="power">The power to apply to the matrix.</param>
+    ///// <returns>The resulting matrix of the power operation.</returns>
+    //public static float[,] Power(float[,] matrix, int power)
+    //{
+    //  if (!(matrix.GetLength(0) == matrix.GetLength(1)))
+    //    throw new CalcException("invalid power (!matrix.IsSquare).");
+    //  if (!(power > -1))
+    //    throw new CalcException("invalid power !(power > -1)");
+    //  if (power == 0)
+    //    return Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
+    //  float[,] result = Matrix.Clone(matrix);
+    //  for (int i = 0; i < power; i++)
+    //    result = Multiply(result, result);
+    //  return result;
+    //}
 
     /// <summary>Divides all the values in the matrix by a scalar.</summary>
     /// <param name="matrix">The matrix to divide the values of.</param>
@@ -517,154 +500,154 @@ namespace SevenEngine.Mathematics
       return result;
     }
 
-    /// <summary>Calculates the determinent of a square matrix.</summary>
-    /// <param name="matrix">The matrix to calculate the determinent of.</param>
-    /// <returns>The determinent of the matrix.</returns>
-    public static float Determinent(float[,] matrix)
-    {
-      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
-        throw new CalcException("invalid determinent !(matrix.IsSquare).");
-      float det = 1.0f;
-      try
-      {
-        float[,] rref = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-          if (rref[i, i] == 0)
-            for (int j = i + 1; j < rref.GetLength(0); j++)
-              if (rref[j, i] != 0)
-              {
-                Calc.SwapRows(rref, i, j);
-                det *= -1;
-              }
-          det *= rref[i, i];
-          Calc.RowMultiplication(rref, i, 1 / rref[i, i]);
-          for (int j = i + 1; j < rref.GetLength(0); j++)
-            Calc.RowAddition(rref, j, i, -rref[j, i]);
-          for (int j = i - 1; j >= 0; j--)
-            Calc.RowAddition(rref, j, i, -rref[j, i]);
-        }
-        return det;
-      }
-      catch (Exception)
-      {
-        throw new CalcException("determinent computation failed.");
-      }
-    }
+    ///// <summary>Calculates the determinent of a square matrix.</summary>
+    ///// <param name="matrix">The matrix to calculate the determinent of.</param>
+    ///// <returns>The determinent of the matrix.</returns>
+    //public static float Determinent(float[,] matrix)
+    //{
+    //  if (!(matrix.GetLength(0) == matrix.GetLength(1)))
+    //    throw new CalcException("invalid determinent !(matrix.IsSquare).");
+    //  float det = 1.0f;
+    //  try
+    //  {
+    //    float[,] rref = Matrix.Clone(matrix);
+    //    for (int i = 0; i < matrix.GetLength(0); i++)
+    //    {
+    //      if (rref[i, i] == 0)
+    //        for (int j = i + 1; j < rref.GetLength(0); j++)
+    //          if (rref[j, i] != 0)
+    //          {
+    //            Calc.SwapRows(rref, i, j);
+    //            det *= -1;
+    //          }
+    //      det *= rref[i, i];
+    //      Calc.RowMultiplication(rref, i, 1 / rref[i, i]);
+    //      for (int j = i + 1; j < rref.GetLength(0); j++)
+    //        Calc.RowAddition(rref, j, i, -rref[j, i]);
+    //      for (int j = i - 1; j >= 0; j--)
+    //        Calc.RowAddition(rref, j, i, -rref[j, i]);
+    //    }
+    //    return det;
+    //  }
+    //  catch (Exception)
+    //  {
+    //    throw new CalcException("determinent computation failed.");
+    //  }
+    //}
 
-    /// <summary>Calculates the echelon of a matrix (aka REF).</summary>
-    /// <param name="matrix">The matrix to calculate the echelon of (aka REF).</param>
-    /// <returns>The echelon of the matrix (aka REF).</returns>
-    public static float[,] Echelon(float[,] matrix)
-    {
-      try
-      {
-        float[,] result = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-          if (result[i, i] == 0)
-            for (int j = i + 1; j < result.GetLength(0); j++)
-              if (result[j, i] != 0)
-                Calc.SwapRows(result, i, j);
-          if (result[i, i] == 0)
-            continue;
-          if (result[i, i] != 1)
-            for (int j = i + 1; j < result.GetLength(0); j++)
-              if (result[j, i] == 1)
-                Calc.SwapRows(result, i, j);
-          Calc.RowMultiplication(result, i, 1 / result[i, i]);
-          for (int j = i + 1; j < result.GetLength(0); j++)
-            Calc.RowAddition(result, j, i, -result[j, i]);
-        }
-        return result;
-      }
-      catch { throw new CalcException("echelon computation failed."); }
-    }
+    ///// <summary>Calculates the echelon of a matrix (aka REF).</summary>
+    ///// <param name="matrix">The matrix to calculate the echelon of (aka REF).</param>
+    ///// <returns>The echelon of the matrix (aka REF).</returns>
+    //public static float[,] Echelon(float[,] matrix)
+    //{
+    //  try
+    //  {
+    //    float[,] result = Matrix.Clone(matrix);
+    //    for (int i = 0; i < matrix.GetLength(0); i++)
+    //    {
+    //      if (result[i, i] == 0)
+    //        for (int j = i + 1; j < result.GetLength(0); j++)
+    //          if (result[j, i] != 0)
+    //            Calc.SwapRows(result, i, j);
+    //      if (result[i, i] == 0)
+    //        continue;
+    //      if (result[i, i] != 1)
+    //        for (int j = i + 1; j < result.GetLength(0); j++)
+    //          if (result[j, i] == 1)
+    //            Calc.SwapRows(result, i, j);
+    //      Calc.RowMultiplication(result, i, 1 / result[i, i]);
+    //      for (int j = i + 1; j < result.GetLength(0); j++)
+    //        Calc.RowAddition(result, j, i, -result[j, i]);
+    //    }
+    //    return result;
+    //  }
+    //  catch { throw new CalcException("echelon computation failed."); }
+    //}
 
-    /// <summary>Calculates the echelon of a matrix and reduces it (aka RREF).</summary>
-    /// <param name="matrix">The matrix matrix to calculate the reduced echelon of (aka RREF).</param>
-    /// <returns>The reduced echelon of the matrix (aka RREF).</returns>
-    public static float[,] ReducedEchelon(float[,] matrix)
-    {
-      try
-      {
-        float[,] result = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-          if (result[i, i] == 0)
-            for (int j = i + 1; j < result.GetLength(0); j++)
-              if (result[j, i] != 0)
-                Calc.SwapRows(result, i, j);
-          if (result[i, i] == 0) continue;
-          if (result[i, i] != 1)
-            for (int j = i + 1; j < result.GetLength(0); j++)
-              if (result[j, i] == 1)
-                Calc.SwapRows(result, i, j);
-          Calc.RowMultiplication(result, i, 1 / result[i, i]);
-          for (int j = i + 1; j < result.GetLength(0); j++)
-            Calc.RowAddition(result, j, i, -result[j, i]);
-          for (int j = i - 1; j >= 0; j--)
-            Calc.RowAddition(result, j, i, -result[j, i]);
-        }
-        return result;
-      }
-      catch { throw new CalcException("reduced echelon calculation failed."); }
-    }
+    ///// <summary>Calculates the echelon of a matrix and reduces it (aka RREF).</summary>
+    ///// <param name="matrix">The matrix matrix to calculate the reduced echelon of (aka RREF).</param>
+    ///// <returns>The reduced echelon of the matrix (aka RREF).</returns>
+    //public static float[,] ReducedEchelon(float[,] matrix)
+    //{
+    //  try
+    //  {
+    //    float[,] result = Matrix.Clone(matrix);
+    //    for (int i = 0; i < matrix.GetLength(0); i++)
+    //    {
+    //      if (result[i, i] == 0)
+    //        for (int j = i + 1; j < result.GetLength(0); j++)
+    //          if (result[j, i] != 0)
+    //            Calc.SwapRows(result, i, j);
+    //      if (result[i, i] == 0) continue;
+    //      if (result[i, i] != 1)
+    //        for (int j = i + 1; j < result.GetLength(0); j++)
+    //          if (result[j, i] == 1)
+    //            Calc.SwapRows(result, i, j);
+    //      Calc.RowMultiplication(result, i, 1 / result[i, i]);
+    //      for (int j = i + 1; j < result.GetLength(0); j++)
+    //        Calc.RowAddition(result, j, i, -result[j, i]);
+    //      for (int j = i - 1; j >= 0; j--)
+    //        Calc.RowAddition(result, j, i, -result[j, i]);
+    //    }
+    //    return result;
+    //  }
+    //  catch { throw new CalcException("reduced echelon calculation failed."); }
+    //}
 
-    /// <summary>Calculates the inverse of a matrix.</summary>
-    /// <param name="matrix">The matrix to calculate the inverse of.</param>
-    /// <returns>The inverse of the matrix.</returns>
-    public static float[,] Inverse(float[,] matrix)
-    {
-      if (Matrix.Determinent(matrix) == 0)
-        throw new CalcException("inverse calculation failed.");
-      try
-      {
-        float[,] identity = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
-        float[,] rref = Matrix.Clone(matrix);
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-          if (rref[i, i] == 0)
-            for (int j = i + 1; j < rref.GetLength(0); j++)
-              if (rref[j, i] != 0)
-              {
-                Calc.SwapRows(rref, i, j);
-                Calc.SwapRows(identity, i, j);
-              }
-          Calc.RowMultiplication(identity, i, 1 / rref[i, i]);
-          Calc.RowMultiplication(rref, i, 1 / rref[i, i]);
-          for (int j = i + 1; j < rref.GetLength(0); j++)
-          {
-            Calc.RowAddition(identity, j, i, -rref[j, i]);
-            Calc.RowAddition(rref, j, i, -rref[j, i]);
-          }
-          for (int j = i - 1; j >= 0; j--)
-          {
-            Calc.RowAddition(identity, j, i, -rref[j, i]);
-            Calc.RowAddition(rref, j, i, -rref[j, i]);
-          }
-        }
-        return identity;
-      }
-      catch { throw new CalcException("inverse calculation failed."); }
-    }
+    ///// <summary>Calculates the inverse of a matrix.</summary>
+    ///// <param name="matrix">The matrix to calculate the inverse of.</param>
+    ///// <returns>The inverse of the matrix.</returns>
+    //public static float[,] Inverse(float[,] matrix)
+    //{
+    //  if (Matrix.Determinent(matrix) == 0)
+    //    throw new CalcException("inverse calculation failed.");
+    //  try
+    //  {
+    //    float[,] identity = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
+    //    float[,] rref = Matrix.Clone(matrix);
+    //    for (int i = 0; i < matrix.GetLength(0); i++)
+    //    {
+    //      if (rref[i, i] == 0)
+    //        for (int j = i + 1; j < rref.GetLength(0); j++)
+    //          if (rref[j, i] != 0)
+    //          {
+    //            Calc.SwapRows(rref, i, j);
+    //            Calc.SwapRows(identity, i, j);
+    //          }
+    //      Calc.RowMultiplication(identity, i, 1 / rref[i, i]);
+    //      Calc.RowMultiplication(rref, i, 1 / rref[i, i]);
+    //      for (int j = i + 1; j < rref.GetLength(0); j++)
+    //      {
+    //        Calc.RowAddition(identity, j, i, -rref[j, i]);
+    //        Calc.RowAddition(rref, j, i, -rref[j, i]);
+    //      }
+    //      for (int j = i - 1; j >= 0; j--)
+    //      {
+    //        Calc.RowAddition(identity, j, i, -rref[j, i]);
+    //        Calc.RowAddition(rref, j, i, -rref[j, i]);
+    //      }
+    //    }
+    //    return identity;
+    //  }
+    //  catch { throw new CalcException("inverse calculation failed."); }
+    //}
 
-    /// <summary>Calculates the adjoint of a matrix.</summary>
-    /// <param name="matrix">The matrix to calculate the adjoint of.</param>
-    /// <returns>The adjoint of the matrix.</returns>
-    public static float[,] Adjoint(float[,] matrix)
-    {
-      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
-        throw new CalcException("Adjoint of a non-square matrix does not exists");
-      float[,] result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
-      for (int i = 0; i < matrix.GetLength(0); i++)
-        for (int j = 0; j < matrix.GetLength(1); j++)
-          if ((i + j) % 2 == 0)
-            result[i, j] = Calc.Determinent(Matrix.Minor(matrix, i, j));
-          else
-            result[i, j] = -Calc.Determinent(Matrix.Minor(matrix, i, j));
-      return Matrix.Transpose(result);
-    }
+    ///// <summary>Calculates the adjoint of a matrix.</summary>
+    ///// <param name="matrix">The matrix to calculate the adjoint of.</param>
+    ///// <returns>The adjoint of the matrix.</returns>
+    //public static float[,] Adjoint(float[,] matrix)
+    //{
+    //  if (!(matrix.GetLength(0) == matrix.GetLength(1)))
+    //    throw new CalcException("Adjoint of a non-square matrix does not exists");
+    //  float[,] result = new Matrix(matrix.GetLength(0), matrix.GetLength(1));
+    //  for (int i = 0; i < matrix.GetLength(0); i++)
+    //    for (int j = 0; j < matrix.GetLength(1); j++)
+    //      if ((i + j) % 2 == 0)
+    //        result[i, j] = Calc.Determinent(Matrix.Minor(matrix, i, j));
+    //      else
+    //        result[i, j] = -Calc.Determinent(Matrix.Minor(matrix, i, j));
+    //  return Matrix.Transpose(result);
+    //}
 
     /// <summary>Returns the transpose of a matrix.</summary>
     /// <param name="matrix">The matrix to transpose.</param>
@@ -678,56 +661,109 @@ namespace SevenEngine.Mathematics
       return transpose;
     }
 
-    /// <summary>Decomposes a matrix into lower-upper reptresentation.</summary>
-    /// <param name="matrix">The matrix to decompose.</param>
-    /// <param name="Lower">The computed lower triangular matrix.</param>
-    /// <param name="Upper">The computed upper triangular matrix.</param>
-    public static void DecomposeLU(float[,] matrix, out float[,] Lower, out float[,] Upper)
+    ///// <summary>Decomposes a matrix into lower-upper reptresentation.</summary>
+    ///// <param name="matrix">The matrix to decompose.</param>
+    ///// <param name="Lower">The computed lower triangular matrix.</param>
+    ///// <param name="Upper">The computed upper triangular matrix.</param>
+    //public static void DecomposeLU(float[,] matrix, out float[,] Lower, out float[,] Upper)
+    //{
+    //  if (!(matrix.GetLength(0) == matrix.GetLength(1)))
+    //    throw new CalcException("The matrix is not square!");
+    //  Lower = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
+    //  Upper = Matrix.Clone(matrix);
+    //  int[] permutation = new int[matrix.GetLength(0)];
+    //  for (int i = 0; i < matrix.GetLength(0); i++) permutation[i] = i;
+    //  float p = 0, pom2, detOfP = 1;
+    //  int k0 = 0, pom1 = 0;
+    //  for (int k = 0; k < matrix.GetLength(1) - 1; k++)
+    //  {
+    //    p = 0;
+    //    for (int i = k; i < matrix.GetLength(0); i++)
+    //      if (Calc.Abs(Upper[i, k]) > p)
+    //      {
+    //        p = Calc.Abs(Upper[i, k]);
+    //        k0 = i;
+    //      }
+    //    if (p == 0)
+    //      throw new CalcException("The matrix is singular!");
+    //    pom1 = permutation[k];
+    //    permutation[k] = permutation[k0];
+    //    permutation[k0] = pom1;
+    //    for (int i = 0; i < k; i++)
+    //    {
+    //      pom2 = Lower[k, i];
+    //      Lower[k, i] = Lower[k0, i];
+    //      Lower[k0, i] = pom2;
+    //    }
+    //    if (k != k0)
+    //      detOfP *= -1;
+    //    for (int i = 0; i < matrix.GetLength(1); i++)
+    //    {
+    //      pom2 = Upper[k, i];
+    //      Upper[k, i] = Upper[k0, i];
+    //      Upper[k0, i] = pom2;
+    //    }
+    //    for (int i = k + 1; i < matrix.GetLength(0); i++)
+    //    {
+    //      Lower[i, k] = Upper[i, k] / Upper[k, k];
+    //      for (int j = k; j < matrix.GetLength(1); j++)
+    //        Upper[i, j] = Upper[i, j] - Lower[i, k] * Upper[k, j];
+    //    }
+    //  }
+    //}
+
+    #endregion
+
+    #region Combinatorics
+
+    /// <summary>calculates the factorial of a given number.</summary>
+    /// <param name="integer">The number of the factorial to calculate.</param>
+    /// <returns>The calculated factorial value.</returns>
+    public static int Factorial(int integer)
     {
-      if (!(matrix.GetLength(0) == matrix.GetLength(1)))
-        throw new CalcException("The matrix is not square!");
-      Lower = Matrix.FactoryIdentity(matrix.GetLength(0), matrix.GetLength(1));
-      Upper = Matrix.Clone(matrix);
-      int[] permutation = new int[matrix.GetLength(0)];
-      for (int i = 0; i < matrix.GetLength(0); i++) permutation[i] = i;
-      float p = 0, pom2, detOfP = 1;
-      int k0 = 0, pom1 = 0;
-      for (int k = 0; k < matrix.GetLength(1) - 1; k++)
+      try
       {
-        p = 0;
-        for (int i = k; i < matrix.GetLength(0); i++)
-          if (Calc.Abs(Upper[i, k]) > p)
-          {
-            p = Calc.Abs(Upper[i, k]);
-            k0 = i;
-          }
-        if (p == 0)
-          throw new CalcException("The matrix is singular!");
-        pom1 = permutation[k];
-        permutation[k] = permutation[k0];
-        permutation[k0] = pom1;
-        for (int i = 0; i < k; i++)
+        checked
         {
-          pom2 = Lower[k, i];
-          Lower[k, i] = Lower[k0, i];
-          Lower[k0, i] = pom2;
-        }
-        if (k != k0)
-          detOfP *= -1;
-        for (int i = 0; i < matrix.GetLength(1); i++)
-        {
-          pom2 = Upper[k, i];
-          Upper[k, i] = Upper[k0, i];
-          Upper[k0, i] = pom2;
-        }
-        for (int i = k + 1; i < matrix.GetLength(0); i++)
-        {
-          Lower[i, k] = Upper[i, k] / Upper[k, k];
-          for (int j = k; j < matrix.GetLength(1); j++)
-            Upper[i, j] = Upper[i, j] - Lower[i, k] * Upper[k, j];
+          int result = 1;
+          for (; integer > 1; integer--)
+            result *= integer;
+          return result;
         }
       }
+      catch { throw new Exception("overflow occured in factorial."); }
     }
+
+    /// <summary></summary>
+    /// <param name="set"></param>
+    /// <param name="subsets"></param>
+    /// <returns></returns>
+    public static float Combinations(int set, params int[] subsets)
+    {
+      float result = Calc.Factorial(set);
+      int sum = 0;
+      for (int i = 0; i < subsets.Length; i++)
+      {
+        result /= (float)Calc.Factorial(subsets[i]);
+        sum += subsets[i];
+      }
+      if (sum > set)
+        throw new CalcException("invalid combination (set < Count(subsets)).");
+      return result;
+    }
+
+    /// <summary>Does a combinotorics choose operation.</summary>
+    /// <param name="top">The number of items choosing from a set.</param>
+    /// <param name="bottom">The set to be chosen from.</param>
+    /// <returns>The result of the choose.</returns>
+    public static float Choose(int top, int bottom)
+    {
+      if (!(top <= bottom || top >= 0))
+        throw new CalcException("invalid choose values !(top <= bottom || top >= 0)");
+      return Calc.Factorial(top) / (float)(Calc.Factorial(top) * Calc.Factorial(bottom - top));
+    }
+
+
 
     #endregion
 

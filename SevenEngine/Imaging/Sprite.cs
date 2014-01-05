@@ -30,7 +30,7 @@ namespace SevenEngine.Imaging
       0f,1f,  1f,1f,  0f,0f };
     private Vector _position;
     private Texture _texture;
-    private Point _scale;
+    private Vector _scale;
     private float _rotation;
     private static int _gpuVertexBufferHandle;
     private static int _gpuTextureMappingBufferHandleDefault;
@@ -45,7 +45,16 @@ namespace SevenEngine.Imaging
     /// <summary>Get and set the position of the sprite.</summary>
     public Vector Position { get { return _position; } set { _position = value; } }
     /// <summary>Get and set the size of the sprite.</summary>
-    public Point Scale { get { return _scale; } set { _scale = value; } }
+    public Vector Scale 
+    { 
+      get { return _scale; } 
+      set
+      {
+        if (value.Dimensions != 2) 
+          throw new Exception("the scale vector of a sprite can only have two components."); 
+        _scale = value;
+      }
+    }
     /// <summary>Get and set the rotation angle of the sprite.</summary>
     public float Rotation { get { return _rotation; } set { _rotation = value; } }
     /// <summary>Get and set the texture the sprite is mapping to.</summary>
@@ -58,7 +67,7 @@ namespace SevenEngine.Imaging
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer(_verteces);
       _position = new Vector(0, 0, -10);
-      _scale = new Point(1, 1);
+      _scale = new Vector(1, 1);
       _rotation = 0f;
       _texture = texture;
       if (_gpuTextureMappingBufferHandleDefault == 0)
@@ -78,7 +87,7 @@ namespace SevenEngine.Imaging
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer(_verteces);
       _position = new Vector(0, 0, -10);
-      _scale = new Point(1, 1);
+      _scale = new Vector(1, 1);
       _rotation = 0f;
       _texture = texture;
       if (textureMappings.Length != 12)

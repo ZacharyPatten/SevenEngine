@@ -53,7 +53,7 @@ namespace Game.Units
         // Moving
         else
         {
-          Position = Vector.MoveTowardsPosition(Position, _target.Position, MoveSpeed);
+          Position += (_target.Position - Position).Normalize() * MoveSpeed; 
           _move++;
         }
         StaticModel.Orientation.W += .1f;

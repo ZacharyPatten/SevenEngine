@@ -87,7 +87,7 @@ namespace Game.Units
         // Moving
         else if (_time > _delay)
         {
-          Position = Vector.MoveTowardsPosition(Position, _target.Position, MoveSpeed);
+          Position += (_target.Position - Position).Normalize() * MoveSpeed;
           move++;
           attack = false;
         }

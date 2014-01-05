@@ -69,7 +69,18 @@ namespace SevenEngine.Shaders
     {
       normal = normalize(gl_NormalMatrix * gl_Normal);
       light = normalize(vec3(gl_LightSource[0].position));
+      gl_TexCoord[0] = gl_MultiTexCoord0;
+      gl_Position = ftransform();
+    }";
 
+    internal const string Transformation =
+    @"uniform mat4 transformation;
+    varying vec3 normal;
+
+    void main()
+    {
+      normal = normalize(gl_NormalMatrix * gl_Normal);
+      light = normalize(vec3(gl_LightSource[0].position));
       gl_TexCoord[0] = gl_MultiTexCoord0;
       gl_Position = ftransform();
     }";

@@ -1,4 +1,4 @@
-﻿// SEVENENGINE LISCENSE:
+﻿/*// SEVENENGINE LISCENSE:
 // You are free to use, modify, and distribute any or all code segments/files for any purpose
 // including commercial use under the following condition: any code using or originally taken 
 // from the SevenEngine project must include citation to its original author(s) located at the
@@ -18,15 +18,15 @@ namespace SevenEngine.Mathematics
   /// (u, v) texture coordinates, and (r, g, b, a) colors.</summary>
   public class Vertex
   {
-    protected Vector _position;
-    protected Vector _normal;
+    protected Vector37 _position;
+    protected Vector37 _normal;
     protected Point _mapping;
     protected Color _color;
 
     /// <summary>The position (X, Y, Z) of the vertex.</summary>
-    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector37 Position { get { return _position; } set { _position = value; } }
     /// <summary>The normal (X, Y, Z) of the vertex.</summary>
-    public Vector Normal { get { return _normal; } set { _normal = value; } }
+    public Vector37 Normal { get { return _normal; } set { _normal = value; } }
     /// <summary>The texture coordinates (u, v) of the vertex.</summary>
     public Point TextureCoordinates { get { return _mapping; } set { _mapping = value; } }
     /// <summary>The color of the vertex (RBG).</summary>
@@ -34,13 +34,13 @@ namespace SevenEngine.Mathematics
 
     public Vertex()
     {
-      _position = new Vector(0, 0, 0);
-      _normal = new Vector(0, 0, 0);
+      _position = new Vector37(0, 0, 0);
+      _normal = new Vector37(0, 0, 0);
       _mapping = new Point(0, 0);
       _color = new Color(0, 0, 0, 0);
     }
 
-    public Vertex(Vector modelPosition, Vector normal, Point textureMapping, Color color)
+    public Vertex(Vector37 modelPosition, Vector37 normal, Point textureMapping, Color color)
     {
       _position = modelPosition;
       _normal = normal;
@@ -48,4 +48,4 @@ namespace SevenEngine.Mathematics
      _color = color;
     }
   }
-}
+}*/

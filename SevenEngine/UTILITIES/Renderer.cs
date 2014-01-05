@@ -37,13 +37,14 @@ namespace SevenEngine
     #endregion
 
     #region Transformations
+    
+    private static Matrix _projectionMatrix;
+    private static Matrix _viewMatrix;
+    private static Matrix _modelMatrix;
 
-    //private Matrix _viewMatrix;
-    //private Matrix _projectionMatrix;
-    //private Matrix _cameraMatrix;
-    //private Matrix _modelMatrix;
-
-    //private Matrix Projection { get { return _projectionMatrix; } set { _projectionMatrix = value; } }
+    public static Matrix MatrixProjection { get { return _projectionMatrix; } set { _projectionMatrix = value; } }
+    public static Matrix MatrixView { get { return _viewMatrix; } set { _viewMatrix = value; } }
+    public static Matrix MatrixModel { get { return _modelMatrix; } set { _modelMatrix = value; } }
 
     private static Camera _currentCamera;
 
@@ -322,6 +323,15 @@ namespace SevenEngine
     /// <param name="staticModel">The mesh to be rendered.</param>
     public static void DrawStaticModel(StaticModel staticModel)
     {
+      /*Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(
+        (float)_currentCamera.FieldOfView,
+        (float)_screenWidth / (float)_screenHeight,
+        (float)_currentCamera.NearClipPlane,
+        (float)_currentCamera.FarClipPlane);
+      perspective.Transpose();
+      Matrix4 camera = _currentCamera.GetMatrix();
+      camera = perspective;*/
+
       // Apply the 3D projection matrix transformations
       SetProjectionMatrix();
 

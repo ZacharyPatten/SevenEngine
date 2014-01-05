@@ -235,9 +235,9 @@ namespace SevenEngine.Mathematics
         left.W == right.W;
     }
 
-    public static Matrix3x3 ToMatrix(Quaternion q)
+    public static Matrix ToMatrix(Quaternion q)
     {
-      return new Matrix3x3(
+      return new Matrix(3, 3,
         q.W * q.W + q.X * q.X - q.Y * q.Y - q.Z * q.Z,
         2 * q.X * q.Y - 2 * q.W * q.Z,
         2 *q.X * q.Z + 2 * q.W * q.Y,

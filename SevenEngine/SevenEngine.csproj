@@ -88,6 +88,7 @@
     <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Mathematics\Matrix.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
+    <Compile Include="Mathematics\Vector.cs" />
     <Compile Include="Physics\Matter.cs" />
     <Compile Include="Physics\Shapes\Cone.cs" />
     <Compile Include="Physics\Shapes\Cube.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\Link.cs" />
-    <Compile Include="Mathematics\Matrix3x3.cs" />
     <Compile Include="MANAGERS\SpriteManager.cs" />
     <Compile Include="MANAGERS\StaticModelManager.cs" />
     <Compile Include="Mathematics\Vertex.cs" />
@@ -128,7 +128,6 @@
     <Compile Include="MANAGERS\InputManager.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
-    <Compile Include="Mathematics\Point.cs" />
     <Compile Include="UTILITIES\Timer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UTILITIES\Renderer.cs" />
@@ -140,7 +139,6 @@
     <Compile Include="Imaging\Texture.cs" />
     <Compile Include="MANAGERS\TextureManager.cs" />
     <Compile Include="Mathematics\Tween.cs" />
-    <Compile Include="Mathematics\Vector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DataStructures\README.md" />
