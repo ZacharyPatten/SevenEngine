@@ -1,7 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// SEVENENGINE LISCENSE:
+// You are free to use, modify, and distribute any or all code segments/files for any purpose
+// including commercial use under the following condition: any code using or originally taken 
+// from the SevenEngine project must include citation to its original author(s) located at the
+// top of each source code file, or you may include a reference to the SevenEngine project as
+// a whole but you must include the current SevenEngine official website URL and logo.
+// - Thanks.  :)  (support: seven@sevenengine.com)
+
+// Author(s):
+// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+
+using System;
 
 namespace SevenEngine.Mathematics
 {
@@ -10,37 +18,55 @@ namespace SevenEngine.Mathematics
   {
     private float[] _vector;
 
+    /// <summary>Sane as accessing index 0.</summary>
     public float X
     {
       get { return _vector[0]; }
       set { _vector[0] = value; }
     }
 
+    /// <summary>Same as accessing index 1.</summary>
     public float Y
     {
-      get { if (_vector.Length < 2) throw new VectorException("vector does not contains a y component."); return _vector[1]; }
-      set { if (_vector.Length < 2) throw new VectorException("vector does not contains a y component."); _vector[1] = value; }
+      get { try { return _vector[1]; } catch { throw new VectorException("vector does not contains a y component."); } }
+      set { try { _vector[1] = value; } catch { throw new VectorException("vector does not contains a y component."); } }
     }
 
+    /// <summary>Same as accessing index 2.</summary>
     public float Z
     {
-      get { if (_vector.Length < 3) throw new VectorException("vector does not contains a z component."); return _vector[2]; }
-      set { if (_vector.Length < 3) throw new VectorException("vector does not contains a z component."); _vector[2] = value; }
+      get { try { return _vector[2]; } catch { throw new VectorException("vector does not contains a z component."); } }
+      set { try { _vector[2] = value; } catch { throw new VectorException("vector does not contains a z component."); } }
     }
 
+    /// <summary>Same as accessing index 3.</summary>
     public float W
     {
-      get { if (_vector.Length < 4) throw new VectorException("vector does not contains a w component."); return _vector[3]; }
-      set { if (_vector.Length < 4) throw new VectorException("vector does not contains a w component."); _vector[3] = value; }
+      get { try { return _vector[3]; } catch { throw new VectorException("vector does not contains a w component."); } }
+      set { try { _vector[3] = value; } catch { throw new VectorException("vector does not contains a w component."); } }
     }
 
     /// <summary>Gives you direct access to the values in this vector.</summary>
     public float[] Floats { get { return _vector; } }
+
+    /// <summary>The number of components in this vector.</summary>
     public int Dimensions { get { return _vector.Length; } }
-    public float this[int index] { get { return _vector[index]; } set { _vector[index] = value; } }
 
-    public Vector(int dimensions) { _vector = new float[dimensions]; }
+    /// <summary>Allows indexed access to this vector.</summary>
+    /// <param name="index">The index to access.</param>
+    /// <returns>The value of the given index.</returns>
+    public float this[int index]
+    {
+      get { try { return _vector[index]; } catch { throw new VectorException("index out of bounds."); } }
+      set { try { _vector[index] = value; } catch { throw new VectorException("index out of bounds."); } }
+    }
 
+    /// <summary>Creates a new vector with the given number of components.</summary>
+    /// <param name="dimensions">The number of dimensions this vector will have.</param>
+    public Vector(int dimensions) { try { _vector = new float[dimensions]; } catch { throw new VectorException("invalid dimensions on vector contruction."); } }
+
+    /// <summary>Creates a vector out of the given values.</summary>
+    /// <param name="vector">The values to initialize the vector to.</param>
     public Vector(params float[] vector)
     {
       float[] floats = new float[vector.Length];
@@ -48,37 +74,130 @@ namespace SevenEngine.Mathematics
       _vector = floats;
     }
 
+    /// <summary>Creates a vector with the given number of components with the values initialized to zeroes.</summary>
+    /// <param name="dimensions">The number of components in the vector.</param>
+    /// <returns>The newly constructed vector.</returns>
     public static Vector FactoryZero(int dimensions) { return new Vector(dimensions); }
+    /// <summary>Creates a vector with the given number of components with the values initialized to ones.</summary>
+    /// <param name="dimensions">The number of components in the vector.</param>
+    /// <returns>The newly constructed vector.</returns>
     public static Vector FactoryOne(int dimensions) { return new Vector(new float[dimensions]); }
 
+    /// <summary>Adds two vectors together.</summary>
+    /// <param name="left">The first vector of the addition.</param>
+    /// <param name="right">The second vector of the addition.</param>
+    /// <returns>The result of the addition.</returns>
     public static Vector operator +(Vector left, Vector right) { return Vector.Add(left, right); }
+    /// <summary>Subtracts two vectors.</summary>
+    /// <param name="left">The left operand of the subtraction.</param>
+    /// <param name="right">The right operand of the subtraction.</param>
+    /// <returns>The result of the subtraction.</returns>
     public static Vector operator -(Vector left, Vector right) { return Vector.Subtract(left, right); }
+    /// <summary>Negates a vector.</summary>
+    /// <param name="vector">The vector to negate.</param>
+    /// <returns>The result of the negation.</returns>
     public static Vector operator -(Vector vector) { return Vector.Negate(vector); }
+    /// <summary>Multiplies all the values in a vector by a scalar.</summary>
+    /// <param name="left">The vector to have all its values multiplied.</param>
+    /// <param name="right">The scalar to multiply all the vector values by.</param>
+    /// <returns>The result of the multiplication.</returns>
     public static Vector operator *(Vector left, float right) { return Vector.Multiply(left, right); }
+    /// <summary>Multiplies all the values in a vector by a scalar.</summary>
+    /// <param name="left">The scalar to multiply all the vector values by.</param>
+    /// <param name="right">The vector to have all its values multiplied.</param>
+    /// <returns>The result of the multiplication.</returns>
     public static Vector operator *(float left, Vector right) { return Vector.Multiply(right, left); }
+    /// <summary>Divides all the values in the vector by a scalar.</summary>
+    /// <param name="left">The vector to have its values divided.</param>
+    /// <param name="right">The scalar to divide all the vectors values by.</param>
+    /// <returns>The vector after the divisions.</returns>
     public static Vector operator /(Vector left, float right) { return Vector.Divide(left, right); }
-    public static bool operator ==(Vector left, Vector right) { return Vector.Equals(left, right); }
-    public static bool operator !=(Vector left, Vector right) { return !Vector.Equals(left, right); }
-    public static implicit operator float[](Vector vector) { return vector.Floats; }
+    /// <summary>Does an equality check by value. (warning for float errors)</summary>
+    /// <param name="left">The first vector of the equality check.</param>
+    /// <param name="right">The second vector of the equality check.</param>
+    /// <returns>true if the values are equal, false if not.</returns>
+    public static bool operator ==(Vector left, Vector right) { return Vector.EqualsValue(left, right); }
+    /// <summary>Does an anti-equality check by value. (warning for float errors)</summary>
+    /// <param name="left">The first vector of the anit-equality check.</param>
+    /// <param name="right">The second vector of the anti-equality check.</param>
+    /// <returns>true if the values are not equal, false if they are.</returns>
+    public static bool operator !=(Vector left, Vector right) { return !Vector.EqualsValue(left, right); }
+    /// <summary>Automatically converts a vector into a matrix.</summary>
+    /// <param name="vector">The vector of the conversion.</param>
+    /// <returns>The result of the conversion.</returns>
     public static implicit operator Matrix(Vector vector) { return Vector.ToMatrix(vector); }
 
+    /// <summary>Adds two vectors together.</summary>
+    /// <param name="right">The vector to add to this one.</param>
+    /// <returns>The result of the vector.</returns>
     public Vector Add(Vector right) { return Vector.Add(this, right); }
+    /// <summary>Negates this vector.</summary>
+    /// <returns>The result of the negation.</returns>
     public Vector Negate() { return Vector.Negate(this); }
+    /// <summary>Subtracts another vector from this one.</summary>
+    /// <param name="right">The vector to subtract from this one.</param>
+    /// <returns>The result of the subtraction.</returns>
     public Vector Subtract(Vector right) { return Vector.Subtract(this, right); }
+    /// <summary>Multiplies the values in this vector by a scalar.</summary>
+    /// <param name="right">The scalar to multiply these values by.</param>
+    /// <returns>The result of the multiplications</returns>
     public Vector Multiply(float right) { return Vector.Multiply(this, right); }
+    /// <summary>Divides all the values in this vector by a scalar.</summary>
+    /// <param name="right">The scalar to divide the values of the vector by.</param>
+    /// <returns>The resulting vector after teh divisions.</returns>
     public Vector Divide(float right) { return Vector.Divide(this, right); }
+    /// <summary>Computes the dot product between this vector and another.</summary>
+    /// <param name="right">The second vector of the dot product operation.</param>
+    /// <returns>The result of the dot product.</returns>
     public float DotProduct(Vector right) { return Vector.DotProduct(this, right); }
+    /// <summary>Computes the cross product between this vector and another.</summary>
+    /// <param name="right">The second vector of the dot product operation.</param>
+    /// <returns>The result of the dot product operation.</returns>
     public Vector CrossProduct(Vector right) { return Vector.CrossProduct(this, right); }
+    /// <summary>Normalizes this vector.</summary>
+    /// <returns>The result of the normalization.</returns>
     public Vector Normalize() { return Vector.Normalize(this); }
+    /// <summary>Computes the length of this vector.</summary>
+    /// <returns>The length of this vector.</returns>
     public float Length() { return Vector.Length(this); }
+    /// <summary>Computes the length of this vector, but doesn't square root it for 
+    /// possible optimization purposes.</summary>
+    /// <returns>The squared length of the vector.</returns>
     public float LengthSquared() { return Vector.LengthSquared(this); }
+    /// <summary>Check for equality by value.</summary>
+    /// <param name="right">The other vector of the equality check.</param>
+    /// <returns>true if the values were equal, false if not.</returns>
     public bool EqualsValue(Vector right) { return Vector.EqualsValue(this, right); }
+    /// <summary>Checks for equality by value with some leniency.</summary>
+    /// <param name="right">The other vector of the equality check.</param>
+    /// <param name="leniency">The ammount the values can differ but still be considered equal.</param>
+    /// <returns>true if the values were cinsidered equal, false if not.</returns>
     public bool EqualsValue(Vector right, float leniency) { return Vector.EqualsValue(this, right, leniency); }
+    /// <summary>Checks for equality by reference.</summary>
+    /// <param name="right">The other vector of the equality check.</param>
+    /// <returns>true if the references are equal, false if not.</returns>
     public bool EqualsReference(Vector right) { return Vector.EqualsReference(this, right); }
+    /// <summary>Rotates this vector by quaternon values.</summary>
+    /// <param name="angle">The amount of rotation about the axis.</param>
+    /// <param name="x">The x component deterniming the axis of rotation.</param>
+    /// <param name="y">The y component determining the axis of rotation.</param>
+    /// <param name="z">The z component determining the axis of rotation.</param>
+    /// <returns>The resulting vector after the rotation.</returns>
     public Vector RotateBy(float angle, float x, float y, float z) { return Vector.RotateBy(this, angle, x, y, z); }
+    /// <summary>Computes the linear interpolation between two vectors.</summary>
+    /// <param name="right">The ending vector of the interpolation.</param>
+    /// <param name="blend">The ratio 0.0 to 1.0 of the interpolation between the start and end.</param>
+    /// <returns>The result of the interpolation.</returns>
     public Vector Lerp(Vector right, float blend) { return Vector.Lerp(this, right, blend); }
+    /// <summary>Sphereically interpolates between two vectors.</summary>
+    /// <param name="right">The ending vector of the interpolation.</param>
+    /// <param name="blend">The ratio 0.0 to 1.0 defining the interpolation distance between the two vectors.</param>
+    /// <returns>The result of the slerp operation.</returns>
     public Vector Slerp(Vector right, float blend) { return Vector.Slerp(this, right, blend); }
-    //public Vector RotateBy(Quaternion rotation) { return Vector.RotateBy(this, rotation); }
+    /// <summary>Rotates a vector by a quaternion.</summary>
+    /// <param name="rotation">The quaternion to rotate the 3-component vector by.</param>
+    /// <returns>The result of the rotation.</returns>
+    public Vector RotateBy(Quaternion rotation) { return Vector.RotateBy(this, rotation); }
 
     /// <summary>Adds two vectors together.</summary>
     /// <param name="leftFloats">The first vector of the addition.</param>
@@ -272,14 +391,23 @@ namespace SevenEngine.Mathematics
           y * w2 + cosHalfAngle * y2 + z * x2 - x * z2,
           z * w2 + cosHalfAngle * z2 + x * y2 - y * x2);
       }
-      throw new VectorException("my RotateBy() function is only defined for vectors with 3 components.");
+      throw new VectorException("my RotateBy() function is only defined for 3-component vectors.");
     }
 
-    //public static Vector RotateBy(Vector vector, Quaternion rotation)
-    //{
-    //  Quaternion answer = (rotation * vector) * Quaternion.Conjugate(rotation);
-    //  return new Vector(answer.X, answer.Y, answer.Z);
-    //}
+    /// <summary>Rotates a vector by a quaternion.</summary>
+    /// <param name="vector">The vector to rotate.</param>
+    /// <param name="rotation">The quaternion to rotate the 3-component vector by.</param>
+    /// <returns>The result of the rotation.</returns>
+    public static Vector RotateBy(Vector vector, Quaternion rotation)
+    {
+      if (vector.Dimensions == 3)
+      {
+        Quaternion answer = Quaternion.Multiply(Quaternion.Multiply(rotation, vector), Quaternion.Conjugate(rotation));
+        return new Vector(answer.X, answer.Y, answer.Z);
+      }
+      else
+        throw new VectorException("my quaternion rotations are only defined for 3-component vectors.");
+    }
 
     /// <summary>Computes the linear interpolation between two vectors.</summary>
     /// <param name="left">The starting vector of the interpolation.</param>
@@ -361,8 +489,8 @@ namespace SevenEngine.Mathematics
     }
 
     /// <summary>Checks if two matrices are equal by reverences.</summary>
-    /// <param name="left">The left matric of the equality check.</param>
-    /// <param name="right">The right matrix of the equality check.</param>
+    /// <param name="left">The left vector of the equality check.</param>
+    /// <param name="right">The right vector of the equality check.</param>
     /// <returns>True if the references are equal, false if not.</returns>
     public static bool EqualsReference(Vector left, Vector right)
     {

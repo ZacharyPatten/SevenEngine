@@ -20,8 +20,14 @@ namespace SevenEngine.Mathematics
     private int _columns;
     private int _rows;
 
-    /// <summary>The float[,] reference of this matrix.</summary>
-    public float[] Floats { get { return _matrix; } }
+    /// <summary>The float[] reference of this matrix.</summary>
+    public float[] Floats 
+    {
+      get { return _matrix; }
+      set {
+        if (value.Length == _rows * _columns) _matrix = value; 
+        else throw new MatrixException("you cannot change the dimension of matrix when setting its float values"); }
+    }
     /// <summary>The number of rows in the matrix.</summary>
     public int Rows { get { return _rows; } }
     /// <summary>The number of columns in the matrix.</summary>

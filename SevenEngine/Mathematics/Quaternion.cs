@@ -13,14 +13,19 @@ using System;
 
 namespace SevenEngine.Mathematics
 {
-  /// <summary>Implements a 4-component (x, y, z, and w) quaternion.</summary>
+  /// <summary>Implements a 4-component (x, y, z, and w) quaternion. X, Y, and Z represent the axis
+  /// of rotation, and W is the rotation ammount.</summary>
   public class Quaternion
   {
     protected float _x, _y, _z, _w;
 
+    /// <summary>The X component of the quaternion. (axis, NOT rotation ammount)</summary>
     public float X { get { return _x; } set { _x = value; } }
+    /// <summary>The Y component of the quaternion. (axis, NOT rotation ammount)</summary>
     public float Y { get { return _y; } set { _y = value; } }
+    /// <summary>The Z component of the quaternion. (axis, NOT rotation ammount)</summary>
     public float Z { get { return _z; } set { _z = value; } }
+    /// <summary>The W component of the quaternion. (rotation ammount, NOT axis)</summary>
     public float W { get { return _w; } set { _w = value; } }
 
     public Quaternion(float x, float y, float z, float w) { _x = x; _y = y; _z = z; _w = w; }
@@ -60,8 +65,11 @@ namespace SevenEngine.Mathematics
     public Quaternion Invert() { return Quaternion.Invert(this); }
     public Quaternion Lerp(Quaternion right, float blend) { return Quaternion.Lerp(this, right, blend); }
     public Quaternion Slerp(Quaternion right, float blend) { return Quaternion.Slerp(this, right, blend); }
-    public Vector Rotate(Vector vector) { return Quaternion.Rotate(vector, this); }
+    public Vector Rotate(Vector vector) { return Quaternion.Rotate(this, vector); }
 
+    /// <summary>Computes the length of quaternion.</summary>
+    /// <param name="quaternion">The quaternion to compute the length of.</param>
+    /// <returns>The length of the given quaternion.</returns>
     public static float Length(Quaternion quaternion)
     {
       return
@@ -72,6 +80,10 @@ namespace SevenEngine.Mathematics
           quaternion.W * quaternion.W);
     }
     
+    /// <summary>Computes the length of a quaternion, but doesn't square root it
+    /// for optimization possibilities.</summary>
+    /// <param name="quaternion">The quaternion to compute the length squared of.</param>
+    /// <returns>The squared length of the given quaternion.</returns>
     public static float LengthSquared(Quaternion quaternion)
     {
       return
@@ -81,6 +93,9 @@ namespace SevenEngine.Mathematics
         quaternion.W * quaternion.W;
     }
     
+    /// <summary>Gets the conjugate of the quaternion.</summary>
+    /// <param name="quaternion">The quaternion to conjugate.</param>
+    /// <returns>The conjugate of teh given quaternion.</returns>
     public static Quaternion Conjugate(Quaternion quaternion)
     {
       return new Quaternion(
@@ -90,6 +105,10 @@ namespace SevenEngine.Mathematics
         quaternion.W);
     }
     
+    /// <summary>Adds two quaternions together.</summary>
+    /// <param name="left">The first quaternion of the addition.</param>
+    /// <param name="right">The second quaternion of the addition.</param>
+    /// <returns>The result of the addition.</returns>
     public static Quaternion Add(Quaternion left, Quaternion right)
     {
       return new Quaternion(
@@ -99,6 +118,10 @@ namespace SevenEngine.Mathematics
         left.W + right.W);
     }
     
+    /// <summary>Subtracts two quaternions.</summary>
+    /// <param name="left">The left quaternion of the subtraction.</param>
+    /// <param name="right">The right quaternion of the subtraction.</param>
+    /// <returns>The resulting quaternion after the subtraction.</returns>
     public static Quaternion Subtract(Quaternion left, Quaternion right)
     {
       return new Quaternion(
@@ -108,6 +131,10 @@ namespace SevenEngine.Mathematics
         left.W - right.W);
     }
 
+    /// <summary>Multiplies two quaternions together.</summary>
+    /// <param name="left">The first quaternion of the multiplication.</param>
+    /// <param name="right">The second quaternion of the multiplication.</param>
+    /// <returns>The resulting quaternion after the multiplication.</returns>
     public static Quaternion Multiply(Quaternion left, Quaternion right)
     {
       return new Quaternion(
@@ -117,6 +144,10 @@ namespace SevenEngine.Mathematics
         left.W * right.W - left.X * right.X - left.Y * right.Y - left.Z * right.Z);
     }
 
+    /// <summary>Multiplies all the values of the quaternion by a scalar value.</summary>
+    /// <param name="left">The quaternion of the multiplication.</param>
+    /// <param name="right">The scalar of the multiplication.</param>
+    /// <returns>The result of multiplying all the values in the quaternion by the scalar.</returns>
     public static Quaternion Multiply(Quaternion left, float right)
     {
       return new Quaternion(
@@ -126,26 +157,45 @@ namespace SevenEngine.Mathematics
         left.W * right);
     }
 
+    /// <summary>Pre-multiplies a 3-component vector by a quaternion.</summary>
+    /// <param name="left">The quaternion to pre-multiply the vector by.</param>
+    /// <param name="vector">The vector to be multiplied.</param>
+    /// <returns>The resulting quaternion of the multiplication.</returns>
     public static Quaternion Multiply(Quaternion left, Vector vector)
     {
-      return new Quaternion(
-        left.W * vector.X + left.Y * vector.Z - left.Z * vector.Y,
-        left.W * vector.Y + left.Z * vector.X - left.X * vector.Z,
-        left.W * vector.Z + left.X * vector.Y - left.Y * vector.X,
-        -left.X * vector.X - left.Y * vector.Y - left.Z * vector.Z);
+      if (vector.Dimensions == 3)
+      {
+        return new Quaternion(
+          left.W * vector.X + left.Y * vector.Z - left.Z * vector.Y,
+          left.W * vector.Y + left.Z * vector.X - left.X * vector.Z,
+          left.W * vector.Z + left.X * vector.Y - left.Y * vector.X,
+          -left.X * vector.X - left.Y * vector.Y - left.Z * vector.Z);
+      }
+      else
+        throw new QuaternionException("my quaternion rotations are only defined for 3-component vectors.");
     }
 
-
+    /// <summary>Normalizes the quaternion.</summary>
+    /// <param name="quaternion">The quaternion to normalize.</param>
+    /// <returns>The normalization of the given quaternion.</returns>
     public static Quaternion Normalize(Quaternion quaternion)
     {
       float length = Quaternion.Length(quaternion);
-      return new Quaternion(
-        quaternion.X / length,
-        quaternion.Y / length,
-        quaternion.Z / length,
-        quaternion.W / length);
+      if (length != 0)
+      {
+        return new Quaternion(
+          quaternion.X / length,
+          quaternion.Y / length,
+          quaternion.Z / length,
+          quaternion.W / length);
+      }
+      else
+        return new Quaternion(0, 0, 0, 1);
     }
 
+    /// <summary>Inverts a quaternion.</summary>
+    /// <param name="quaternion">The quaternion to find the inverse of.</param>
+    /// <returns>The inverse of the given quaternion.</returns>
     public static Quaternion Invert(Quaternion quaternion)
     {
       float lengthSquared = Quaternion.LengthSquared(quaternion);
@@ -158,6 +208,11 @@ namespace SevenEngine.Mathematics
         quaternion.W / lengthSquared);
     }
 
+    /// <summary>Lenearly interpolates between two quaternions.</summary>
+    /// <param name="left">The starting point of the interpolation.</param>
+    /// <param name="right">The ending point of the interpolation.</param>
+    /// <param name="blend">The ratio 0.0-1.0 of how far to interpolate between the left and right quaternions.</param>
+    /// <returns>The result of the interpolation.</returns>
     public static Quaternion Lerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
@@ -181,6 +236,11 @@ namespace SevenEngine.Mathematics
         return FactoryIdentity;
     }
 
+    /// <summary>Sphereically interpolates between two quaternions.</summary>
+    /// <param name="left">The starting point of the interpolation.</param>
+    /// <param name="right">The ending point of the interpolation.</param>
+    /// <param name="blend">The ratio of how far to interpolate between the left and right quaternions.</param>
+    /// <returns>The result of the interpolation.</returns>
     public static Quaternion Slerp(Quaternion left, Quaternion right, float blend)
     {
       if (blend < 0 || blend > 1.0f)
@@ -216,46 +276,82 @@ namespace SevenEngine.Mathematics
         return FactoryIdentity;
     }
 
-    public static Vector Rotate(Vector vector, Quaternion rotation)
+    /// <summary>Rotates a vector by a quaternion.</summary>
+    /// <param name="rotation">The quaternion to rotate the vector by.</param>
+    /// <param name="vector">The vector to be rotated by.</param>
+    /// <returns>The result of the rotation.</returns>
+    public static Vector Rotate(Quaternion rotation, Vector vector)
     {
-      Quaternion answer = (rotation * vector) * Quaternion.Conjugate(rotation);
+      if (vector.Dimensions != 3)
+        throw new QuaternionException("my quaternion rotations are only defined for 3-component vectors.");
+      Quaternion answer = Quaternion.Multiply(Quaternion.Multiply(rotation, vector), Quaternion.Conjugate(rotation));
       return new Vector(answer.X, answer.Y, answer.Z);
     }
 
-    public static bool Equals(Quaternion left, Quaternion right)
+    /// <summary>Does a value equality check.</summary>
+    /// <param name="left">The first quaternion to check for equality.</param>
+    /// <param name="right">The second quaternion  to check for equality.</param>
+    /// <returns>True if values are equal, false if not.</returns>
+    public static bool EqualsValue(Quaternion left, Quaternion right)
     {
-      if (object.ReferenceEquals(left, right))
-        return true;
-      else if (left == null || right == null)
-        return false;
-      else return
+      return
         left.X == right.X &&
         left.Y == right.Y &&
         left.Z == right.Z &&
         left.W == right.W;
     }
 
-    public static Matrix ToMatrix(Quaternion q)
-    {
-      return new Matrix(3, 3,
-        q.W * q.W + q.X * q.X - q.Y * q.Y - q.Z * q.Z,
-        2 * q.X * q.Y - 2 * q.W * q.Z,
-        2 *q.X * q.Z + 2 * q.W * q.Y,
-        2 * q.X * q.Y + 2 * q.W * q.Z,
-        q.W * q.W - q.X * q.X + q.Y * q.Y - q.Z * q.Z,
-        2 * q.Y * q.Z + 2 * q.W * q.X,
-        2 * q.X * q.Z - 2 * q.W * q.Y,
-        2 * q.Y * q.Z - 2 * q.W * q.X,
-        q.W * q.W - q.X * q.X - q.Y * q.Y + q.Z * q.Z);
-    }
-
-    public override string ToString()
+    /// <summary>Does a value equality check with leniency.</summary>
+    /// <param name="leftFloats">The first quaternion to check for equality.</param>
+    /// <param name="rightFloats">The second quaternion to check for equality.</param>
+    /// <param name="leniency">How much the values can vary but still be considered equal.</param>
+    /// <returns>True if values are equal, false if not.</returns>
+    public static bool EqualsValue(Quaternion left, Quaternion right, float leniency)
     {
       return
-        String.Format("X: |{0}|\nY: |{1}|\nZ: |{2}|\nW: |{3}|",
-        _x, _y, _z, _w);
+        Calc.Abs(left.X - right.X) < leniency &&
+        Calc.Abs(left.Y - right.Y) < leniency &&
+        Calc.Abs(left.Z - right.Z) < leniency &&
+        Calc.Abs(left.W - right.W) > leniency;
     }
 
+    /// <summary>Checks if two matrices are equal by reverences.</summary>
+    /// <param name="left">The left quaternion of the equality check.</param>
+    /// <param name="right">The right quaternion of the equality check.</param>
+    /// <returns>True if the references are equal, false if not.</returns>
+    public static bool EqualsReference(Quaternion left, Quaternion right)
+    {
+      return object.ReferenceEquals(left, right);
+    }
+
+    /// <summary>Converts a quaternion into a matrix.</summary>
+    /// <param name="quaternion">The quaternion of the conversion.</param>
+    /// <returns>The resulting matrix.</returns>
+    public static Matrix ToMatrix(Quaternion quaternion)
+    {
+      return new Matrix(3, 3,
+        quaternion.W * quaternion.W + quaternion.X * quaternion.X - quaternion.Y * quaternion.Y - quaternion.Z * quaternion.Z,
+        2 * quaternion.X * quaternion.Y - 2 * quaternion.W * quaternion.Z,
+        2 *quaternion.X * quaternion.Z + 2 * quaternion.W * quaternion.Y,
+        2 * quaternion.X * quaternion.Y + 2 * quaternion.W * quaternion.Z,
+        quaternion.W * quaternion.W - quaternion.X * quaternion.X + quaternion.Y * quaternion.Y - quaternion.Z * quaternion.Z,
+        2 * quaternion.Y * quaternion.Z + 2 * quaternion.W * quaternion.X,
+        2 * quaternion.X * quaternion.Z - 2 * quaternion.W * quaternion.Y,
+        2 * quaternion.Y * quaternion.Z - 2 * quaternion.W * quaternion.X,
+        quaternion.W * quaternion.W - quaternion.X * quaternion.X - quaternion.Y * quaternion.Y + quaternion.Z * quaternion.Z);
+    }
+
+    /// <summary>Converts the quaternion into a string.</summary>
+    /// <returns>The resulting string after the conversion.</returns>
+    public override string ToString()
+    {
+      // Chane this method to format it how you want...
+      return base.ToString();
+      //return "{ " + _x + ", " + _y + ", " + _z + ", " + _w + " }";
+    }
+
+    /// <summary>Computes a hash code from the values in this quaternion.</summary>
+    /// <returns>The computed hash code.</returns>
     public override int GetHashCode()
     { 
       return 
@@ -265,20 +361,14 @@ namespace SevenEngine.Mathematics
         _w.GetHashCode();
     }
 
+    /// <summary>Does a reference equality check.</summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public override bool Equals(object other)
     {
       if (other is Quaternion)
-        return Equals((Quaternion)other);
-      return base.Equals(other);
-    }
-
-    public bool Equals(Quaternion right)
-    {
-      return
-        _x == right.X &&
-        _y == right.Y &&
-        _z == right.Z &&
-        W == right.W;
+        return Quaternion.EqualsReference(this, (Quaternion)other);
+      return false;
     }
 
     private class QuaternionException : Exception
