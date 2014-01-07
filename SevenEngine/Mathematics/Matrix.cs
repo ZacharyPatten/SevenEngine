@@ -24,9 +24,11 @@ namespace SevenEngine.Mathematics
     public float[] Floats 
     {
       get { return _matrix; }
-      set {
+      set
+      {
         if (value.Length == _rows * _columns) _matrix = value; 
-        else throw new MatrixException("you cannot change the dimension of matrix when setting its float values"); }
+        else throw new MatrixException("you cannot change the dimension of matrix when setting its float values");
+      }
     }
     /// <summary>The number of rows in the matrix.</summary>
     public int Rows { get { return _rows; } }
@@ -92,6 +94,22 @@ namespace SevenEngine.Mathematics
       _columns = columns;
       _rows = rows;
     }
+
+    /// <summary>This is a special constructor to make a vector into a matrix
+    /// without copying the data for efficiency purposes.</summary>
+    /// <param name="vector">The values the new matrix will point to.</param>
+    private Matrix(Vector vector)
+    {
+      _matrix = vector.Floats;
+      _rows = _matrix.Length;
+      _columns = 1;
+    }
+
+    /// <summary>Constructs a matrix that points to the values in a vector. So the vector and this
+    /// new matrix point to the same float[].</summary>
+    /// <param name="vector">The vector who will share the data as the constructed matrix.</param>
+    /// <returns>The constructed matrix sharing the data with the vector.</returns>
+    public static Matrix UnsafeFactoryFromVector(Vector vector) { return new Matrix(vector); }
 
     /// <summary>Constructs a new zero-matrix of the given dimensions.</summary>
     /// <param name="rows">The number of rows of the matrix.</param>
@@ -902,7 +920,8 @@ namespace SevenEngine.Mathematics
   }
 
   // This version uses a 2D float array which is convenient and can be more efficient
-  // depending on how often you need to comvert your matrix into an array format.
+  // depending on how often you need to comvert your matrix into an array format, but 
+  // in general it will not be faster than the flattened array implemenation.
   #region Matrix (2-D Array)
 
   ///// <summary>A matrix wrapper for float[,] to perform matrix theory in row major order. Enjoy :)</summary>

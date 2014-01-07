@@ -28,10 +28,20 @@ namespace SevenEngine.Mathematics
     /// <summary>The W component of the quaternion. (rotation ammount, NOT axis)</summary>
     public float W { get { return _w; } set { _w = value; } }
 
+    /// <summary>Constructs a quaternion with the desired values.</summary>
+    /// <param name="x">The x component of the quaternion.</param>
+    /// <param name="y">The y component of the quaternion.</param>
+    /// <param name="z">The z component of the quaternion.</param>
+    /// <param name="w">The w component of the quaternion.</param>
     public Quaternion(float x, float y, float z, float w) { _x = x; _y = y; _z = z; _w = w; }
 
+    /// <summary>Returns new Quaternion(0, 0, 0, 1).</summary>
     public static readonly Quaternion FactoryIdentity = new Quaternion(0, 0, 0, 1);
 
+    /// <summary>Creates a quaternion from an axis and rotation.</summary>
+    /// <param name="axis">The to create the quaternion from.</param>
+    /// <param name="angle">The angle to create teh quaternion from.</param>
+    /// <returns>The newly created quaternion.</returns>
     public static Quaternion FactoryFromAxisAngle(Vector axis, float angle)
     {
       if (axis.LengthSquared() == 0.0f)
@@ -44,28 +54,113 @@ namespace SevenEngine.Mathematics
         Calc.Cos(angle / 2)));
     }
 
+    /// <summary>Adds two quaternions together.</summary>
+    /// <param name="left">The first quaternion of the addition.</param>
+    /// <param name="right">The second quaternion of the addition.</param>
+    /// <returns>The result of the addition.</returns>
     public static Quaternion operator +(Quaternion left, Quaternion right) { return Quaternion.Add(left, right); }
+    /// <summary>Subtracts two quaternions.</summary>
+    /// <param name="left">The left quaternion of the subtraction.</param>
+    /// <param name="right">The right quaternion of the subtraction.</param>
+    /// <returns>The resulting quaternion after the subtraction.</returns>
     public static Quaternion operator -(Quaternion left, Quaternion right) { return Quaternion.Subtract(left, right); }
+    /// <summary>Multiplies two quaternions together.</summary>
+    /// <param name="left">The first quaternion of the multiplication.</param>
+    /// <param name="right">The second quaternion of the multiplication.</param>
+    /// <returns>The resulting quaternion after the multiplication.</returns>
     public static Quaternion operator *(Quaternion left, Quaternion right) { return Quaternion.Multiply(left, right); }
+    /// <summary>Pre-multiplies a 3-component vector by a quaternion.</summary>
+    /// <param name="left">The quaternion to pre-multiply the vector by.</param>
+    /// <param name="vector">The vector to be multiplied.</param>
+    /// <returns>The resulting quaternion of the multiplication.</returns>
     public static Quaternion operator *(Quaternion left, Vector right) { return Quaternion.Multiply(left, right); }
+    /// <summary>Multiplies all the values of the quaternion by a scalar value.</summary>
+    /// <param name="left">The quaternion of the multiplication.</param>
+    /// <param name="right">The scalar of the multiplication.</param>
+    /// <returns>The result of multiplying all the values in the quaternion by the scalar.</returns>
     public static Quaternion operator *(Quaternion left, float right) { return Quaternion.Multiply(left, right); }
-    public static Quaternion operator *(float scalor, Quaternion quaternion) { return Quaternion.Multiply(quaternion, scalor); }
+    /// <summary>Multiplies all the values of the quaternion by a scalar value.</summary>
+    /// <param name="left">The scalar of the multiplication.</param>
+    /// <param name="right">The quaternion of the multiplication.</param>
+    /// <returns>The result of multiplying all the values in the quaternion by the scalar.</returns>
+    public static Quaternion operator *(float left, Quaternion right) { return Quaternion.Multiply(right, left); }
+    /// <summary>Checks for equality by value. (beware float errors)</summary>
+    /// <param name="left">The first quaternion of the equality check.</param>
+    /// <param name="right">The second quaternion of the equality check.</param>
+    /// <returns>true if the values were deemed equal, false if not.</returns>
     public static bool operator ==(Quaternion left, Quaternion right) { return Quaternion.Equals(left, right); }
+    /// <summary>Checks for anti-equality by value. (beware float errors)</summary>
+    /// <param name="left">The first quaternion of the anti-equality check.</param>
+    /// <param name="right">The second quaternion of the anti-equality check.</param>
+    /// <returns>false if the values were deemed equal, true if not.</returns>
     public static bool operator !=(Quaternion left, Quaternion right) { return !Quaternion.Equals(left, right); }
 
+    /// <summary>Computes the length of quaternion.</summary>
+    /// <returns>The length of the given quaternion.</returns>
     public float Length() { return Quaternion.Length(this); }
+    /// <summary>Computes the length of a quaternion, but doesn't square root it
+    /// for optimization possibilities.</summary>
+    /// <returns>The squared length of the given quaternion.</returns>
     public float LengthSquared() { return Quaternion.LengthSquared(this); }
+    /// <summary>Gets the conjugate of the quaternion.</summary>
+    /// <returns>The conjugate of teh given quaternion.</returns>
     public Quaternion Conjugate() { return Quaternion.Conjugate(this); }
+    /// <summary>Adds two quaternions together.</summary>
+    /// <param name="right">The second quaternion of the addition.</param>
+    /// <returns>The result of the addition.</returns>
     public Quaternion Add(Quaternion right) { return Quaternion.Add(this, right); }
+    /// <summary>Subtracts two quaternions.</summary>
+    /// <param name="right">The right quaternion of the subtraction.</param>
+    /// <returns>The resulting quaternion after the subtraction.</returns>
     public Quaternion Subtract(Quaternion right) { return Quaternion.Subtract(this, right); }
+    /// <summary>Multiplies two quaternions together.</summary>
+    /// <param name="right">The second quaternion of the multiplication.</param>
+    /// <returns>The resulting quaternion after the multiplication.</returns>
     public Quaternion Multiply(Quaternion right) { return Quaternion.Multiply(this, right); }
+    /// <summary>Multiplies all the values of the quaternion by a scalar value.</summary>
+    /// <param name="right">The scalar of the multiplication.</param>
+    /// <returns>The result of multiplying all the values in the quaternion by the scalar.</returns>
     public Quaternion Multiply(float right) { return Quaternion.Multiply(this, right); }
+    /// <summary>Pre-multiplies a 3-component vector by a quaternion.</summary>
+    /// <param name="right">The vector to be multiplied.</param>
+    /// <returns>The resulting quaternion of the multiplication.</returns>
     public Quaternion Multiply(Vector vector) { return Quaternion.Multiply(this, vector); }
+    /// <summary>Normalizes the quaternion.</summary>
+    /// <returns>The normalization of the given quaternion.</returns>
     public Quaternion Normalize() { return Quaternion.Normalize(this); }
+    /// <summary>Inverts a quaternion.</summary>
+    /// <returns>The inverse of the given quaternion.</returns>
     public Quaternion Invert() { return Quaternion.Invert(this); }
+    /// <summary>Lenearly interpolates between two quaternions.</summary>
+    /// <param name="right">The ending point of the interpolation.</param>
+    /// <param name="blend">The ratio 0.0-1.0 of how far to interpolate between the left and right quaternions.</param>
+    /// <returns>The result of the interpolation.</returns>
     public Quaternion Lerp(Quaternion right, float blend) { return Quaternion.Lerp(this, right, blend); }
+    /// <summary>Sphereically interpolates between two quaternions.</summary>
+    /// <param name="right">The ending point of the interpolation.</param>
+    /// <param name="blend">The ratio of how far to interpolate between the left and right quaternions.</param>
+    /// <returns>The result of the interpolation.</returns>
     public Quaternion Slerp(Quaternion right, float blend) { return Quaternion.Slerp(this, right, blend); }
+    /// <summary>Rotates a vector by a quaternion.</summary>
+    /// <param name="vector">The vector to be rotated by.</param>
+    /// <returns>The result of the rotation.</returns>
     public Vector Rotate(Vector vector) { return Quaternion.Rotate(this, vector); }
+    /// <summary>Does a value equality check.</summary>
+    /// <param name="right">The second quaternion  to check for equality.</param>
+    /// <returns>True if values are equal, false if not.</returns>
+    public bool EqualsValue(Quaternion right) { return Quaternion.EqualsValue(this, right); }
+    /// <summary>Does a value equality check with leniency.</summary>
+    /// <param name="right">The second quaternion to check for equality.</param>
+    /// <param name="leniency">How much the values can vary but still be considered equal.</param>
+    /// <returns>True if values are equal, false if not.</returns>
+    public bool EqualsValue(Quaternion right, float leniency) { return Quaternion.EqualsValue(this, right, leniency); }
+    /// <summary>Checks if two matrices are equal by reverences.</summary>
+    /// <param name="right">The right quaternion of the equality check.</param>
+    /// <returns>True if the references are equal, false if not.</returns>
+    public bool EqualsReference(Quaternion right) { return Quaternion.EqualsReference(this, right); }
+    /// <summary>Converts a quaternion into a matrix.</summary>
+    /// <returns>The resulting matrix.</returns>
+    public Matrix ToMatrix() { return Quaternion.ToMatrix(this); }
 
     /// <summary>Computes the length of quaternion.</summary>
     /// <param name="quaternion">The quaternion to compute the length of.</param>
@@ -159,17 +254,17 @@ namespace SevenEngine.Mathematics
 
     /// <summary>Pre-multiplies a 3-component vector by a quaternion.</summary>
     /// <param name="left">The quaternion to pre-multiply the vector by.</param>
-    /// <param name="vector">The vector to be multiplied.</param>
+    /// <param name="right">The vector to be multiplied.</param>
     /// <returns>The resulting quaternion of the multiplication.</returns>
-    public static Quaternion Multiply(Quaternion left, Vector vector)
+    public static Quaternion Multiply(Quaternion left, Vector right)
     {
-      if (vector.Dimensions == 3)
+      if (right.Dimensions == 3)
       {
         return new Quaternion(
-          left.W * vector.X + left.Y * vector.Z - left.Z * vector.Y,
-          left.W * vector.Y + left.Z * vector.X - left.X * vector.Z,
-          left.W * vector.Z + left.X * vector.Y - left.Y * vector.X,
-          -left.X * vector.X - left.Y * vector.Y - left.Z * vector.Z);
+          left.W * right.X + left.Y * right.Z - left.Z * right.Y,
+          left.W * right.Y + left.Z * right.X - left.X * right.Z,
+          left.W * right.Z + left.X * right.Y - left.Y * right.X,
+          -left.X * right.X - left.Y * right.Y - left.Z * right.Z);
       }
       else
         throw new QuaternionException("my quaternion rotations are only defined for 3-component vectors.");
@@ -233,7 +328,7 @@ namespace SevenEngine.Mathematics
       if (Quaternion.LengthSquared(result) > 0.0f)
         return Quaternion.Normalize(result);
       else
-        return FactoryIdentity;
+        return Quaternion.FactoryIdentity;
     }
 
     /// <summary>Sphereically interpolates between two quaternions.</summary>
@@ -273,7 +368,7 @@ namespace SevenEngine.Mathematics
       if (Quaternion.LengthSquared(result) > 0.0f)
         return Quaternion.Normalize(result);
       else
-        return FactoryIdentity;
+        return Quaternion.FactoryIdentity;
     }
 
     /// <summary>Rotates a vector by a quaternion.</summary>
@@ -302,8 +397,8 @@ namespace SevenEngine.Mathematics
     }
 
     /// <summary>Does a value equality check with leniency.</summary>
-    /// <param name="leftFloats">The first quaternion to check for equality.</param>
-    /// <param name="rightFloats">The second quaternion to check for equality.</param>
+    /// <param name="left">The first quaternion to check for equality.</param>
+    /// <param name="right">The second quaternion to check for equality.</param>
     /// <param name="leniency">How much the values can vary but still be considered equal.</param>
     /// <returns>True if values are equal, false if not.</returns>
     public static bool EqualsValue(Quaternion left, Quaternion right, float leniency)

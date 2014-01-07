@@ -78,10 +78,24 @@ namespace SevenEngine.Mathematics
     /// <param name="dimensions">The number of components in the vector.</param>
     /// <returns>The newly constructed vector.</returns>
     public static Vector FactoryZero(int dimensions) { return new Vector(dimensions); }
+
     /// <summary>Creates a vector with the given number of components with the values initialized to ones.</summary>
     /// <param name="dimensions">The number of components in the vector.</param>
     /// <returns>The newly constructed vector.</returns>
     public static Vector FactoryOne(int dimensions) { return new Vector(new float[dimensions]); }
+
+    /// <summary>Returns a 3-component vector representing the x-axis.</summary>
+    public static readonly Vector FactoryXAxis = new Vector(1, 0, 0);
+    /// <summary>Returns a 3-component vector representing the y-axis.</summary>
+    public static readonly Vector FactoryYAxis = new Vector(0, 1, 0);
+    /// <summary>Returns a 3-component vector representing the z-axis.</summary>
+    public static readonly Vector FactoryZAxis = new Vector(0, 0, 1);
+    /// <summary>Returns a 3-component vector representing the negative x-axis.</summary>
+    public static readonly Vector FactoryNegXAxis = new Vector(1, 0, 0);
+    /// <summary>Returns a 3-component vector representing the negative y-axis.</summary>
+    public static readonly Vector FactoryNegYAxis = new Vector(0, 1, 0);
+    /// <summary>Returns a 3-component vector representing the negative z-axis.</summary>
+    public static readonly Vector FactoryNegZAxis = new Vector(0, 0, 1);
 
     /// <summary>Adds two vectors together.</summary>
     /// <param name="left">The first vector of the addition.</param>
@@ -125,7 +139,7 @@ namespace SevenEngine.Mathematics
     /// <summary>Automatically converts a vector into a matrix.</summary>
     /// <param name="vector">The vector of the conversion.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Matrix(Vector vector) { return Vector.ToMatrix(vector); }
+    public static implicit operator Matrix(Vector vector) { return Matrix.UnsafeFactoryFromVector(vector); }
 
     /// <summary>Adds two vectors together.</summary>
     /// <param name="right">The vector to add to this one.</param>
@@ -364,7 +378,7 @@ namespace SevenEngine.Mathematics
       return Calc.ArcCos(Vector.DotProduct(first, second) / (Vector.Length(first) * Vector.Length(second)));
     }
     
-    /// <summary>Rotates a vector by the specified quaternion values.</summary>
+    /// <summary>Rotates a vector by the specified axis and rotation values.</summary>
     /// <param name="vector">The vector to rotate.</param>
     /// <param name="angle">The angle of the rotation.</param>
     /// <param name="x">The x component of the axis vector to rotate about.</param>
@@ -472,8 +486,8 @@ namespace SevenEngine.Mathematics
     }
 
     /// <summary>Does a value equality check with leniency.</summary>
-    /// <param name="leftFloats">The first vector to check for equality.</param>
-    /// <param name="rightFloats">The second vector to check for equality.</param>
+    /// <param name="left">The first vector to check for equality.</param>
+    /// <param name="right">The second vector to check for equality.</param>
     /// <param name="leniency">How much the values can vary but still be considered equal.</param>
     /// <returns>True if values are equal, false if not.</returns>
     public static bool EqualsValue(Vector left, Vector right, float leniency)
