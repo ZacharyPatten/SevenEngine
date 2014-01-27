@@ -27,6 +27,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements a standard array that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
+  [Serializable]
   public class ArrayBase<Type> : Array<Type>
   {
     private Type[] _array;

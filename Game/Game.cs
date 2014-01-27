@@ -111,7 +111,13 @@ namespace Game
       //   meshes because they do not have transformations. Put them in a static model to render them.
       StaticModelManager.LoadMesh("terrain", FilePath.FromRelative(@"\..\..\Assets\Models\Terrain.obj"));
       StaticModelManager.LoadMesh("RedRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
+      StaticModelManager.LoadMesh("BlackRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
+      StaticModelManager.LoadMesh("BlueRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
+      StaticModelManager.LoadMesh("YellowRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
+      StaticModelManager.LoadMesh("PinkRanger", FilePath.FromRelative(@"\..\..\Assets\Models\RedRanger.obj"));
       StaticModelManager.LoadMesh("Tux", FilePath.FromRelative(@"\..\..\Assets\Models\tux.obj"));
+      StaticModelManager.LoadMesh("TuxRed", FilePath.FromRelative(@"\..\..\Assets\Models\tux.obj"));
+      StaticModelManager.LoadMesh("TuxGreen", FilePath.FromRelative(@"\..\..\Assets\Models\tux.obj"));
       StaticModelManager.LoadMesh("mountain", FilePath.FromRelative(@"\..\..\Assets\Models\mountain.obj"));
       StaticModelManager.LoadMesh("MushroomCloud", FilePath.FromRelative(@"\..\..\Assets\Models\MushCloud.obj"));
 
@@ -121,14 +127,16 @@ namespace Game
       StaticModelManager.LoadModel("Terrain", new string[] { "Terrain" }, new string[] { "terrain" }, new string[] { "grass" });
       StaticModelManager.LoadModel("Mountain", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock" });
       StaticModelManager.LoadModel("Mountain2", new string[] { "mountain" }, new string[] { "mountain" }, new string[] { "rock2" });
+
       StaticModelManager.LoadModel("Tux", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "Tux" });
-      StaticModelManager.LoadModel("TuxRed", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "TuxRed" });
-      StaticModelManager.LoadModel("TuxGreen", new string[] { "Body" }, new string[] { "Tux" }, new string[] { "TuxGreen" });
+      StaticModelManager.LoadModel("TuxRed", new string[] { "Body" }, new string[] { "TuxRed" }, new string[] { "TuxRed" });
+      StaticModelManager.LoadModel("TuxGreen", new string[] { "Body" }, new string[] { "TuxGreen" }, new string[] { "TuxGreen" });
+
       StaticModelManager.LoadModel("RedRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "RedRanger" });
-      StaticModelManager.LoadModel("BlueRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlueRanger" });
-      StaticModelManager.LoadModel("BlackRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "BlackRanger" });
-      StaticModelManager.LoadModel("PinkRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "PinkRanger" });
-      StaticModelManager.LoadModel("YellowRanger", new string[] { "Body" }, new string[] { "RedRanger" }, new string[] { "YellowRanger" });
+      StaticModelManager.LoadModel("BlueRanger", new string[] { "Body" }, new string[] { "BlueRanger" }, new string[] { "BlueRanger" });
+      StaticModelManager.LoadModel("BlackRanger", new string[] { "Body" }, new string[] { "BlackRanger" }, new string[] { "BlackRanger" });
+      StaticModelManager.LoadModel("PinkRanger", new string[] { "Body" }, new string[] { "PinkRanger" }, new string[] { "PinkRanger" });
+      StaticModelManager.LoadModel("YellowRanger", new string[] { "Body" }, new string[] { "YellowRanger" }, new string[] { "YellowRanger" });
     }
 
     public override void InitializeShaders()
@@ -183,6 +191,12 @@ namespace Game
       // The state must be loaded before you make it the current state.
       StateManager.TriggerStateLoad("AiBattle");
       StateManager.ChangeState("AiBattle");
+
+
+
+      /*StateManager.AddState(new SpriteState("SpriteState"));
+      StateManager.TriggerStateLoad("SpriteState");
+      StateManager.ChangeState("SpriteState");*/
     }
 
     public override void Update(double elapsedTime)

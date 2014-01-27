@@ -19,7 +19,7 @@ namespace SevenEngine.Physics
 
   public class Matter
   {
-    protected Substance _substance;
+    protected Material _substance;
     //protected Shape _space;
 
     protected Vector _acceleration;

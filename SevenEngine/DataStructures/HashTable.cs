@@ -31,6 +31,7 @@ namespace SevenEngine.DataStructures
   
   #region HashTableLinked
 
+  [Serializable]
   public class HashTableLinked<ValueType, KeyType> : HashTable<ValueType, KeyType>
   {
     /// <summary>A set of allowable table sizes, all of which are prime.</summary>

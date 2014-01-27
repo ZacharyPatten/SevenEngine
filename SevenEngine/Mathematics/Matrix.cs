@@ -310,7 +310,7 @@ namespace SevenEngine.Mathematics
     /// <summary>Automatically converts a matrix into a float[,] if necessary.</summary>
     /// <param name="matrix">The matrix to convert to a float[,].</param>
     /// <returns>The reference to the float[,] representing the matrix.</returns>
-    public static implicit operator float[](Matrix matrix) { return matrix.Floats; }
+    //public static implicit operator float[](Matrix matrix) { return matrix.Floats; }
 
     /// <summary>Negates all the values in this matrix.</summary>
     /// <returns>The resulting matrix after the negations.</returns>
@@ -367,12 +367,13 @@ namespace SevenEngine.Mathematics
     /// <returns>The resulting matrix after the negations.</returns>
     public static Matrix Negate(Matrix matrix)
     {
-      float[] result = new float[matrix.Floats.Length];
-      Buffer.BlockCopy(matrix.Floats, 0, result, 0, matrix.Floats.Length * sizeof(float));
-      int length = result.Length;
+      Matrix result = new Matrix(matrix.Rows, matrix.Columns, matrix.Floats);
+      float[] resultFloats = result.Floats;
+      float[] matrixFloats = matrix.Floats;
+      int length = resultFloats.Length;
       for (int i = 0; i < length; i++)
-        result[i] = -result[i];
-      return new Matrix(matrix.Rows, matrix.Columns, result);
+        resultFloats[i] = -matrixFloats[i];
+      return result;
     }
 
     /// <summary>Does standard addition of two matrices.</summary>
@@ -383,15 +384,15 @@ namespace SevenEngine.Mathematics
     {
       if (left.Rows != right.Rows || left.Columns != right.Columns)
         throw new MatrixException("invalid addition (size miss-match).");
-
-      //float[] result = (float[])left.Floats.Clone();
-      float[] result = new float[left.Floats.Length];
-      Buffer.BlockCopy(left.Floats, 0, result, 0, left.Floats.Length * sizeof(float));
-      float[] rightFloats = right.Floats;
-      int length = result.Length;
+      Matrix result = new Matrix(left.Rows, left.Columns);
+      float[]
+        resultFloats = result.Floats,
+        leftFloats = left.Floats,
+        rightFloats = right.Floats;
+      int length = resultFloats.Length;
       for (int i = 0; i < length; i++)
-        result[i] += rightFloats[i];
-      return new Matrix(left.Rows, left.Columns, result);
+        resultFloats[i] = leftFloats[i] + rightFloats[i];
+      return result;
     }
 
     /// <summary>Subtracts a scalar from all the values in a matrix.</summary>
@@ -402,14 +403,14 @@ namespace SevenEngine.Mathematics
     {
       if (left.Rows != right.Rows || left.Columns != right.Columns)
         throw new MatrixException("invalid subtraction (size miss-match).");
-      //float[] result = (float[])left.Floats.Clone();
-      float[] result = new float[left.Floats.Length];
-      Buffer.BlockCopy(left.Floats, 0, result, 0, left.Floats.Length * sizeof(float));
-      float[] rightFloats = right.Floats;
-      int length = result.Length;
+      Matrix result = new Matrix(left.Rows, left.Columns);
+      float[] resultFloats = result.Floats,
+        leftFloats = left.Floats,
+        rightFloats = right.Floats;
+      int length = resultFloats.Length;
       for (int i = 0; i < length; i++)
-        result[i] -= rightFloats[i];
-      return new Matrix(left.Rows, left.Columns, result);
+        resultFloats[i] = leftFloats[i] - rightFloats[i];
+      return result;
     }
 
     /// <summary>Does a standard (triple for looped) multiplication between matrices.</summary>
@@ -418,16 +419,16 @@ namespace SevenEngine.Mathematics
     /// <returns>The resulting matrix of the multiplication.</returns>
     public static Matrix Multiply(Matrix left, Matrix right)
     {
-      float[] leftFloats = left.Floats, rightFloats = right.Floats, result;
+      float[] leftFloats = left.Floats, rightFloats = right.Floats, resultFloats;
       int leftRows = left.Rows, leftCols = left.Columns, rightRows = right.Rows, rightCols = right.Columns;
-
+      Matrix result = new Matrix(leftRows, rightCols);
+      resultFloats = result.Floats;
       #region Optimizations
-
       if (leftRows < 5)
       {
         if (leftRows == 4 && leftCols == 4 && rightRows == 4 && rightCols == 4)
         {
-          result = new float[16];
+          resultFloats = new float[16];
           float
             l11 = leftFloats[0], l12 = leftFloats[1], l13 = leftFloats[2], l14 = leftFloats[3],
             l21 = leftFloats[4], l22 = leftFloats[5], l23 = leftFloats[6], l24 = leftFloats[7],
@@ -437,36 +438,34 @@ namespace SevenEngine.Mathematics
             r21 = rightFloats[4], r22 = rightFloats[5], r23 = rightFloats[6], r24 = rightFloats[7],
             r31 = rightFloats[8], r32 = rightFloats[9], r33 = rightFloats[10], r34 = rightFloats[11],
             r41 = rightFloats[12], r42 = rightFloats[13], r43 = rightFloats[14], r44 = rightFloats[15];
-          result[0] = l11 * r11 + l12 * r21 + l13 * r31 + l14 * r41;
-          result[1] = l11 * r12 + l12 * r22 + l13 * r32 + l14 * r42;
-          result[2] = l11 * r13 + l12 * r23 + l13 * r33 + l14 * r43;
-          result[3] = l11 * r14 + l12 * r24 + l13 * r34 + l14 * r44;
-          result[4] = l21 * r11 + l22 * r21 + l23 * r31 + l24 * r41;
-          result[5] = l21 * r12 + l22 * r22 + l23 * r32 + l24 * r42;
-          result[6] = l21 * r13 + l22 * r23 + l23 * r33 + l24 * r43;
-          result[7] = l21 * r14 + l22 * r24 + l23 * r34 + l24 * r44;
-          result[8] = l31 * r11 + l32 * r21 + l33 * r31 + l34 * r41;
-          result[9] = l31 * r12 + l32 * r22 + l33 * r32 + l34 * r42;
-          result[10] = l31 * r13 + l32 * r23 + l33 * r33 + l34 * r43;
-          result[11] = l31 * r14 + l32 * r24 + l33 * r34 + l34 * r44;
-          result[12] = l41 * r11 + l42 * r21 + l43 * r31 + l44 * r41;
-          result[13] = l41 * r12 + l42 * r22 + l43 * r32 + l44 * r42;
-          result[14] = l41 * r13 + l42 * r23 + l43 * r33 + l44 * r43;
-          result[15] = l41 * r14 + l42 * r24 + l43 * r34 + l44 * r44;
-          return new Matrix(4, 4, result);
+          resultFloats[0] = l11 * r11 + l12 * r21 + l13 * r31 + l14 * r41;
+          resultFloats[1] = l11 * r12 + l12 * r22 + l13 * r32 + l14 * r42;
+          resultFloats[2] = l11 * r13 + l12 * r23 + l13 * r33 + l14 * r43;
+          resultFloats[3] = l11 * r14 + l12 * r24 + l13 * r34 + l14 * r44;
+          resultFloats[4] = l21 * r11 + l22 * r21 + l23 * r31 + l24 * r41;
+          resultFloats[5] = l21 * r12 + l22 * r22 + l23 * r32 + l24 * r42;
+          resultFloats[6] = l21 * r13 + l22 * r23 + l23 * r33 + l24 * r43;
+          resultFloats[7] = l21 * r14 + l22 * r24 + l23 * r34 + l24 * r44;
+          resultFloats[8] = l31 * r11 + l32 * r21 + l33 * r31 + l34 * r41;
+          resultFloats[9] = l31 * r12 + l32 * r22 + l33 * r32 + l34 * r42;
+          resultFloats[10] = l31 * r13 + l32 * r23 + l33 * r33 + l34 * r43;
+          resultFloats[11] = l31 * r14 + l32 * r24 + l33 * r34 + l34 * r44;
+          resultFloats[12] = l41 * r11 + l42 * r21 + l43 * r31 + l44 * r41;
+          resultFloats[13] = l41 * r12 + l42 * r22 + l43 * r32 + l44 * r42;
+          resultFloats[14] = l41 * r13 + l42 * r23 + l43 * r33 + l44 * r43;
+          resultFloats[15] = l41 * r14 + l42 * r24 + l43 * r34 + l44 * r44;
+          return result;
         }
       }
-
       #endregion
-
       if (leftCols != right.Rows)
         throw new MatrixException("invalid multiplication (size miss-match).");
-      result = new float[leftRows * rightCols];
+      resultFloats = new float[leftRows * rightCols];
       for (int i = 0; i < leftRows; i++)
         for (int j = 0; j < rightCols; j++)
           for (int k = 0; k < leftCols; k++)
-            result[i * rightCols + j] += leftFloats[i * leftCols + k] * rightFloats[k * rightCols + j];
-      return new Matrix(leftRows, rightCols, result);
+            resultFloats[i * rightCols + j] += leftFloats[i * leftCols + k] * rightFloats[k * rightCols + j];
+      return result;
     }
 
     /// <summary>Multiplies all the values in a matrix by a scalar.</summary>
@@ -475,12 +474,12 @@ namespace SevenEngine.Mathematics
     /// <returns>The resulting matrix after the multiplications.</returns>
     public static Matrix Multiply(Matrix left, float right)
     {
-      //float[] result = (float[])left.Floats.Clone();
-      float[] result = new float[left.Floats.Length];
-      Buffer.BlockCopy(left.Floats, 0, result, 0, left.Floats.Length * sizeof(float));
-      for (int i = 0; i < result.Length; i++)
-        result[i] *= right;
-      return new Matrix(left.Rows, left.Columns, result);
+      Matrix result = new Matrix(left.Rows, left.Columns);
+      float[] resultFloats = result.Floats;
+      float[] leftFloats = left.Floats;
+      for (int i = 0; i < resultFloats.Length; i++)
+        resultFloats[i] = leftFloats[i] * right;
+      return result;
     }
 
     /// <summary>Applies a power to a square matrix.</summary>
@@ -498,22 +497,14 @@ namespace SevenEngine.Mathematics
       Matrix result = matrix.Clone();
       for (int i = 0; i < power; i++)
         result *= matrix;
-      return new Matrix(matrix.Rows, matrix.Columns, result);
+      return result;
     }
 
     /// <summary>Divides all the values in the matrix by a scalar.</summary>
     /// <param name="left">The matrix to divide the values of.</param>
     /// <param name="right">The scalar to divide all the matrix values by.</param>
     /// <returns>The resulting matrix with the divided values.</returns>
-    public static Matrix Divide(Matrix left, float right)
-    {
-      //float[] result = (float[])matrix.Floats.Clone();
-      float[] result = new float[left.Floats.Length];
-      Buffer.BlockCopy(left.Floats, 0, result, 0, left.Floats.Length * sizeof(float));
-      for (int i = 0; i < result.Length; i++)
-        result[i] /= right;
-      return new Matrix(left.Rows, left.Columns, result);
-    }
+    public static Matrix Divide(Matrix left, float right) { return Matrix.Multiply(left, 1.0f / right); }
 
     /// <summary>Gets the minor of a matrix.</summary>
     /// <param name="matrix">The matrix to get the minor of.</param>
@@ -523,7 +514,9 @@ namespace SevenEngine.Mathematics
     public static Matrix Minor(Matrix matrix, int row, int column)
     {
       int matrixRows = matrix.Rows, matrixCols = matrix.Columns, resultCols = matrix.Columns - 1;
-      float[] result = new float[(matrix.Rows - 1) * resultCols];
+      Matrix result = new Matrix(matrix.Rows - 1, resultCols);
+      float[] resultFloats = result.Floats;
+      float[] matrixFloats = matrix.Floats;
       int m = 0, n = 0;
       for (int i = 0; i < matrixRows; i++)
       {
@@ -531,10 +524,10 @@ namespace SevenEngine.Mathematics
         n = 0;
         for (int j = 0; j < matrixCols; j++)
           if (j == column) continue;
-          else result[m * resultCols + n++] = matrix[i, j];
+          else resultFloats[m * resultCols + n++] = matrixFloats[i * matrixCols + j];
         m++;
       }
-      return new Matrix(matrix.Rows - 1, resultCols, result);
+      return result;
     }
 
     private static void RowMultiplication(Matrix matrix, int row, float scalar)
@@ -578,17 +571,18 @@ namespace SevenEngine.Mathematics
         throw new MatrixException("invalid row-wise concatenation !(left.Rows == right.Rows).");
       int resultRows = left.Rows, resultCols = left.Columns + right.Columns,
         leftCols = left.Columns, rightCols = right.Columns;
+      Matrix result = new Matrix(resultRows, resultCols);
       float[]
-        result = new Matrix(left.Rows, left.Columns + right.Columns),
+        resultfloats = result.Floats,
         leftFloats = left.Floats,
         rightFloats = right.Floats;
       for (int i = 0; i < resultRows; i++)
         for (int j = 0; j < resultCols; j++)
         {
-          if (j < left.Columns) result[i * resultCols + j] = leftFloats[i * leftCols + j];
-          else result[i * resultCols + j] = rightFloats[i * rightCols + j - leftCols];
+          if (j < left.Columns) resultfloats[i * resultCols + j] = leftFloats[i * leftCols + j];
+          else resultfloats[i * resultCols + j] = rightFloats[i * rightCols + j - leftCols];
         }
-      return new Matrix(resultRows, resultCols, result);
+      return result;
     }
 
     /// <summary>Calculates the determinent of a square matrix.</summary>
@@ -633,27 +627,23 @@ namespace SevenEngine.Mathematics
       try
       {
         int rows = matrix.Rows, columns = matrix.Columns;
-        float[] floats = new float[matrix.Floats.Length];
-        Buffer.BlockCopy(matrix.Floats, 0, floats, 0, floats.Length * sizeof(float));
-        Matrix result = new Matrix(rows, columns, floats);
-        // Just in case I change the constructor...
-        floats = result.Floats;
-
+        Matrix result = new Matrix(rows, columns, matrix.Floats);
+        float[] resultfloats = result.Floats;
         for (int i = 0; i < rows; i++)
         {
-          if (floats[i * columns + i] == 0)
+          if (resultfloats[i * columns + i] == 0)
             for (int j = i + 1; j < rows; j++)
-              if (floats[j * columns + i] != 0)
+              if (resultfloats[j * columns + i] != 0)
                 Matrix.SwapRows(result, i, j);
-          if (floats[i * columns + i] == 0)
+          if (resultfloats[i * columns + i] == 0)
             continue;
-          if (floats[i * columns + i] != 1)
+          if (resultfloats[i * columns + i] != 1)
             for (int j = i + 1; j < rows; j++)
-              if (floats[j * columns + i] == 1)
+              if (resultfloats[j * columns + i] == 1)
                 Matrix.SwapRows(result, i, j);
-          Matrix.RowMultiplication(result, i, 1 / floats[i * columns + i]);
+          Matrix.RowMultiplication(result, i, 1 / resultfloats[i * columns + i]);
           for (int j = i + 1; j < rows; j++)
-            Matrix.RowAddition(result, j, i, -floats[j * columns + i]);
+            Matrix.RowAddition(result, j, i, -resultfloats[j * columns + i]);
         }
         return result;
       }
@@ -668,26 +658,24 @@ namespace SevenEngine.Mathematics
       try
       {
         int rows = matrix.Rows, columns = matrix.Columns;
-        float[] floats = new float[matrix.Floats.Length];
-        Buffer.BlockCopy(matrix.Floats, 0, floats, 0, floats.Length * sizeof(float));
-        Matrix result = new Matrix(rows, columns, floats);
-
+        Matrix result = new Matrix(rows, columns, matrix.Floats);
+        float[] resultFloats = result.Floats;
         for (int i = 0; i < rows; i++)
         {
-          if (floats[i * columns + i] == 0)
+          if (resultFloats[i * columns + i] == 0)
             for (int j = i + 1; j < rows; j++)
-              if (floats[j * columns + i] != 0)
+              if (resultFloats[j * columns + i] != 0)
                 Matrix.SwapRows(result, i, j);
-          if (floats[i * columns + i] == 0) continue;
-          if (floats[i * columns + i] != 1)
+          if (resultFloats[i * columns + i] == 0) continue;
+          if (resultFloats[i * columns + i] != 1)
             for (int j = i + 1; j < rows; j++)
-              if (floats[j * columns + i] == 1)
+              if (resultFloats[j * columns + i] == 1)
                 Matrix.SwapRows(result, i, j);
-          Matrix.RowMultiplication(result, i, 1 / floats[i * columns + i]);
+          Matrix.RowMultiplication(result, i, 1 / resultFloats[i * columns + i]);
           for (int j = i + 1; j < rows; j++)
-            Matrix.RowAddition(result, j, i, -floats[j * columns + i]);
+            Matrix.RowAddition(result, j, i, -resultFloats[j * columns + i]);
           for (int j = i - 1; j >= 0; j--)
-            Matrix.RowAddition(result, j, i, -floats[j * columns + i]);
+            Matrix.RowAddition(result, j, i, -resultFloats[j * columns + i]);
         }
         return result;
       }
@@ -754,13 +742,14 @@ namespace SevenEngine.Mathematics
     /// <returns>The transpose of the matrix.</returns>
     public static Matrix Transpose(Matrix matrix)
     {
-      float[] floats = matrix.Floats;
+      Matrix result = new Matrix(matrix.Columns, matrix.Rows);
+      float[] matrixfloats = matrix.Floats;
       int rows = matrix.Columns, columns = matrix.Rows;
-      float[] transpose = new float[rows * columns];
+      float[] resultFloats = result.Floats;
       for (int i = 0; i < rows; i++)
         for (int j = 0; j < columns; j++)
-          transpose[i * columns + j] = floats[j * rows + i];
-      return new Matrix(rows, columns, transpose);
+          resultFloats[i * columns + j] = matrixfloats[j * rows + i];
+      return result;
     }
 
     /// <summary>Decomposes a matrix into lower-upper reptresentation.</summary>
@@ -919,9 +908,9 @@ namespace SevenEngine.Mathematics
     }
   }
 
-  // This version uses a 2D float array which is convenient and can be more efficient
-  // depending on how often you need to comvert your matrix into an array format, but 
-  // in general it will not be faster than the flattened array implemenation.
+  // This version uses a 2D float array; however, it is not as faster as the 
+  // flattened array implementation. If you are attempting to copy the matrix
+  // code into another project, you shoudl probably start with this version.
   #region Matrix (2-D Array)
 
   ///// <summary>A matrix wrapper for float[,] to perform matrix theory in row major order. Enjoy :)</summary>

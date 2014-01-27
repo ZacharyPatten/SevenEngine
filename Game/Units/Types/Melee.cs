@@ -16,8 +16,8 @@ namespace Game.Units
     private const int _damageMax = 20;
     private const int _viewDistanceMin = 1;
     private const int _viewDistanceMax = 10000;
-    private const int _moveSpeedMin = 60;
-    private const int _moveSpeedMax = 70;
+    private const int _moveSpeedMin = 70;
+    private const int _moveSpeedMax = 110;
 
     public Melee(string id, StaticModel staticModel) : base(id, staticModel)
     {

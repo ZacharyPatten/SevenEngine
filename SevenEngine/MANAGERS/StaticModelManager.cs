@@ -24,8 +24,8 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTree<StaticMeshInstance, string> _staticMeshDatabase =
-      new AvlTreeLinked<StaticMeshInstance, string>(StaticMeshInstance.CompareTo, StaticMeshInstance.CompareTo);
+    private static AvlTree<StaticMesh, string> _staticMeshDatabase =
+      new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
     private static AvlTree<StaticModel, string> _staticModelDatabase =
       new AvlTreeLinked<StaticModel, string>(StaticModel.CompareTo, StaticModel.CompareTo);
 
@@ -39,9 +39,9 @@ namespace SevenEngine
     /// <returns>The desired static mesh if it exists.</returns>
     public static StaticMesh GetMesh(string staticMeshId)
     {
-      StaticMeshInstance mesh = _staticMeshDatabase.Get(staticMeshId);
+      StaticMesh mesh = _staticMeshDatabase.Get(staticMeshId);
       mesh.ExistingReferences++;
-      return new StaticMesh(mesh.Id, null, mesh);
+      return mesh;
     }
 
     /// <summary>Gets a static model you loaded that you have loaded.</summary>
@@ -56,18 +56,11 @@ namespace SevenEngine
         (StaticMesh mesh) =>
         {
           mesh.Texture.ExistingReferences++;
-          mesh.StaticMeshInstance.ExistingReferences++;
-          meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
+          mesh.ExistingReferences++;
+          meshes.Add(mesh);
         }
       );
       return new StaticModel(modelToGet.Id, meshes);
-    }
-
-    private static void CopyMeshes(StaticMesh mesh, ListLinked<StaticMesh, string> meshes)
-    {
-      mesh.Texture.ExistingReferences++;
-      mesh.StaticMeshInstance.ExistingReferences++;
-      meshes.Add(new StaticMesh(mesh.Id, mesh.Texture, mesh.StaticMeshInstance));
     }
 
     #region Parsers
@@ -104,38 +97,37 @@ namespace SevenEngine
     {
       // Get the struct with the GPU mappings.
       StaticMesh mesh = GetMesh(staticMeshId);
-      StaticMeshInstance meshInstance = mesh.StaticMeshInstance;
 
       // If the game tries to remove a texture that still has active references then
         // lets warn them.
-      if (meshInstance.ExistingReferences > 1)
+      if (mesh.ExistingReferences > 1)
         Output.WriteLine("WARNING: texture removal \"" + staticMeshId + "\" still has active references.");
 
       // Delete the vertex buffer if it exists.
-      int vertexBufferId = meshInstance.VertexBufferHandle;
+      int vertexBufferId = mesh.VertexBufferHandle;
       if (vertexBufferId != 0)
         GL.DeleteBuffers(1, ref vertexBufferId);
       // Delete the normal buffer if it exists.
-      int normalbufferId = meshInstance.NormalBufferHandle;
+      int normalbufferId = mesh.NormalBufferHandle;
       if (normalbufferId != 0)
         GL.DeleteBuffers(1, ref normalbufferId);
       // Delete the color buffer if it exists.
-      int colorBufferId = meshInstance.ColorBufferHandle;
+      int colorBufferId = mesh.ColorBufferHandle;
       if (colorBufferId != 0)
         GL.DeleteBuffers(1, ref colorBufferId);
       // Delete the texture coordinate buffer if it exists.
-      int textureCoordinateBufferId = meshInstance.TextureCoordinateBufferHandle;
+      int textureCoordinateBufferId = mesh.TextureCoordinateBufferHandle;
       if (textureCoordinateBufferId != 0)
         GL.DeleteBuffers(1, ref textureCoordinateBufferId);
       // Delete the element buffer if it exists.
-      int elementBufferId = meshInstance.ElementBufferHandle;
+      int elementBufferId = mesh.ElementBufferHandle;
       if (elementBufferId != 0)
         GL.DeleteBuffers(1, ref elementBufferId);
       // Now we can remove it from the dictionary.
       _staticMeshDatabase.Remove(staticMeshId);
     }
 
-    private static StaticMeshInstance LoadObj(string staticMeshId, string filePath)
+    private static StaticMesh LoadObj(string staticMeshId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
       // Its better to use "ListArrays" vs "Lists" because they will be accessed by indeces
@@ -334,7 +326,7 @@ namespace SevenEngine
       }
       else { normalBufferId = 0; }
 
-      return new StaticMeshInstance(
+      return new StaticMesh(
         filePath,
         staticMeshId,
         vertexBufferId,
@@ -342,7 +334,8 @@ namespace SevenEngine
         textureCoordinateBufferId,
         normalBufferId,
         0, // I don't support an index buffer at this time
-        verteces.Length);
+        verteces.Length,
+        null);
     }
 
     /// <summary>DONT USE THIS FUNCTION!!! This is an experimental file type I may use in the future.</summary>
@@ -582,18 +575,16 @@ namespace SevenEngine
               else { normalBufferId = 0; }
 
               meshes.Add(
-                new StaticMesh(
+                  new StaticMesh(
                   meshName,
-                  texture,
-                  new StaticMeshInstance(
-                  filePath,
                   staticModelId + "sub" + meshes.Count,
                   vertexBufferId,
                   0, // Obj files don't support vertex colors
                   textureCoordinateBufferId,
                   normalBufferId,
                   0, // I don't support an index buffer at this time
-                  verteces.Length)));
+                  verteces.Length,
+                  texture));
               fileVerteces.Clear();
               fileNormals.Clear();
               fileTextureCoordinates.Clear();

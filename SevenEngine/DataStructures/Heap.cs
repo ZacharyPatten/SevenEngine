@@ -264,6 +264,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a mutable priority heap with static priorities using an array.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class HeapArrayStatic<Type> : Heap<Type>
   {
     #region HeapArrayLink
@@ -489,6 +490,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a mutable priority heap with dynamic priorities using an array and a hash table.</summary>
   /// <typeparam name="Type">The type of item to be stored in this priority heap.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class HeapArrayDynamic<Type> : Heap<Type>
   {
     #region HeapArrayDynamicLink

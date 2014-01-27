@@ -50,6 +50,7 @@ namespace SevenEngine.DataStructures
 
   #region RedBlackTreeLinked
 
+  [Serializable]
   public class RedBlackTreeLinked<ValueType> : RedBlackTree<ValueType>
   {
     protected const bool Red = true;

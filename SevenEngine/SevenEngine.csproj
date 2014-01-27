@@ -81,7 +81,9 @@
     <Compile Include="DataStructures\Queue.cs" />
     <Compile Include="DataStructures\RedBlackTree.cs" />
     <Compile Include="DataStructures\Stack.cs" />
+    <Compile Include="DynamicModels\Animation.cs" />
     <Compile Include="DynamicModels\DynamicModel.cs" />
+    <Compile Include="DynamicModels\KeyFrame.cs" />
     <Compile Include="INTERFACES\InterfaceComparable.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
     <Compile Include="InterfaceGameState.cs" />
@@ -98,9 +100,8 @@
     <Compile Include="Physics\Shapes\Sphere.cs" />
     <Compile Include="Physics\Shapes\TriangularPrism.cs" />
     <Compile Include="Physics\Shapes\TriangularPyramid.cs" />
-    <Compile Include="Physics\Substance.cs" />
+    <Compile Include="Physics\Material.cs" />
     <Compile Include="StaticModels\StaticMesh.cs" />
-    <Compile Include="StaticModels\StaticMeshInstance.cs" />
     <Compile Include="StaticModels\StaticModel.cs" />
     <Compile Include="MANAGERS\PhysicsManager.cs" />
     <Compile Include="SevenEngineWindow.cs" />

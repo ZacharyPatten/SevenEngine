@@ -301,7 +301,7 @@ namespace SevenEngine
 
       // Transform Vertex Shader
       int transformVertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
-      GL.ShaderSource(transformVertexShaderHandle, VertexShader.Transform);
+      GL.ShaderSource(transformVertexShaderHandle, VertexShader.FTransform);
       GL.CompileShader(transformVertexShaderHandle);
       VertexShader transformVertexShader =
         new VertexShader("VertexShaderTransform", "Built-In", transformVertexShaderHandle);

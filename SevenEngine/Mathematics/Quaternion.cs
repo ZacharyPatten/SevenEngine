@@ -275,14 +275,20 @@ namespace SevenEngine.Mathematics
     /// <returns>The normalization of the given quaternion.</returns>
     public static Quaternion Normalize(Quaternion quaternion)
     {
-      float length = Quaternion.Length(quaternion);
-      if (length != 0)
+      float normalizer =
+        Calc.SquareRoot(
+          quaternion.X * quaternion.X +
+          quaternion.Y * quaternion.Y +
+          quaternion.Z * quaternion.Z +
+          quaternion.W * quaternion.W);
+      if (normalizer != 0)
       {
+        normalizer = 1.0f / normalizer;
         return new Quaternion(
-          quaternion.X / length,
-          quaternion.Y / length,
-          quaternion.Z / length,
-          quaternion.W / length);
+          quaternion.X * normalizer,
+          quaternion.Y * normalizer,
+          quaternion.Z * normalizer,
+          quaternion.W * normalizer);
       }
       else
         return new Quaternion(0, 0, 0, 1);
@@ -293,14 +299,20 @@ namespace SevenEngine.Mathematics
     /// <returns>The inverse of the given quaternion.</returns>
     public static Quaternion Invert(Quaternion quaternion)
     {
-      float lengthSquared = Quaternion.LengthSquared(quaternion);
-      if (lengthSquared == 0.0)
+      // EQUATION: invert = quaternion.Conjugate()).Normalized()
+      float normalizer =
+        quaternion.X * quaternion.X +
+        quaternion.Y * quaternion.Y +
+        quaternion.Z * quaternion.Z +
+        quaternion.W * quaternion.W;
+      if (normalizer == 0.0)
         return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+      normalizer = 1.0f / normalizer;
       return new Quaternion(
-        -quaternion.X / lengthSquared,
-        -quaternion.Y / lengthSquared,
-        -quaternion.Z / lengthSquared,
-        quaternion.W / lengthSquared);
+        -quaternion.X * normalizer,
+        -quaternion.Y * normalizer,
+        -quaternion.Z * normalizer,
+        quaternion.W * normalizer);
     }
 
     /// <summary>Lenearly interpolates between two quaternions.</summary>
@@ -379,8 +391,23 @@ namespace SevenEngine.Mathematics
     {
       if (vector.Dimensions != 3)
         throw new QuaternionException("my quaternion rotations are only defined for 3-component vectors.");
-      Quaternion answer = Quaternion.Multiply(Quaternion.Multiply(rotation, vector), Quaternion.Conjugate(rotation));
-      return new Vector(answer.X, answer.Y, answer.Z);
+      
+      float[] vectorFloats = vector.Floats;
+      // EQUATION: t = 2 * cross(q.xyz, v)
+      Vector temp = new Vector(
+        (rotation.Y * vectorFloats[2] - rotation.Z * vectorFloats[1]) * 2,
+        (rotation.Z * vectorFloats[0] - rotation.X * vectorFloats[2]) * 2,
+        (rotation.X * vectorFloats[1] - rotation.Y * vectorFloats[0]) * 2);
+      // EQUATION: v' = v + q.w * t + cross(q.xyz, t)
+      return new Vector(
+        vector.X + (rotation.W * temp.X) + (rotation.Y * temp.Z - rotation.Z * temp.Y),
+        vector.Y + (rotation.W * temp.Y) + (rotation.Z * temp.X - rotation.X * temp.Z),
+        vector.Z + (rotation.W * temp.Z) + (rotation.X * temp.Y - rotation.Y * temp.X));
+
+      //// OLD VERSION: 
+      //// EQUATION: v' = qvq'
+      //Quaternion answer = Quaternion.Multiply(Quaternion.Multiply(rotation, vector), Quaternion.Conjugate(rotation));
+      //return new Vector(answer.X, answer.Y, answer.Z);
     }
 
     /// <summary>Does a value equality check.</summary>

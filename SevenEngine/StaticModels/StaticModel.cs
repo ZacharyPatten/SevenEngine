@@ -8,7 +8,6 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
 
 using System;
 using SevenEngine.DataStructures;
@@ -64,7 +63,12 @@ namespace SevenEngine.StaticModels
       _id = staticModelId;
       _meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
       for (int i = 0; i < textures.Length; i++)
-        _meshes.Add(new StaticMesh(meshNames[i], TextureManager.Get(textures[i]), StaticModelManager.GetMesh(meshes[i]).StaticMeshInstance));
+      {
+        StaticMesh mesh = StaticModelManager.GetMesh(meshes[i]);
+        mesh.Texture = TextureManager.Get(textures[i]);
+        _meshes.Add(mesh);
+
+      }
       _shaderOverride = null;
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);

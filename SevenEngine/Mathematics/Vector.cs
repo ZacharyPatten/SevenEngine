@@ -349,6 +349,13 @@ namespace SevenEngine.Mathematics
     public static float Length(Vector vector)
     {
       float[] floats = vector.Floats;
+      if (floats.Length == 3)
+      {
+        return Calc.SquareRoot(
+          floats[0] * floats[0] +
+          floats[1] * floats[1] +
+          floats[2] * floats[2]);
+      }
       float result = 0;
       int arrayLength = floats.Length;
       for (int i = 0; i < arrayLength; i++)
@@ -362,6 +369,13 @@ namespace SevenEngine.Mathematics
     public static float LengthSquared(Vector vector)
     {
       float[] floats = vector.Floats;
+      if (floats.Length == 3)
+      {
+        return
+          floats[0] * floats[0] +
+          floats[1] * floats[1] +
+          floats[2] * floats[2];
+      }
       float result = 0;
       int arrayLength = floats.Length;
       for (int i = 0; i < arrayLength; i++)
@@ -415,10 +429,7 @@ namespace SevenEngine.Mathematics
     public static Vector RotateBy(Vector vector, Quaternion rotation)
     {
       if (vector.Dimensions == 3)
-      {
-        Quaternion answer = Quaternion.Multiply(Quaternion.Multiply(rotation, vector), Quaternion.Conjugate(rotation));
-        return new Vector(answer.X, answer.Y, answer.Z);
-      }
+        return Quaternion.Rotate(rotation, vector);
       else
         throw new VectorException("my quaternion rotations are only defined for 3-component vectors.");
     }

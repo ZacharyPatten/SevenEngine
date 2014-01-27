@@ -30,6 +30,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements First-In-First-Out queue data structure that inherits InterfaceTraversable.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class QueueLinked<Type> : Queue<Type>
   {
     #region QueueNode
@@ -199,6 +200,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class QueueArray<Type> : Queue<Type>
   {
     private Type[] _queue;

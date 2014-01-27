@@ -29,6 +29,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="Type">The generic type within the structure.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.
   /// Seven (Zachary Patten) 10-12-13.</remarks>
+  [Serializable]
   public class StackLinked<Type> : Stack<Type>
   {
     #region StackLinkedNode
@@ -187,10 +188,10 @@ namespace SevenEngine.DataStructures
 
   #region StackArray
 
-  /// <summary>Implements a growing list as an array (with expansions/contractions) 
-  /// data structure that inherits InterfaceTraversable.</summary>
+  /// <summary>Implements a growing stack as an array (with expansions/contractions) data structure.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class StackArray<Type> : Stack<Type>
   {
     private Type[] _stack;

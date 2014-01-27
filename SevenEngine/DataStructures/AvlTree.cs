@@ -57,24 +57,25 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class AvlTreeLinked<ValueType> : AvlTree<ValueType>
   {
     #region AvlTreeNodeLinked
 
     /// <summary>This class just holds the data for each individual node of the tree.</summary>
-    protected class AvlTreeLinkedNode
+    public class AvlTreeLinkedNode
     {
       private ValueType _value;
       private AvlTreeLinkedNode _leftChild;
       private AvlTreeLinkedNode _rightChild;
       private int _height;
 
-      internal ValueType Value { get { return _value; } set { _value = value; } }
-      internal AvlTreeLinkedNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
-      internal AvlTreeLinkedNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
-      internal int Height { get { return _height; } set { _height = value; } }
+      public ValueType Value { get { return _value; } set { _value = value; } }
+      public AvlTreeLinkedNode LeftChild { get { return _leftChild; } set { _leftChild = value; } }
+      public AvlTreeLinkedNode RightChild { get { return _rightChild; } set { _rightChild = value; } }
+      public int Height { get { return _height; } set { _height = value; } }
 
-      internal AvlTreeLinkedNode(ValueType value)
+      public AvlTreeLinkedNode(ValueType value)
       {
         _value = value;
         _leftChild = null;
@@ -93,6 +94,9 @@ namespace SevenEngine.DataStructures
     protected object _lock;
     protected int _readers;
     protected int _writers;
+
+    /// <summary>WARNING! Allows direct access to the tree structure. Can corrupt tree if miss-used</summary>
+    public AvlTreeLinkedNode UnsafeTop { get { return _avlTree; } set { _avlTree = value; } }
 
     /// <summary>Gets the number of elements in the collection.</summary>
     /// <remarks>Runtime: O(1).</remarks>
@@ -571,6 +575,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class AvlTreeLinked<ValueType, KeyType> : AvlTreeLinked<ValueType>, AvlTree<ValueType, KeyType>
   {
     protected Func<ValueType, KeyType, int> _keyComparisonFunction;
@@ -795,6 +800,7 @@ namespace SevenEngine.DataStructures
 
   /// <summary>Implements an AVL Tree where the items are sorted by string id values.</summary>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class AvlTreeLinked<ValueType, FirstKeyType, SecondKeyType> : AvlTreeLinked<ValueType, FirstKeyType>, AvlTree<ValueType, FirstKeyType, SecondKeyType>
   {
     Func<ValueType, SecondKeyType, int> _secondkeyComparisonFunction;

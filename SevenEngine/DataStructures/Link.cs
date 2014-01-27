@@ -10,6 +10,8 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
+using System;
+
 namespace SevenEngine.DataStructures
 {
   #region Link2
@@ -17,6 +19,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Represents a link between two objects.</summary>
   /// <typeparam name="FirstItem">The type of the left item to be linked.</typeparam>
   /// <typeparam name="SecondItem">The type of the right item to be linked.</typeparam>
+  [Serializable]
   public class Link2<FirstItem, SecondItem>
   {
     private FirstItem _first;
@@ -48,6 +51,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="FirstType">The type of the first item to be linked.</typeparam>
   /// <typeparam name="SecondType">The type of the second item to be linked.</typeparam>
   /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
+  [Serializable]
   public class Link3<FirstType, SecondType, ThirdType>
   {
     private FirstType _first;
@@ -86,6 +90,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="SecondType">The type of the second item to be linked.</typeparam>
   /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
   /// <typeparam name="FourthType">The type of the fourth item to be linked.</typeparam>
+  [Serializable]
   public class Link4<FirstType, SecondType, ThirdType, FourthType>
   {
     private FirstType _first;
@@ -131,6 +136,7 @@ namespace SevenEngine.DataStructures
   /// <typeparam name="ThirdType">The type of the third item to be linked.</typeparam>
   /// <typeparam name="FourthType">The type of the fourth item to be linked.</typeparam>
   /// <typeparam name="FifthType">The type of the fifth item to be linked.</typeparam>
+  [Serializable]
   public class Link5<FirstType, SecondType, ThirdType, FourthType, FifthType>
   {
     private FirstType _first;

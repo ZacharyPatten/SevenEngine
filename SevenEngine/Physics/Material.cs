@@ -11,16 +11,30 @@
 // Last Edited: 11-28-13
 
 using System;
+using SevenEngine.Imaging;
 
 namespace SevenEngine.Physics
 {
-  public class Substance
+  public class Material
   {
-    protected float _density;
-    protected float _magnetism;
-    protected float _radioactivity;
-    protected float _conductivity;
-    protected float _integrity;
-    protected float _elasticity;
+    // Lighting Model
+    private float _shininess;
+    private Color _specular, _ambient, _diffuse;
+
+    // Collision Model
+    private float _density;
+    private float _elasticity;
+    private float _integrity;
+
+    // Other (possible future use)
+    //private float _magnetism;
+    //private float _radioactivity;
+    //private float _conductivity;
+
+    public Material()
+    {
+    }
+
+    //public static Material 
   }
 }

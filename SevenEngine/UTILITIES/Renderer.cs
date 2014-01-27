@@ -128,7 +128,7 @@ namespace SevenEngine
 
       GL.BindTexture(TextureTarget.Texture2D, texture.GpuHandle);
 
-      GL.DrawArrays(BeginMode.Triangles, 0, verteces.Length / 3);
+      GL.DrawArrays(PrimitiveType.Triangles, 0, verteces.Length / 3);
     }
 
     public static void DrawLine(Vector from, Vector to, Color color)
@@ -142,7 +142,7 @@ namespace SevenEngine
       int uniformLocation = GL.GetUniformLocation(ShaderManager.ColorShader.GpuHandle, "color");
       GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1));//color.A / 255f));
 
-      GL.Begin(BeginMode.Lines);
+      GL.Begin(PrimitiveType.Lines);
       GL.Vertex3(from.X, from.Y, from.Z);
       GL.Vertex3(to.X, to.Y, to.Z);
       GL.Color3(color.R / 255f, color.G / 255f, color.B / 255f);
@@ -211,7 +211,7 @@ namespace SevenEngine
         GL.EnableClientState(ArrayCap.TextureCoordArray);
 
         // Perform the render
-        GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
 
         // Remove the per character transforms and advance to the next charachers position
         GL.Scale(1 / xSize, 1 / ySize, 0f);
@@ -257,7 +257,7 @@ namespace SevenEngine
       // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
       GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
       // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
+      GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
     }
 
     #endregion
@@ -296,23 +296,23 @@ namespace SevenEngine
 
       // Render left side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Left.GpuHandle);
-      GL.DrawArrays(BeginMode.Triangles, 0, 6);
+      GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
       // Render front side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Front.GpuHandle);
-      GL.DrawArrays(BeginMode.Triangles, 6, 6);
+      GL.DrawArrays(PrimitiveType.Triangles, 6, 6);
 
       // Render right side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Right.GpuHandle);
-      GL.DrawArrays(BeginMode.Triangles, 12, 6);
+      GL.DrawArrays(PrimitiveType.Triangles, 12, 6);
 
       // Render back side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Back.GpuHandle);
-      GL.DrawArrays(BeginMode.Triangles, 18, 6);
+      GL.DrawArrays(PrimitiveType.Triangles, 18, 6);
 
       // Render top side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Top.GpuHandle);
-      GL.DrawArrays(BeginMode.Triangles, 24, 6);
+      GL.DrawArrays(PrimitiveType.Triangles, 24, 6);
     }
 
     #endregion
@@ -356,11 +356,11 @@ namespace SevenEngine
       staticModel.Meshes.Traverse(DrawStaticModelPart);
     }
 
-    private static void DrawStaticModelPart(StaticMesh subStaticModel)
+    private static void DrawStaticModelPart(StaticMesh staticMesh)
     {
       // Make sure something will render
-      if (subStaticModel.StaticMeshInstance.VertexBufferHandle == 0 ||
-        (subStaticModel.StaticMeshInstance.ColorBufferHandle == 0 && subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle == 0))
+      if (staticMesh.VertexBufferHandle == 0 ||
+        (staticMesh.ColorBufferHandle == 0 && staticMesh.TextureCoordinateBufferHandle == 0))
         return;
 
       // Push current Array Buffer state so we can restore it later
@@ -369,10 +369,10 @@ namespace SevenEngine
       if (GL.IsEnabled(EnableCap.Lighting))
       {
         // Normal Array Buffer
-        if (subStaticModel.StaticMeshInstance.NormalBufferHandle != 0)
+        if (staticMesh.NormalBufferHandle != 0)
         {
           // Set up normals
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.NormalBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, staticMesh.NormalBufferHandle);
           GL.NormalPointer(NormalPointerType.Float, 0, IntPtr.Zero);
           GL.EnableClientState(ArrayCap.NormalArray);
         }
@@ -380,21 +380,21 @@ namespace SevenEngine
       else
       {
         // Color Array Buffer
-        if (subStaticModel.StaticMeshInstance.ColorBufferHandle != 0)
+        if (staticMesh.ColorBufferHandle != 0)
         {
           // Set up colors
-          GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.ColorBufferHandle);
+          GL.BindBuffer(BufferTarget.ArrayBuffer, staticMesh.ColorBufferHandle);
           GL.ColorPointer(3, ColorPointerType.Float, 0, IntPtr.Zero);
           GL.EnableClientState(ArrayCap.ColorArray);
         }
       }
 
       // Texture Array Buffer
-      if (GL.IsEnabled(EnableCap.Texture2D) && subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle != 0)
+      if (GL.IsEnabled(EnableCap.Texture2D) && staticMesh.TextureCoordinateBufferHandle != 0)
       {
         // Select the texture and set up texture coordinates
-        GL.BindTexture(TextureTarget.Texture2D, subStaticModel.Texture.GpuHandle);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.TextureCoordinateBufferHandle);
+        GL.BindTexture(TextureTarget.Texture2D, staticMesh.Texture.GpuHandle);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, staticMesh.TextureCoordinateBufferHandle);
         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, IntPtr.Zero);
         GL.EnableClientState(ArrayCap.TextureCoordArray);
       }
@@ -403,24 +403,25 @@ namespace SevenEngine
         return;
 
       // Set up verteces
-      GL.BindBuffer(BufferTarget.ArrayBuffer, subStaticModel.StaticMeshInstance.VertexBufferHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, staticMesh.VertexBufferHandle);
       GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
       GL.EnableClientState(ArrayCap.VertexArray);
 
-      if (subStaticModel.StaticMeshInstance.ElementBufferHandle != 0)
+      if (staticMesh.ElementBufferHandle != 0)
       {
         // Set up indeces
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, subStaticModel.StaticMeshInstance.ElementBufferHandle);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, staticMesh.ElementBufferHandle);
         GL.IndexPointer(IndexPointerType.Int, 0, IntPtr.Zero);
         GL.EnableClientState(ArrayCap.IndexArray);
         
         // Ready to render using an index buffer
         int elements = 0;
-        GL.DrawElements(BeginMode.Triangles, subStaticModel.StaticMeshInstance.VertexCount, DrawElementsType.UnsignedInt, ref elements);
+        GL.DrawElements(PrimitiveType.Triangles, staticMesh.VertexCount, DrawElementsType.UnsignedInt, ref elements);
       }
       else
         // Ready to render
-        GL.DrawArrays(BeginMode.Triangles, 0, subStaticModel.StaticMeshInstance.VertexCount);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, staticMesh.VertexCount);
+
 
       GL.PopClientAttrib();
     }

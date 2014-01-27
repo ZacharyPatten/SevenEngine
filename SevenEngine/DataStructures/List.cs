@@ -48,6 +48,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListLinked<Type> : List<Type>
   {
     #region ListLinkedNode
@@ -223,13 +224,13 @@ namespace SevenEngine.DataStructures
     }
 
     /// <summary>Thread safe enterance for readers.</summary>
-    protected void ReaderLock() { lock (_lock) { while (!(_writers == 0)) Monitor.Wait(_lock); _readers++; } }
+    protected void ReaderLock() { }// lock (_lock) { while (!(_writers == 0)) Monitor.Wait(_lock); _readers++; } }
     /// <summary>Thread safe exit for readers.</summary>
-    protected void ReaderUnlock() { lock (_lock) { _readers--; Monitor.Pulse(_lock); } }
+    protected void ReaderUnlock() { }// lock (_lock) { _readers--; Monitor.Pulse(_lock); } }
     /// <summary>Thread safe enterance for writers.</summary>
-    protected void WriterLock() { lock (_lock) { while (!(_writers == 0) && !(_readers == 0)) Monitor.Wait(_lock); _writers++; } }
+    protected void WriterLock() { } //lock (_lock) { while (!(_writers == 0) && !(_readers == 0)) Monitor.Wait(_lock); _writers++; } }
     /// <summary>Thread safe exit for readers.</summary>
-    protected void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
+    protected void WriterUnlock() { } //lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     protected class ListLinkedException : Exception { public ListLinkedException(string message) : base(message) { } }
@@ -242,6 +243,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListLinked<ValueType, KeyType> : ListLinked<ValueType>, List<ValueType, KeyType>
   {
     protected Func<ValueType, KeyType, bool> _equalityFunction;
@@ -339,6 +341,7 @@ namespace SevenEngine.DataStructures
   /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListLinked<ValueType, FirstKeyType, SecondKeyType> : ListLinked<ValueType, FirstKeyType>, List<ValueType, FirstKeyType, SecondKeyType>
   {
     protected Func<ValueType, SecondKeyType, bool> _secondequalityFunction;
@@ -445,6 +448,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListArray<Type> : List<Type>
   {
     protected Type[] _list;
@@ -715,13 +719,13 @@ namespace SevenEngine.DataStructures
     }
 
     /// <summary>Thread safe enterance for readers.</summary>
-    protected void ReaderLock() { lock (_lock) { while (!(_writers == 0)) Monitor.Wait(_lock); _readers++; } }
+    protected void ReaderLock() { } //lock (_lock) { while (!(_writers == 0)) Monitor.Wait(_lock); _readers++; } }
     /// <summary>Thread safe exit for readers.</summary>
-    protected void ReaderUnlock() { lock (_lock) { _readers--; Monitor.Pulse(_lock); } }
+    protected void ReaderUnlock() { } //lock (_lock) { _readers--; Monitor.Pulse(_lock); } }
     /// <summary>Thread safe enterance for writers.</summary>
-    protected void WriterLock() { lock (_lock) { while (!(_writers == 0) && !(_readers == 0)) Monitor.Wait(_lock); _writers++; } }
+    protected void WriterLock() { } //lock (_lock) { while (!(_writers == 0) && !(_readers == 0)) Monitor.Wait(_lock); _writers++; } }
     /// <summary>Thread safe exit for readers.</summary>
-    protected void WriterUnlock() { lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
+    protected void WriterUnlock() { } //lock (_lock) { _writers--; Monitor.PulseAll(_lock); } }
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     protected class ListArrayException : Exception { public ListArrayException(string message) : base(message) { } }
@@ -735,6 +739,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListArray<ValueType, KeyType> : ListArray<ValueType>, List<ValueType, KeyType>
   {
     protected Func<ValueType, KeyType, int> _keyComparisonFunction;
@@ -823,6 +828,7 @@ namespace SevenEngine.DataStructures
   /// data structure that inherits InterfaceTraversable.</summary>
   /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
   /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
   public class ListArray<ValueType, FirstKeyType, SecondKeyType> : ListArray<ValueType, FirstKeyType>, List<ValueType, FirstKeyType>
   {
     protected Func<ValueType, SecondKeyType, int> _secondkeyComparisonFunction;

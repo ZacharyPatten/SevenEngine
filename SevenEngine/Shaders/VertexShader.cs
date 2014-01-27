@@ -48,10 +48,29 @@ namespace SevenEngine.Shaders
     public static int CompareTo(VertexShader left, string right) { return left.Id.CompareTo(right); }
 
     #region Vertex Shader Library
-    internal const string Transform =
+    internal const string StaticModelPhong =
+    @"uniform mat4 transformation;
+    varying vec3 light;
+    varying vec3 normal;
+    void main()
+    {
+      normal = normalize(gl_NormalMatrix * gl_Normal);
+      light = normalize(vec3(gl_LightSource[0].position));
+      gl_TexCoord[0] = gl_MultiTexCoord0;
+      gl_Position = gl_Vertex * transformation;
+    }";
+
+    internal const string UniformTransform =
+    @"uniform mat4 transformation;
+    void main()
+    {
+      gl_position = transformation * gl_Vertex;
+    }";
+
+    internal const string FTransform =
     @"void main()
     {
-        gl_Position = ftransform();
+      gl_Position = ftransform();
     }";
 
     internal const string Texture =

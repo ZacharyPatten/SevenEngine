@@ -60,30 +60,12 @@ namespace SevenEngine.DataStructures
 
   #region OctreeLinked
 
+  [Serializable]
   public class OctreeLinked<ValueType, KeyType> : Octree<ValueType, KeyType>
     where ValueType : IOctreeEntry
   {
     private Func<ValueType, ValueType, int> _valueComparisonFunction;
     private Func<ValueType, KeyType, int> _keyComparisonFunction;
-
-    #region OctreeLinkedBound
-
-    /// <summary>Represents a bounding cube. Includes coordinates of the center 
-    /// and a scale of expansion along each axis.</summary>
-    private class OctreeLinkedBound
-    {
-      private float _x, _y, _z, _scale;
-
-      internal float X { get { return _x; } }
-      internal float Y { get { return _y; } }
-      internal float Z { get { return _z; } }
-      internal float Scale { get { return _scale; } }
-
-      internal OctreeLinkedBound(float x, float y, float z, float scale)
-      { _x = x; _y = y; _z = z; _scale = scale; }
-    }
-
-    #endregion
 
     #region OctreeLinkedNode
 
@@ -110,60 +92,68 @@ namespace SevenEngine.DataStructures
       }
 
       /// <summary>Finds the child index relative to "this" node given x, y, and z coordinates.</summary>
-      internal int DetermineChild(float x, float y, float z)
+      static internal int DetermineChild(OctreeLinkedNode node, float x, float y, float z)
       {
         // Finds the child given an x, y, and z
         // Possible child (all): 0, 1, 2, 3, 4, 5, 6, 7
-        if (z < _z)
+        if (z < node.Z)
         {
           // Possible child: 0, 2, 4, 6
-          if (y < _y)
+          if (y < node.Y)
             // Possible child: 0, 4
-            if (x < _x) return 0;
+            if (x < node.X) return 0;
             else return 4;
           else
             // Possible child: 2, 6, 
-            if (x < _x) return 2;
+            if (x < node.X) return 2;
             else return 6;
         }
         else
         {
           // Possible child: 1, 3, 5, 7
-          if (y < _y)
+          if (y < node.Y)
             // Possible child: 1, 5
-            if (x < _x) return 1;
+            if (x < node.X) return 1;
             else return 5;
           else
             // Possible child: 3, 7 
-            if (x < _x) return 3;
+            if (x < node.X) return 3;
             else return 7;
         }
       }
 
       /// <summary>Determins the bounds of a child node.</summary>
-      internal OctreeLinkedBound DetermineChildBounds(int child)
+      static internal void DetermineChildBounds(OctreeLinkedNode node, int child, out float x, out float y, out float z, out float scale)
       {
-        float halfScale = _scale / 2;
+        float halfScale = node.Scale * .5f;
         switch (child)
         {
-          case 0:
-            return new OctreeLinkedBound(_x - halfScale, _y - halfScale, _z - halfScale, halfScale);
-          case 1:
-            return new OctreeLinkedBound(_x - halfScale, _y - halfScale, _z + halfScale, halfScale);
-          case 2:
-            return new OctreeLinkedBound(_x - halfScale, _y + halfScale, _z - halfScale, halfScale);
-          case 3:
-            return new OctreeLinkedBound(_x - halfScale, _y + halfScale, _z + halfScale, halfScale);
-          case 4:
-            return new OctreeLinkedBound(_x + halfScale, _y - halfScale, _z - halfScale, halfScale);
-          case 5:
-            return new OctreeLinkedBound(_x + halfScale, _y - halfScale, _z + halfScale, halfScale);
-          case 6:
-            return new OctreeLinkedBound(_x + halfScale, _y + halfScale, _z - halfScale, halfScale);
-          case 7:
-            return new OctreeLinkedBound(_x + halfScale, _y + halfScale, _z + halfScale, halfScale);
+          case 0: x = node.X - halfScale; y = node.Y - halfScale; z = node.Z - halfScale; scale = halfScale; return;
+          case 1: x = node.X - halfScale; y = node.Y - halfScale; z = node.Z + halfScale; scale = halfScale; return;
+          case 2: x = node.X - halfScale; y = node.Y + halfScale; z = node.Z - halfScale; scale = halfScale; return;
+          case 3: x = node.X - halfScale; y = node.Y + halfScale; z = node.Z + halfScale; scale = halfScale; return;
+          case 4: x = node.X + halfScale; y = node.Y - halfScale; z = node.Z - halfScale; scale = halfScale; return;
+          case 5: x = node.X + halfScale; y = node.Y - halfScale; z = node.Z + halfScale; scale = halfScale; return;
+          case 6: x = node.X + halfScale; y = node.Y + halfScale; z = node.Z - halfScale; scale = halfScale; return;
+          case 7: x = node.X + halfScale; y = node.Y + halfScale; z = node.Z + halfScale; scale = halfScale; return;
+          default: throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
         }
-        throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
+      }
+
+      static internal bool ContainsBounds(OctreeLinkedNode node, float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
+      {
+        return !(node == null ||
+            xMax < node.X - node.Scale || xMin > node.X + node.Scale ||
+            yMax < node.Y - node.Scale || yMin > node.Y + node.Scale ||
+            zMax < node.Z - node.Scale || zMin > node.Z + node.Scale);
+      }
+
+      static internal bool ContainsCoordinate(OctreeLinkedNode node, float x, float y, float z)
+      {
+        return !(node == null ||
+            x < node.X - node.Scale || x > node.X + node.Scale ||
+            y < node.Y - node.Scale || y > node.Y + node.Scale ||
+            z < node.Z - node.Scale || z > node.Z + node.Scale);
       }
     }
 
@@ -208,22 +198,80 @@ namespace SevenEngine.DataStructures
       // The children are indexed as follows (relative to this node's center):
       // 0: (-x, -y, -z)   1: (-x, -y, z)   2: (-x, y, -z)   3: (-x, y, z)
       // 4: (x, -y, -z)   5: (x, -y, z)   6: (x, y, -z)   7: (x, y, z)
-      private OctreeLinkedNode[] _children;
+      //private OctreeLinkedNode[] _children;
 
-      internal OctreeLinkedNode[] Children { get { return _children; } }
+      private OctreeLinkedNode _child0;
+      private OctreeLinkedNode _child1;
+      private OctreeLinkedNode _child2;
+      private OctreeLinkedNode _child3;
+      private OctreeLinkedNode _child4;
+      private OctreeLinkedNode _child5;
+      private OctreeLinkedNode _child6;
+      private OctreeLinkedNode _child7;
+
+      public OctreeLinkedNode Child0 { get { return _child0; } }
+      public OctreeLinkedNode Child1 { get { return _child1; } }
+      public OctreeLinkedNode Child2 { get { return _child2; } }
+      public OctreeLinkedNode Child3 { get { return _child3; } }
+      public OctreeLinkedNode Child4 { get { return _child4; } }
+      public OctreeLinkedNode Child5 { get { return _child5; } }
+      public OctreeLinkedNode Child6 { get { return _child6; } }
+      public OctreeLinkedNode Child7 { get { return _child7; } }
+
+      public OctreeLinkedNode this[int index]
+      {
+        get
+        {
+          switch (index)
+          {
+            case 0: return _child0;
+            case 1: return _child1;
+            case 2: return _child2;
+            case 3: return _child3;
+            case 4: return _child4;
+            case 5: return _child5;
+            case 6: return _child6;
+            case 7: return _child7;
+            default: throw new OctreeLinkedException("index out of bounds.");
+          }
+        }
+        set
+        {
+          switch (index)
+          {
+            case 0: _child0 = value; break;
+            case 1: _child1 = value; break;
+            case 2: _child2 = value; break;
+            case 3: _child3 = value; break;
+            case 4: _child4 = value; break;
+            case 5: _child5 = value; break;
+            case 6: _child6 = value; break;
+            case 7: _child7 = value; break;
+            default: throw new OctreeLinkedException("index out of bounds.");
+          }
+        }
+      }
+
+      //internal OctreeLinkedNode[] Children { get { return _children; } }
+
       internal bool IsEmpty
       {
         get
         {
-          return _children[0] == null && _children[1] == null && _children[2] == null
-            && _children[3] == null && _children[4] == null && _children[5] == null
-            && _children[6] == null && _children[7] == null;
+          //return _children[0] == null && _children[1] == null && _children[2] == null
+          //  && _children[3] == null && _children[4] == null && _children[5] == null
+          //  && _children[6] == null && _children[7] == null;
+          return _child0 == null && _child1 == null && _child2 == null
+            && _child3 == null && _child4 == null && _child5== null
+            && _child6 == null && _child7 == null;
         }
       }
 
       internal OctreeLinkedBranch(float x, float y, float z, float scale, OctreeLinkedBranch parent)
         : base(x, y, z, scale, parent)
-      { _children = new OctreeLinkedNode[8]; }
+      {
+        //_children = new OctreeLinkedNode[8];
+      }
     }
 
     #endregion
@@ -319,7 +367,7 @@ namespace SevenEngine.DataStructures
           if (parent == null)
             growth = (OctreeLinkedBranch)(_top = new OctreeLinkedBranch(_top.X, _top.Y, _top.Z, _top.Scale, null));
           else
-            growth = GrowBranch(parent, parent.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z));
+            growth = GrowBranch(parent, OctreeLinkedNode.DetermineChild(parent, addition.Position.X, addition.Position.Y, addition.Position.Z));
           foreach (ValueType entry in leaf.Contents)
             _referenceDatabase.GetSecondGeneric(entry).Leaf = Add(entry, growth);
           return Add(addition, growth);
@@ -329,32 +377,34 @@ namespace SevenEngine.DataStructures
       else
       {
         OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
-        int child = branch.DetermineChild(addition.Position.X, addition.Position.Y, addition.Position.Z);
+        int child = OctreeLinkedNode.DetermineChild(branch, addition.Position.X, addition.Position.Y, addition.Position.Z);
         // If the leaf is null, we must grow one before attempting to add to it
-        if (branch.Children[child] == null)
+        if (branch[child] == null)
           return GrowLeaf(branch, child).Add(addition);
-        return Add(addition, branch.Children[child]);
+        return Add(addition, branch[child]);
       }
     }
 
     // Grows a branch on the tree at the desired location
     private OctreeLinkedBranch GrowBranch(OctreeLinkedBranch branch, int child)
     {
-      OctreeLinkedBound childBounds = branch.DetermineChildBounds(child);
-      branch.Children[child] =
-        new OctreeLinkedBranch(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch);
-      return (OctreeLinkedBranch)branch.Children[child];
+      // values for the new node
+      float x, y, z, scale;
+      OctreeLinkedNode.DetermineChildBounds(branch, child, out x, out y, out z, out scale);
+      branch[child] = new OctreeLinkedBranch(x, y, z, scale, branch);
+      return (OctreeLinkedBranch)branch[child];
     }
 
     // Grows a leaf on the tree at the desired location
     private OctreeLinkedLeaf GrowLeaf(OctreeLinkedBranch branch, int child)
     {
-      if (branch.Children[child] != null)
+      if (branch[child] != null)
         throw new OctreeLinkedException("My octree has a glitched, sorry.");
-      OctreeLinkedBound childBounds = branch.DetermineChildBounds(child);
-      branch.Children[child] =
-        new OctreeLinkedLeaf(childBounds.X, childBounds.Y, childBounds.Z, childBounds.Scale, branch, _branchFactor);
-      return (OctreeLinkedLeaf)branch.Children[child];
+      // values for new node
+      float x, y, z, scale;
+      OctreeLinkedNode.DetermineChildBounds(branch, child, out x, out y, out z, out scale);
+      branch[child] = new OctreeLinkedLeaf(x, y, z, scale, branch, _branchFactor);
+      return (OctreeLinkedLeaf)branch[child];
     }
 
     /// <summary>Removes an item from the octree by the id that was assigned to it.</summary>
@@ -382,26 +432,26 @@ namespace SevenEngine.DataStructures
             break;
           }
       }
-      else PluckLeaf(leaf.Parent, leaf.Parent.DetermineChild(leaf.X, leaf.Y, leaf.Z));
+      else PluckLeaf(leaf.Parent, OctreeLinkedNode.DetermineChild(leaf.Parent, leaf.X, leaf.Y, leaf.Z));
     }
 
     private void PluckLeaf(OctreeLinkedBranch branch, int child)
     {
-      if (!(branch.Children[child] is OctreeLinkedLeaf) || ((OctreeLinkedLeaf)branch.Children[child]).Count > 1)
+      if (!(branch[child] is OctreeLinkedLeaf) || ((OctreeLinkedLeaf)branch[child]).Count > 1)
         throw new OctreeLinkedException("There is a glitch in my octree, sorry.");
-      branch.Children[child] = null;
+      branch[child] = null;
       while (branch.IsEmpty)
       {
-        ChopBranch(branch.Parent, branch.Parent.DetermineChild(branch.X, branch.Y, branch.Z));
+        ChopBranch(branch.Parent, OctreeLinkedNode.DetermineChild(branch.Parent, branch.X, branch.Y, branch.Z));
         branch = branch.Parent;
       }
     }
 
     private void ChopBranch(OctreeLinkedBranch branch, int child)
     {
-      if (branch.Children[child] == null)
+      if (branch[child] == null)
         throw new OctreeLinkedException("There is a glitch in my octree, sorry...");
-      branch.Children[child] = null;
+      branch[child] = null;
     }
 
     /// <summary>Moves an existing item from one position to another.</summary>
@@ -474,14 +524,14 @@ namespace SevenEngine.DataStructures
         {
           // The current node is a branch
           OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[0])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[1])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[2])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[3])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[4])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[5])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[6])) return false;
-          if (!TraverseBreakable(traversalFunctionBreakable, branch.Children[7])) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child0)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child1)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child2)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child3)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child4)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child5)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child6)) return false;
+          if (!TraverseBreakable(traversalFunctionBreakable, branch.Child7)) return false;
         }
       }
       return true;
@@ -506,14 +556,14 @@ namespace SevenEngine.DataStructures
         {
           // The current node is a branch
           OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
-          Traverse(traversalFunction, branch.Children[0]);
-          Traverse(traversalFunction, branch.Children[1]);
-          Traverse(traversalFunction, branch.Children[2]);
-          Traverse(traversalFunction, branch.Children[3]);
-          Traverse(traversalFunction, branch.Children[4]);
-          Traverse(traversalFunction, branch.Children[5]);
-          Traverse(traversalFunction, branch.Children[6]);
-          Traverse(traversalFunction, branch.Children[7]);
+          Traverse(traversalFunction, branch.Child0);
+          Traverse(traversalFunction, branch.Child1);
+          Traverse(traversalFunction, branch.Child2);
+          Traverse(traversalFunction, branch.Child3);
+          Traverse(traversalFunction, branch.Child4);
+          Traverse(traversalFunction, branch.Child5);
+          Traverse(traversalFunction, branch.Child6);
+          Traverse(traversalFunction, branch.Child7);
         }
       }
     }
@@ -549,18 +599,39 @@ namespace SevenEngine.DataStructures
         }
         else
         {
-          // The current node is a branch
-          foreach (OctreeLinkedNode node in ((OctreeLinkedBranch)octreeNode).Children)
-          {
-            if (node == null) continue;
-            else if (xMax < node.X - node.Scale) continue;
-            else if (yMax < node.Y - node.Scale) continue;
-            else if (zMax < node.Z - node.Scale) continue;
-            else if (xMin > node.X + node.Scale) continue;
-            else if (yMin > node.Y + node.Scale) continue;
-            else if (zMin > node.Z + node.Scale) continue;
-            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax)) return false;
-          }
+          OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
+          OctreeLinkedNode node = branch.Child0;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child1;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child2;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child3;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child4;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child5;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child6;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
+          node = branch.Child7;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            if (!TraverseBreakable(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax))
+              return false;
         }
       }
       return true;
@@ -579,7 +650,6 @@ namespace SevenEngine.DataStructures
         if (octreeNode is OctreeLinkedLeaf)
         {
           foreach (ValueType entry in ((OctreeLinkedLeaf)octreeNode).Contents)
-            //if (!traversalFunction(item)) return false;
             if (entry != null &&
             entry.Position.X > xMin && entry.Position.X < xMax
             && entry.Position.Y > yMin && entry.Position.Y < yMax
@@ -588,18 +658,31 @@ namespace SevenEngine.DataStructures
         }
         else
         {
-          // The current node is a branch
-          foreach (OctreeLinkedNode node in ((OctreeLinkedBranch)octreeNode).Children)
-          {
-            if (node == null) continue;
-            else if (xMax < node.X - node.Scale) continue;
-            else if (yMax < node.Y - node.Scale) continue;
-            else if (zMax < node.Z - node.Scale) continue;
-            else if (xMin > node.X + node.Scale) continue;
-            else if (yMin > node.Y + node.Scale) continue;
-            else if (zMin > node.Z + node.Scale) continue;
+          OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
+          OctreeLinkedNode node = branch.Child0;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
             Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
-          }
+          node = branch.Child1;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child2;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child3;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child4;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child5;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child6;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
+          node = branch.Child7;
+          if (OctreeLinkedNode.ContainsBounds(node, xMin, yMin, zMin, xMax, yMax, zMax))
+            Traverse(traversalFunction, node, xMin, yMin, zMin, xMax, yMax, zMax);
         }
       }
     }
@@ -629,14 +712,14 @@ namespace SevenEngine.DataStructures
         {
           // The current node is a branch
           OctreeLinkedBranch branch = (OctreeLinkedBranch)octreeNode;
-          ToArray(branch.Children[0], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[1], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[2], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[3], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[4], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[5], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[6], array, entryIndex, out entryIndex);
-          ToArray(branch.Children[7], array, entryIndex, out entryIndex);
+          ToArray(branch.Child0, array, entryIndex, out entryIndex);
+          ToArray(branch.Child1, array, entryIndex, out entryIndex);
+          ToArray(branch.Child2, array, entryIndex, out entryIndex);
+          ToArray(branch.Child3, array, entryIndex, out entryIndex);
+          ToArray(branch.Child4, array, entryIndex, out entryIndex);
+          ToArray(branch.Child5, array, entryIndex, out entryIndex);
+          ToArray(branch.Child6, array, entryIndex, out entryIndex);
+          ToArray(branch.Child7, array, entryIndex, out entryIndex);
           returnIndex = entryIndex;
         }
       }

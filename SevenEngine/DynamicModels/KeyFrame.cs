@@ -8,13 +8,25 @@
 
 // Author(s):
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+// Last Edited: 11-16-13
 
+using System;
+using SevenEngine.Mathematics;
 using SevenEngine.DataStructures;
 
 namespace SevenEngine.DynamicModels
 {
-  public class DynamicModel
+  public class KeyFrame
   {
-    
+    private float _start, _end; // seconds
+    private ListArray<Matrix> _tranformations;
+
+    public float Start { get { return _start; } }
+    public float End { get { return _end; } }
+
+    public KeyFrame(ListArray<Matrix> transformations)
+    {
+
+    }
   }
 }
