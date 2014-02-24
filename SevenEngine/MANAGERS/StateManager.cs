@@ -18,11 +18,13 @@ namespace SevenEngine
   /// <summary>StateManager is used for is used for state management (loading, storing).</summary>
   public static class StateManager
   {
-    private static AvlTree<InterfaceGameState, string> _stateDatabase = new AvlTreeLinked<InterfaceGameState, string>
-    (
-      (InterfaceGameState left, InterfaceGameState right) => { return left.Id.CompareTo(right.Id); },
-      (InterfaceGameState left, string right) => { return left.Id.CompareTo(right); }
-    );
+    private static Func<InterfaceGameState, InterfaceGameState, int> _comparison =
+      (InterfaceGameState left, InterfaceGameState right) => { return left.Id.CompareTo(right.Id); };
+
+    private static Func<InterfaceGameState, string, int> _keyComparison =
+      (InterfaceGameState left, string right) => { return left.Id.CompareTo(right); };
+
+    private static AvlTree<InterfaceGameState> _stateDatabase = new AvlTreeLinked<InterfaceGameState>(_comparison);
 
     private static InterfaceGameState _currentState = null;
 
@@ -44,7 +46,7 @@ namespace SevenEngine
     /// <summary>Gets a reference to a state.</summary>
     /// <param name="stateId">The name associated with that desired state.</param>
     /// <returns>The desired state.</returns>
-    public static InterfaceGameState GetState(string stateId) { return _stateDatabase.Get(stateId); }
+    public static InterfaceGameState GetState(string stateId) { return _stateDatabase.Get<string>(stateId, _keyComparison); }
 
     /// <summary>Tries to get a desired state, but returns a bool rather than crashing.</summary>
     /// <param name="stateId">The name of the state to get.</param>
@@ -52,8 +54,8 @@ namespace SevenEngine
     /// <returns>Whether or not it could get the value.</returns>
     public static bool TryGet(string stateId, out InterfaceGameState state)
     {
-      try { state = _stateDatabase.Get(stateId); return true; }
-      catch { state = null; return false; }
+       return _stateDatabase.TryGet<string>(stateId, _keyComparison, out state);
+
     }
 
     /// <summary>Adds a game state to the game</summary>
@@ -76,7 +78,10 @@ namespace SevenEngine
 
     /// <summary>Triggers the load method of a state.</summary>
     /// <param name="stateId">The name of the state to trigger the Load.</param>
-    public static void TriggerStateLoad(string stateId) { _stateDatabase.Get(stateId).Load(); }
+    public static void TriggerStateLoad(string stateId)
+    {
+      _stateDatabase.Get<string>(stateId, _keyComparison).Load();
+    }
 
     /// <summary>Select the current state to be updated and rendered.</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
@@ -97,7 +102,7 @@ namespace SevenEngine
       }
       else
       {
-        _currentState = _stateDatabase.Get(stateId);
+        _currentState = _stateDatabase.Get<string>(stateId, _keyComparison);
         Output.WriteLine("\"" + stateId + "\" state selected;");
       }
     }
@@ -105,7 +110,10 @@ namespace SevenEngine
     /// <summary>Checks if a state exists (an example could be if a specific menu is already loaded then use it; if not then it needs to be loaded first).</summary>
     /// <param name="stateId">The name associated with the state (what you caled it when you added it).</param>
     /// <returns>"true if the state exists. "false""</returns>
-    public static bool StateExists(string stateId) { return _stateDatabase.Contains(stateId); }
+    public static bool StateExists(string stateId)
+    {
+      return _stateDatabase.Contains<string>(stateId, _keyComparison);
+    }
 
     /// <summary>A unique class for throwing StateSystem exceptions only.</summary>
     private class StateSystemException : Exception { public StateSystemException(string message) : base(message) { } }

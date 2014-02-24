@@ -37,7 +37,7 @@ namespace Game.States
       (Unit left, Unit right) => { return left.Id.CompareTo(right.Id); },
       (Unit left, string right) => { return left.Id.CompareTo(right); });*/
 
-    public static OctreeLinked<Unit, string> _octree;
+    public static OctreeLinked<Unit> _octree;
       //= new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
 
     private int _meleeCount = 30;
@@ -106,6 +106,7 @@ namespace Game.States
       // ONCE YOU ARE DONE LOADING, BE SURE TO SET YOUR READY 
       // PROPERTY TO TRUE SO MY ENGINE DOESN'T SCREAM AT YOU
       _isReady = true;
+
     }
 
     private void GenerateUnits()
@@ -113,7 +114,7 @@ namespace Game.States
       _powerRangerCount = _rangedCount + _meleeCount + _kamakaziCount;
       _tuxCount = _rangedCount + _meleeCount + _kamakaziCount;
 
-      _octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
+      _octree = new OctreeLinked<Unit>(0, 0, 0, 1000000, 10, Unit.CompareTo);
       lines = new AvlTreeLinked<Link3<Vector, Vector, Color>>(
         (Link3<Vector, Vector, Color> link, Link3<Vector, Vector, Color> link2) => { if (link.First == link2.First && link.Second == link2.Second) return 0; else return 1; }
         );
@@ -706,7 +707,7 @@ namespace Game.States
       {
         _octree.Traverse((Unit model) => { model.AI(elapsedTime, _octree); }, -100000, -100000, -100000, 100000, 100000, 100000);
 
-        OctreeLinked<Unit, string> octree = new OctreeLinked<Unit, string>(0, 0, 0, 1000000, 10, Unit.CompareTo, Unit.CompareTo);
+        OctreeLinked<Unit> octree = new OctreeLinked<Unit>(0, 0, 0, 1000000, 10, Unit.CompareTo);
         foreach (Unit unit in _zackMelee)
           octree.Add(unit);
         foreach (Unit unit in _zackRanged)

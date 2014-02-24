@@ -14,7 +14,7 @@ namespace Game.Units
 
     public ZackKamakazi(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
+    public override void AI(float elapsedTime, OctreeLinked<Unit> octree)
     {
       if (IsDead == false)
       {
@@ -57,6 +57,7 @@ namespace Game.Units
           _move++;
         }
         StaticModel.Orientation.W += .1f;
+        //StaticModel.Orientation.Z += .1f;
       }
     }
   }

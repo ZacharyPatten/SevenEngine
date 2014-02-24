@@ -515,7 +515,7 @@ namespace SevenEngine.DataStructures
 
     private int _count;
     private HeapArrayDynamicLink[] _heapArray;
-    private HashTableLinked<int, Type> _indexingReference;
+    private HashTableLinkedThreadSafe<int, Type> _indexingReference;
 
     private object _lock;
     private int _readers;
@@ -542,7 +542,7 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: Theta(capacity).</remarks>
     public HeapArrayDynamic(int capacity)
     {
-      _indexingReference = new HashTableLinked<int, Type>();
+      _indexingReference = new HashTableLinkedThreadSafe<int, Type>();
       _heapArray = new HeapArrayDynamicLink[capacity + 1];
       _heapArray[0] = new HeapArrayDynamicLink(int.MaxValue, default(Type));
       for (int i = 1; i < capacity; i++)

@@ -25,10 +25,10 @@ namespace SevenEngine.StaticModels
     protected Vector _scale;
     protected Quaternion _orientation;
     protected ShaderProgram _shaderOverride;
-    protected AvlTree<StaticMesh, string> _meshes;
+    protected AvlTree<StaticMesh> _meshes;
     
     /// <summary>Gets the list of meshes that make up this model.</summary>
-    public AvlTree<StaticMesh, string> Meshes { get { return _meshes; } set { _meshes = value; } }
+    public AvlTree<StaticMesh> Meshes { get { return _meshes; } set { _meshes = value; } }
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
@@ -45,7 +45,7 @@ namespace SevenEngine.StaticModels
     {
       _id = id;
       _shaderOverride = null;
-      _meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
+      _meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
       _position = new Vector(0, 0, 0);
       _scale = new Vector(1, 1, 1);
       _orientation = Quaternion.FactoryIdentity;
@@ -61,7 +61,7 @@ namespace SevenEngine.StaticModels
       if (textures.Length != meshes.Length && textures.Length != meshNames.Length)
         throw new Exception("Attempting to create a static model with non-matching number of components.");
       _id = staticModelId;
-      _meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
+      _meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
       for (int i = 0; i < textures.Length; i++)
       {
         StaticMesh mesh = StaticModelManager.GetMesh(meshes[i]);
@@ -78,7 +78,7 @@ namespace SevenEngine.StaticModels
     /// <summary>Creates a static model out of the parameters.</summary>
     /// <param name="staticModelId">The id of this model for look up purposes.</param>
     /// <param name="meshes">A list of mesh ids, textures, and buffer references that make up this model.</param>
-    internal StaticModel(string staticModelId, AvlTree<StaticMesh, string> meshes)
+    internal StaticModel(string staticModelId, AvlTree<StaticMesh> meshes)
     {
       _id = staticModelId;
       _shaderOverride = null;

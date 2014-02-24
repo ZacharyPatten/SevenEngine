@@ -24,10 +24,8 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTree<StaticMesh, string> _staticMeshDatabase =
-      new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
-    private static AvlTree<StaticModel, string> _staticModelDatabase =
-      new AvlTreeLinked<StaticModel, string>(StaticModel.CompareTo, StaticModel.CompareTo);
+    private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
+    private static AvlTree<StaticModel> _staticModelDatabase = new AvlTreeLinked<StaticModel>(StaticModel.CompareTo);
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
     public static int MeshCount { get { return _staticMeshDatabase.Count; } }
@@ -39,7 +37,7 @@ namespace SevenEngine
     /// <returns>The desired static mesh if it exists.</returns>
     public static StaticMesh GetMesh(string staticMeshId)
     {
-      StaticMesh mesh = _staticMeshDatabase.Get(staticMeshId);
+      StaticMesh mesh = _staticMeshDatabase.Get<string>(staticMeshId, StaticMesh.CompareTo);
       mesh.ExistingReferences++;
       return mesh;
     }
@@ -49,8 +47,8 @@ namespace SevenEngine
     /// <returns>The desired static model if it exists.</returns>
     public static StaticModel GetModel(string staticModelId)
     {
-      StaticModel modelToGet = _staticModelDatabase.Get(staticModelId);
-      AvlTree<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>(StaticMesh.CompareTo, StaticMesh.CompareTo);
+      StaticModel modelToGet = _staticModelDatabase.Get<string>(staticModelId, StaticModel.CompareTo);
+      AvlTree<StaticMesh> meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
       modelToGet.Meshes.Traverse
       (
         (StaticMesh mesh) =>
@@ -124,7 +122,7 @@ namespace SevenEngine
       if (elementBufferId != 0)
         GL.DeleteBuffers(1, ref elementBufferId);
       // Now we can remove it from the dictionary.
-      _staticMeshDatabase.Remove(staticMeshId);
+      _staticMeshDatabase.Remove<string>(staticMeshId, StaticMesh.CompareTo);
     }
 
     private static StaticMesh LoadObj(string staticMeshId, string filePath)
@@ -349,11 +347,7 @@ namespace SevenEngine
       Texture texture = null;
       string meshName = "defaultMeshName";
 
-      AvlTreeLinked<StaticMesh, string> meshes = new AvlTreeLinked<StaticMesh, string>
-      (
-        (StaticMesh left, StaticMesh right) => { return left.Id.CompareTo(right.Id); },
-        (StaticMesh left, string right) => { return left.Id.CompareTo(right); }
-      );
+      AvlTreeLinked<StaticMesh> meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))

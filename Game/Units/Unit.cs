@@ -44,7 +44,7 @@ namespace Game.Units
       _staticModel.Position.Z += (vector.Z / vector.Length()) * _moveSpeed;
 
     }
-    public virtual void AI(float elapsedTime, OctreeLinked<Unit, string> octree) { throw new NotImplementedException(); }
+    public virtual void AI(float elapsedTime, OctreeLinked<Unit> octree) { throw new NotImplementedException(); }
 
     public static int CompareTo(Unit left, Unit right) { return left.Id.CompareTo(right.Id); }
     public static int CompareTo(Unit left, string right) { return left.Id.CompareTo(right); }

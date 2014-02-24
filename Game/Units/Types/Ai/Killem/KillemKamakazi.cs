@@ -14,7 +14,7 @@ namespace Game.Units
 
    public KillemKamakazi(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
+    public override void AI(float elapsedTime, OctreeLinked<Unit> octree)
     {
       if (IsDead == false)
       {

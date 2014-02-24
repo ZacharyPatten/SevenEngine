@@ -32,16 +32,11 @@ namespace SevenEngine
     public static ShaderProgram TextShader { get { return _textShader; } }
     public static ShaderProgram LightShader { get { return _lightShader; } }
 
-    private static AvlTree<VertexShader, string> _vertexShaderDatabase =
-      new AvlTreeLinked<VertexShader, string>(VertexShader.CompareTo, VertexShader.CompareTo);
-    private static AvlTree<FragmentShader, string> _fragmentShaderDatabase =
-      new AvlTreeLinked<FragmentShader, string>(FragmentShader.CompareTo, FragmentShader.CompareTo);
-    private static AvlTree<GeometryShader, string> _geometryShaderDatabase =
-      new AvlTreeLinked<GeometryShader, string>(GeometryShader.CompareTo, GeometryShader.CompareTo);
-    private static AvlTree<ExtendedGeometryShader, string> _extendedGeometryShaderDatabase =
-      new AvlTreeLinked<ExtendedGeometryShader, string>(ExtendedGeometryShader.CompareTo, ExtendedGeometryShader.CompareTo);
-    private static AvlTree<ShaderProgram, string> _shaderProgramDatabase =
-      new AvlTreeLinked<ShaderProgram, string>(ShaderProgram.CompareTo, ShaderProgram.CompareTo);
+    private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTreeLinked<VertexShader>(VertexShader.CompareTo);
+    private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTreeLinked<FragmentShader>(FragmentShader.CompareTo);
+    private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTreeLinked<GeometryShader>(GeometryShader.CompareTo);
+    private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTreeLinked<ExtendedGeometryShader>(ExtendedGeometryShader.CompareTo);
+    private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTreeLinked<ShaderProgram>(ShaderProgram.CompareTo);
 
     public static int Comparison(Func<FragmentShader, int> function, FragmentShader right)
     {
@@ -54,7 +49,7 @@ namespace SevenEngine
     public static VertexShader GetVertexShader(string shaderId)
     {
       //VertexShader shader = _vertexShaderDatabase[shaderId];
-      VertexShader shader = _vertexShaderDatabase.Get(shaderId);
+      VertexShader shader = _vertexShaderDatabase.Get<string>(shaderId, VertexShader.CompareTo);
       shader.ExistingReferences++;
       return shader;
     }
@@ -65,7 +60,7 @@ namespace SevenEngine
     public static FragmentShader GetFragmentShader(string shaderId)
     {
       //FragmentShader shader = _fragmentShaderDatabase[shaderId];
-      FragmentShader shader = _fragmentShaderDatabase.Get(shaderId);
+      FragmentShader shader = _fragmentShaderDatabase.Get<string>(shaderId, FragmentShader.CompareTo);
       shader.ExistingReferences++;
       return shader;
     }
@@ -76,7 +71,7 @@ namespace SevenEngine
     public static GeometryShader GetGeometryShader(string shaderId)
     {
       //GeometryShader shader = _geometryShaderDatabase[shaderId];
-      GeometryShader shader = _geometryShaderDatabase.Get(shaderId);
+      GeometryShader shader = _geometryShaderDatabase.Get<string>(shaderId, GeometryShader.CompareTo);
       shader.ExistingReferences++;
       return shader;
     }
@@ -87,7 +82,7 @@ namespace SevenEngine
     public static ExtendedGeometryShader GetExtendedGeometryShader(string shaderId)
     {
       //ExtendedGeometryShader shader = _extendedGeometryShaderDatabase[shaderId];
-      ExtendedGeometryShader shader = _extendedGeometryShaderDatabase.Get(shaderId);
+      ExtendedGeometryShader shader = _extendedGeometryShaderDatabase.Get<string>(shaderId, ExtendedGeometryShader.CompareTo);
       shader.ExistingReferences++;
       return shader;
     }
@@ -98,7 +93,7 @@ namespace SevenEngine
     public static ShaderProgram GetShaderProgram(string shaderId)
     {
       //ShaderProgram shaderProgram = _shaderProgramDatabase[shaderId];
-      ShaderProgram shaderProgram = _shaderProgramDatabase.Get(shaderId);
+      ShaderProgram shaderProgram = _shaderProgramDatabase.Get<string>(shaderId, ShaderProgram.CompareTo);
 
       shaderProgram.ExistingReferences++;
       return shaderProgram;

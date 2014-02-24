@@ -24,8 +24,7 @@ namespace SevenEngine
   public static class TextureManager
   {
     //private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
-    public static AvlTreeLinked<Texture, string> _textureDatabase =
-      new AvlTreeLinked<Texture, string>(Texture.CompareTo, Texture.CompareTo);
+    public static AvlTreeLinked<Texture> _textureDatabase = new AvlTreeLinked<Texture>(Texture.CompareTo);
 
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
     public static int Count { get { return _textureDatabase.Count; } }
@@ -33,14 +32,18 @@ namespace SevenEngine
     /// <summary>Checks to see if a texture id exists.</summary>
     /// <param name="textureId">The id to check for existance.</param>
     /// <returns>True if the texture is exists, false if it does not.</returns>
-    public static bool TextureExists(string textureId) { return _textureDatabase.Contains(textureId); }
+    public static bool TextureExists(string textureId)
+    {
+      throw new NotImplementedException();
+      //return _textureDatabase.Contains(textureId);
+    }
 
     /// <summary>Pulls out a reference to a texture and increments the hardware instancing tracker.</summary>
     /// <param name="textureId">The name associated with the texture (what you caled it when you added it).</param>
     /// <returns>A reference to the desired texture.</returns>
     public static Texture Get(string textureId)
     {
-      Texture texture = _textureDatabase.Get(textureId);
+      Texture texture = _textureDatabase.Get<string>(textureId, Texture.CompareTo);
       texture.ExistingReferences++;
       return texture;
     }

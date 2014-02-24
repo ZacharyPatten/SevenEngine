@@ -128,7 +128,8 @@ namespace SevenEngine
 
       GL.BindTexture(TextureTarget.Texture2D, texture.GpuHandle);
 
-      GL.DrawArrays(PrimitiveType.Triangles, 0, verteces.Length / 3);
+      GL.DrawArrays(OpenTK.Graphics.OpenGL.BeginMode.Triangles, 0, verteces.Length / 3);
+      //GL.DrawArrays(PrimitiveType.Triangles, 0, verteces.Length / 3);
     }
 
     public static void DrawLine(Vector from, Vector to, Color color)
@@ -142,7 +143,8 @@ namespace SevenEngine
       int uniformLocation = GL.GetUniformLocation(ShaderManager.ColorShader.GpuHandle, "color");
       GL.Uniform4(uniformLocation, new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1));//color.A / 255f));
 
-      GL.Begin(PrimitiveType.Lines);
+      //GL.Begin(PrimitiveType.Lines);
+      GL.Begin(BeginMode.Lines);
       GL.Vertex3(from.X, from.Y, from.Z);
       GL.Vertex3(to.X, to.Y, to.Z);
       GL.Color3(color.R / 255f, color.G / 255f, color.B / 255f);
@@ -211,7 +213,8 @@ namespace SevenEngine
         GL.EnableClientState(ArrayCap.TextureCoordArray);
 
         // Perform the render
-        GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
+        //GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
+        GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
 
         // Remove the per character transforms and advance to the next charachers position
         GL.Scale(1 / xSize, 1 / ySize, 0f);
@@ -257,7 +260,8 @@ namespace SevenEngine
       // Select the vertex buffer as the active buffer (I don't think this is necessary but I haven't tested it yet).
       GL.BindBuffer(BufferTarget.ArrayBuffer, sprite.GpuVertexBufferHandle);
       // There is no index buffer, so we shoudl use "DrawArrays()" instead of "DrawIndeces()".
-      GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
+      //GL.DrawArrays(PrimitiveType.Triangles, 0, sprite.VertexCount);
+      GL.DrawArrays(BeginMode.Triangles, 0, sprite.VertexCount);
     }
 
     #endregion
@@ -296,23 +300,28 @@ namespace SevenEngine
 
       // Render left side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Left.GpuHandle);
-      GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+      //GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+      GL.DrawArrays(BeginMode.Triangles, 0, 6);
 
       // Render front side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Front.GpuHandle);
-      GL.DrawArrays(PrimitiveType.Triangles, 6, 6);
+      //GL.DrawArrays(PrimitiveType.Triangles, 6, 6);
+      GL.DrawArrays(BeginMode.Triangles, 6, 6);
 
       // Render right side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Right.GpuHandle);
-      GL.DrawArrays(PrimitiveType.Triangles, 12, 6);
+      //GL.DrawArrays(PrimitiveType.Triangles, 12, 6);
+      GL.DrawArrays(BeginMode.Triangles, 12, 6);
 
       // Render back side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Back.GpuHandle);
-      GL.DrawArrays(PrimitiveType.Triangles, 18, 6);
+      //GL.DrawArrays(PrimitiveType.Triangles, 18, 6);
+      GL.DrawArrays(BeginMode.Triangles, 18, 6);
 
       // Render top side of skybox
       GL.BindTexture(TextureTarget.Texture2D, skybox.Top.GpuHandle);
-      GL.DrawArrays(PrimitiveType.Triangles, 24, 6);
+      //GL.DrawArrays(PrimitiveType.Triangles, 24, 6);
+      GL.DrawArrays(BeginMode.Triangles, 24, 6);
     }
 
     #endregion
@@ -416,11 +425,13 @@ namespace SevenEngine
         
         // Ready to render using an index buffer
         int elements = 0;
-        GL.DrawElements(PrimitiveType.Triangles, staticMesh.VertexCount, DrawElementsType.UnsignedInt, ref elements);
+        //GL.DrawElements(PrimitiveType.Triangles, staticMesh.VertexCount, DrawElementsType.UnsignedInt, ref elements);
+        GL.DrawElements(BeginMode.Triangles, staticMesh.VertexCount, DrawElementsType.UnsignedInt, ref elements);
       }
       else
         // Ready to render
-        GL.DrawArrays(PrimitiveType.Triangles, 0, staticMesh.VertexCount);
+        //GL.DrawArrays(PrimitiveType.Triangles, 0, staticMesh.VertexCount);
+        GL.DrawArrays(BeginMode.Triangles, 0, staticMesh.VertexCount);
 
 
       GL.PopClientAttrib();

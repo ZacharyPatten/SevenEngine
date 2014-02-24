@@ -24,6 +24,7 @@ namespace Game
       // EXAMPLES:
         // GraphicsSettingsManager.SettingToChange = newValue;
 
+      //GraphicsSettingsManager.Fullscreen = true;
       GraphicsSettingsManager.BackFaceCulling = true;
       GraphicsSettingsManager.DepthBuffer = true;
       GraphicsSettingsManager.VerticalSyncronization = true;
@@ -137,6 +138,9 @@ namespace Game
       StaticModelManager.LoadModel("BlackRanger", new string[] { "Body" }, new string[] { "BlackRanger" }, new string[] { "BlackRanger" });
       StaticModelManager.LoadModel("PinkRanger", new string[] { "Body" }, new string[] { "PinkRanger" }, new string[] { "PinkRanger" });
       StaticModelManager.LoadModel("YellowRanger", new string[] { "Body" }, new string[] { "YellowRanger" }, new string[] { "YellowRanger" });
+
+      StaticModelManager.LoadMesh("Dodecahedron", FilePath.FromRelative(@"\..\..\Assets\Models\Dodecahedron.obj"));
+      StaticModelManager.LoadModel("Dodecahedron", new string[] { "Body" }, new string[] { "Dodecahedron" }, new string[] { "rock2" });
     }
 
     public override void InitializeShaders()
@@ -192,8 +196,7 @@ namespace Game
       StateManager.TriggerStateLoad("AiBattle");
       StateManager.ChangeState("AiBattle");
 
-
-
+      // Try this state for sprite usage example
       /*StateManager.AddState(new SpriteState("SpriteState"));
       StateManager.TriggerStateLoad("SpriteState");
       StateManager.ChangeState("SpriteState");*/

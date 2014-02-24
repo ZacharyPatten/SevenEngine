@@ -21,6 +21,7 @@ namespace SevenEngine
   {
     private static GameWindow _sevenEngineWindow;
 
+    private static bool _fullscreen;
     private static bool _verticalSyncronization;
     private static Color _clearColor;
     private static bool _depthBuffer;
@@ -165,6 +166,14 @@ namespace SevenEngine
     public static void SetAlphaBlending()
     {
       GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+    }
+
+    public static bool Fullscreen
+    {
+      get
+      {
+        return _fullscreen;
+      }
     }
   }
 }

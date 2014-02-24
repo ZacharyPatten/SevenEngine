@@ -23,24 +23,12 @@ namespace SevenEngine.DataStructures
     int Count { get; }
     bool IsEmpty { get; }
     void Clear();
-  }
 
-  public interface List<ValueType, KeyType> : List<ValueType>
-  {
-    ValueType Get(KeyType get);
-    bool TryGet(KeyType get, out ValueType returnValue);
-    bool Contains(KeyType containsCheck);
-    void RemoveFirst(KeyType removalKey);
-  }
-
-  public interface List<ValueType, FirstKeyType, SecondKeyType> : List<ValueType, FirstKeyType>
-  {
-    // THESE MUST BE NAMED DIFFERENTLY FROM THE INHERITED INTERFACE ACCORDING TO 13.4.6 (as of 12.16.13 in C# 5.0)
-    // OTHERWISE INTERFACE RE-IMPLEMENTATION WILL OVERRIDE METHODS IF THE GENERIC TYPES ARE EQUAL
-    ValueType GetSecondGeneric(SecondKeyType get);
-    bool TryGetSecondGeneric(SecondKeyType get, out ValueType returnValue);
-    bool ContainsSecondGeneric(SecondKeyType containsCheck);
-    void RemoveFirstSecondGeneric(SecondKeyType removalKey);
+    //bool Contains<Key>(Key key, Func<Type, Key, int> comparison);
+    //Type Get<Key>(Key key, Func<Type, Key, int> comparison);
+    //bool TryGet<Key>(Key key, Func<Type, Key, int> comparison, out Type item);
+    //void RemoveFirst<Key>(Key key, Func<Type, Key, int> comparison);
+    //bool TryRemoveFirst<Key>(Key key, Func<Type, Key, int> comparison);
   }
 
   #region ListLinked<Type>
@@ -71,13 +59,9 @@ namespace SevenEngine.DataStructures
     protected ListLinkedNode _tail;
     protected int _count;
 
-    protected object _lock;
-    protected int _readers;
-    protected int _writers;
-
     /// <summary>Returns the number of items in the list.</summary>
     /// <remarks>Runtime: O(1).</remarks>
-    public int Count { get { ReaderLock(); int count = _count; ReaderUnlock(); return count; } }
+    public int Count { get { return _count; } }
 
     /// <summary>Returns true if the structure is empty.</summary>
     /// <remarks>Runtime: O(1).</remarks>
@@ -89,9 +73,6 @@ namespace SevenEngine.DataStructures
     {
       _head = _tail = null;
       _count = 0;
-      _lock = new object();
-      _readers = 0;
-      _writers = 0;
     }
 
     /// <summary>Checks to see if an object reference exists.</summary>
@@ -111,11 +92,174 @@ namespace SevenEngine.DataStructures
     /// <remarks>Runtime: O(1).</remarks>
     public void Add(Type addition)
     {
-      WriterLock();
       if (_tail == null)
         _head = _tail = new ListLinkedNode(addition);
       else
         _tail = _tail.Next = new ListLinkedNode(addition);
+      _count++;
+    }
+
+    /// <summary>Removes the first equality by object reference.</summary>
+    /// <param name="removal">The reference to the item to remove.</param>
+    public void RemoveFirst(Type removal)
+    {
+      if (_head == null)
+        throw new ListLinkedException("Attempting to remove a non-existing id value.");
+      if (_head.Value.Equals(removal))
+      {
+        _head = _head.Next;
+        _count--;
+        return;
+      }
+      ListLinkedNode listNode = _head;
+      while (listNode != null)
+      {
+        if (listNode.Next == null)
+          throw new ListLinkedException("Attempting to remove a non-existing id value.");
+        else if (_head.Value.Equals(removal))
+        {
+          if (listNode.Next.Equals(_tail))
+            _tail = listNode;
+          listNode.Next = listNode.Next.Next;
+          return;
+        }
+        else
+          listNode = listNode.Next;
+      }
+      throw new ListLinkedException("Attempting to remove a non-existing id value.");
+    }
+
+    /// <summary>Resets the list to an empty state. WARNING could cause excessive garbage collection.</summary>
+    public void Clear()
+    {
+      _head = _tail = null;
+      _count = 0;
+    }
+
+    /// <summary>Allows a foreach loop using a delegate.</summary>
+    /// <param name="traversalFunction">The function to perform on each iteration.</param>
+    /// <remarks>Runtime: O(n * traversalFunction).</remarks>
+    public bool TraverseBreakable(Func<Type, bool> traversalFunction)
+    {
+      ListLinkedNode looper = _head;
+      while (looper != null)
+      {
+        if (!traversalFunction(looper.Value))
+          return false;
+        looper = looper.Next;
+      }
+      return true;
+    }
+
+    /// <summary>Does an imperative traversal of the structure.</summary>
+    /// <param name="traversalAction">The action to perform on each iteration.</param>
+    /// <remarks>Runtime: O(n * traversalAction).</remarks>
+    public void Traverse(Action<Type> traversalAction)
+    {
+      ListLinkedNode looper = _head;
+      while (looper != null)
+      {
+        traversalAction(looper.Value);
+        looper = looper.Next;
+      }
+    }
+
+    /// <summary>Converts the list into a standard array.</summary>
+    /// <returns>A standard array of all the items.</returns>
+    /// /// <remarks>Runtime: Theta(n).</remarks>
+    public Type[] ToArray()
+    {
+      if (_count == 0)
+        return null;
+      Type[] array = new Type[_count];
+      ListLinkedNode looper = _head;
+      for (int i = 0; i < _count; i++)
+      {
+        array[i] = looper.Value;
+        looper = looper.Next;
+      }
+      return array;
+    }
+
+    /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
+    protected class ListLinkedException : Exception { public ListLinkedException(string message) : base(message) { } }
+  }
+
+  #endregion
+
+  #region ListLinkedThreadSafe<Type>
+
+  /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
+  /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
+  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
+  [Serializable]
+  public class ListLinkedThreadSafe<Type> : List<Type>
+  {
+    #region ListLinkedNode
+
+    /// <summary>This class just holds the data for each individual node of the list.</summary>
+    protected class ListLinkedThreadSafeNode
+    {
+      private Type _value;
+      private ListLinkedThreadSafeNode _next;
+
+      internal Type Value { get { return _value; } set { _value = value; } }
+      internal ListLinkedThreadSafeNode Next { get { return _next; } set { _next = value; } }
+
+      internal ListLinkedThreadSafeNode(Type data) { _value = data; }
+    }
+
+    #endregion
+
+    protected ListLinkedThreadSafeNode _head;
+    protected ListLinkedThreadSafeNode _tail;
+    protected int _count;
+
+    protected object _lock;
+    protected int _readers;
+    protected int _writers;
+
+    /// <summary>Returns the number of items in the list.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public int Count { get { ReaderLock(); int count = _count; ReaderUnlock(); return count; } }
+
+    /// <summary>Returns true if the structure is empty.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public bool IsEmpty { get { return _count == 0; } }
+
+    /// <summary>Creates an instance of a stalistck.</summary>
+    /// <remarks>Runtime: O(1).</remarks>
+    public ListLinkedThreadSafe()
+    {
+      _head = _tail = null;
+      _count = 0;
+      _lock = new object();
+      _readers = 0;
+      _writers = 0;
+    }
+
+    /// <summary>Checks to see if an object reference exists.</summary>
+    /// <param name="itemReference">The reference to the object.</param>
+    /// <returns>Whether or not the object reference was found.</returns>
+    public bool Contains(Type itemReference)
+    {
+      for (ListLinkedThreadSafeNode looper = _head; looper != null; looper = looper.Next)
+        if (looper.Value.Equals(itemReference))
+          return true;
+      return false;
+    }
+
+    /// <summary>Adds an item to the list.</summary>
+    /// <param name="id">The string id of the item to add to the list.</param>
+    /// <param name="addition">The item to add to the list.</param>
+    /// <remarks>Runtime: O(1).</remarks>
+    public void Add(Type addition)
+    {
+      WriterLock();
+      if (_tail == null)
+        _head = _tail = new ListLinkedThreadSafeNode(addition);
+      else
+        _tail = _tail.Next = new ListLinkedThreadSafeNode(addition);
       _count++;
       WriterUnlock();
     }
@@ -134,7 +278,7 @@ namespace SevenEngine.DataStructures
         WriterUnlock();
         return;
       }
-      ListLinkedNode listNode = _head;
+      ListLinkedThreadSafeNode listNode = _head;
       while (listNode != null)
       {
         if (listNode.Next == null)
@@ -172,7 +316,7 @@ namespace SevenEngine.DataStructures
     public bool TraverseBreakable(Func<Type, bool> traversalFunction)
     {
       ReaderLock();
-      ListLinkedNode looper = _head;
+      ListLinkedThreadSafeNode looper = _head;
       while (looper != null)
       {
         if (!traversalFunction(looper.Value))
@@ -192,7 +336,7 @@ namespace SevenEngine.DataStructures
     public void Traverse(Action<Type> traversalAction)
     {
       ReaderLock();
-      ListLinkedNode looper = _head;
+      ListLinkedThreadSafeNode looper = _head;
       while (looper != null)
       {
         traversalAction(looper.Value);
@@ -213,7 +357,7 @@ namespace SevenEngine.DataStructures
         return null;
       }
       Type[] array = new Type[_count];
-      ListLinkedNode looper = _head;
+      ListLinkedThreadSafeNode looper = _head;
       for (int i = 0; i < _count; i++)
       {
         array[i] = looper.Value;
@@ -234,210 +378,6 @@ namespace SevenEngine.DataStructures
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     protected class ListLinkedException : Exception { public ListLinkedException(string message) : base(message) { } }
-  }
-
-  #endregion
-
-  #region ListLinked<ValueType, KeyType>
-
-  /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
-  /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
-  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  [Serializable]
-  public class ListLinked<ValueType, KeyType> : ListLinked<ValueType>, List<ValueType, KeyType>
-  {
-    protected Func<ValueType, KeyType, bool> _equalityFunction;
-
-    /// <summary>Creates an instance of a stalistck.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public ListLinked(Func<ValueType, KeyType, bool> equalityFunction)
-    {
-      _equalityFunction = equalityFunction;
-    }
-
-    /// <summary>Checks to see if an key item exists.</summary>
-    /// <param name="keyReference">The reference to the object.</param>
-    /// <returns>Whether or not the object reference was found.</returns>
-    public bool Contains(KeyType keyReference)
-    {
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_equalityFunction(looper.Value, keyReference))
-          return true;
-      return false;
-    }
-
-    public bool TryGet(KeyType keyReference, out ValueType returnValue)
-    {
-      ReaderLock();
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_equalityFunction(looper.Value, keyReference))
-        {
-          returnValue = looper.Value;
-          ReaderUnlock();
-          return true;
-        }
-      returnValue = default(ValueType);
-      ReaderUnlock();
-      return false;
-    }
-
-    public ValueType Get(KeyType keyReference)
-    {
-      ReaderLock();
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_equalityFunction(looper.Value, keyReference))
-        {
-          ValueType returnValue = looper.Value;
-          ReaderUnlock();
-          return returnValue;
-        }
-      ReaderUnlock();
-      throw new ListLinkedException("attempting to get a non-existing key.");
-    }
-
-    /// <summary>Removes an item from the list with the matching string id.</summary>
-    /// <param name="removalId">The string id of the item to remove.</param>
-    /// <remarks>Runtime: O(n).</remarks>
-    public void RemoveFirst(KeyType removalKey)
-    {
-      WriterLock();
-      if (_head == null)
-        throw new ListLinkedException("Attempting to remove a non-existing id value.");
-      if (_equalityFunction(_head.Value, removalKey))
-      {
-        _head = _head.Next;
-        _count--;
-        WriterUnlock();
-        return;
-      }
-      ListLinkedNode listNode = _head;
-      while (listNode != null)
-      {
-        if (listNode.Next == null)
-        {
-          WriterUnlock();
-          throw new ListLinkedException("Attempting to remove a non-existing id value.");
-        }
-        else if (_equalityFunction(_head.Value, removalKey))
-        {
-          if (listNode.Next.Equals(_tail))
-            _tail = listNode;
-          listNode.Next = listNode.Next.Next;
-          WriterUnlock();
-          return;
-        }
-        else
-          listNode = listNode.Next;
-      }
-      WriterUnlock();
-      throw new ListLinkedException("Attempting to remove a non-existing id value.");
-    }
-  }
-
-  #endregion
-
-  #region ListLinked<ValueType, FirstKeyType, SecondKeyType>
-
-  /// <summary>Implements a growing, singularly-linked list data structure that inherits InterfaceTraversable.</summary>
-  /// <typeparam name="InterfaceStringId">The type of objects to be placed in the list.</typeparam>
-  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  [Serializable]
-  public class ListLinked<ValueType, FirstKeyType, SecondKeyType> : ListLinked<ValueType, FirstKeyType>, List<ValueType, FirstKeyType, SecondKeyType>
-  {
-    protected Func<ValueType, SecondKeyType, bool> _secondequalityFunction;
-
-    /// <summary>Creates an instance of a stalistck.</summary>
-    /// <remarks>Runtime: O(1).</remarks>
-    public ListLinked(
-      Func<ValueType, FirstKeyType, bool> firstequalityFunction,
-      Func<ValueType, SecondKeyType, bool> secondequalityFunction)
-      : base(firstequalityFunction)
-    {
-      _equalityFunction = firstequalityFunction;
-    }
-
-    /// <summary>Checks to see if an key item exists.</summary>
-    /// <param name="keyReference">The reference to the object.</param>
-    /// <returns>Whether or not the object reference was found.</returns>
-    public bool ContainsSecondGeneric(SecondKeyType keyReference)
-    {
-      ReaderLock();
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_secondequalityFunction(looper.Value, keyReference))
-        {
-          ReaderUnlock();
-          return true;
-        }
-      ReaderUnlock();
-      return false;
-    }
-
-    public bool TryGetSecondGeneric(SecondKeyType keyReference, out ValueType returnValue)
-    {
-      ReaderLock();
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_secondequalityFunction(looper.Value, keyReference))
-        {
-          returnValue = looper.Value;
-          ReaderUnlock();
-          return true;
-        }
-      returnValue = default(ValueType);
-      ReaderUnlock();
-      return false;
-    }
-
-    public ValueType GetSecondGeneric(SecondKeyType keyReference)
-    {
-      ReaderLock();
-      for (ListLinkedNode looper = _head; looper != null; looper = looper.Next)
-        if (_secondequalityFunction(looper.Value, keyReference))
-        {
-          ValueType returnValue = looper.Value;
-          ReaderUnlock();
-          return returnValue;
-        }
-      ReaderUnlock();
-      throw new ListLinkedException("attempting to get a non-existing key.");
-    }
-
-    /// <summary>Removes an item from the list with the matching string id.</summary>
-    /// <param name="removalId">The string id of the item to remove.</param>
-    /// <remarks>Runtime: O(n).</remarks>
-    public void RemoveFirstSecondGeneric(SecondKeyType removalKey)
-    {
-      WriterLock();
-      if (_head == null)
-        throw new ListLinkedException("Attempting to remove a non-existing id value.");
-      if (_secondequalityFunction(_head.Value, removalKey))
-      {
-        _head = _head.Next;
-        _count--;
-        WriterUnlock();
-        return;
-      }
-      ListLinkedNode listNode = _head;
-      while (listNode != null)
-      {
-        if (listNode.Next == null)
-        {
-          WriterUnlock();
-          throw new ListLinkedException("Attempting to remove a non-existing id value.");
-        }
-        else if (_secondequalityFunction(_head.Value, removalKey))
-        {
-          if (listNode.Next.Equals(_tail))
-            _tail = listNode;
-          listNode.Next = listNode.Next.Next;
-          WriterUnlock();
-          return;
-        }
-        else
-          listNode = listNode.Next;
-      }
-      WriterUnlock();
-      throw new ListLinkedException("Attempting to remove a non-existing id value.");
-    }
   }
 
   #endregion
@@ -729,188 +669,6 @@ namespace SevenEngine.DataStructures
 
     /// <summary>This is used for throwing AVL Tree exceptions only to make debugging faster.</summary>
     protected class ListArrayException : Exception { public ListArrayException(string message) : base(message) { } }
-  }
-
-  #endregion
-
-  #region ListArray<ValueType, KeyType>
-
-  /// <summary>Implements a growing list as an array (with expansions/contractions) 
-  /// data structure that inherits InterfaceTraversable.</summary>
-  /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
-  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  [Serializable]
-  public class ListArray<ValueType, KeyType> : ListArray<ValueType>, List<ValueType, KeyType>
-  {
-    protected Func<ValueType, KeyType, int> _keyComparisonFunction;
-
-    /// <summary>Creates an instance of a ListArray, and sets it's minimum capacity.</summary>
-    /// <param name="minimumCapacity">The initial and smallest array size allowed by this list.</param>
-    /// <remarks>Runtime: O(1).</remarks>
-    public ListArray(Func<ValueType, KeyType, int> keyComparisonFunction, int minimumCapacity) : base(minimumCapacity)
-    {
-      _keyComparisonFunction = keyComparisonFunction;
-    }
-
-    public ValueType Get(KeyType removal)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_keyComparisonFunction(_list[index], removal) == 0)
-        {
-          ValueType returnValue = _list[index];
-          WriterUnlock();
-          return returnValue;
-        }
-      WriterUnlock();
-      throw new ListArrayException("attempting to remove a non-existing value.");
-    }
-
-    public bool TryGet(KeyType removal, out ValueType returnValue)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_keyComparisonFunction(_list[index], removal) == 0)
-        {
-          returnValue = _list[index];
-          WriterUnlock();
-          return true;
-        }
-      returnValue = default(ValueType);
-      WriterUnlock();
-      return false;
-    }
-
-    public bool Contains(KeyType check)
-    {
-      ReaderLock();
-      for (int index = 0; index < _count; index++)
-        if (_keyComparisonFunction(_list[index], check) == 0)
-        {
-          ReaderUnlock();
-          return true;
-        }
-      ReaderUnlock();
-      return false;
-    }
-
-    /// <summary>Removes the first equality by object reference.</summary>
-    /// <param name="removal">The reference to the item to remove.</param>
-    public void RemoveFirst(KeyType removal)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_keyComparisonFunction(_list[index], removal) == 0)
-        {
-          if (_count < _list.Length / 4 && _list.Length / 2 > _minimumCapacity)
-          {
-            ValueType[] newList = new ValueType[_list.Length / 2];
-            for (int i = 0; i < _count; i++)
-              newList[i] = _list[i];
-            _list = newList;
-          }
-          for (int i = index; i < _count - 1; i++)
-            _list[i] = _list[i + 1];
-          _count--;
-          WriterUnlock();
-          return;
-        }
-      WriterUnlock();
-      throw new ListArrayException("attempting to remove a non-existing value.");
-    }
-  }
-
-  #endregion
-
-  #region ListArray<ValueType, FirstKeyType, SecondKeyType>
-
-  /// <summary>Implements a growing list as an array (with expansions/contractions) 
-  /// data structure that inherits InterfaceTraversable.</summary>
-  /// <typeparam name="Type">The type of objects to be placed in the list.</typeparam>
-  /// <remarks>The runtimes of each public member are included in the "remarks" xml tags.</remarks>
-  [Serializable]
-  public class ListArray<ValueType, FirstKeyType, SecondKeyType> : ListArray<ValueType, FirstKeyType>, List<ValueType, FirstKeyType>
-  {
-    protected Func<ValueType, SecondKeyType, int> _secondkeyComparisonFunction;
-
-    /// <summary>Creates an instance of a ListArray, and sets it's minimum capacity.</summary>
-    /// <param name="minimumCapacity">The initial and smallest array size allowed by this list.</param>
-    /// <remarks>Runtime: O(1).</remarks>
-    public ListArray(
-      Func<ValueType, FirstKeyType, int> firstkeyComparisonFunction,
-      Func<ValueType, SecondKeyType, int> secondkeyComparisonFunction,
-      int minimumCapacity)
-      : base(firstkeyComparisonFunction, minimumCapacity)
-    {
-      _secondkeyComparisonFunction = secondkeyComparisonFunction;
-    }
-
-    public ValueType Get(SecondKeyType removal)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_secondkeyComparisonFunction(_list[index], removal) == 0)
-        {
-          ValueType returnValue = _list[index];
-          WriterUnlock();
-          return returnValue;
-        }
-      WriterUnlock();
-      throw new ListArrayException("attempting to remove a non-existing value.");
-    }
-
-    public bool TryGet(SecondKeyType removal, out ValueType returnValue)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_secondkeyComparisonFunction(_list[index], removal) == 0)
-        {
-          returnValue = _list[index];
-          WriterUnlock();
-          return true;
-        }
-      returnValue = default(ValueType);
-      WriterUnlock();
-      return false;
-    }
-
-    public bool Contains(SecondKeyType check)
-    {
-      ReaderLock();
-      for (int index = 0; index < _count; index++)
-        if (_secondkeyComparisonFunction(_list[index], check) == 0)
-        {
-          ReaderUnlock();
-          return true;
-        }
-      ReaderUnlock();
-      return false;
-    }
-
-    /// <summary>Removes the first equality by object reference.</summary>
-    /// <param name="removal">The reference to the item to remove.</param>
-    public void RemoveFirst(SecondKeyType removal)
-    {
-      WriterLock();
-      for (int index = 0; index < _count; index++)
-        if (_secondkeyComparisonFunction(_list[index], removal) == 0)
-        {
-          if (_count < _list.Length / 4 && _list.Length / 2 > _minimumCapacity)
-          {
-            ValueType[] newList = new ValueType[_list.Length / 2];
-            for (int i = 0; i < _count; i++)
-              newList[i] = _list[i];
-            _list = newList;
-          }
-          for (int i = index; i < _count - 1; i++)
-            _list[i] = _list[i + 1];
-          _count--;
-          WriterUnlock();
-          return;
-        }
-      WriterUnlock();
-      throw new ListArrayException("attempting to remove a non-existing value.");
-    }
   }
 
   #endregion

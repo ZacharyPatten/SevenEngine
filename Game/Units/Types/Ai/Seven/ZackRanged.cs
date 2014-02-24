@@ -18,7 +18,7 @@ namespace Game.Units
 
     public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000;}
 
-    public override void AI(float elapsedTime, OctreeLinked<Unit, string> octree)
+    public override void AI(float elapsedTime, OctreeLinked<Unit> octree)
     {
       if (_time <= _delay)
         _time += elapsedTime;

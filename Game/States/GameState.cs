@@ -18,9 +18,8 @@ namespace Game.States
 
     #region State Fields
 
-    public OctreeLinked<StaticModel, string> _octree = new OctreeLinked<StaticModel, string>(0, 0, 0, 1000000, 10,
-      (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); },
-      (StaticModel left, string right) => { return left.Id.CompareTo(right); } );
+    public OctreeLinked<StaticModel> _octree = new OctreeLinked<StaticModel>(0, 0, 0, 1000000, 10,
+      (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); });
 
     Camera _camera;
     StaticModel _terrain;
@@ -32,6 +31,8 @@ namespace Game.States
     float _time;
     bool _bool;
     SkyBox _skybox;
+
+    StaticModel _dodeca;
 
     #endregion
 
@@ -118,12 +119,14 @@ namespace Game.States
 
       for (int i = 0; i < _rangers.Length; i += 2)
       {
-        _rangers[i].Meshes.Remove("Body");
+        _rangers[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
         //_octree.Remove("Ranger" + i);
-        _tuxes[i].Meshes.Remove("Body");
+        _tuxes[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
       }
 
       Renderer.Font = TextManager.GetFont("Calibri");
+
+      _dodeca = StaticModelManager.GetModel("Dodecahedron");
 
       // ONCE YOU ARE DONE LOADING, BE SURE TO SET YOUR READY 
       // PROPERTY TO TRUE SO MY ENGINE DOESN'T SCREAM AT YOU
@@ -167,6 +170,8 @@ namespace Game.States
       Renderer.RenderText("Fullscreen: F1", 0f, .15f, 30f, 0, Color.SteelBlue);
       Renderer.RenderText("Camera Movement: w, a, s, d", 0f, .1f, 30f, 0, Color.Tomato);
       Renderer.RenderText("Camera Angle: j, k, l, i", 0f, .05f, 30f, 0, Color.Yellow);
+
+      Renderer.DrawStaticModel(_dodeca);
     }
 
     #endregion
@@ -200,6 +205,9 @@ namespace Game.States
       //_mushroomCloud.Scale.X = Trigonometry.Sin(_time / 300f) * 200f;
       //_mushroomCloud.Scale.Y = Trigonometry.Sin(_time / 300f) * 200f;
       //_mushroomCloud.Scale.Z = Trigonometry.Sin(_time / 300f) * 200f;
+
+      _dodeca.Orientation.Z += 1;
+      _dodeca.Orientation.W += 1;
 
       return "Don't Change States";
     }

@@ -21,8 +21,7 @@ namespace SevenEngine
   /// <summary>TextManager is used for fonts management (loading, storing, hardware instance controling, and disposing). </summary>
   public static class TextManager
   {
-    private static AvlTreeLinked<Font, string> _fontDatabase =
-      new AvlTreeLinked<Font, string>(Font.CompareTo, Font.CompareTo);
+    private static AvlTreeLinked<Font> _fontDatabase = new AvlTreeLinked<Font>(Font.CompareTo);
 
     /// <summary>The number of fonts currently loaded onto the graphics card.</summary>
     public static int Count { get { return _fontDatabase.Count; } }
@@ -32,7 +31,7 @@ namespace SevenEngine
     /// <returns>The font associated with the string id.</returns>
     public static Font GetFont(string font)
     {
-      try { Font fontToGet = _fontDatabase.Get(font); return fontToGet; }
+      try { Font fontToGet = _fontDatabase.Get<string>(font, Font.CompareTo); return fontToGet; }
       catch { throw new TextManagerException("The requested font does not exists."); }
     }
 
