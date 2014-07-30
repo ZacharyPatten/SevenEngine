@@ -11,7 +11,7 @@
 // Last Edited: 11-16-13
 
 using System;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Imaging;
 
 namespace SevenEngine

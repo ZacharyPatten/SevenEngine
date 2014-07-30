@@ -1,7 +1,7 @@
 ﻿using System;
 
-using SevenEngine.Mathematics;
-using SevenEngine.DataStructures;
+using Seven.Mathematics;
+using Seven.Structures;
 using SevenEngine.StaticModels;
 
 namespace Game.Units
@@ -14,7 +14,7 @@ namespace Game.Units
 
    public KillemKamakazi(string id, StaticModel staticModel) : base(id, staticModel) { }
 
-    public override void AI(float elapsedTime, OctreeLinked<Unit> octree)
+    public override void AI(float elapsedTime, Omnitree<Unit, double> octree)
     {
       if (IsDead == false)
       {
@@ -23,7 +23,7 @@ namespace Game.Units
         {
           _move = 0;
           float nearest = float.MinValue;
-          octree.Traverse
+          octree.Foreach
           (
             (Unit current) =>
             {

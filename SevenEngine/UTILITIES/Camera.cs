@@ -1,25 +1,19 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
-
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
 using System;
 using OpenTK;
 using OpenTK.Input;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine
 {
   /// <summary>Represents a camera to assist a game by generating a view matrix transformation.</summary>
   public class Camera
   {
-    private static Vector yAxis = new Vector(0, 1, 0);
+    private static Vector<float> yAxis = new Vector<float>(0, 1, 0);
 
     private float _fieldOfView;
 
@@ -29,9 +23,9 @@ namespace SevenEngine
     private float _positionSpeed;
     private float _lookSpeed;
 
-    private Vector _position;
-    private Vector _forward;
-    private Vector _up;
+    private Vector<float> _position;
+    private Vector<float> _forward;
+    private Vector<float> _up;
 
     public float NearClipPlane { get { return _nearClipPlane; } set { _nearClipPlane = value; } }
     public float FarClipPlane { get { return _farClipPlane; } set { _farClipPlane = value; } }
@@ -43,25 +37,25 @@ namespace SevenEngine
     public float PositionSpeed { get { return _positionSpeed; } set { _positionSpeed = value; } }
     public float LookSpeed { get { return _lookSpeed; } set { _lookSpeed = value; } }
 
-    public Vector Position { get { return _position; } set { _position = value; } }
-    public Vector Forward { get { return _forward; } set { _forward = value; } }
-    public Vector Up { get { return _up; } set { _up = value; } }
+    public Vector<float> Position { get { return _position; } set { _position = value; } }
+    public Vector<float> Forward { get { return _forward; } set { _forward = value; } }
+    public Vector<float> Up { get { return _up; } set { _up = value; } }
 
-    public Vector Backward { get { return -_forward; } }
-    public Vector Right { get { return _forward.CrossProduct(_up).Normalize(); } }
-    public Vector Left { get { return _up.CrossProduct(_forward).Normalize(); } }
-    public Vector Down { get { return -_up; } }
+    public Vector<float> Backward { get { return -_forward; } }
+    public Vector<float> Right { get { return _forward.CrossProduct(_up).Normalize(); } }
+    public Vector<float> Left { get { return _up.CrossProduct(_forward).Normalize(); } }
+    public Vector<float> Down { get { return -_up; } }
 
     public Camera()
     {
-      _position = new Vector(0, 0, 0);
-      _forward = new Vector(0, 0, 1);
-      _up = new Vector(0, 1, 0);
+      _position = new Vector<float>(0, 0, 0);
+      _forward = new Vector<float>(0, 0, 1);
+      _up = new Vector<float>(0, 1, 0);
 
       _fieldOfView = .5f;
     }
 
-    public Camera(Vector pos, Vector forward, Vector up, float fieldOfView)
+    public Camera(Vector<float> pos, Vector<float> forward, Vector<float> up, float fieldOfView)
     {
       _position = pos;
       _forward = forward.Normalize();
@@ -69,21 +63,21 @@ namespace SevenEngine
       _fieldOfView = fieldOfView;
     }
 
-    public void Move(Vector direction, float ammount)
+    public void Move(Vector<float> direction, float ammount)
     {
       _position = _position + (direction * ammount);
     }
 
     public void RotateY(float angle)
     {
-      Vector Haxis = yAxis.CrossProduct(_forward.Normalize());
+      Vector<float> Haxis = yAxis.CrossProduct(_forward.Normalize());
       _forward = _forward.RotateBy(angle, 0, 1, 0).Normalize();
       _up = _forward.CrossProduct(Haxis.Normalize());
     }
 
     public void RotateX(float angle)
     {
-      Vector Haxis = yAxis.CrossProduct(_forward.Normalize());
+      Vector<float> Haxis = yAxis.CrossProduct(_forward.Normalize());
       _forward = _forward.RotateBy(angle, Haxis.X, Haxis.Y, Haxis.Z).Normalize();
       _up = _forward.CrossProduct(Haxis.Normalize());
     }

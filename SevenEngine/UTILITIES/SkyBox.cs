@@ -1,29 +1,22 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken from the 
-// SevenEngine project must include citation to its original author(s) located at the top of each
-// source code file. Alternatively, you may include a reference to the SevenEngine project as a whole,
-// but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
-
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 10-26-13
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
 using System;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine;
 using SevenEngine.Imaging;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine
 {
   public class SkyBox
   {
     private static readonly int _vertexCount = 30;
-    protected Vector _position;
-    protected Vector _scale;
+    protected Vector<float> _position;
+    protected Vector<float> _scale;
     protected Texture _top;
     protected Texture _right;
     protected Texture _left;
@@ -39,9 +32,9 @@ namespace SevenEngine
     /// <summary>The handle to the memory of the texture buffer on the GPU.</summary>
     internal int GPUTextureCoordinateBufferHandle { get { return _gpuTextureMappingBufferHandle; } }
     /// <summary>The center of this skybox. YOU PROBABLY WANT THE SKYBOXES POSITION TO FOLLOW THE CAMERA!!!</summary>
-    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector<float> Position { get { return _position; } set { _position = value; } }
     /// <summary>The scale of the skybox. YOU MAY WANT TO SET THE SCALE TO BE 1/2 OF THE FAR CLIP PLANE FOR EACH DIMENSION.</summary>
-    public Vector Scale { get { return _scale; } set { _scale = value; } }
+    public Vector<float> Scale { get { return _scale; } set { _scale = value; } }
     /// <summary>The texture being applied to the top of the skybox.</summary>
     public Texture Top { get { return _top; } set { _top = value; } }
     /// <summary>The texture being applied to the right of the skybox.</summary>
@@ -55,8 +48,8 @@ namespace SevenEngine
 
     public SkyBox()
     {
-      _position = new Vector(0, 0, 0);
-      _scale = new Vector(100, 100, 100);
+      _position = new Vector<float>(0, 0, 0);
+      _scale = new Vector<float>(100, 100, 100);
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer();
       if (_gpuTextureMappingBufferHandle == 0)

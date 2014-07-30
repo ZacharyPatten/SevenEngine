@@ -1,19 +1,12 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
-
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
 using System;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine.Imaging
 {
@@ -28,9 +21,9 @@ namespace SevenEngine.Imaging
     private static readonly float[] _textureMappingsDefault = new float[] {
       1f,0f,  0f,0f,  1f,1f,
       0f,1f,  1f,1f,  0f,0f };
-    private Vector _position;
+    private Vector<float> _position;
     private Texture _texture;
-    private Vector _scale;
+    private Vector<float> _scale;
     private float _rotation;
     private static int _gpuVertexBufferHandle;
     private static int _gpuTextureMappingBufferHandleDefault;
@@ -43,9 +36,9 @@ namespace SevenEngine.Imaging
     /// <summary>Returns 6, because sprites always have 6 verteces.</summary>
     internal int VertexCount { get { return _vertexCount; } }
     /// <summary>Get and set the position of the sprite.</summary>
-    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector<float> Position { get { return _position; } set { _position = value; } }
     /// <summary>Get and set the size of the sprite.</summary>
-    public Vector Scale 
+    public Vector<float> Scale 
     { 
       get { return _scale; } 
       set
@@ -66,8 +59,8 @@ namespace SevenEngine.Imaging
     {
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer(_verteces);
-      _position = new Vector(0, 0, -10);
-      _scale = new Vector(1, 1);
+      _position = new Vector<float>(0, 0, -10);
+      _scale = new Vector<float>(1, 1);
       _rotation = 0f;
       _texture = texture;
       if (_gpuTextureMappingBufferHandleDefault == 0)
@@ -86,8 +79,8 @@ namespace SevenEngine.Imaging
     {
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer(_verteces);
-      _position = new Vector(0, 0, -10);
-      _scale = new Vector(1, 1);
+      _position = new Vector<float>(0, 0, -10);
+      _scale = new Vector<float>(1, 1);
       _rotation = 0f;
       _texture = texture;
       if (textureMappings.Length != 12)

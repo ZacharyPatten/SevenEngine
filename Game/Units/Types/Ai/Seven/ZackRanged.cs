@@ -1,8 +1,8 @@
 ﻿using System;
 
 using Game.States;
-using SevenEngine.Mathematics;
-using SevenEngine.DataStructures;
+using Seven.Mathematics;
+using Seven.Structures;
 using SevenEngine.StaticModels;
 using SevenEngine.Imaging;
 
@@ -18,7 +18,7 @@ namespace Game.Units
 
     public ZackRanged(string id, StaticModel staticModel) : base(id, staticModel) { _time = 0; if (AiBattle._map == 0) _delay = 4000;}
 
-    public override void AI(float elapsedTime, OctreeLinked<Unit> octree)
+    public override void AI(float elapsedTime, Omnitree<Unit, double> octree)
     {
       if (_time <= _delay)
         _time += elapsedTime;
@@ -30,7 +30,7 @@ namespace Game.Units
         {
           move = 0;
           float shortest = float.MaxValue;
-          octree.Traverse
+          octree.Foreach
           (
             (Unit current) =>
             {
@@ -72,13 +72,17 @@ namespace Game.Units
           );
         }
         // Attacking
-        else if (Calc.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared)
+        else if (Logic.Abs((Position - _target.Position).LengthSquared()) < _attackRangedSquared)
         {
-          if (!attack)
-            AiBattle.lines.TryAdd(new Link3<Vector, Vector, Color>(
-              new Vector(Position.X, Position.Y, Position.Z),
-              new Vector(_target.Position.X, _target.Position.Y, _target.Position.Z),
-              Color.Yellow));
+          Link<Vector<float>, Vector<float>, Color> link =
+            new Link<Vector<float>, Vector<float>, Color>(
+              new Vector<float>(Position.X, Position.Y, Position.Z),
+              new Vector<float>(_target.Position.X, _target.Position.Y, _target.Position.Z),
+              Color.Red);
+
+          if (!attack && !AiBattle.lines.Contains(link, AiBattle.Compare))
+            AiBattle.lines.Add(link);
+
           if (Attack(_target))
             _target = null;
           move = 0;

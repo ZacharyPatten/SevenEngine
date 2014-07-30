@@ -13,7 +13,7 @@
 using System;
 using System.IO;
 using System.Globalization;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.StaticModels;
 using SevenEngine.Imaging;
 using OpenTK;
@@ -24,8 +24,8 @@ namespace SevenEngine
   /// <summary>StaticModelManager is used for rigid-body model management (loading, storing, hardware instance controling, and disposing).</summary>
   public static class StaticModelManager
   {
-    private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
-    private static AvlTree<StaticModel> _staticModelDatabase = new AvlTreeLinked<StaticModel>(StaticModel.CompareTo);
+    private static AvlTree<StaticMesh> _staticMeshDatabase = new AvlTree_Linked<StaticMesh>(StaticMesh.CompareTo);
+    private static AvlTree<StaticModel> _staticModelDatabase = new AvlTree_Linked<StaticModel>(StaticModel.CompareTo);
 
     /// <summary>The number of meshes currently loaded onto the graphics card.</summary>
     public static int MeshCount { get { return _staticMeshDatabase.Count; } }
@@ -48,8 +48,8 @@ namespace SevenEngine
     public static StaticModel GetModel(string staticModelId)
     {
       StaticModel modelToGet = _staticModelDatabase.Get<string>(staticModelId, StaticModel.CompareTo);
-      AvlTree<StaticMesh> meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
-      modelToGet.Meshes.Traverse
+      AvlTree<StaticMesh> meshes = new AvlTree_Linked<StaticMesh>(StaticMesh.CompareTo);
+      modelToGet.Meshes.Foreach
       (
         (StaticMesh mesh) =>
         {
@@ -130,10 +130,10 @@ namespace SevenEngine
       // These are temporarily needed lists for storing the parsed data as you read it.
       // Its better to use "ListArrays" vs "Lists" because they will be accessed by indeces
       // by the faces of the obj file.
-      ListArray<float> fileVerteces = new ListArray<float>(10000);
-      ListArray<float> fileNormals = new ListArray<float>(10000);
-      ListArray<float> fileTextureCoordinates = new ListArray<float>(10000);
-      ListArray<int> fileIndeces = new ListArray<int>(10000);
+      List_Array<float> fileVerteces = new List_Array<float>(10000);
+      List_Array<float> fileNormals = new List_Array<float>(10000);
+      List_Array<float> fileTextureCoordinates = new List_Array<float>(10000);
+      List_Array<int> fileIndeces = new List_Array<int>(10000);
 
       // Obj files are not required to include texture coordinates or normals
       bool hasTextureCoordinates = true;
@@ -340,14 +340,14 @@ namespace SevenEngine
     public static StaticModel LoadSevenModelFromDisk(string staticModelId, string filePath)
     {
       // These are temporarily needed lists for storing the parsed data as you read it.
-      ListArray<float> fileVerteces = new ListArray<float>(1000);
-      ListArray<float> fileNormals = new ListArray<float>(1000);
-      ListArray<float> fileTextureCoordinates = new ListArray<float>(1000);
-      ListArray<int> fileIndeces = new ListArray<int>(1000);
+      List_Array<float> fileVerteces = new List_Array<float>(1000);
+      List_Array<float> fileNormals = new List_Array<float>(1000);
+      List_Array<float> fileTextureCoordinates = new List_Array<float>(1000);
+      List_Array<int> fileIndeces = new List_Array<int>(1000);
       Texture texture = null;
       string meshName = "defaultMeshName";
 
-      AvlTreeLinked<StaticMesh> meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
+      AvlTree<StaticMesh> meshes = new AvlTree_Linked<StaticMesh>(StaticMesh.CompareTo);
 
       // Lets read the file and handle each line separately for ".obj" files
       using (StreamReader reader = new StreamReader(filePath))

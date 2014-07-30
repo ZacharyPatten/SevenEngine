@@ -2,7 +2,7 @@
 using System.IO;
 using SevenEngine;
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Shaders;
 using Game.States;
 

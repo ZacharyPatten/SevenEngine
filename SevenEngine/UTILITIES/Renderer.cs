@@ -1,25 +1,18 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
-
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
 using System;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Imaging;
 using SevenEngine.Texts;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 using SevenEngine.Shaders;
 
 namespace SevenEngine
@@ -38,13 +31,13 @@ namespace SevenEngine
 
     #region Transformations
     
-    private static Matrix _projectionMatrix;
-    private static Matrix _viewMatrix;
-    private static Matrix _modelMatrix;
+    private static Matrix<float> _projectionMatrix;
+    private static Matrix<float> _viewMatrix;
+    private static Matrix<float> _modelMatrix;
 
-    public static Matrix MatrixProjection { get { return _projectionMatrix; } set { _projectionMatrix = value; } }
-    public static Matrix MatrixView { get { return _viewMatrix; } set { _viewMatrix = value; } }
-    public static Matrix MatrixModel { get { return _modelMatrix; } set { _modelMatrix = value; } }
+    public static Matrix<float> MatrixProjection { get { return _projectionMatrix; } set { _projectionMatrix = value; } }
+    public static Matrix<float> MatrixView { get { return _viewMatrix; } set { _viewMatrix = value; } }
+    public static Matrix<float> MatrixModel { get { return _modelMatrix; } set { _modelMatrix = value; } }
 
     private static Camera _currentCamera;
 
@@ -132,7 +125,7 @@ namespace SevenEngine
       //GL.DrawArrays(PrimitiveType.Triangles, 0, verteces.Length / 3);
     }
 
-    public static void DrawLine(Vector from, Vector to, Color color)
+    public static void DrawLine(Vector<float> from, Vector<float> to, Color color)
     {
       SetProjectionMatrix();
       GL.MatrixMode(MatrixMode.Modelview);
@@ -165,7 +158,7 @@ namespace SevenEngine
       // Apply the 2D orthographic matrix transformation
       SetOrthographicMatrix();
 
-      rotation = Calc.ToDegrees(rotation);
+      rotation = rotation * 180f / Constants.pi_float;
 
       // Set the text shader program and pass in the color as a parameter
       GL.UseProgram(ShaderManager.TextShader.GpuHandle);
@@ -358,11 +351,11 @@ namespace SevenEngine
       GL.LoadMatrix(ref cameraTransform);
       // Apply the world transformation
       GL.Translate(staticModel.Position.X, staticModel.Position.Y, staticModel.Position.Z);
-      GL.Rotate(Calc.ToDegrees(staticModel.Orientation.W), staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
+      GL.Rotate(staticModel.Orientation.W * 180f / 3.14f, staticModel.Orientation.X, staticModel.Orientation.Y, staticModel.Orientation.Z);
       GL.Scale(staticModel.Scale.X, staticModel.Scale.Y, staticModel.Scale.Z);
 
       // Call the drawing functions for each mesh within the model
-      staticModel.Meshes.Traverse(DrawStaticModelPart);
+      staticModel.Meshes.Foreach((Foreach<StaticMesh>)DrawStaticModelPart);
     }
 
     private static void DrawStaticModelPart(StaticMesh staticMesh)

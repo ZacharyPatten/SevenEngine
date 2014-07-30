@@ -15,7 +15,7 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine.Shaders;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine
 {
@@ -32,11 +32,11 @@ namespace SevenEngine
     public static ShaderProgram TextShader { get { return _textShader; } }
     public static ShaderProgram LightShader { get { return _lightShader; } }
 
-    private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTreeLinked<VertexShader>(VertexShader.CompareTo);
-    private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTreeLinked<FragmentShader>(FragmentShader.CompareTo);
-    private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTreeLinked<GeometryShader>(GeometryShader.CompareTo);
-    private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTreeLinked<ExtendedGeometryShader>(ExtendedGeometryShader.CompareTo);
-    private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTreeLinked<ShaderProgram>(ShaderProgram.CompareTo);
+    private static AvlTree<VertexShader> _vertexShaderDatabase = new AvlTree_Linked<VertexShader>(VertexShader.CompareTo);
+    private static AvlTree<FragmentShader> _fragmentShaderDatabase = new AvlTree_Linked<FragmentShader>(FragmentShader.CompareTo);
+    private static AvlTree<GeometryShader> _geometryShaderDatabase = new AvlTree_Linked<GeometryShader>(GeometryShader.CompareTo);
+    private static AvlTree<ExtendedGeometryShader> _extendedGeometryShaderDatabase = new AvlTree_Linked<ExtendedGeometryShader>(ExtendedGeometryShader.CompareTo);
+    private static AvlTree<ShaderProgram> _shaderProgramDatabase = new AvlTree_Linked<ShaderProgram>(ShaderProgram.CompareTo);
 
     public static int Comparison(Func<FragmentShader, int> function, FragmentShader right)
     {

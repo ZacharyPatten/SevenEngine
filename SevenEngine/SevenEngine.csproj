@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SevenEngine</RootNamespace>
     <AssemblyName>SevenEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -29,9 +32,11 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="GraphicsCard\GraphicsCard.cs" />
     <Compile Include="SevenEngineWindow.cs" />
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="UTILITIES\FilePath.cs" />
@@ -60,12 +65,6 @@
     <Compile Include="Physics\Shapes\TriangularPrism.cs" />
     <Compile Include="Physics\Shapes\TriangularPyramid.cs" />
     <Compile Include="Physics\Shapes\Interfaces\InterfaceShape.cs" />
-    <Compile Include="Mathematics\Calc.cs" />
-    <Compile Include="Mathematics\Matrix.cs" />
-    <Compile Include="Mathematics\Quaternion.cs" />
-    <Compile Include="Mathematics\Tween.cs" />
-    <Compile Include="Mathematics\Vector.cs" />
-    <Compile Include="Mathematics\Vertex.cs" />
     <Compile Include="MANAGERS\AudioManager.cs" />
     <Compile Include="MANAGERS\GraphicsSettingsManager.cs" />
     <Compile Include="MANAGERS\HardwareManager.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="MANAGERS\StaticModelManager.cs" />
     <Compile Include="MANAGERS\TextManager.cs" />
     <Compile Include="MANAGERS\TextureManager.cs" />
-    <Compile Include="INTERFACES\InterfaceComparable.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="Imaging\Color.cs" />
@@ -86,20 +84,6 @@
     <Compile Include="DynamicModels\Animation.cs" />
     <Compile Include="DynamicModels\DynamicModel.cs" />
     <Compile Include="DynamicModels\KeyFrame.cs" />
-    <Compile Include="DataStructures\Array.cs" />
-    <Compile Include="DataStructures\AvlTree.cs" />
-    <Compile Include="DataStructures\Graph.cs" />
-    <Compile Include="DataStructures\HashTable.cs" />
-    <Compile Include="DataStructures\Heap.cs" />
-    <Compile Include="DataStructures\Interfaces.cs" />
-    <Compile Include="DataStructures\Link.cs" />
-    <Compile Include="DataStructures\List.cs" />
-    <Compile Include="DataStructures\Octree.cs" />
-    <Compile Include="DataStructures\Quadtree.cs" />
-    <Compile Include="DataStructures\Queue.cs" />
-    <Compile Include="DataStructures\RedBlackTree.cs" />
-    <Compile Include="DataStructures\Sort.cs" />
-    <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="Audio\Sound.cs" />
     <Compile Include="InterfaceGameState.cs" />
     <Compile Include="Importer\Collada.cs" />
@@ -107,17 +91,14 @@
     <Compile Include="Lighting\Light.cs" />
     <Compile Include="Lighting\Material.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Texts\" />
-    <Folder Include="Importer\" />
-    <Folder Include="Scripting\" />
-    <Folder Include="Lighting\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="README\License.txt" />
-    <None Include="DataStructures\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Seven">
+      <HintPath>..\References\Seven.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="OpenTK">

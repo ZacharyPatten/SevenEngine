@@ -1,16 +1,10 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
-
-using SevenEngine.DataStructures;
+using Seven;
+using Seven.Structures;
 
 namespace SevenEngine.Shaders
 {
@@ -43,7 +37,26 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
-    public static int CompareTo(ExtendedGeometryShader left, ExtendedGeometryShader right) { return left.Id.CompareTo(right.Id); }
-    public static int CompareTo(ExtendedGeometryShader left, string right) { return left.Id.CompareTo(right); }
+    public static Comparison CompareTo(ExtendedGeometryShader left, ExtendedGeometryShader right)
+    {
+      int comparison = left.Id.CompareTo(right.Id);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
+
+    public static Comparison CompareTo(ExtendedGeometryShader left, string right)
+    {
+      int comparison = left.Id.CompareTo(right);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
   }
 }

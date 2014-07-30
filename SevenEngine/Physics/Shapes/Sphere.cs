@@ -10,21 +10,21 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine.Physics.Primitives
 {
   public class Sphere
   {
-    Vector _position;
+    Vector<float> _position;
     float _radius;
-    Quaternion _orientation;
+    Quaternion<float> _orientation;
 
-    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector<float> Position { get { return _position; } set { _position = value; } }
     public float Radius { get { return _radius; } set { _radius = value; } }
-    public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
+    public Quaternion<float> Orientation { get { return _orientation; } set { _orientation = value; } }
 
-    public Sphere(Vector position, float radius, Quaternion orientation)
+    public Sphere(Vector<float> position, float radius, Quaternion<float> orientation)
     {
       _position = position;
       _radius = radius;

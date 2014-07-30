@@ -14,14 +14,14 @@ using System;
 using System.IO;
 using System.Globalization;
 using SevenEngine.Texts;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine
 {
   /// <summary>TextManager is used for fonts management (loading, storing, hardware instance controling, and disposing). </summary>
   public static class TextManager
   {
-    private static AvlTreeLinked<Font> _fontDatabase = new AvlTreeLinked<Font>(Font.CompareTo);
+    private static AvlTree<Font> _fontDatabase = new AvlTree_Linked<Font>(Font.CompareTo);
 
     /// <summary>The number of fonts currently loaded onto the graphics card.</summary>
     public static int Count { get { return _fontDatabase.Count; } }
@@ -39,8 +39,8 @@ namespace SevenEngine
 
     public static void LoadFontFile(string id, string filePath, string textureLocations)
     {
-      ListArray<CharacterSprite> characters = new ListArray<CharacterSprite>(255);
-      ListArray<string> textures = new ListArray<string>(1);
+      List_Array<CharacterSprite> characters = new List_Array<CharacterSprite>(255);
+      List_Array<string> textures = new List_Array<string>(1);
       int lineHeight = -1, fontBase = int.MinValue;
       using (StreamReader reader = new StreamReader(filePath))
       {

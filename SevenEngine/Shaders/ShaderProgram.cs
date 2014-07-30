@@ -1,18 +1,11 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
-
-using System;
+using Seven;
 using OpenTK.Graphics.OpenGL;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine.Shaders
 {
@@ -40,8 +33,27 @@ namespace SevenEngine.Shaders
       _existingReferences = 0;
     }
 
-    public static int CompareTo(ShaderProgram left, ShaderProgram right) { return left.Id.CompareTo(right.Id); }
-    public static int CompareTo(ShaderProgram left, string right) { return left.Id.CompareTo(right); }
+    public static Comparison CompareTo(ShaderProgram left, ShaderProgram right)
+    {
+      int comparison = left.Id.CompareTo(right.Id);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
+
+    public static Comparison CompareTo(ShaderProgram left, string right)
+    {
+      int comparison = left.Id.CompareTo(right);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
 
     public void SetShaderParameter(string variable, float value)
     {
@@ -129,6 +141,6 @@ namespace SevenEngine.Shaders
     }*/
 
     /// <summary>This is used for throwing shader exceptions only to make debugging faster.</summary>
-    private class ShaderException : Exception { public ShaderException(string message) : base(message) { } }
+    private class ShaderException : System.Exception { public ShaderException(string message) : base(message) { } }
   }
 }

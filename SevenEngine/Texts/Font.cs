@@ -1,18 +1,11 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
-
-using System;
+using Seven;
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine.Texts
 {
@@ -21,7 +14,7 @@ namespace SevenEngine.Texts
     private string _id;
     private int _lineHeight;
     private int _base;
-    private ListArray<CharacterSprite> _characterDatum;
+    private List<CharacterSprite> _characterDatum;
     private int _existingHardwareInstances;
 
     public string Id { get { return _id; } set { _id = value; } }
@@ -29,7 +22,7 @@ namespace SevenEngine.Texts
     internal int LineHeight { get { return _lineHeight; } }
     internal int Base { get { return _base; } }
 
-    internal Font(string id, int lineHeight, int fontBase, ListArray<CharacterSprite> characters)
+    internal Font(string id, int lineHeight, int fontBase, List<CharacterSprite> characters)
     {
       _id = id;
       _lineHeight = lineHeight;
@@ -39,13 +32,42 @@ namespace SevenEngine.Texts
 
     internal CharacterSprite Get(int id)
     {
-      for (int i = 0; i < _characterDatum.Count; i++)
-        if (_characterDatum[i].Id == id)
-          return _characterDatum[i];
-      throw new Exception("Character not found");
+      CharacterSprite lookup = null;
+      _characterDatum.Foreach(
+        (CharacterSprite i) =>
+        {
+          if (i.Id == id)
+          {
+            lookup = i;
+            return ForeachStatus.Break;
+          }
+          return ForeachStatus.Continue;
+        });
+      if (lookup != null)
+        return lookup;
+      throw new System.Exception("Character not found");
     }
 
-    public static int CompareTo(Font left, Font right) { return left.Id.CompareTo(right.Id); }
-    public static int CompareTo(Font left, string right) { return left.Id.CompareTo(right); }
+    public static Comparison CompareTo(Font left, Font right)
+    {
+      int comparison = left.Id.CompareTo(right.Id);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
+
+    public static Comparison CompareTo(Font left, string right)
+    { 
+      int comparison = left.Id.CompareTo(right);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
   }
 }

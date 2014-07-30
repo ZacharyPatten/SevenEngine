@@ -1,10 +1,12 @@
-﻿using System;
+﻿//using System;
+
+using Seven;
 
 using SevenEngine;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Imaging;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace Game.States
 {
@@ -18,8 +20,25 @@ namespace Game.States
 
     #region State Fields
 
-    public OctreeLinked<StaticModel> _octree = new OctreeLinked<StaticModel>(0, 0, 0, 1000000, 10,
-      (StaticModel left, StaticModel right) => { return left.Id.CompareTo(right.Id); });
+    public static Comparison Compare(double left, double right)
+    {
+      int comparison = left.CompareTo(right);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
+
+    public Omnitree<StaticModel, double> _octree = 
+      new Omnitree_Array<StaticModel, double>(
+        new double[] { -100000, -100000, -100000 },
+        new double[] { 100000, 100000, 100000 },
+        (StaticModel i, out double[] location) => { location = new double[] { i.Position.X, i.Position.Y, i.Position.Z }; },
+        Compare,
+        (double left, double right) => { return (left + right) * .5d; });
+        
 
     Camera _camera;
     StaticModel _terrain;
@@ -63,13 +82,13 @@ namespace Game.States
       _skybox.Top = TextureManager.Get("SkyboxTop");
 
       _terrain = StaticModelManager.GetModel("Terrain");
-      _terrain.Scale = new Vector(500, 20, 500);
-      _terrain.Orientation = new Quaternion(0, 0, 0, 0);
-      _terrain.Position = new Vector(0, 0, 0);
+      _terrain.Scale = new Vector<float>(500, 20, 500);
+      _terrain.Orientation = new Quaternion<float>(0, 0, 0, 0);
+      _terrain.Position = new Vector<float>(0, 0, 0);
 
       _mushroomCloud = StaticModelManager.GetModel("MushroomCloud");
-      _mushroomCloud.Scale = new Vector(500, 20, 500);
-      _mushroomCloud.Orientation = new Quaternion(0, 0, 0, 0);
+      _mushroomCloud.Scale = new Vector<float>(500, 20, 500);
+      _mushroomCloud.Orientation = new Quaternion<float>(0, 0, 0, 0);
       _mushroomCloud.Position.X = 0;
       _mushroomCloud.Position.Y = _terrain.Position.Y + 30;
       _mushroomCloud.Position.Z = 0;
@@ -77,18 +96,18 @@ namespace Game.States
       _bool = false;
 
       _mountain = StaticModelManager.GetModel("Mountain");
-      _mountain.Scale = new Vector(5000, 5000, 5000);
-      _mountain.Orientation = new Quaternion(0, 0, 0, 0);
-      _mountain.Position = new Vector(4000, 0, 1000);
+      _mountain.Scale = new Vector<float>(5000, 5000, 5000);
+      _mountain.Orientation = new Quaternion<float>(0, 0, 0, 0);
+      _mountain.Position = new Vector<float>(4000, 0, 1000);
 
       _mountain2 = StaticModelManager.GetModel("Mountain2");
-      _mountain2.Scale = new Vector(3500, 3500, 3500);
-      _mountain2.Orientation = new Quaternion(0, 0, 0, 0);
-      _mountain2.Position = new Vector(0, 0, 2500);
+      _mountain2.Scale = new Vector<float>(3500, 3500, 3500);
+      _mountain2.Orientation = new Quaternion<float>(0, 0, 0, 0);
+      _mountain2.Position = new Vector<float>(0, 0, 2500);
 
       string[] colors = new string[] { "YellowRanger", "RedRanger", "BlueRanger", "BlackRanger", "PinkRanger" };
 
-      Random random = new Random();
+      System.Random random = new System.Random();
       _rangers = new StaticModel[80];
       for (int i = 0; i < _rangers.Length; i++)
       {
@@ -96,8 +115,8 @@ namespace Game.States
         _rangers[i].Position.X = -100;
         _rangers[i].Position.Y = _terrain.Position.Y + 10;
         _rangers[i].Position.Z = -i * 50;
-        _rangers[i].Scale = new Vector(5, 5, 5);
-        _rangers[i].Orientation = new Quaternion(0, 1, 0, 0);
+        _rangers[i].Scale = new Vector<float>(5, 5, 5);
+        _rangers[i].Orientation = new Quaternion<float>(0, 1, 0, 0);
         _rangers[i].Orientation.W = i * 2;
         _rangers[i].Id = "Ranger" + i;
         _octree.Add(_rangers[i]);
@@ -110,19 +129,19 @@ namespace Game.States
         _tuxes[i].Position.X = 100;
         _tuxes[i].Position.Y = _terrain.Position.Y + 10;
         _tuxes[i].Position.Z = i * 50;
-        _tuxes[i].Scale = new Vector(25, 25, 25);
-        _tuxes[i].Orientation = new Quaternion(0, 1, 0, 0);
+        _tuxes[i].Scale = new Vector<float>(25, 25, 25);
+        _tuxes[i].Orientation = new Quaternion<float>(0, 1, 0, 0);
         _tuxes[i].Orientation.W = i * 2;
         _tuxes[i].Id = "Tux" + i;
         _octree.Add(_tuxes[i]);
       }
 
-      for (int i = 0; i < _rangers.Length; i += 2)
-      {
-        _rangers[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
-        //_octree.Remove("Ranger" + i);
-        _tuxes[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
-      }
+      //for (int i = 0; i < _rangers.Length; i += 2)
+      //{
+      //  _rangers[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
+      //  //_octree.Remove("Ranger" + i);
+      //  _tuxes[i].Meshes.Remove<string>("Body", (StaticMesh mesh, string key) => { return mesh.Id.CompareTo(key); });
+      //}
 
       Renderer.Font = TextManager.GetFont("Calibri");
 
@@ -147,10 +166,11 @@ namespace Game.States
 
       //Renderer.SetProjectionMatrix();
 
-      _octree.Traverse(
+      _octree.Foreach(
         (StaticModel model) => { 
           Renderer.DrawStaticModel(model); },
-        -100000, -100000, -100000, 100000, 100000, 100000);
+        new double[] { -100000, -100000, -100000, },
+        new double [] { 100000, 100000, 100000 });
 
       Renderer.DrawSkybox(_skybox);
       Renderer.DrawStaticModel(_terrain);

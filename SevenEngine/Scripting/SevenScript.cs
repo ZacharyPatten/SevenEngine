@@ -1,5 +1,10 @@
-﻿using System;
-using SevenEngine.DataStructures;
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
+
+using System;
+using Seven.Structures;
 
 namespace bD
 {
@@ -7,12 +12,14 @@ namespace bD
   public class Dimension
   {
     // The base of the library
-    private HashTable<object, string> _dB;
+    private Map<object, string> _dB;
 
     /// <summary>Constructs an empty code library.</summary>
     public Dimension()
     {
-      _dB = new HashTableLinked<object, string>();
+      _dB = new Map_Linked<object, string>(
+        (string left, string right) => { return left.Equals(right); },
+        (string str) => { return str.GetHashCode(); });
     }
 
     /// <summary>Declares a value in the code library to it's default value.</summary>

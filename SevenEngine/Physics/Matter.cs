@@ -11,7 +11,7 @@
 // Last Edited: 11-28-13
 
 using System;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine.Physics
 {
@@ -22,11 +22,11 @@ namespace SevenEngine.Physics
     protected Material _substance;
     //protected Shape _space;
 
-    protected Vector _acceleration;
-    protected Vector _velocity;
+    protected Vector<float> _acceleration;
+    protected Vector<float> _velocity;
 
-    protected Quaternion _angularAccelteration;
-    protected Quaternion _angularVelocity;
+    protected Quaternion<float> _angularAccelteration;
+    protected Quaternion<float> _angularVelocity;
 
     protected float _tempurature;
   }

@@ -1,6 +1,6 @@
 ﻿using System;
 using SevenEngine;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.StaticModels;
 using Game.States;
 
@@ -65,9 +65,9 @@ namespace Game.Units
       _moveSpeed = random.Next(_moveSpeedMin, _moveSpeedMax) / 20f;
     }
 
-    protected void Attack(OctreeLinked<Unit> octree)
+    protected void Attack(Omnitree<Unit, double> octree)
     {
-      octree.Traverse
+      octree.Foreach
       (
         (Unit unit) =>
         {
@@ -80,7 +80,8 @@ namespace Game.Units
             }
           }
         },
-        -_attackRange + Position.X, -_attackRange + Position.Y, -_attackRange + Position.Z, _attackRange + Position.X, _attackRange + Position.Y, _attackRange + Position.Z
+        new double[] { -_attackRange + Position.X, -_attackRange + Position.Y, -_attackRange + Position.Z },
+        new double[] { _attackRange + Position.X, _attackRange + Position.Y, _attackRange + Position.Z }
       );
       IsDead = true;
     }

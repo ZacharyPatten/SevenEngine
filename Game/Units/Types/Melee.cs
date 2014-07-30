@@ -3,8 +3,8 @@ using Game.States;
 using SevenEngine;
 using SevenEngine.Imaging;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
-using SevenEngine.DataStructures;
+using Seven.Mathematics;
+using Seven.Structures;
 
 namespace Game.Units
 {

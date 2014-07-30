@@ -1,11 +1,11 @@
 ﻿using System;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace Game.Units
 {
-  public abstract class Unit : IOctreeEntry
+  public abstract class Unit
   {
     protected string _id;
     protected int _health;
@@ -23,7 +23,7 @@ namespace Game.Units
     public float ViewDistance { get { return _viewDistance; } set { _viewDistance = value; } }
     public float MoveSpeed { get { return _moveSpeed; } set { _moveSpeed = value; } }
     public StaticModel StaticModel { get { return _staticModel; } set { _staticModel = value; } }
-    public Vector Position { get { return _staticModel.Position; } set { _staticModel.Position = value; } }
+    public Vector<float> Position { get { return _staticModel.Position; } set { _staticModel.Position = value; } }
     public virtual bool IsDead { get { return _isDead; } set { _isDead = value; } }
     
     public Unit(string id, StaticModel staticModel)
@@ -34,9 +34,9 @@ namespace Game.Units
     }
 
 
-    public void MoveTowards(Vector vector) 
+    public void MoveTowards(Vector<float> vector) 
     {
-      //Vector v1 = new Vector(0, 0, -1);
+      //Vector v1 = new Vector<float>(0, 0, -1);
       //Vector moveV = _staticModel.Position - vector;
       //Vector v2 = moveV.RotateBy(_staticModel.Orientation.W, 0, 1, 0);
       _staticModel.Position.X += (vector.X / vector.Length()) * _moveSpeed;
@@ -44,7 +44,7 @@ namespace Game.Units
       _staticModel.Position.Z += (vector.Z / vector.Length()) * _moveSpeed;
 
     }
-    public virtual void AI(float elapsedTime, OctreeLinked<Unit> octree) { throw new NotImplementedException(); }
+    public virtual void AI(float elapsedTime, Omnitree<Unit, double> octree) { throw new NotImplementedException(); }
 
     public static int CompareTo(Unit left, Unit right) { return left.Id.CompareTo(right.Id); }
     public static int CompareTo(Unit left, string right) { return left.Id.CompareTo(right); }

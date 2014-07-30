@@ -2,9 +2,9 @@
 using SevenEngine;
 using SevenEngine.Imaging;
 using Game.States;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace Game.Units
 {

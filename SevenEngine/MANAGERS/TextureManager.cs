@@ -16,7 +16,7 @@ using System.Drawing.Imaging;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine
 {
@@ -24,7 +24,7 @@ namespace SevenEngine
   public static class TextureManager
   {
     //private static Dictionary<string, Texture> _textureDatabase = new Dictionary<string, Texture>();
-    public static AvlTreeLinked<Texture> _textureDatabase = new AvlTreeLinked<Texture>(Texture.CompareTo);
+    public static AvlTree<Texture> _textureDatabase = new AvlTree_Linked<Texture>(Texture.CompareTo);
 
     /// <summary>The number of textures currently loaded onto the graphics card.</summary>
     public static int Count { get { return _textureDatabase.Count; } }

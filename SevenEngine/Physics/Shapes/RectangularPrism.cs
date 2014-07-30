@@ -11,24 +11,24 @@
 // Last Edited: 11-16-13
 
 using System;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace SevenEngine.Physics.Primitives
 {
   public class RectangularPrism
   {
     private float _width, _height;
-    private Vector _position;
-    private Quaternion _orientation;
+    private Vector<float> _position;
+    private Quaternion<float> _orientation;
 
     public RectangularPrism(float width, float height, float x, float y, float z)
     {
       _width = width;
       _height = height;
-      _position = new Vector(x, y, z);
+      _position = new Vector<float>(x, y, z);
     }
 
-    public RectangularPrism(float width, float height, Vector position)
+    public RectangularPrism(float width, float height, Vector<float> position)
     {
       if (position.Dimensions != 3)
         throw new Exception();

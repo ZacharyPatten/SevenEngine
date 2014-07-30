@@ -16,14 +16,14 @@ using OpenTK;
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 using SevenEngine.Audio;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine
 {
   /// <summary>SoundManager is used for audio management (loading, storing, hardware instance controling, and disposing).</summary>
   internal static class AudioManager
   {
-    private static AvlTree<Sound> _soundDatabase = new AvlTreeLinked<Sound>(Sound.CompareTo);
+    private static AvlTree<Sound> _soundDatabase = new AvlTree_Linked<Sound>(Sound.CompareTo);
 
     public static void Initialize()
     {

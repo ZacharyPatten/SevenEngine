@@ -1,29 +1,23 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-
-using System;
-using SevenEngine.DataStructures;
+using Seven;
+using Seven.Structures;
 using SevenEngine.Imaging;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 using SevenEngine.Shaders;
 
 namespace SevenEngine.StaticModels
 {
   /// <summary>Represents a collection of static meshes that all use the same model-view matrix.</summary>
-  public class StaticModel : IOctreeEntry
+  public class StaticModel
   {
     protected string _id;
-    protected Vector _position;
-    protected Vector _scale;
-    protected Quaternion _orientation;
+    protected Vector<float> _position;
+    protected Vector<float> _scale;
+    protected Quaternion<float> _orientation;
     protected ShaderProgram _shaderOverride;
     protected AvlTree<StaticMesh> _meshes;
     
@@ -32,11 +26,11 @@ namespace SevenEngine.StaticModels
     /// <summary>Look-up id for pulling the static model out of the databases.</summary>
     public string Id { get { return _id; } set { _id = value; } }
     /// <summary>The position vector of this static model (used in rendering transformations).</summary>
-    public Vector Position { get { return _position; } set { _position = value; } }
+    public Vector<float> Position { get { return _position; } set { _position = value; } }
     /// <summary>The scale vector (scale of each axis separately) of this static model (used in rendering transformations).</summary>
-    public Vector Scale { get { return _scale; } set { _scale = value; } }
+    public Vector<float> Scale { get { return _scale; } set { _scale = value; } }
     /// <summary>Represents the orientation of a static model by a quaternion rotation.</summary>
-    public Quaternion Orientation { get { return _orientation; } set { _orientation = value; } }
+    public Quaternion<float> Orientation { get { return _orientation; } set { _orientation = value; } }
     /// <summary>Overrides the default shader while rendering this specific model.</summary>
     public ShaderProgram ShaderOverride { get { return _shaderOverride; } set { _shaderOverride = value; } }
 
@@ -45,10 +39,10 @@ namespace SevenEngine.StaticModels
     {
       _id = id;
       _shaderOverride = null;
-      _meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
-      _position = new Vector(0, 0, 0);
-      _scale = new Vector(1, 1, 1);
-      _orientation = Quaternion.FactoryIdentity;
+      _meshes = new AvlTree_Linked<StaticMesh>(StaticMesh.CompareTo);
+      _position = new Vector<float>(0, 0, 0);
+      _scale = new Vector<float>(1, 1, 1);
+      _orientation = Quaternion<float>.FactoryIdentity;
     }
 
     /// <summary>Creates a static model from the ids provided.</summary>
@@ -59,9 +53,9 @@ namespace SevenEngine.StaticModels
     internal StaticModel(string staticModelId, string[] meshNames, string[] meshes, string[] textures)
     {
       if (textures.Length != meshes.Length && textures.Length != meshNames.Length)
-        throw new Exception("Attempting to create a static model with non-matching number of components.");
+        throw new System.Exception("Attempting to create a static model with non-matching number of components.");
       _id = staticModelId;
-      _meshes = new AvlTreeLinked<StaticMesh>(StaticMesh.CompareTo);
+      _meshes = new AvlTree_Linked<StaticMesh>(StaticMesh.CompareTo);
       for (int i = 0; i < textures.Length; i++)
       {
         StaticMesh mesh = StaticModelManager.GetMesh(meshes[i]);
@@ -70,9 +64,9 @@ namespace SevenEngine.StaticModels
 
       }
       _shaderOverride = null;
-      _position = new Vector(0, 0, 0);
-      _scale = new Vector(1, 1, 1);
-      _orientation = Quaternion.FactoryIdentity;
+      _position = new Vector<float>(0, 0, 0);
+      _scale = new Vector<float>(1, 1, 1);
+      _orientation = Quaternion<float>.FactoryIdentity;
     }
 
     /// <summary>Creates a static model out of the parameters.</summary>
@@ -83,12 +77,31 @@ namespace SevenEngine.StaticModels
       _id = staticModelId;
       _shaderOverride = null;
       _meshes = meshes;
-      _position = new Vector(0, 0, 0);
-      _scale = new Vector(1, 1, 1);
-      _orientation = Quaternion.FactoryIdentity;
+      _position = new Vector<float>(0, 0, 0);
+      _scale = new Vector<float>(1, 1, 1);
+      _orientation = Quaternion<float>.FactoryIdentity;
     }
 
-    public static int CompareTo(StaticModel left, StaticModel right) { return left.Id.CompareTo(right.Id); }
-    public static int CompareTo(StaticModel left, string right) { return left.Id.CompareTo(right); }
+    public static Comparison CompareTo(StaticModel left, StaticModel right)
+    {
+      int comparison = left.Id.CompareTo(right.Id);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
+
+    public static Comparison CompareTo(StaticModel left, string right)
+    {
+      int comparison = left.Id.CompareTo(right);
+      if (comparison > 0)
+        return Comparison.Greater;
+      else if (comparison < 0)
+        return Comparison.Less;
+      else
+        return Comparison.Equal;
+    }
   }
 }

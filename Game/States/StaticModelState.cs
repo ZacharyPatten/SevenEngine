@@ -1,10 +1,10 @@
 ﻿using System;
 
 using SevenEngine;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Imaging;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace Game.States
 {
@@ -43,46 +43,46 @@ namespace Game.States
 
       // Gets a copy of the "Terrain" model and tracks the number of hardware instances of each component
       _terrain = StaticModelManager.GetModel("Terrain");
-      _terrain.Scale = new Vector(500, 20, 500);
-      _terrain.Orientation = new Quaternion(0, 0, 0, 0);
-      _terrain.Position = new Vector(0, 0, 0);
+      _terrain.Scale = new Vector<float>(500, 20, 500);
+      _terrain.Orientation = new Quaternion<float>(0, 0, 0, 0);
+      _terrain.Position = new Vector<float>(0, 0, 0);
 
       // Gets a copy of the "RedRanger" model and tracks the number of hardware instances of each component
       _redRanger = StaticModelManager.GetModel("RedRanger");
-      _redRanger.Orientation = new Quaternion(0, 1, 0, 0);
+      _redRanger.Orientation = new Quaternion<float>(0, 1, 0, 0);
       //_redRanger.RotationAngle = 180f;
-      _redRanger.Scale = new Vector(5, 5, 5);
-      _redRanger.Position = new Vector(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _redRanger.Scale = new Vector<float>(5, 5, 5);
+      _redRanger.Position = new Vector<float>(_terrain.Position.X + 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "YellowRanger" model and tracks the number of hardware instances of each component
       _yellowRanger = StaticModelManager.GetModel("YellowRanger");
-      _yellowRanger.Orientation = new Quaternion(0, 1, 1, 0);
-      _yellowRanger.Scale = new Vector(10, 10, 10);
-      _yellowRanger.Position = new Vector(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _yellowRanger.Orientation = new Quaternion<float>(0, 1, 1, 0);
+      _yellowRanger.Scale = new Vector<float>(10, 10, 10);
+      _yellowRanger.Position = new Vector<float>(_terrain.Position.X + 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "BlackRanger" model and tracks the number of hardware instances of each component
       _blackRanger = StaticModelManager.GetModel("BlackRanger");
-      _blackRanger.Orientation = new Quaternion(1, 1, 0, 0);
-      _blackRanger.Scale = new Vector(10, 10, 10);
-      _blackRanger.Position = new Vector(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _blackRanger.Orientation = new Quaternion<float>(1, 1, 0, 0);
+      _blackRanger.Scale = new Vector<float>(10, 10, 10);
+      _blackRanger.Position = new Vector<float>(_terrain.Position.X + 0, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "BlueRanger" model and tracks the number of hardware instances of each component
       _blueRanger = StaticModelManager.GetModel("BlueRanger");
-      _blueRanger.Orientation = new Quaternion(0, 1, 2, 0);
-      _blueRanger.Scale = new Vector(10, 10, 10);
-      _blueRanger.Position = new Vector(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _blueRanger.Orientation = new Quaternion<float>(0, 1, 2, 0);
+      _blueRanger.Scale = new Vector<float>(10, 10, 10);
+      _blueRanger.Position = new Vector<float>(_terrain.Position.X - 200, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "PinkRanger" model and tracks the number of hardware instances of each component
       _pinkRanger = StaticModelManager.GetModel("PinkRanger");
-      _pinkRanger.Orientation = new Quaternion(0, 1, 0, 0);
-      _pinkRanger.Scale = new Vector(10, 10, 10);
-      _pinkRanger.Position = new Vector(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
+      _pinkRanger.Orientation = new Quaternion<float>(0, 1, 0, 0);
+      _pinkRanger.Scale = new Vector<float>(10, 10, 10);
+      _pinkRanger.Position = new Vector<float>(_terrain.Position.X - 100, _terrain.Position.Y + 130, _terrain.Position.Z);
 
       // Gets a copy of the "RedRangerSeven" model and tracks the number of hardware instances of each component
       _RedRangerTwo = StaticModelManager.GetModel("RedRangerSeven");
-      _RedRangerTwo.Orientation = new Quaternion(0, 1, 0, 0);
-      _RedRangerTwo.Scale = new Vector(20, 20, 20);
-      _RedRangerTwo.Position = new Vector(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
+      _RedRangerTwo.Orientation = new Quaternion<float>(0, 1, 0, 0);
+      _RedRangerTwo.Scale = new Vector<float>(20, 20, 20);
+      _RedRangerTwo.Position = new Vector<float>(_terrain.Position.X - 500, _terrain.Position.Y + 130, _terrain.Position.Z + 700);
 
       _isReady = true;
     }

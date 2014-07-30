@@ -10,21 +10,40 @@
 // - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
 // Last Edited: 11-16-13
 
-using System;
-using SevenEngine.DataStructures;
+//using System;
+using Seven;
+using Seven.Structures;
 
 namespace SevenEngine
 {
   /// <summary>StateManager is used for is used for state management (loading, storing).</summary>
   public static class StateManager
   {
-    private static Func<InterfaceGameState, InterfaceGameState, int> _comparison =
-      (InterfaceGameState left, InterfaceGameState right) => { return left.Id.CompareTo(right.Id); };
+    private static Compare<InterfaceGameState> _comparison =
+      (InterfaceGameState left, InterfaceGameState right) =>
+      {
+        int comparison = left.Id.CompareTo(right.Id);
+        if (comparison > 0)
+          return Comparison.Greater;
+        else if (comparison < 0)
+          return Comparison.Less;
+        else
+          return Comparison.Equal;
+      };
 
-    private static Func<InterfaceGameState, string, int> _keyComparison =
-      (InterfaceGameState left, string right) => { return left.Id.CompareTo(right); };
+    private static Compare<InterfaceGameState, string> _keyComparison =
+      (InterfaceGameState left, string right) =>
+      {
+        int comparison = left.Id.CompareTo(right);
+        if (comparison > 0)
+          return Comparison.Greater;
+        else if (comparison < 0)
+          return Comparison.Less;
+        else
+          return Comparison.Equal;
+      };
 
-    private static AvlTree<InterfaceGameState> _stateDatabase = new AvlTreeLinked<InterfaceGameState>(_comparison);
+    private static AvlTree<InterfaceGameState> _stateDatabase = new AvlTree_Linked<InterfaceGameState>(_comparison);
 
     private static InterfaceGameState _currentState = null;
 
@@ -116,6 +135,6 @@ namespace SevenEngine
     }
 
     /// <summary>A unique class for throwing StateSystem exceptions only.</summary>
-    private class StateSystemException : Exception { public StateSystemException(string message) : base(message) { } }
+    private class StateSystemException : System.Exception { public StateSystemException(string message) : base(message) { } }
   }
 }

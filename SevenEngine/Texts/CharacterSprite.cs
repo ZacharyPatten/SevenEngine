@@ -1,19 +1,12 @@
-﻿// SEVENENGINE LISCENSE:
-// You are free to use, modify, and distribute any or all code segments/files for any purpose
-// including commercial use under the following condition: any code using or originally taken 
-// from the SevenEngine project must include citation to its original author(s) located at the
-// top of each source code file, or you may include a reference to the SevenEngine project as
-// a whole but you must include the current SevenEngine official website URL and logo.
-// - Thanks.  :)  (support: seven@sevenengine.com)
-
-// Author(s):
-// - Zachary Aaron Patten (aka Seven) seven@sevenengine.com
-// Last Edited: 11-16-13
+﻿// Seven
+// https://github.com/53V3N1X/SevenEngine
+// LISCENSE: See "LISCENSE.txt" in th root project directory.
+// SUPPORT: See "README.txt" in the root project directory.
 
 using System;
 using OpenTK.Graphics.OpenGL;
 using SevenEngine.Imaging;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 
 namespace SevenEngine.Texts
 {
@@ -31,7 +24,7 @@ namespace SevenEngine.Texts
     private static int _gpuVertexBufferHandle;
     private int _gpuTextureMappingBufferHandle;
     private int _xAdvance;
-    private ListArray<Link2<int, int>> _kearnings;
+    private List_Array<Link<int, int>> _kearnings;
     private int _id;
     private int _xOffset;
     private int _yOffset;
@@ -68,7 +61,7 @@ namespace SevenEngine.Texts
       _yOffset = yOffset;
       _originalWidth = width;
       _originalHeight = height;
-      _kearnings = new ListArray<Link2<int, int>>(1);
+      _kearnings = new List_Array<Link<int, int>>(1);
 
       if (_gpuVertexBufferHandle == 0)
         GenerateVertexBuffer(_verteces);
@@ -118,13 +111,13 @@ namespace SevenEngine.Texts
     }
 
     internal void AddKearning(int followingCharacter, int ammount)
-    { _kearnings.Add(new Link2<int,int>(followingCharacter, ammount)); }
+    { _kearnings.Add(new Link<int,int>(followingCharacter, ammount)); }
 
     internal int CheckKearning(int followinCharacter)
     {
       for (int i = 0; i < _kearnings.Count; i++)
-        if (_kearnings[i].First == followinCharacter)
-          return _kearnings[i].Second;
+        if (_kearnings[i].One == followinCharacter)
+          return _kearnings[i].Two;
       return 0;
     }
   }

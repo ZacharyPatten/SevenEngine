@@ -1,10 +1,10 @@
 ﻿using System;
 
 using SevenEngine;
-using SevenEngine.DataStructures;
+using Seven.Structures;
 using SevenEngine.Imaging;
 using SevenEngine.StaticModels;
-using SevenEngine.Mathematics;
+using Seven.Mathematics;
 
 namespace Game.States
 {
@@ -39,9 +39,9 @@ namespace Game.States
       _camera.Move(_camera.Backward, 300);
 
       _terrain = StaticModelManager.GetModel("Terrain");
-      _terrain.Scale = new Vector(500, 20, 500);
-      //_terrain.RotationAmmounts = new Vector(0, 0, 0);
-      _terrain.Position = new Vector(0, 0, 0);
+      _terrain.Scale = new Vector<float>(500, 20, 500);
+      //_terrain.RotationAmmounts = new Vector<float>(0, 0, 0);
+      _terrain.Position = new Vector<float>(0, 0, 0);
 
       _sprites = new Sprite(TextureManager.Get("Menu"));
       _sprites.Scale.X = 50;
@@ -75,14 +75,14 @@ namespace Game.States
       CameraControls();
 
       spriteTimer += .05f;
-      _sprites.Position.X = (Calc.Sin(spriteTimer) * 100) + 100;
-      _sprites.Position.Y = (Calc.Cos(spriteTimer) * 100) + 100;
+      _sprites.Position.X = ((float)Math.Sin(spriteTimer) * 100f) + 100f;
+      _sprites.Position.Y = ((float)Math.Cos(spriteTimer) * 100f) + 100f;
 
-      _sprites2.Position.X = (float)(Math.Sin(spriteTimer) * 100) - 100;
-      _sprites2.Position.Y = (float)(Math.Cos(spriteTimer) * 100) - 100;
+      _sprites2.Position.X = (float)((float)Math.Sin(spriteTimer) * 100f) - 100f;
+      _sprites2.Position.Y = (float)((float)Math.Cos(spriteTimer) * 100f) - 100f;
 
-      _sprites3.Position.X = (Calc.Sin(spriteTimer) * 100);
-      _sprites3.Position.Y = (Calc.Cos(spriteTimer) * 100);
+      _sprites3.Position.X = ((float)Math.Sin(spriteTimer) * 100f);
+      _sprites3.Position.Y = ((float)Math.Cos(spriteTimer) * 100f);
 
       // You can return whatever you like, but you should use the return value to determine state changes
       return "Don't Change States";
