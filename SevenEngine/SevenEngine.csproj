@@ -36,7 +36,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="GraphicsCard\GraphicsCard.cs" />
+    <Compile Include="Graphics\Graphics.cs" />
     <Compile Include="SevenEngineWindow.cs" />
     <Compile Include="UTILITIES\Camera.cs" />
     <Compile Include="UTILITIES\FilePath.cs" />
@@ -91,7 +91,6 @@
     <Compile Include="Lighting\Light.cs" />
     <Compile Include="Lighting\Material.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="README\License.txt" />
   </ItemGroup>
